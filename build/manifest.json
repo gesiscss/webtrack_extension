@@ -1,0 +1,53 @@
+{
+  "short_name": "Webtrack",
+  "author": "Universität Koblenz-Landau",
+  "name": "Webtrack",
+  "description": "Webtrack",
+  "manifest_version": 2,
+  "version": "0.6.8.3",
+  "permissions": ["activeTab", "declarativeContent", "storage",  "tabs", "<all_urls>", "notifications", "unlimitedStorage"],
+  "icons": {
+    "128": "images/on.png"
+  },
+  "web_accessible_resources": [
+    "images/on.png"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_title": "Webtrack",
+
+    "default_icon": {
+      "128": "images/off.png"
+    }
+  },
+
+  "background": {
+    "scripts": [
+      "3rdpart/zip/deflate.js",
+      "3rdpart/zip/inflate.js",
+      "3rdpart/zip/z-worker.js",
+      "3rdpart/zip/zip.js",
+
+      "3rdpart/aes.js",
+      "3rdpart/jsencrypt.min.js",
+      "3rdpart/aws-sdk.min.js",
+
+      "defined/settings.js",
+      "dist/background.js"
+    ],
+    "persistent": true
+  },
+
+
+  "content_scripts": [{
+      "matches": ["http://*/*", "https://*/*"],
+      "js": [
+             "3rdpart/aes.js",
+             "dist/content.js"],
+        "run_at": "document_end",
+        "all_frames": false
+    }]
+
+}
