@@ -1,0 +1,13 @@
+.schedule .block-header{
+  margin-top: 5px;
+}
+
+.schedule .block-footer,
+.schedule .block-header{
+    color: black;
+}
+
+.schedule .block{
+  padding-top: var(--f7-block-padding-horizontal);
+  margin: 0;
+}

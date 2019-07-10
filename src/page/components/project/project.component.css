@@ -1,0 +1,19 @@
+[data-name="project"] [slot="nav-right"]{
+  padding-left: var(--f7-navbar-title-margin-left);
+  padding-right: var(--f7-navbar-title-margin-left);
+}
+
+/* [data-name="project"] .tab-history {
+  padding-top: 0 !important;
+} */
+
+[data-name="project"] .tab-search > *{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+[data-name="project"] .tab-search img{
+  width: 40%;
+  margin: 0 auto;
+}

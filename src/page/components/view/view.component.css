@@ -1,0 +1,9 @@
+[data-name="view"] .navbar-inner img{
+  width: 2em;
+  margin-right: 0.2em;
+}
+
+[data-name="view"] .navbar-inner .title{
+  display: flex;
+  align-items: center;
+}

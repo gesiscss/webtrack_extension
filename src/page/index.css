@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --main-bg-color: #337ab7;
+  --main-red-color: #f44336;
+}
+
+:root {
+  --f7-theme-color: #337ab7;
+  --f7-theme-color-rgb: 51, 122, 183;
+  --f7-theme-color-shade: #0066d6;
+  --f7-theme-color-tint: #337ab7;
+}
+
+.color-green {
+  --f7-theme-color: rgb(86, 176, 76);
+  --f7-theme-color-rgb: 86, 176, 76;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.dialog-button{
+  color: var(--main-bg-color) !important;
+}
+
+.navbar-inner{
+  background-color: var(--main-bg-color);
+  color: #fff;
+}
+
+.navbar-inner *{
+  color: #fff !important;
+}
+
+.tabbar .tab-link-highlight,
+.tabbar-labels .tab-link-highlight{
+  background-color: var(--main-bg-color) !important;
+}
+
+.toolbar a.tab-link-active{
+  color: var(--main-bg-color) !important;
+}
+
+
+.md .item-input-wrap:after,
+.md .input:after{
+  background-color: var(--main-bg-color) !important;
+}
+
+.item-input-focused .item-label,
+.item-input-focused .item-floating-label{
+  color: var(--main-bg-color) !important;
+}
+
+/* .tabs{
+  height: 100%;
+} */
+
+.page-content.tab{
+  padding: 1.5em 0 !important;
+}
+
+@media only screen and (max-height: 350px) {
+  .toolbar{
+    display: none;
+  }
+}
+
+html,
+body,
+.framework7-root,
+.view,
+.page,
+.page-content{
+  height: auto;
+}

@@ -1,0 +1,23 @@
+.data-table .data-table-footer{
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+#action .actions-button-text svg{
+  margin-right: 5px;
+}
+
+.history tr[disabled]{
+  background: var(--f7-color-white-shade);
+}
+
+.data-table tbody tr.data-table-row-selected[disabled],
+.device-desktop .data-table tbody tr[disabled]:hover {
+    background: var(--f7-color-white-shade);
+}
+
+.data-table tbody tr.data-table-row-selected:not([disabled]),
+.device-desktop .data-table tbody tr:not([disabled]):hover {
+  background: var(--f7-theme-color);
+  color: white;
+}
