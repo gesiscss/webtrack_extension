@@ -77,6 +77,14 @@ code {
   }
 }
 
+html,
+body,
+.framework7-root,
+.view,
+.page,
+.page-content{
+  height: auto;
+}
 .App {
   text-align: center;
 }

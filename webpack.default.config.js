@@ -34,13 +34,13 @@ module.exports = env => {
     optimization : {
       runtimeChunk : false,
       minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
-            mangle: {
-              keep_fnames: true,
-            },
-          },
-        })
+        // new UglifyJsPlugin({
+        //   uglifyOptions: {
+        //     mangle: {
+        //       keep_fnames: true,
+        //     },
+        //   },
+        // })
       ],
     }
   };
