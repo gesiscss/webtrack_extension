@@ -60,8 +60,8 @@ export default class History extends Component {
    * @param  {Array} items
    * @return {Array}
    */
-  getFilterItems(items){
-    return items.sort((a,b) => b.start.getTime() - a.start.getTime());
+  getFilterItems(items){    
+    return items.sort((a,b) => new Date(b.start).getTime() - new Date(a.start).getTime());
   }
 
   /**

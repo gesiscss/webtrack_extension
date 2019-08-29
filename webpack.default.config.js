@@ -1,8 +1,5 @@
 const process = require("process");
 const path = require("path");
-const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DIST_FOLDER = path.resolve('build', 'dist');
 const DIST_DIR = path.resolve(__dirname, DIST_FOLDER);
 
