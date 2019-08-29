@@ -39,7 +39,7 @@ export default class Actionbuttons extends Component {
    * [on update set the permission for allow sendData, privatetab, privatemode & set count of data]
    * @param  {Object} nextProps
    */
-  componentWillReceiveProps(nextProps){
+  UNSAFE_componentWillReceiveProps(nextProps){
     this.setState({
       allowSendData: nextProps.allowSendData,
       allowPrivateTab: nextProps.allowPrivateTab,

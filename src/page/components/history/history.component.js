@@ -56,6 +56,22 @@ export default class History extends Component {
   }
 
   /**
+   * [getItems return filtered and sorted array object-arrays]
+   * @param  {Array} items    [default: this.props.items]
+   * @param  {Number} start   [default: this.storageBetween.get().start]
+   * @param  {Number} end     [default: this.storageBetween.get().end]
+   * @return {Object}  [{items: [], nextItems: []}]
+   */
+  getItems(items=this.props.items, start=this.storageBetween.get().start, end=this.storageBetween.get().end){
+    items = this.getFilterItems(items);
+    if(this.storageFilter.get()) items = items.filter(e => !e.send)
+    return {
+      items: items.slice(start, end),
+      nextItems: items.slice(end, end+STEPS)
+    }
+  }
+
+  /**
    * [getFilterItems sort array after start time]
    * @param  {Array} items
    * @return {Array}
@@ -71,15 +87,17 @@ export default class History extends Component {
    */
   componentDidUpdate(nextProps, nextState){
     this.storageBetween.set(nextState.between);
-  }
+  } 
 
   /**
    * [componentWillReceiveProps update items and nextItems]
    * @param  {Object} nextProps
    */
-  componentWillReceiveProps(nextProps){
+  UNSAFE_componentWillReceiveProps(nextProps){
     this.setState(this.getItems(nextProps.items))
   }
+
+ 
 
   /**
    * [handleToogleFilter description]
