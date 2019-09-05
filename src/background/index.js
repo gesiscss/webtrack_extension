@@ -24,8 +24,8 @@ window.addEventListener("unhandledrejection", event => {
       console.error('PLEASE UPDATE YOUR BROWSER');
       window.requireUpdate = true;
     }
-    await errorCache.createDB();
-    console.log('Created Error DB');
+    // await errorCache.createDB();
+    // console.log('Created Error DB');
     window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
     window.settings = settings;
     window.companie = settings.companie;
@@ -40,7 +40,7 @@ window.addEventListener("unhandledrejection", event => {
     console.log('<Config load>');
 
     window.pageHandler = new PageHandler(config, transfer, window.tracker);
-    window.pageHandler.event.on('error', error => errorCache.add(error));
+    // window.pageHandler.event.on('error', error => errorCache.add(error));
 
     if(config.getSelect()!=null && config.getRunProjectTmpSettings() && (config.getRunProjectTmpSettings().clientId != null || !config.getProject(config.getSelect()).SETTINGS.ENTERID)){
       window.pageHandler.selectProject(config.getSelect());
