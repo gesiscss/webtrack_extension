@@ -9929,7 +9929,7 @@ function () {
                 };
 
                 blob instanceof Blob ? fileReader.readAsDataURL(blob) : resolve(url);
-              }).catch(console.log);
+              })["catch"](console.log);
             } catch (e) {
               resolve(url);
               console.log(url);
@@ -9962,7 +9962,7 @@ function () {
             this.data.push({
               url: url,
               data: this.urls2data[url].data,
-              new: this.urls2data[url].new
+              "new": this.urls2data[url]["new"]
             });
 
             this._worker();
@@ -9974,12 +9974,12 @@ function () {
               _this2.data.push({
                 url: url,
                 data: result,
-                new: true
+                "new": true
               });
 
               _this2.urls2data[url] = {
                 data: result,
-                new: true
+                "new": true
               };
               _this2.workerCount--;
 
@@ -10158,8 +10158,8 @@ function (_MultiFetch) {
         _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
           }
         } finally {
           if (_didIteratorError) {
@@ -10259,8 +10259,8 @@ function (_MultiFetch) {
         _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
           }
         } finally {
           if (_didIteratorError2) {
@@ -10350,8 +10350,8 @@ function (_MultiFetch) {
         _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
           }
         } finally {
           if (_didIteratorError3) {
@@ -10422,8 +10422,8 @@ function (_MultiFetch) {
           _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
             if (_didIteratorError4) {
@@ -10590,10 +10590,10 @@ function (_MultiFetch) {
                 case 3:
                   source = _context2.sent;
                   source = source.filter(function (e) {
-                    return e.new;
+                    return e["new"];
                   }).map(function (e) {
-                    _this4.urls2data[e.url].new = false;
-                    delete e.new;
+                    _this4.urls2data[e.url]["new"] = false;
+                    delete e["new"];
                     return e;
                   }); // this.eventEmitter.emit(EVENT_NAMES.data, {source: source}, false)
 
@@ -10975,8 +10975,8 @@ function (_Tracker) {
               _iteratorError = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                  _iterator.return();
+                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                  _iterator["return"]();
                 }
               } finally {
                 if (_didIteratorError) {
@@ -11004,55 +11004,55 @@ function (_Tracker) {
       var search = [{
         name: 'articel-time',
         query: ['._5ptz'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.getAttribute('title');
         }
       }, {
         name: 'articel-link',
         query: ['.fsm.fwn.fcg a'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return location.href.substring(0, location.href.length - 1) + e.getAttribute('href');
         }
       }, {
         name: 'articel-headertext',
         query: ['.userContent p'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-publisher-name',
         query: ['.fwn .fwb a'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-count-likes',
         query: ['a._3dlf > span', '._2x4v > span'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.textContent.replace(/\D+/g, ""), 10);
         }
       }, {
         name: 'articel-count-comments',
         query: ['._1whp._4vn2 a', '._36_q a'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.textContent.replace(/\D+/g, ""), 10);
         }
       }, {
         name: 'articel-count-shares',
         query: ['._355t._4vn2 a', '._ipm._2x0m'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.textContent.replace(/\D+/g, ""), 10);
         }
       }, {
         name: 'articel-count-contentType',
-        default: undefined,
+        "default": undefined,
         query: ['._3x-2'],
         filter: function filter(e) {
           if (e.querySelectorAll('a[target="_blank"][rel="noopener nofollow"]').length > 0) {
@@ -11068,11 +11068,11 @@ function (_Tracker) {
       }],
           values = [];
 
-      for (var _i = 0; _i < search.length; _i++) {
-        var s = search[_i];
+      for (var _i = 0, _search = search; _i < _search.length; _i++) {
+        var s = _search[_i];
 
         try {
-          var value = s.default;
+          var value = s["default"];
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
           var _iteratorError2 = undefined;
@@ -11094,8 +11094,8 @@ function (_Tracker) {
             _iteratorError2 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
               }
             } finally {
               if (_didIteratorError2) {
@@ -11173,8 +11173,8 @@ function (_Tracker) {
         _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
           }
         } finally {
           if (_didIteratorError3) {
@@ -11234,8 +11234,8 @@ function (_Tracker) {
           _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
             if (_didIteratorError4) {
@@ -11322,8 +11322,8 @@ function (_Tracker) {
           _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
           } finally {
             if (_didIteratorError5) {
@@ -11382,8 +11382,8 @@ function (_Tracker) {
           _iteratorError6 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-              _iterator6.return();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
           } finally {
             if (_didIteratorError6) {
@@ -11480,8 +11480,8 @@ function (_Tracker) {
           _iteratorError7 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-              _iterator7.return();
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
             }
           } finally {
             if (_didIteratorError7) {
@@ -11623,8 +11623,8 @@ function (_Tracker) {
           _iteratorError8 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-              _iterator8.return();
+            if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+              _iterator8["return"]();
             }
           } finally {
             if (_didIteratorError8) {
@@ -11688,8 +11688,8 @@ function (_Tracker) {
           _iteratorError9 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-              _iterator9.return();
+            if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+              _iterator9["return"]();
             }
           } finally {
             if (_didIteratorError9) {
@@ -11893,8 +11893,8 @@ function (_Tracker) {
         _iteratorError10 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
+          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+            _iterator10["return"]();
           }
         } finally {
           if (_didIteratorError10) {
@@ -12113,56 +12113,56 @@ function (_Tracker) {
       var search = [{
         name: 'articel-time',
         query: ['.date'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent.match(/\b(\w*[A-Za-z0-9 äÄöÖüÜß]\w*)\b/g).join('');
         }
       }, {
         name: 'articel-link',
         query: ['#primary-inner'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return location.href;
         }
       }, {
         name: 'articel-headertext',
         query: ['.title'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-description',
         query: ['#meta #container #content #description'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-publisher-name',
         query: ['#owner-name a'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-count-likes',
         query: ['#top-level-buttons > *:nth-child(1) #text'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-count-dislikes',
         query: ['#top-level-buttons > *:nth-child(2) #text'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-count-comments',
         query: ['#comments #count'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.textContent.replace(/\D+/g, ""), 10);
         }
@@ -12175,12 +12175,12 @@ function (_Tracker) {
         return e.name;
       });
 
-      for (var _i = 0; _i < search.length; _i++) {
-        var s = search[_i];
+      for (var _i = 0, _search = search; _i < _search.length; _i++) {
+        var s = _search[_i];
         if (is.includes(s.name)) continue;
 
         try {
-          var value = s.default;
+          var value = s["default"];
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -12204,8 +12204,8 @@ function (_Tracker) {
             _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
               }
             } finally {
               if (_didIteratorError) {
@@ -12254,8 +12254,8 @@ function (_Tracker) {
             _iteratorError2 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
               }
             } finally {
               if (_didIteratorError2) {
@@ -12299,8 +12299,8 @@ function (_Tracker) {
           _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
             }
           } finally {
             if (_didIteratorError3) {
@@ -12328,8 +12328,8 @@ function (_Tracker) {
           _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
             if (_didIteratorError4) {
@@ -12361,8 +12361,8 @@ function (_Tracker) {
           _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
           } finally {
             if (_didIteratorError5) {
@@ -12391,8 +12391,8 @@ function (_Tracker) {
             _iteratorError6 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-                _iterator6.return();
+              if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+                _iterator6["return"]();
               }
             } finally {
               if (_didIteratorError6) {
@@ -12415,8 +12415,8 @@ function (_Tracker) {
             _iteratorError7 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-                _iterator7.return();
+              if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+                _iterator7["return"]();
               }
             } finally {
               if (_didIteratorError7) {
@@ -12542,8 +12542,8 @@ function (_Tracker) {
         _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
+          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+            _iterator8["return"]();
           }
         } finally {
           if (_didIteratorError8) {
@@ -12706,8 +12706,8 @@ function (_Tracker) {
             _iteratorError11 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-                _iterator11.return();
+              if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+                _iterator11["return"]();
               }
             } finally {
               if (_didIteratorError11) {
@@ -12751,8 +12751,8 @@ function (_Tracker) {
             _iteratorError12 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
-                _iterator12.return();
+              if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
+                _iterator12["return"]();
               }
             } finally {
               if (_didIteratorError12) {
@@ -12813,8 +12813,8 @@ function (_Tracker) {
                 _iteratorError14 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion14 && _iterator14.return != null) {
-                    _iterator14.return();
+                  if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
+                    _iterator14["return"]();
                   }
                 } finally {
                   if (_didIteratorError14) {
@@ -12833,8 +12833,8 @@ function (_Tracker) {
             _iteratorError13 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
-                _iterator13.return();
+              if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
+                _iterator13["return"]();
               }
             } finally {
               if (_didIteratorError13) {
@@ -12853,8 +12853,8 @@ function (_Tracker) {
         _iteratorError9 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
+          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+            _iterator9["return"]();
           }
         } finally {
           if (_didIteratorError9) {
@@ -12935,8 +12935,8 @@ function (_Tracker) {
                           _iteratorError17 = err;
                         } finally {
                           try {
-                            if (!_iteratorNormalCompletion17 && _iterator17.return != null) {
-                              _iterator17.return();
+                            if (!_iteratorNormalCompletion17 && _iterator17["return"] != null) {
+                              _iterator17["return"]();
                             }
                           } finally {
                             if (_didIteratorError17) {
@@ -12960,8 +12960,8 @@ function (_Tracker) {
                 _iteratorError16 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion16 && _iterator16.return != null) {
-                    _iterator16.return();
+                  if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
+                    _iterator16["return"]();
                   }
                 } finally {
                   if (_didIteratorError16) {
@@ -12980,8 +12980,8 @@ function (_Tracker) {
             _iteratorError15 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion15 && _iterator15.return != null) {
-                _iterator15.return();
+              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
+                _iterator15["return"]();
               }
             } finally {
               if (_didIteratorError15) {
@@ -12996,8 +12996,8 @@ function (_Tracker) {
         _iteratorError10 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
+          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+            _iterator10["return"]();
           }
         } finally {
           if (_didIteratorError10) {
@@ -13051,8 +13051,8 @@ function (_Tracker) {
             _iteratorError19 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion19 && _iterator19.return != null) {
-                _iterator19.return();
+              if (!_iteratorNormalCompletion19 && _iterator19["return"] != null) {
+                _iterator19["return"]();
               }
             } finally {
               if (_didIteratorError19) {
@@ -13079,8 +13079,8 @@ function (_Tracker) {
             _iteratorError20 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion20 && _iterator20.return != null) {
-                _iterator20.return();
+              if (!_iteratorNormalCompletion20 && _iterator20["return"] != null) {
+                _iterator20["return"]();
               }
             } finally {
               if (_didIteratorError20) {
@@ -13099,8 +13099,8 @@ function (_Tracker) {
         _iteratorError18 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion18 && _iterator18.return != null) {
-            _iterator18.return();
+          if (!_iteratorNormalCompletion18 && _iterator18["return"] != null) {
+            _iterator18["return"]();
           }
         } finally {
           if (_didIteratorError18) {
@@ -13269,60 +13269,60 @@ function (_Tracker) {
       var search = [{
         name: 'articel-time',
         query: ['.tweet-timestamp'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.getAttribute('title');
         }
       }, {
         name: 'articel-link',
         query: ['.tweet-timestamp'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return location.href.substring(0, location.href.length - 1) + e.getAttribute('href');
         }
       }, {
         name: 'articel-headertext',
         query: ['.tweet-text'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-description',
         query: ['.TweetTextSize'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent;
         }
       }, {
         name: 'articel-publisher-name',
         query: ['.FullNameGroup .fullname'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return e.textContent.match(/\b(\w*[A-Za-z0-9 äÄöÖüÜß]\w*)\b/g).join('');
         }
       }, {
         name: 'articel-count-likes',
         query: ['.ProfileTweet-actionButton.js-actionFavorite .ProfileTweet-actionCountForPresentation'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.textContent, 10);
         }
       }, {
         name: 'articel-count-comments',
         query: ['.ProfileTweet-actionCountList .ProfileTweet-actionCount'],
-        default: undefined,
+        "default": undefined,
         filter: function filter(e) {
           return parseInt(e.getAttribute('data-tweet-stat-count'), 10);
         }
       }],
           values = [];
 
-      for (var _i = 0; _i < search.length; _i++) {
-        var s = search[_i];
+      for (var _i = 0, _search = search; _i < _search.length; _i++) {
+        var s = _search[_i];
 
         try {
-          var value = s.default;
+          var value = s["default"];
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -13344,8 +13344,8 @@ function (_Tracker) {
             _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
               }
             } finally {
               if (_didIteratorError) {
@@ -13399,8 +13399,8 @@ function (_Tracker) {
               _iteratorError2 = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                  _iterator2.return();
+                if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                  _iterator2["return"]();
                 }
               } finally {
                 if (_didIteratorError2) {
