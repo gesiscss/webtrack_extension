@@ -2,7 +2,8 @@ var settings = {
   companie: {
     name: "WebTrack"
   },
-  id: 'de.unild.webtrack',
+  //id: 'de.unild.webtrack',
+  //id: 'localhost',
   lang: 'de',
   versionType: 'Chrome',
   mobile: false,
@@ -10,5 +11,6 @@ var settings = {
     chrome: 45
   },
   server: "https://webtrack.uni-landau.de:8443/"
+  server: "https://localhost:8443/"
   // server: "https://va.uni-landau.de:8443/"
 }
