@@ -8,7 +8,7 @@ export default class FacebookTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     this.allow = true;
-    this.debug = true;
+    this.debug = false;
     this.debugEvents = false;
     this.elements = [];
     this.elementStrings = '';
