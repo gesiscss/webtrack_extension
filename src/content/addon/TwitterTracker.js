@@ -167,7 +167,20 @@ export default class TwitterTracker extends Tracker{
    * @return {Boolean}
    */
   _isPublic(target){
-    return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
+    var ispublic = true;
+    var svgs = target.getElementsByTagName('svg');
+
+    for (var i = 0; i < svgs.length; i++) {
+      if (svgs[i].hasAttribute('aria-label')) {
+        if (svgs[i].getAttribute('aria-label') == 'Protected account') {
+          ispublic = false;
+          break;
+        }
+      }
+    }
+
+    return ispublic;
+    //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
   }
 
   /**
@@ -333,11 +346,12 @@ export default class TwitterTracker extends Tracker{
       this._eventListenPermalinkOverlay();
       for (var i = 0; i < found.length; i++) {
         this.elements.push(found[i]);
-        //this.elementStrings += found[i].outerHTML;
-        this.elementStrings += "<div>" + found[i].textContent + "</div>";
+        this.elementStrings += found[i].outerHTML;
+        //this.elementStrings += "<div>" + found[i].textContent + "</div>";
       }
 
       console.log('DOOMING....');
+      console.log(this.elements.length);
 
       if(this.elements.length==0){
         if(this.debug) console.log('Not allow');

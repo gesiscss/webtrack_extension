@@ -13450,7 +13450,19 @@ function (_Tracker) {
   }, {
     key: "_isPublic",
     value: function _isPublic(target) {
-      return !target.querySelectorAll('[class="Icon Icon--protected"]').length > 0;
+      var ispublic = true;
+      var svgs = target.getElementsByTagName('svg');
+
+      for (var i = 0; i < svgs.length; i++) {
+        if (svgs[i].hasAttribute('aria-label')) {
+          if (svgs[i].getAttribute('aria-label') == 'Protected account') {
+            ispublic = false;
+            break;
+          }
+        }
+      }
+
+      return ispublic; //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
     }
     /**
      * [_getPublicArticels return elements of public articels]
@@ -13718,13 +13730,13 @@ function (_Tracker) {
                   _this8._eventListenPermalinkOverlay();
 
                   for (i = 0; i < found.length; i++) {
-                    _this8.elements.push(found[i]); //this.elementStrings += found[i].outerHTML;
+                    _this8.elements.push(found[i]);
 
-
-                    _this8.elementStrings += "<div>" + found[i].textContent + "</div>";
+                    _this8.elementStrings += found[i].outerHTML; //this.elementStrings += "<div>" + found[i].textContent + "</div>";
                   }
 
                   console.log('DOOMING....');
+                  console.log(_this8.elements.length);
 
                   if (_this8.elements.length == 0) {
                     if (_this8.debug) console.log('Not allow');
@@ -13734,7 +13746,7 @@ function (_Tracker) {
                     resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
                   }
 
-                case 8:
+                case 9:
                 case "end":
                   return _context.stop();
               }
