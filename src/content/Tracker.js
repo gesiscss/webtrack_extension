@@ -278,9 +278,9 @@ export default class Tracker extends MultiFetch {
   getDom(){
     return new Promise((resolve, reject) => {
 
-      var tclone = document.documentElement;//.cloneNode(true);
+      var tclone = document.documentElement.cloneNode(true);
       //clean all scripts to minimize the size
-      var r = tclone.getElementsByTagName('script');
+      var r = tclone.querySelectorAll('script,link,svg');
       for (var i = (r.length-1); i >= 0; i--) {
           if(r[i].getAttribute('id') != 'a'){
               r[i].parentNode.removeChild(r[i]);
