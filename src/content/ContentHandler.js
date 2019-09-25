@@ -34,13 +34,13 @@ export default class ContentHandler {
     let str = location.hostname;
     if(str.indexOf('facebook')>=0){
       console.log('FacebookTracker');
-      return FacebookTracker
+      return FacebookTracker;
     }else if(str.indexOf('youtube')>=0){
       console.log('YouTubeTracker');
-      return YouTubeTracker
+      return YouTubeTracker;
     }else if(str.indexOf('twitter')>=0){
       console.log('TwitterTracker');
-      return TwitterTracker
+      return TwitterTracker;
     }
     console.log('Tracker');
     return Tracker
