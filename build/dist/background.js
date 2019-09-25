@@ -32231,7 +32231,22 @@ function () {
         xbrowser.tabs.onRemoved.addListener(_this4._onTabRemove);
         xbrowser.tabs.onUpdated.addListener(_this4._onTabUpdate);
         xbrowser.runtime.onMessage.addListener(_this4._onTabContent);
-        xbrowser.tabs.onActivated.addListener(_this4._onActivatedTab);
+        xbrowser.tabs.onActivated.addListener(_this4._onActivatedTab); // function logURL(requestDetails) {
+        //   console.log("Loading: " + requestDetails.url);
+        // }
+        // console.log('!!!!!!!!!!!!start!!');
+        // xbrowser.webRequest.onBeforeRequest.addListener(logURL, {
+        //   urls: ["https://api.twitter.com/*"]
+        // });
+        // function logResponse(responseDetails) { 
+        //   console.log('responseDetails');
+        //   console.log(responseDetails);
+        // }
+        // xbrowser.webRequest.onCompleted.addListener(
+        //   logResponse,
+        //   {urls: ["https://api.twitter.com/*"]}
+        // );
+
         xbrowser.windows.getLastFocused({}, function (window) {
           if (window.id > 0) _this4._onActivWindows(window.id); // if(window.id>0) console.log('Change activWindowId %s', window.id);
         });

@@ -12,7 +12,7 @@ export default class TwitterTracker extends Tracker{
     this.eventElements = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
-      articels: ['#stream-items-id li > .tweet'],
+      articels: ['article'],//#['#stream-items-id li > .tweet'],
       likeButton: ['.ProfileTweet-actionList .js-actionFavorite'],
       commentDialog: {
         wrapper: ['#global-tweet-dialog'],
@@ -155,7 +155,7 @@ export default class TwitterTracker extends Tracker{
    * @return {String}
    */
   _getHead(){
-    if(this.documentHead.length>0) this.documentHead = document.querySelectorAll('head')[0].outerHTML;
+    this.documentHead = document.querySelectorAll('head')[0].outerHTML;
     return this.documentHead;
   }
 
@@ -333,13 +333,18 @@ export default class TwitterTracker extends Tracker{
       this._eventListenPermalinkOverlay();
       for (var i = 0; i < found.length; i++) {
         this.elements.push(found[i]);
-        this.elementStrings += found[i].outerHTML
+        //this.elementStrings += found[i].outerHTML;
+        this.elementStrings += "<div>" + found[i].textContent + "</div>";
       }
+
+      console.log('DOOMING....');
 
       if(this.elements.length==0){
         if(this.debug) console.log('Not allow');
         resolve(false);
       }else{
+
+        console.log('RESOLVING....');
         resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
       }
     })

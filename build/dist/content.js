@@ -10558,7 +10558,17 @@ function (_MultiFetch) {
     key: "getDom",
     value: function getDom() {
       return new Promise(function (resolve, reject) {
-        resolve(document.documentElement.outerHTML);
+        var tclone = document.documentElement.cloneNode(true); //clean all scripts to minimize the size
+
+        var r = tclone.querySelectorAll('script,link,svg,style');
+
+        for (var i = r.length - 1; i >= 0; i--) {
+          if (r[i].getAttribute('id') != 'a') {
+            r[i].parentNode.removeChild(r[i]);
+          }
+        }
+
+        resolve(tclone.outerHTML); //resolve(document.documentElement.outerHTML);
       });
     }
     /**
@@ -10766,6 +10776,8 @@ function (_MultiFetch) {
 
                     resolve(false);
                   } else {
+                    console.log("FETCHING...");
+
                     _this7.eventEmitter.emit(EVENT_NAMES.data, {
                       html: html,
                       create: +new Date()
@@ -13217,7 +13229,8 @@ function (_Tracker) {
     _this.eventElements = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
-      articels: ['#stream-items-id li > .tweet'],
+      articels: ['article'],
+      //#['#stream-items-id li > .tweet'],
       likeButton: ['.ProfileTweet-actionList .js-actionFavorite'],
       commentDialog: {
         wrapper: ['#global-tweet-dialog'],
@@ -13425,7 +13438,7 @@ function (_Tracker) {
   }, {
     key: "_getHead",
     value: function _getHead() {
-      if (this.documentHead.length > 0) this.documentHead = document.querySelectorAll('head')[0].outerHTML;
+      this.documentHead = document.querySelectorAll('head')[0].outerHTML;
       return this.documentHead;
     }
     /**
@@ -13705,19 +13718,23 @@ function (_Tracker) {
                   _this8._eventListenPermalinkOverlay();
 
                   for (i = 0; i < found.length; i++) {
-                    _this8.elements.push(found[i]);
+                    _this8.elements.push(found[i]); //this.elementStrings += found[i].outerHTML;
 
-                    _this8.elementStrings += found[i].outerHTML;
+
+                    _this8.elementStrings += "<div>" + found[i].textContent + "</div>";
                   }
+
+                  console.log('DOOMING....');
 
                   if (_this8.elements.length == 0) {
                     if (_this8.debug) console.log('Not allow');
                     resolve(false);
                   } else {
+                    console.log('RESOLVING....');
                     resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
                   }
 
-                case 7:
+                case 8:
                 case "end":
                   return _context.stop();
               }
@@ -13948,6 +13965,7 @@ function () {
     this.data = {};
     this.DELAY = 1000;
     this.last = 0;
+    this.debug = true;
   }
   /**
    * [return specific tracker for the current page]
@@ -14005,6 +14023,15 @@ function () {
       var type = null;
 
       if (object.hasOwnProperty('html')) {
+        if (this.debug) {
+          console.log('Counter');
+          console.log(this.count);
+
+          if (object['html']) {
+            console.log(object['html'].length);
+          }
+        }
+
         object = {
           content: [object]
         };

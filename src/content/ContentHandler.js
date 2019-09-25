@@ -23,6 +23,7 @@ export default class ContentHandler {
     this.data = {}
     this.DELAY = 1000;
     this.last = 0;
+    this.debug = true;
   }
 
   /**
@@ -67,6 +68,14 @@ export default class ContentHandler {
 
     let type = null;
     if(object.hasOwnProperty('html')){
+      if (this.debug){
+        console.log('Counter');
+        console.log(this.count);
+
+        if(object['html']) {
+          console.log((object['html']).length);
+        }
+      }
       object = {content: [object]}
       type = 'html';
     } else if(object.hasOwnProperty('links')){
