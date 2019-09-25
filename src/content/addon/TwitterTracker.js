@@ -168,18 +168,26 @@ export default class TwitterTracker extends Tracker{
    */
   _isPublic(target){
     var ispublic = true;
-    var svgs = target.getElementsByTagName('svg');
+    //var svgs = target.getElementsByTagName('svg');
 
-    for (var i = 0; i < svgs.length; i++) {
-      if (svgs[i].hasAttribute('aria-label')) {
-        if (svgs[i].getAttribute('aria-label') == 'Protected account') {
-          ispublic = false;
-          break;
-        }
-      }
+    var svgs = target.querySelectorAll('svg[aria-label="Protected account"]');
+
+    if (svgs.length > 0) {
+      return false;
+    } else {
+      return true;
     }
 
-    return ispublic;
+    // for (var i = 0; i < svgs.length; i++) {
+    //   if (svgs[i].hasAttribute('aria-label')) {
+    //     if (svgs[i].getAttribute('aria-label') == 'Protected account') {
+    //       ispublic = false;
+    //       break;
+    //     }
+    //   }
+    // }
+
+    //return ispublic;
     //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
   }
 
@@ -334,34 +342,57 @@ export default class TwitterTracker extends Tracker{
 
 
   /**
+   * [return true if user is logged in twitter]
+   * @return {[bool]} [description]
+   */
+  _isNotLoggedTwitter(){
+    //document.documentElement.querySelectorAll('script,link,svg,style');
+    //var navs = document.documentElement.getElementsByTagName('nav');
+    var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
+    console.log(navs);
+    if (navs.length > 0){
+      console.log('it is logged!!!!!!');
+      return false;
+    } else {
+      console.log('NOOOOOOOOT logged!!!!!!');
+      return true;
+    }
+
+  }
+
+  /**
    * [getDom return html content from public articel]
    * @return {String}
    */
   getDom(){
-    return new Promise(async (resolve, reject) => {
-      let found = this._getPublicArticels();
-      this._eventListenComment();
-      this._eventListenRetweet();
-      this._eventListenTweetstorm();
-      this._eventListenPermalinkOverlay();
-      for (var i = 0; i < found.length; i++) {
-        this.elements.push(found[i]);
-        this.elementStrings += found[i].outerHTML;
-        //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-      }
+    if (this._isNotLoggedTwitter()){
+        return super.getDom();
+    } else {
+      return new Promise(async (resolve, reject) => {
+        let found = this._getPublicArticels();
+        this._eventListenComment();
+        this._eventListenRetweet();
+        this._eventListenTweetstorm();
+        this._eventListenPermalinkOverlay();
+        for (var i = 0; i < found.length; i++) {
+          this.elements.push(found[i]);
+          this.elementStrings += found[i].outerHTML;
+          //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+        }
 
-      console.log('DOOMING....');
-      console.log(this.elements.length);
+        console.log('DOOMING....');
+        console.log(this.elements.length);
 
-      if(this.elements.length==0){
-        if(this.debug) console.log('Not allow');
-        resolve(false);
-      }else{
+        if(this.elements.length==0){
+          if(this.debug) console.log('Not allow');
+          resolve(false);
+        }else{
 
-        console.log('RESOLVING....');
-        resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
-      }
-    })
+          console.log('RESOLVING....');
+          resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
+        }
+      })
+    }
   }
 
   /**

@@ -13198,9 +13198,13 @@ function TwitterTracker_createClass(Constructor, protoProps, staticProps) { if (
 
 function TwitterTracker_possibleConstructorReturn(self, call) { if (call && (TwitterTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return TwitterTracker_assertThisInitialized(self); }
 
-function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
-
 function TwitterTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = TwitterTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
 
 function TwitterTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) TwitterTracker_setPrototypeOf(subClass, superClass); }
 
@@ -13450,19 +13454,25 @@ function (_Tracker) {
   }, {
     key: "_isPublic",
     value: function _isPublic(target) {
-      var ispublic = true;
-      var svgs = target.getElementsByTagName('svg');
+      var ispublic = true; //var svgs = target.getElementsByTagName('svg');
 
-      for (var i = 0; i < svgs.length; i++) {
-        if (svgs[i].hasAttribute('aria-label')) {
-          if (svgs[i].getAttribute('aria-label') == 'Protected account') {
-            ispublic = false;
-            break;
-          }
-        }
-      }
+      var svgs = target.querySelectorAll('svg[aria-label="Protected account"]');
 
-      return ispublic; //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
+      if (svgs.length > 0) {
+        return false;
+      } else {
+        return true;
+      } // for (var i = 0; i < svgs.length; i++) {
+      //   if (svgs[i].hasAttribute('aria-label')) {
+      //     if (svgs[i].getAttribute('aria-label') == 'Protected account') {
+      //       ispublic = false;
+      //       break;
+      //     }
+      //   }
+      // }
+      //return ispublic;
+      //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
+
     }
     /**
      * [_getPublicArticels return elements of public articels]
@@ -13699,6 +13709,27 @@ function (_Tracker) {
 
     }
     /**
+     * [return true if user is logged in twitter]
+     * @return {[bool]} [description]
+     */
+
+  }, {
+    key: "_isNotLoggedTwitter",
+    value: function _isNotLoggedTwitter() {
+      //document.documentElement.querySelectorAll('script,link,svg,style');
+      //var navs = document.documentElement.getElementsByTagName('nav');
+      var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
+      console.log(navs);
+
+      if (navs.length > 0) {
+        console.log('it is logged!!!!!!');
+        return false;
+      } else {
+        console.log('NOOOOOOOOT logged!!!!!!');
+        return true;
+      }
+    }
+    /**
      * [getDom return html content from public articel]
      * @return {String}
      */
@@ -13708,56 +13739,60 @@ function (_Tracker) {
     value: function getDom() {
       var _this8 = this;
 
-      return new Promise(
-      /*#__PURE__*/
-      function () {
-        var _ref = TwitterTracker_asyncToGenerator(
+      if (this._isNotLoggedTwitter()) {
+        return _get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
+      } else {
+        return new Promise(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee(resolve, reject) {
-          var found, i;
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  found = _this8._getPublicArticels();
+        function () {
+          var _ref = TwitterTracker_asyncToGenerator(
+          /*#__PURE__*/
+          regeneratorRuntime.mark(function _callee(resolve, reject) {
+            var found, i;
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    found = _this8._getPublicArticels();
 
-                  _this8._eventListenComment();
+                    _this8._eventListenComment();
 
-                  _this8._eventListenRetweet();
+                    _this8._eventListenRetweet();
 
-                  _this8._eventListenTweetstorm();
+                    _this8._eventListenTweetstorm();
 
-                  _this8._eventListenPermalinkOverlay();
+                    _this8._eventListenPermalinkOverlay();
 
-                  for (i = 0; i < found.length; i++) {
-                    _this8.elements.push(found[i]);
+                    for (i = 0; i < found.length; i++) {
+                      _this8.elements.push(found[i]);
 
-                    _this8.elementStrings += found[i].outerHTML; //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-                  }
+                      _this8.elementStrings += found[i].outerHTML; //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+                    }
 
-                  console.log('DOOMING....');
-                  console.log(_this8.elements.length);
+                    console.log('DOOMING....');
+                    console.log(_this8.elements.length);
 
-                  if (_this8.elements.length == 0) {
-                    if (_this8.debug) console.log('Not allow');
-                    resolve(false);
-                  } else {
-                    console.log('RESOLVING....');
-                    resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
-                  }
+                    if (_this8.elements.length == 0) {
+                      if (_this8.debug) console.log('Not allow');
+                      resolve(false);
+                    } else {
+                      console.log('RESOLVING....');
+                      resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
+                    }
 
-                case 9:
-                case "end":
-                  return _context.stop();
+                  case 9:
+                  case "end":
+                    return _context.stop();
+                }
               }
-            }
-          }, _callee);
-        }));
+            }, _callee);
+          }));
 
-        return function (_x, _x2) {
-          return _ref.apply(this, arguments);
-        };
-      }());
+          return function (_x, _x2) {
+            return _ref.apply(this, arguments);
+          };
+        }());
+      }
     }
     /**
      * [onStart on start event]
