@@ -277,7 +277,18 @@ export default class Tracker extends MultiFetch {
    */
   getDom(){
     return new Promise((resolve, reject) => {
-      resolve(document.documentElement.outerHTML);
+
+      var tclone = document.documentElement;//.cloneNode(true);
+      //clean all scripts to minimize the size
+      var r = tclone.getElementsByTagName('script');
+      for (var i = (r.length-1); i >= 0; i--) {
+          if(r[i].getAttribute('id') != 'a'){
+              r[i].parentNode.removeChild(r[i]);
+          }
+      }
+
+      resolve(tclone.outerHTML);
+      //resolve(document.documentElement.outerHTML);
     });
   }
 
@@ -357,6 +368,7 @@ export default class Tracker extends MultiFetch {
         this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false)
         resolve(false)
       }else{
+        console.log("FETCHING...");
         this.eventEmitter.emit(EVENT_NAMES.data, {html: html, create: +new Date()}, false)
         resolve(true)
       }
