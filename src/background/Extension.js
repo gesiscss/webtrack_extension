@@ -282,6 +282,22 @@ export default class Extension {
       xbrowser.runtime.onMessage.addListener(this._onTabContent);
       xbrowser.tabs.onActivated.addListener(this._onActivatedTab);
 
+      // function logURL(requestDetails) {
+      //   console.log("Loading: " + requestDetails.url);
+      // }
+      // console.log('!!!!!!!!!!!!start!!');
+      // xbrowser.webRequest.onBeforeRequest.addListener(logURL, {
+      //   urls: ["https://api.twitter.com/*"]
+      // });
+
+      // function logResponse(responseDetails) { 
+      //   console.log('responseDetails');
+      //   console.log(responseDetails);
+      // }
+      // xbrowser.webRequest.onCompleted.addListener(
+      //   logResponse,
+      //   {urls: ["https://api.twitter.com/*"]}
+      // );
 
       xbrowser.windows.getLastFocused({}, window => {
         if(window.id>0) this._onActivWindows(window.id)
