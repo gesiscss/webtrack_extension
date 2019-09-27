@@ -65,11 +65,12 @@ export default class TwitterTracker extends Tracker{
 
       // the twitter id needs to be search in the .parentNode.parentNode.parentNode.getAttribute('href'), e.g. "/username/status/995297509001048064/analytics"
       svg_maintweet_tweetid: 'a svg g path[d="M12 22c-.414 0-.75-.336-.75-.75V2.75c0-.414.336-.75.75-.75s.75.336.75.75v18.5c0 .414-.336.75-.75.75zm5.14 0c-.415 0-.75-.336-.75-.75V7.89c0-.415.335-.75.75-.75s.75.335.75.75v13.36c0 .414-.337.75-.75.75zM6.86 22c-.413 0-.75-.336-.75-.75V10.973c0-.414.337-.75.75-.75s.75.336.75.75V21.25c0 .414-.335.75-.75.75z"]',
+      svg_maintweet_tweetid_regex: /.*status\/(\d+).*/,
       // the twitter id needs to be search in the .parentNode.getAttribute('href'), e.g. "/username/status/1176767347950084096"
-      svg_maintweet_tweetid: 'a svg time'
-
-
+      time_tweetid: 'a time',
+      time_tweetid_regex: /.*status\/(\d+).*/
     };
+
     this.lastUrlPath = '';
     this.documentHead = '';
     this.values = [];
@@ -222,6 +223,34 @@ export default class TwitterTracker extends Tracker{
     //return !target.querySelectorAl                                                                                                                                            l('[class="Icon Icon--protected"]').length>0;
   }
 
+
+  /**
+   * [_getId looks for an href that contains the id of the element]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
+   */
+  _getId(article){
+    try {
+
+      var _clone = article.cloneNode(true);
+      var times = article.querySelectorAll(this.eventElements.time_tweetid);
+      if (times.length > 0){
+        return times[0].parentNode.getAttribute('href').match(this.eventElements.time_tweetid_regex)[1];
+      } else {
+        var svgs = article.querySelectorAll(this.eventElements.svg_maintweet_tweetid);
+        if (svgs.length > 0){
+          return svgs[0].parentNode.parentNode.parentNode.getAttribute('href').match(this.eventElements.svg_maintweet_tweetid_regex)[1];
+        }
+      }
+    }
+    catch(error) {
+      console.log(error);
+      console.log('Unexpected error getting Twitter ID in TwitterTracker');
+    }
+    
+    return null;
+  }
+
   /**
    * [_getPublicArticels return elements of public articels]
    * @return {Array} articels
@@ -231,9 +260,17 @@ export default class TwitterTracker extends Tracker{
     for (var i = 0; i < articels.length; i++) {
       if(this._isPublic(articels[i])){
         this._setBorder(articels[i]);
-        let id = articels[i].getAttribute('data-tweet-id');
-        this.tweetId2Element[id] = articels[i];
-        this._setEventLikeButton(id);
+
+        //let id = articels[i].getAttribute('data-tweet-id');
+        let id = this._getId(articels[i]);
+        if (debug) console.log('ID detected: ' + id);
+
+        if (id == null) {
+          // TODO: what to do in case of error detecting id.
+        } else {
+          this.tweetId2Element[id] = articels[i];
+          this._setEventLikeButton(id);
+        }       
       }else{
         delete articels[i]
       }
@@ -383,14 +420,12 @@ export default class TwitterTracker extends Tracker{
 
     var svgs = document.documentElement.querySelectorAll(
       this.eventElements.svg_home_deactivated);
-    console.log(svgs);
     if (svgs.length > 0){
       if(this.debug) console.log(' ++++ Logged!!!!!! +++');
       return false;
     } else {
       var svgs = document.documentElement.querySelectorAll(
         this.eventElements.svg_home_activated);
-      console.log(svgs);
       if (svgs.length > 0){
         if(this.debug) console.log(' ++++ Logged!!!!!! +++');
         return false;
