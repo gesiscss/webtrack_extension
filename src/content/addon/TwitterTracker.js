@@ -268,8 +268,8 @@ export default class TwitterTracker extends Tracker{
         if (id == null) {
           // TODO: what to do in case of error detecting id.
         } else {
-          this.tweetId2Element[id] = articels[i];
-          this._setEventLikeButton(id);
+          this.tweetId2Element[id] = articels[i].cloneNode(true);
+          //this._setEventLikeButton(id);
         }       
       }else{
         delete articels[i]
@@ -451,21 +451,30 @@ export default class TwitterTracker extends Tracker{
         //this._eventListenRetweet();
         //this._eventListenTweetstorm();
         //this._eventListenPermalinkOverlay();
-        for (var i = 0; i < found.length; i++) {
-          this.elements.push(found[i]);
-          this.elementStrings += found[i].outerHTML;
+        //for (var i = 0; i < found.length; i++) {
+          //this.elements.push(found[i]);
+          //this.elementStrings += found[i].outerHTML;
           //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-        }
-        
-        if(this.debug) console.log('DOOMING....');
-        if(this.debug) console.log(this.elements.length);
+        //}
 
-        if(this.elements.length==0){
+        
+        var elementStrings = '';
+        var counter = 0;
+        for (var key in this.tweetId2Element) {
+          if (this.tweetId2Element.hasOwnProperty(key)){
+            elementStrings += this.tweetId2Element[key].outerHTML;
+            counter += 1;
+          }
+        }
+
+        if(this.debug) console.log('DOOMING: ' + counter);
+
+        if(elementStrings==''){
           if(this.debug) console.log('No public tweets/replies found');
           resolve(false);
         }else{
           if(this.debug) console.log('RESOLVING....');
-          resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
+          resolve('<html>'+this._getHead()+'<body>'+elementStrings+'</body>'+'</html>');
         }
       })
     }

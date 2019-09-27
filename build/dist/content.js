@@ -13555,9 +13555,7 @@ function (_Tracker) {
 
           if (id == null) {// TODO: what to do in case of error detecting id.
           } else {
-            this.tweetId2Element[id] = articels[i];
-
-            this._setEventLikeButton(id);
+            this.tweetId2Element[id] = articels[i].cloneNode(true); //this._setEventLikeButton(id);
           }
         } else {
           delete articels[i];
@@ -13820,7 +13818,7 @@ function (_Tracker) {
           var _ref = TwitterTracker_asyncToGenerator(
           /*#__PURE__*/
           regeneratorRuntime.mark(function _callee(resolve, reject) {
-            var found, i;
+            var found, elementStrings, counter, key;
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
@@ -13829,25 +13827,33 @@ function (_Tracker) {
                     //this._eventListenRetweet();
                     //this._eventListenTweetstorm();
                     //this._eventListenPermalinkOverlay();
+                    //for (var i = 0; i < found.length; i++) {
+                    //this.elements.push(found[i]);
+                    //this.elementStrings += found[i].outerHTML;
+                    //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+                    //}
 
-                    for (i = 0; i < found.length; i++) {
-                      _this8.elements.push(found[i]);
+                    elementStrings = '';
+                    counter = 0;
 
-                      _this8.elementStrings += found[i].outerHTML; //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+                    for (key in _this8.tweetId2Element) {
+                      if (_this8.tweetId2Element.hasOwnProperty(key)) {
+                        elementStrings += _this8.tweetId2Element[key].outerHTML;
+                        counter += 1;
+                      }
                     }
 
-                    if (_this8.debug) console.log('DOOMING....');
-                    if (_this8.debug) console.log(_this8.elements.length);
+                    if (_this8.debug) console.log('DOOMING: ' + counter);
 
-                    if (_this8.elements.length == 0) {
+                    if (elementStrings == '') {
                       if (_this8.debug) console.log('No public tweets/replies found');
                       resolve(false);
                     } else {
                       if (_this8.debug) console.log('RESOLVING....');
-                      resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
+                      resolve('<html>' + _this8._getHead() + '<body>' + elementStrings + '</body>' + '</html>');
                     }
 
-                  case 5:
+                  case 6:
                   case "end":
                     return _context.stop();
                 }
