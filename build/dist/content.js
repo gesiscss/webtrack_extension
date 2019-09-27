@@ -13264,7 +13264,20 @@ function (_Tracker) {
         }
       },
       svg_home_activated: 'nav a svg g path[d="M22.58 7.35L12.475 1.897c-.297-.16-.654-.16-.95 0L1.425 7.35c-.486.264-.667.87-.405 1.356.18.335.525.525.88.525.16 0 .324-.038.475-.12l.734-.396 1.59 11.25c.216 1.214 1.31 2.062 2.66 2.062h9.282c1.35 0 2.444-.848 2.662-2.088l1.588-11.225.737.398c.485.263 1.092.082 1.354-.404.263-.486.08-1.093-.404-1.355zM12 15.435c-1.795 0-3.25-1.455-3.25-3.25s1.455-3.25 3.25-3.25 3.25 1.455 3.25 3.25-1.455 3.25-3.25 3.25z"]',
-      svg_home_deactivated: 'nav a svg g path[d="M22.46 7.57L12.357 2.115c-.223-.12-.49-.12-.713 0L1.543 7.57c-.364.197-.5.652-.303 1.017.135.25.394.393.66.393.12 0 .243-.03.356-.09l.815-.44L4.7 19.963c.214 1.215 1.308 2.062 2.658 2.062h9.282c1.352 0 2.445-.848 2.663-2.087l1.626-11.49.818.442c.364.193.82.06 1.017-.304.196-.363.06-.818-.304-1.016zm-4.638 12.133c-.107.606-.703.822-1.18.822H7.36c-.48 0-1.075-.216-1.178-.798L4.48 7.69 12 3.628l7.522 4.06-1.7 12.015z"]'
+      svg_home_deactivated: 'nav a svg g path[d="M22.46 7.57L12.357 2.115c-.223-.12-.49-.12-.713 0L1.543 7.57c-.364.197-.5.652-.303 1.017.135.25.394.393.66.393.12 0 .243-.03.356-.09l.815-.44L4.7 19.963c.214 1.215 1.308 2.062 2.658 2.062h9.282c1.352 0 2.445-.848 2.663-2.087l1.626-11.49.818.442c.364.193.82.06 1.017-.304.196-.363.06-.818-.304-1.016zm-4.638 12.133c-.107.606-.703.822-1.18.822H7.36c-.48 0-1.075-.216-1.178-.798L4.48 7.69 12 3.628l7.522 4.06-1.7 12.015z"]',
+      //svg_maintweet_protected: ':not(article) svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      //svg_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      svg_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      // assumes that the target is the tweet/comment
+      svg_proeet_favorite: ':not(article) svg g path[d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"]',
+      svg_favorite: 'article svg g path[d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"]',
+
+      /**This is not enough!!!, the icon appears twice!!!
+      an idea is two check for the content:
+      .parentNode.parentNode.parentNode.innerText != ''
+      **/
+      svg_maintweet_retweet: ':not(article) svg g path[d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zm-10.66 3.28H7.26c-1.24 0-2.25-1.01-2.25-2.25V6.46l2.22 2.22c.148.147.34.22.532.22s.384-.073.53-.22c.293-.293.293-.768 0-1.06l-3.5-3.5c-.293-.294-.768-.294-1.06 0l-3.5 3.5c-.294.292-.294.767 0 1.06s.767.293 1.06 0l2.22-2.22V16.7c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.337-.75-.75-.75z"]',
+      svg_retweet: 'article svg g path[d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zm-10.66 3.28H7.26c-1.24 0-2.25-1.01-2.25-2.25V6.46l2.22 2.22c.148.147.34.22.532.22s.384-.073.53-.22c.293-.293.293-.768 0-1.06l-3.5-3.5c-.293-.294-.768-.294-1.06 0l-3.5 3.5c-.294.292-.294.767 0 1.06s.767.293 1.06 0l2.22-2.22V16.7c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.337-.75-.75-.75z"]'
     };
     _this.lastUrlPath = '';
     _this.documentHead = '';
@@ -13457,12 +13470,15 @@ function (_Tracker) {
     key: "_isPublic",
     value: function _isPublic(target) {
       var ispublic = true; //var svgs = target.getElementsByTagName('svg');
+      //var svgs = target.querySelectorAll('svg[aria-label="Protected account"]');
 
-      var svgs = target.querySelectorAll('svg[aria-label="Protected account"]');
+      var svgs = target.querySelectorAll(this.eventElements.svg_protected);
 
       if (svgs.length > 0) {
+        console.log('protected');
         return false;
       } else {
+        console.log('not protected');
         return true;
       } // for (var i = 0; i < svgs.length; i++) {
       //   if (svgs[i].hasAttribute('aria-label')) {
@@ -13473,7 +13489,7 @@ function (_Tracker) {
       //   }
       // }
       //return ispublic;
-      //return !target.querySelectorAll('[class="Icon Icon--protected"]').length>0;
+      //return !target.querySelectorAl                                                                                                                                            l('[class="Icon Icon--protected"]').length>0;
 
     }
     /**
@@ -13725,17 +13741,17 @@ function (_Tracker) {
       console.log(svgs);
 
       if (svgs.length > 0) {
-        console.log('it is logged!!!!!!');
+        if (this.debug) console.log(' ++++ Logged!!!!!! +++');
         return false;
       } else {
         var svgs = document.documentElement.querySelectorAll(this.eventElements.svg_home_activated);
         console.log(svgs);
 
         if (svgs.length > 0) {
-          console.log('it is logged!!!!!!');
+          if (this.debug) console.log(' ++++ Logged!!!!!! +++');
           return false;
         } else {
-          console.log('NOOOOOOOOT logged!!!!!!');
+          if (this.debug) console.log('Not logged!!!!!!');
           return true;
         }
       }
@@ -13764,15 +13780,10 @@ function (_Tracker) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
-                    found = _this8._getPublicArticels();
-
-                    _this8._eventListenComment();
-
-                    _this8._eventListenRetweet();
-
-                    _this8._eventListenTweetstorm();
-
-                    _this8._eventListenPermalinkOverlay();
+                    found = _this8._getPublicArticels(); //this._eventListenComment();
+                    //this._eventListenRetweet();
+                    //this._eventListenTweetstorm();
+                    //this._eventListenPermalinkOverlay();
 
                     for (i = 0; i < found.length; i++) {
                       _this8.elements.push(found[i]);
@@ -13780,18 +13791,18 @@ function (_Tracker) {
                       _this8.elementStrings += found[i].outerHTML; //this.elementStrings += "<div>" + found[i].textContent + "</div>";
                     }
 
-                    console.log('DOOMING....');
-                    console.log(_this8.elements.length);
+                    if (_this8.debug) console.log('DOOMING....');
+                    if (_this8.debug) console.log(_this8.elements.length);
 
                     if (_this8.elements.length == 0) {
-                      if (_this8.debug) console.log('Not allow');
+                      if (_this8.debug) console.log('No public tweets/replies found');
                       resolve(false);
                     } else {
-                      console.log('RESOLVING....');
+                      if (_this8.debug) console.log('RESOLVING....');
                       resolve('<html>' + _this8._getHead() + '<body>' + _this8.elementStrings + '</body>' + '</html>');
                     }
 
-                  case 9:
+                  case 5:
                   case "end":
                     return _context.stop();
                 }
