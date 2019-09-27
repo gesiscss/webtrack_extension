@@ -13262,7 +13262,9 @@ function (_Tracker) {
           text: ['.inline-reply-tweetbox-container .RichEditor-scrollContainer .tweet-box'],
           submitButton: ['.tweet-button > .EdgeButton']
         }
-      }
+      },
+      svg_home_activated: 'nav a svg g path[d="M22.58 7.35L12.475 1.897c-.297-.16-.654-.16-.95 0L1.425 7.35c-.486.264-.667.87-.405 1.356.18.335.525.525.88.525.16 0 .324-.038.475-.12l.734-.396 1.59 11.25c.216 1.214 1.31 2.062 2.66 2.062h9.282c1.35 0 2.444-.848 2.662-2.088l1.588-11.225.737.398c.485.263 1.092.082 1.354-.404.263-.486.08-1.093-.404-1.355zM12 15.435c-1.795 0-3.25-1.455-3.25-3.25s1.455-3.25 3.25-3.25 3.25 1.455 3.25 3.25-1.455 3.25-3.25 3.25z"]',
+      svg_home_deactivated: 'nav a svg g path[d="M22.46 7.57L12.357 2.115c-.223-.12-.49-.12-.713 0L1.543 7.57c-.364.197-.5.652-.303 1.017.135.25.394.393.66.393.12 0 .243-.03.356-.09l.815-.44L4.7 19.963c.214 1.215 1.308 2.062 2.658 2.062h9.282c1.352 0 2.445-.848 2.663-2.087l1.626-11.49.818.442c.364.193.82.06 1.017-.304.196-.363.06-.818-.304-1.016zm-4.638 12.133c-.107.606-.703.822-1.18.822H7.36c-.48 0-1.075-.216-1.178-.798L4.48 7.69 12 3.628l7.522 4.06-1.7 12.015z"]'
     };
     _this.lastUrlPath = '';
     _this.documentHead = '';
@@ -13718,15 +13720,24 @@ function (_Tracker) {
     value: function _isNotLoggedTwitter() {
       //document.documentElement.querySelectorAll('script,link,svg,style');
       //var navs = document.documentElement.getElementsByTagName('nav');
-      var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
-      console.log(navs);
+      //var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
+      var svgs = document.documentElement.querySelectorAll(this.eventElements.svg_home_deactivated);
+      console.log(svgs);
 
-      if (navs.length > 0) {
+      if (svgs.length > 0) {
         console.log('it is logged!!!!!!');
         return false;
       } else {
-        console.log('NOOOOOOOOT logged!!!!!!');
-        return true;
+        var svgs = document.documentElement.querySelectorAll(this.eventElements.svg_home_activated);
+        console.log(svgs);
+
+        if (svgs.length > 0) {
+          console.log('it is logged!!!!!!');
+          return false;
+        } else {
+          console.log('NOOOOOOOOT logged!!!!!!');
+          return true;
+        }
       }
     }
     /**
