@@ -217,7 +217,8 @@ export default class Extension {
           this.setImage(true);
           // if(msg.count == 1){
              msg = Object.assign(msg, {
-               url: sender.tab.url,
+               sender_url: sender.tab.url,
+               url: msg.location_url,
                title: sender.tab.title
              })
           // }

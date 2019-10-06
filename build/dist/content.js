@@ -14178,6 +14178,7 @@ function () {
       this.data = Object.assign({
         startTime: this.startTime,
         createData: +new Date(),
+        location_url: window.location.href,
         content: [],
         source: [],
         links: [],
