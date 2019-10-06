@@ -12,7 +12,8 @@ const errorCache = new ErrorCache();
 
 window.addEventListener("unhandledrejection", event => {
   errorCache.add(event);
-  console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason);
+  console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
+    '. Have you added the certificates by visiting the server page?');
 });
 
 

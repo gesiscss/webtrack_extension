@@ -38182,7 +38182,7 @@ function background_asyncToGenerator(fn) { return function () { var self = this,
 var errorCache = new ErrorCache_ErrorCache();
 window.addEventListener("unhandledrejection", function (event) {
   errorCache.add(event);
-  console.warn("UNHANDLED PROMISE REJECTION: ", event.reason);
+  console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
 });
 (function () {
   var _main = background_asyncToGenerator(
