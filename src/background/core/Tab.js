@@ -251,7 +251,7 @@ export default class Tab {
       if(this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
       this._update(nr);
     } catch (e) {
-      console.warn('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', e, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
+      console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', e, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
       this.queue[nr].data.shift();
       this.queue[nr].active = false;
       this._update(nr);
