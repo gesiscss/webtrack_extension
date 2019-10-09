@@ -14200,13 +14200,22 @@ function () {
           if (now - this.last > this.DELAY) {
             this.last = now; // console.log('sendMessage %s', this.count, object);
 
-            this.browser.runtime.sendMessage(this.data, function (response) {
-              if (response == undefined) {
-                _this2.close();
+            try {
+              this.browser.runtime.sendMessage(this.data, function (response) {
+                if (response == undefined) {
+                  _this2.close();
 
-                console.log('Close');
+                  console.log('Close');
+                }
+              });
+            } catch (err) {
+              if (err.message == "Extension context invalidated.") {
+                console.log('Could not sendMessage. Did you reload the extension?');
+              } else {
+                debugger;
+                throw err;
               }
-            });
+            }
           }
 
           break;
@@ -14214,13 +14223,22 @@ function () {
         default:
           if (this.data.content.length > 0) {
             // console.log('sendMessage %s', this.count, object);
-            this.browser.runtime.sendMessage(this.data, function (response) {
-              if (response == undefined) {
-                _this2.close();
+            try {
+              this.browser.runtime.sendMessage(this.data, function (response) {
+                if (response == undefined) {
+                  _this2.close();
 
-                console.log('Close');
+                  console.log('Close');
+                }
+              });
+            } catch (err) {
+              if (err.message == "Extension context invalidated.") {
+                console.log('Could not sendMessage. Did you reload the extension?');
+              } else {
+                debugger;
+                throw err;
               }
-            });
+            }
           } else {
             console.log('wait for content');
           }
@@ -14302,7 +14320,8 @@ function () {
                   _context.prev = 12;
 
                   _this3.domDetector.onChange(function () {
-                    //  console.log('Dom Chance');
+                    console.log('Dom Change');
+
                     _this3.tracker.fetchHTML();
                   }, delay);
 

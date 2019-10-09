@@ -35579,7 +35579,7 @@ function () {
               case 20:
                 _context4.prev = 20;
                 _context4.t0 = _context4["catch"](4);
-                console.warn('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context4.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
+                console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context4.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
 
@@ -37589,7 +37589,18 @@ function () {
 
                   if (page.start instanceof Date) {
                     page.start = moment_default()(page.start).format('YYYY-MM-DD HH:mm:ss');
-                  }
+                  } // @tico, if I ever manage to install a minifier in the extension
+                  // for (let i in page.content) {
+                  //   try {
+                  //       console.log('minify');
+                  //       //var minify = require('html-minifier').minify;
+                  //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
+                  //     } catch (err) {
+                  //       debugger;
+                  //       console.log('Failed to minify html');
+                  //     }
+                  // }
+
 
                   _context5.next = 29;
                   return _this4.transfer.sendingData(JSON.stringify({

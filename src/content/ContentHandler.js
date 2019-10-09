@@ -114,23 +114,42 @@ export default class ContentHandler {
           if (now - this.last > this.DELAY) {
               this.last = now;
               // console.log('sendMessage %s', this.count, object);
-              this.browser.runtime.sendMessage(this.data, (response)=>{
-                if(response==undefined){
-                  this.close();
-                  console.log('Close');                  
-                }                
-              });
+              try {
+                this.browser.runtime.sendMessage(this.data, (response)=>{
+                  if(response==undefined){
+                    this.close();
+                    console.log('Close');                  
+                  }                
+                });
+              } catch(err){
+                if (err.message == "Extension context invalidated."){
+                  console.log('Could not sendMessage. Did you reload the extension?');
+                } else {
+                  debugger;
+                  throw err;
+                }
+              }
           }
         break;
       default:
         if(this.data.content.length>0){
           // console.log('sendMessage %s', this.count, object);
-          this.browser.runtime.sendMessage(this.data, (response)=>{
-            if(response==undefined){
-              this.close();
-              console.log('Close');                  
-            }
-          });
+          try{
+            this.browser.runtime.sendMessage(this.data, (response)=>{
+              if(response==undefined){
+                this.close();
+                console.log('Close');                  
+              }
+            });
+          } catch(err){
+              if (err.message == "Extension context invalidated."){
+                console.log('Could not sendMessage. Did you reload the extension?');
+              } else {
+                debugger;
+                throw err;
+              }
+          }
+
         }else{
           console.log('wait for content');
         }
@@ -178,7 +197,7 @@ export default class ContentHandler {
          console.log(err);
        } finally {
          this.domDetector.onChange(() => {
-          //  console.log('Dom Chance');
+           console.log('Dom Change');
            this.tracker.fetchHTML()
          }, delay);
        }
