@@ -9,7 +9,7 @@ export default class URLFilter {
 
 
   /**
-   * [extractRootDomain get from url the domain]
+   * [extractRootDomain get from url the higher level domain]
    * @param  {String} url        [e.g. https://www.google.de/search?q=]
    * @return {String} domain     [e.g. google.de]
    */
@@ -36,6 +36,44 @@ export default class URLFilter {
       return domain;
   }
 
+  /**
+   * [extractHostname get from url the hostdomain]
+   * @param  {String} url        [e.g. https://www.google.de/search?q=]
+   * @return {String} domain     [e.g. google.de]
+   */
+  extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+  }
+
+  /**
+   * [isincluded returns yes or no depending if the domain is included in the list]
+   * @param  {String} url        [e.g. https://www.google.de/search?q=]
+   * @return {boolean} if is included     [e.g. true]
+   */
+  isincluded(domain){
+    for (let i in this.list){
+      if (domain.endsWith(this.list[i])){
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   /**
    * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
@@ -43,19 +81,20 @@ export default class URLFilter {
    * @return {Boolean}     [description]
    */
   isAllow(url){
-    if(this.active){
-      if(this.cache.hasOwnProperty(url)){
-        return this.cache[url];
+    if(this.active){     
+      var hostname = this.extractHostname(url);
+      if(!this.cache.hasOwnProperty(hostname)){
+        var isinlist = this.isincluded(hostname);
+        this.cache[hostname] = isinlist;
       }
+      var isinlist = this.isincluded(hostname);
       if(this.white_or_black){
-        this.cache[url] = this.list.includes(this.extractRootDomain(url))? true: false;
+        return this.cache[hostname];
+      } else {
+        return !this.cache[hostname];
       }
-      if(!this.white_or_black){
-        this.cache[url] = this.list.includes(this.extractRootDomain(url))? false: true
-      }
-      return this.cache[url];
-    }else
-      return true
+    }else{
+      return true;
+    }
   }
-
 }
