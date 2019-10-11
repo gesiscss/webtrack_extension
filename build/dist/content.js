@@ -14188,10 +14188,8 @@ function () {
           keywords: ''
         }),
         favicon: '',
-        count: 0
-      }, this.data, object, {
         count: this.count
-      });
+      }, this.data, object);
 
       switch (type) {
         case 'html':

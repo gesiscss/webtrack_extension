@@ -76,7 +76,7 @@ export default class ContentHandler {
           console.log((object['html']).length);
         }
       }
-      object = {content: [object]}
+      object = {content: [object]};
       type = 'html';
     } else if(object.hasOwnProperty('links')){
       // object = {links: this.data.links.concat(object.links)}
@@ -105,8 +105,8 @@ export default class ContentHandler {
         keywords: ''
       }),
       favicon: '',
-      count: 0
-    }, this.data, object, {count: this.count})
+      count: this.count
+    }, this.data, object)
     
     switch (type) {
       case 'html':
