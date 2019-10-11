@@ -18,7 +18,7 @@ export default class CacheHandler {
     this.id = 'id';
     this.typeofId = 'string';
     this.ids = [];
-    this.debug = true;
+    this.debug = false;
     this.DELAY = 500;
     this.last = 0
     this.timeouts = {};
@@ -68,7 +68,7 @@ export default class CacheHandler {
    */
   add(props={}, now, inspect=false){
     let id = props[this.id];
-    if(this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id)
+    if(this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id);
     if(this.debug) console.log(this.constructor.name, 'add', id);
     if(!this.is(id)){
       // console.log('Set %s default value', id, this.DEFAULTCONTENT);
@@ -123,7 +123,7 @@ export default class CacheHandler {
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
-            console.log('ClearTimeout', props, this.timeouts[id]);
+            if(this.debug) console.log('ClearTimeout', props, this.timeouts[id]);
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();
             this.timeouts[id].resolve = resolve
@@ -163,7 +163,6 @@ export default class CacheHandler {
           resolve();
         }else{
           console.log(this.constructor.name, 'Id '+id+' not found in content');
-          if(this.debug) console.log(this.constructor.name, 'Id '+id+' not found in content');
         }
       } catch (err) {
         reject(err)

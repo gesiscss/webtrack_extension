@@ -26,6 +26,7 @@ export default class TrackingHandler {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new EventEmitter();
+    this.debug = true;
     try {
 
       this.projectId = this.config.getSelect();
@@ -212,15 +213,13 @@ export default class TrackingHandler {
           this.event.emit('onSend', true);
           this.setSending(true);
 
-          console.log('---------------------');
-          console.log('nonClosed %s', nonClosed);
           let pageIds = Object.values(this.pageCache.get()).filter(v=> v.send===false || nonClosed==true && v.send===true && v.sendTime===null).map(e=>e.id);
           if(typeof pages == 'object' && Array.isArray(pages)){
             pageIds = pages.filter(id => pageIds.includes(id));
           }
 
           if(pageIds.length>0){
-            console.log('====UPLOAD====', pageIds);
+            if(this.debug) console.log('====UPLOAD====', pageIds);
             const max = this.settings.STORAGE_DESTINATION? pageIds.length*2: pageIds.length;
             let count = 0;
 
@@ -228,6 +227,7 @@ export default class TrackingHandler {
 
               var page = null
               try {
+                if(this.debug) console.log('====UPDATE pageID ====', id);
                 await this.pageCache.update({id: id, send: true}, undefined, true)
                 page = await this.pageCache.getOnly(id);
                 if(page.start instanceof Date){
@@ -237,16 +237,16 @@ export default class TrackingHandler {
                 // @tico, if I ever manage to install a minifier in the extension
                 // for (let i in page.content) {
                 //   try {
-                //       console.log('minify');
+                //       if(this.debug) console.log('minify');
                 //       //var minify = require('html-minifier').minify;
                 //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
                 //     } catch (err) {
                 //       debugger;
-                //       console.log('Failed to minify html');
+                //       if(this.debug) console.log('Failed to minify html');
                 //     }
                 // }
 
-
+                if(this.debug) console.log('====Transfer ====', page.url);
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
@@ -271,13 +271,15 @@ export default class TrackingHandler {
                 });
 
                 this.pageCache.update({id: page.id, sendTime: new Date(), content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
-                this.pageCache.cleanSource(page.id).catch(console.warn);
+                this.pageCache.cleanSource(page.id);//.catch(console.warn);
+
+                if(this.debug) console.log('==== Source cleaned ====');
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);
                 console.log(page);
                 console.warn(e);
-                let title = 'unkown';
+                let title = 'unknown';
                 if(page!=null) title = page.title;
                 // this.event.emit('onSendData', {
                 //   max: max,

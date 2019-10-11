@@ -19,7 +19,7 @@ export default class PageCache extends CacheHandler {
     this.typeofId = 'string';
     this.fileAttr = [];
     this.LOAD_FILES_AFTER_INIT = false;
-    this.debug = false;
+    this.debug = true;
   }
 
   /**
@@ -32,12 +32,16 @@ export default class PageCache extends CacheHandler {
       try {
         let content = await super.getOnly(id);
         if(content.hasOwnProperty('source')){
-          let urls = content.source.map(e => e.url);
-          await super.cleanSource(urls);
+          if (content.source.length > 0){
+            let urls = content.source.map(e => e.url);
+            if(this.debug) console.log("Sources to clean:" + urls);
+            await super.cleanSource(urls);
+          }
+          
         }
         resolve();
       } catch (err) {
-        reject(err)
+        reject(err)``
       }
     });
   }

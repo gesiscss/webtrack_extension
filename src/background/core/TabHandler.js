@@ -107,7 +107,7 @@ export default class TabHandler {
       if(close && !tabRemove) {
         this.tabs[tabId].close(page => {
           if(page!=null){
-           console.log('Send Page');
+           console.log('==== Send Page ====');
            this.event.emit(EVENT_NAMES.page, page, false);
           }
         });
@@ -208,7 +208,7 @@ export default class TabHandler {
 
         await tab.cleanTab(page => {
           if(page!=null){
-             console.log('Send Page');
+             console.log('==== Send Page ====');
              this.event.emit(EVENT_NAMES.page, page, false);
           }
         })

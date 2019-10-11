@@ -34241,7 +34241,7 @@ function () {
     this.id = 'id';
     this.typeofId = 'string';
     this.ids = [];
-    this.debug = true;
+    this.debug = false;
     this.DELAY = 500;
     this.last = 0;
     this.timeouts = {};
@@ -34414,7 +34414,7 @@ function () {
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
                       if (_this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout != null) {
-                        console.log('ClearTimeout', props, _this2.timeouts[id]);
+                        if (_this2.debug) console.log('ClearTimeout', props, _this2.timeouts[id]);
                         clearTimeout(_this2.timeouts[id].timeout);
 
                         _this2.timeouts[id].resolve();
@@ -34493,28 +34493,27 @@ function () {
 
                 case 5:
                   resolve();
-                  _context3.next = 10;
+                  _context3.next = 9;
                   break;
 
                 case 8:
                   console.log(_this3.constructor.name, 'Id ' + id + ' not found in content');
-                  if (_this3.debug) console.log(_this3.constructor.name, 'Id ' + id + ' not found in content');
 
-                case 10:
-                  _context3.next = 15;
+                case 9:
+                  _context3.next = 14;
                   break;
 
-                case 12:
-                  _context3.prev = 12;
+                case 11:
+                  _context3.prev = 11;
                   _context3.t0 = _context3["catch"](0);
                   reject(_context3.t0);
 
-                case 15:
+                case 14:
                 case "end":
                   return _context3.stop();
               }
             }
-          }, _callee3, null, [[0, 12]]);
+          }, _callee3, null, [[0, 11]]);
         }));
 
         return function (_x5, _x6) {
@@ -35886,7 +35885,7 @@ function () {
                   if (close && !tabRemove) {
                     this.tabs[tabId].close(function (page) {
                       if (page != null) {
-                        console.log('Send Page');
+                        console.log('==== Send Page ====');
 
                         _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                       }
@@ -36144,7 +36143,7 @@ function () {
                 _context4.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
-                    console.log('Send Page');
+                    console.log('==== Send Page ====');
 
                     _this4.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                   }
@@ -36479,6 +36478,18 @@ function () {
 // CONCATENATED MODULE: ./src/background/core/PageCache.js
 function PageCache_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { PageCache_typeof = function _typeof(obj) { return typeof obj; }; } else { PageCache_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return PageCache_typeof(obj); }
 
+function _templateObject() {
+  var data = _taggedTemplateLiteral([""]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
 function PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function PageCache_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -36536,7 +36547,7 @@ function (_CacheHandler) {
     _this.typeofId = 'string';
     _this.fileAttr = [];
     _this.LOAD_FILES_AFTER_INIT = false;
-    _this.debug = false;
+    _this.debug = true;
     return _this;
   }
   /**
@@ -36570,32 +36581,38 @@ function (_CacheHandler) {
                   content = _context.sent;
 
                   if (!content.hasOwnProperty('source')) {
-                    _context.next = 8;
+                    _context.next = 10;
+                    break;
+                  }
+
+                  if (!(content.source.length > 0)) {
+                    _context.next = 10;
                     break;
                   }
 
                   urls = content.source.map(function (e) {
                     return e.url;
                   });
-                  _context.next = 8;
+                  if (_this2.debug) console.log("Sources to clean:" + urls);
+                  _context.next = 10;
                   return PageCache_get(PageCache_getPrototypeOf(PageCache.prototype), "cleanSource", _this2).call(_this2, urls);
 
-                case 8:
+                case 10:
                   resolve();
-                  _context.next = 14;
+                  _context.next = 16;
                   break;
 
-                case 11:
-                  _context.prev = 11;
+                case 13:
+                  _context.prev = 13;
                   _context.t0 = _context["catch"](0);
-                  reject(_context.t0);
+                  reject(_context.t0)(_templateObject());
 
-                case 14:
+                case 16:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 11]]);
+          }, _callee, null, [[0, 13]]);
         }));
 
         return function (_x, _x2) {
@@ -37211,6 +37228,7 @@ function () {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
+    this.debug = true;
 
     try {
       this.projectId = this.config.getSelect();
@@ -37580,8 +37598,6 @@ function () {
 
                   _this4.setSending(true);
 
-                  console.log('---------------------');
-                  console.log('nonClosed %s', nonClosed);
                   pageIds = Object.values(_this4.pageCache.get()).filter(function (v) {
                     return v.send === false || nonClosed == true && v.send === true && v.sendTime === null;
                   }).map(function (e) {
@@ -37595,39 +37611,40 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 61;
+                    _context5.next = 62;
                     break;
                   }
 
-                  console.log('====UPLOAD====', pageIds);
+                  if (_this4.debug) console.log('====UPLOAD====', pageIds);
                   max = _this4.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
                   count = 0;
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context5.prev = 15;
+                  _context5.prev = 13;
                   _iterator2 = pageIds[Symbol.iterator]();
 
-                case 17:
+                case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 46;
+                    _context5.next = 47;
                     break;
                   }
 
                   id = _step2.value;
                   page = null;
-                  _context5.prev = 20;
-                  _context5.next = 23;
+                  _context5.prev = 18;
+                  if (_this4.debug) console.log('====UPDATE pageID ====', id);
+                  _context5.next = 22;
                   return _this4.pageCache.update({
                     id: id,
                     send: true
                   }, undefined, true);
 
-                case 23:
-                  _context5.next = 25;
+                case 22:
+                  _context5.next = 24;
                   return _this4.pageCache.getOnly(id);
 
-                case 25:
+                case 24:
                   page = _context5.sent;
 
                   if (page.start instanceof Date) {
@@ -37635,16 +37652,17 @@ function () {
                   } // @tico, if I ever manage to install a minifier in the extension
                   // for (let i in page.content) {
                   //   try {
-                  //       console.log('minify');
+                  //       if(this.debug) console.log('minify');
                   //       //var minify = require('html-minifier').minify;
                   //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
                   //     } catch (err) {
                   //       debugger;
-                  //       console.log('Failed to minify html');
+                  //       if(this.debug) console.log('Failed to minify html');
                   //     }
                   // }
 
 
+                  if (_this4.debug) console.log('====Transfer ====', page.url);
                   _context5.next = 29;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
@@ -37682,19 +37700,21 @@ function () {
                   }, undefined, true); // set the page attr send to true
 
 
-                  _this4.pageCache.cleanSource(page.id)["catch"](console.warn);
+                  _this4.pageCache.cleanSource(page.id); //.catch(console.warn);
 
-                  _context5.next = 43;
+
+                  if (_this4.debug) console.log('==== Source cleaned ====');
+                  _context5.next = 44;
                   break;
 
-                case 36:
-                  _context5.prev = 36;
-                  _context5.t0 = _context5["catch"](20);
+                case 37:
+                  _context5.prev = 37;
+                  _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
                   console.log(page);
                   console.warn(_context5.t0);
-                  title = 'unkown';
+                  title = 'unknown';
                   if (page != null) title = page.title; // this.event.emit('onSendData', {
                   //   max: max,
                   //   now: count,
@@ -37702,61 +37722,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 43:
+                case 44:
                   _iteratorNormalCompletion2 = true;
-                  _context5.next = 17;
+                  _context5.next = 15;
                   break;
 
-                case 46:
-                  _context5.next = 52;
+                case 47:
+                  _context5.next = 53;
                   break;
 
-                case 48:
-                  _context5.prev = 48;
-                  _context5.t1 = _context5["catch"](15);
+                case 49:
+                  _context5.prev = 49;
+                  _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 52:
-                  _context5.prev = 52;
+                case 53:
                   _context5.prev = 53;
+                  _context5.prev = 54;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 55:
-                  _context5.prev = 55;
+                case 56:
+                  _context5.prev = 56;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 58;
+                    _context5.next = 59;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 58:
-                  return _context5.finish(55);
-
                 case 59:
-                  return _context5.finish(52);
+                  return _context5.finish(56);
 
                 case 60:
+                  return _context5.finish(53);
+
+                case 61:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 61:
+                case 62:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 72;
+                  _context5.next = 73;
                   break;
 
-                case 65:
-                  _context5.prev = 65;
+                case 66:
+                  _context5.prev = 66;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37769,19 +37789,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 72:
-                  _context5.prev = 72;
+                case 73:
+                  _context5.prev = 73;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(72);
+                  return _context5.finish(73);
 
-                case 75:
+                case 76:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 65, 72, 75], [15, 48, 52, 60], [20, 36], [53,, 55, 59]]);
+          }, _callee5, null, [[0, 66, 73, 76], [13, 49, 53, 61], [18, 37], [54,, 56, 60]]);
         }));
 
         return function (_x4, _x5) {

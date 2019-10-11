@@ -2,12 +2,13 @@ var settings = {
   companie: {
     name: "WebTrack"
   },
-  id: 'webtracker.sowi.unibe.ch',
+  id: 'localhost',
   lang: 'de',
   versionType: 'Chrome',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: "https://webtracker.sowi.unibe.ch:8443/"
+  server: "https://localhost:8443/"
+  // server: "https://va.uni-landau.de:8443/"
 }
