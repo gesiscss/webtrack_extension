@@ -10550,6 +10550,23 @@ function (_MultiFetch) {
       return urls;
     }
     /**
+     * [deliver list of urls]
+     * @return {Array<number>}
+     */
+
+  }, {
+    key: "getLinks",
+    value: function getLinks() {
+      var e = document.querySelectorAll('a[href]');
+      var urls = [];
+
+      for (var i = 0; i < e.length; i++) {
+        urls.push(e[i].getAttribute("href"));
+      }
+
+      return urls;
+    }
+    /**
      * [return dom as string]
      * @return {Promise}
      */

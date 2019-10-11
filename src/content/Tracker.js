@@ -272,6 +272,19 @@ export default class Tracker extends MultiFetch {
   }
 
   /**
+   * [deliver list of urls]
+   * @return {Array<number>}
+   */
+  getLinks(){
+    let e = document.querySelectorAll('a[href]');
+    let urls = [];
+    for (var i = 0; i < e.length; i++) {
+      urls.push(e[i].getAttribute("href"));
+    }
+    return urls;
+  }
+
+  /**
    * [return dom as string]
    * @return {Promise}
    */
