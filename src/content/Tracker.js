@@ -365,12 +365,15 @@ export default class Tracker extends MultiFetch {
 
       if(typeof html == 'boolean' && html == false){
         // console.log('HTML is false');
-        this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false)
-        resolve(false)
+        this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
+        resolve(false);
       }else{
         console.log("FETCHING...");
-        this.eventEmitter.emit(EVENT_NAMES.data, {html: html, create: +new Date()}, false)
-        resolve(true)
+        this.eventEmitter.emit(EVENT_NAMES.data, {
+          html: html, 
+          create: +new Date()
+        }, false);
+        resolve(true);
       }
     });
   }
