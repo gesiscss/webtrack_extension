@@ -14316,25 +14316,24 @@ function () {
 
                 case 4:
                   if (!_context.sent) {
-                    _context.next = 7;
+                    _context.next = 6;
                     break;
                   }
 
-                  _this3.tracker.fetchFavicon();
-
+                  //this.tracker.fetchFavicon();
                   _this3.tracker.fetchMetaData();
 
-                case 7:
-                  _context.next = 12;
+                case 6:
+                  _context.next = 11;
                   break;
 
-                case 9:
-                  _context.prev = 9;
+                case 8:
+                  _context.prev = 8;
                   _context.t0 = _context["catch"](0);
                   console.log(_context.t0);
 
-                case 12:
-                  _context.prev = 12;
+                case 11:
+                  _context.prev = 11;
 
                   _this3.domDetector.onChange(function () {
                     console.log('Dom Change');
@@ -14342,14 +14341,14 @@ function () {
                     _this3.tracker.fetchHTML();
                   }, delay);
 
-                  return _context.finish(12);
+                  return _context.finish(11);
 
-                case 15:
+                case 14:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 9, 12, 15]]);
+          }, _callee, null, [[0, 8, 11, 14]]);
         }));
 
         return function (_x) {

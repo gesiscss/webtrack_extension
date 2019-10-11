@@ -190,7 +190,7 @@ export default class ContentHandler {
            createData: +new Date()
          })
          if(await this.tracker.fetchHTML()){
-           this.tracker.fetchFavicon();
+           //this.tracker.fetchFavicon();
            this.tracker.fetchMetaData();
          }
        } catch (err) {
