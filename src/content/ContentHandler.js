@@ -105,8 +105,8 @@ export default class ContentHandler {
         keywords: ''
       }),
       favicon: '',
-      count: this.count
-    }, this.data, object)
+      count: 0
+    }, this.data, object, {count: this.count})
     
     switch (type) {
       case 'html':
