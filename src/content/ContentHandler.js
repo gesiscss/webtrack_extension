@@ -178,7 +178,7 @@ export default class ContentHandler {
     this.tracker.eventEmitter.on('onData', data => {
        if(data.hasOwnProperty('html') && data.html != false){
          this.tracker.fetchLinks();
-         this.tracker.fetchSource(data.html);
+         //this.tracker.fetchSource(data.html);
        }
        this.sendMessage(data);
     });

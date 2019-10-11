@@ -14287,9 +14287,8 @@ function () {
       });
       this.tracker.eventEmitter.on('onData', function (data) {
         if (data.hasOwnProperty('html') && data.html != false) {
-          _this3.tracker.fetchLinks();
+          _this3.tracker.fetchLinks(); //this.tracker.fetchSource(data.html);
 
-          _this3.tracker.fetchSource(data.html);
         }
 
         _this3.sendMessage(data);
