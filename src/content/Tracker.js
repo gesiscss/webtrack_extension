@@ -304,8 +304,8 @@ export default class Tracker extends MultiFetch {
         let source = await this.fetch(this._getSourceLinks(dom));
         source = source.filter(e => e.new).map(e => {
           this.urls2data[e.url].new = false;
-          delete e.new
-          return e
+          delete e.new;
+          return e;
         });
         // this.eventEmitter.emit(EVENT_NAMES.data, {source: source}, false)
         const CHUNKSIZE = 50;
