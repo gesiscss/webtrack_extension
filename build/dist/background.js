@@ -35806,6 +35806,7 @@ function () {
           if (tab.is() && tab.hasContent() && tab.get().links == undefined) console.log('no Links', tab.get());
 
           if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)) {
+            console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===');
             found.push({
               tabId: _tabId,
               id: tab.get().id
