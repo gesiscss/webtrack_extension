@@ -39,6 +39,16 @@ export default class Tracker extends MultiFetch {
     this.onStart(delay => {
       this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
     });
+
+    // and any time that the locationchange
+    // unnecessary as the dom also changes!
+    // window.addEventListener('locationchange', function(event){
+    //   console.log('locationchange');
+    //   //eventEmitter.emit(EVENT_NAMES.start, delay, false)
+    //   this.onStart(delay => {
+    //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
+    //   });
+    // }.bind(this));
   }
 
   /**

@@ -10108,7 +10108,15 @@ function (_MultiFetch) {
 
       this.onStart(function (delay) {
         _this2.eventEmitter.emit(EVENT_NAMES.start, delay, false);
-      });
+      }); // and any time that the locationchange
+      // unnecessary as the dom also changes!
+      // window.addEventListener('locationchange', function(event){
+      //   console.log('locationchange');
+      //   //eventEmitter.emit(EVENT_NAMES.start, delay, false)
+      //   this.onStart(delay => {
+      //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
+      //   });
+      // }.bind(this));
     }
     /**
      * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
@@ -14235,7 +14243,7 @@ function () {
       this.data = Object.assign({
         startTime: this.startTime,
         createData: +new Date(),
-        location_url: window.location.href,
+        location_url: '',
         content: [],
         source: [],
         links: [],
@@ -14247,7 +14255,8 @@ function () {
         favicon: '',
         count: 0
       }, this.data, object, {
-        count: this.count
+        count: this.count,
+        location_url: window.location.href
       });
 
       switch (type) {
