@@ -13937,6 +13937,8 @@ function () {
       this._decide();
     }
 
+    this.current_hash = window.location.hash;
+    this.createLocationChangeEvent();
     var dummy = document.createElement("div");
 
     this._getElement().appendChild(dummy);
@@ -13944,12 +13946,50 @@ function () {
     this._getElement().removeChild(dummy);
   }
   /**
-   * [return the documentElement]
-   * @return {Object}
+   * [ create locationchange to window ]
    */
 
 
   DomDetector_createClass(DomDetector, [{
+    key: "createLocationChangeEvent",
+    value: function createLocationChangeEvent() {
+      var _this = this;
+
+      history.pushState = function (f) {
+        return function pushState() {
+          var ret = f.apply(this, arguments);
+          window.dispatchEvent(new Event('pushState'));
+          window.dispatchEvent(new Event('locationchange'));
+          return ret;
+        };
+      }(history.pushState);
+
+      history.replaceState = function (f) {
+        return function replaceState() {
+          var ret = f.apply(this, arguments);
+          window.dispatchEvent(new Event('replaceState'));
+          window.dispatchEvent(new Event('locationchange'));
+          return ret;
+        };
+      }(history.replaceState);
+
+      window.addEventListener('popstate', function (ev) {
+        if (ev.target.location.hash == _this.current_hash) {
+          window.dispatchEvent(new Event('locationchange'));
+        } else {
+          _this.current_hash = ev.target.location.hash;
+        }
+      });
+      window.addEventListener('locationchange', function (event) {
+        console.log('location changed!');
+      });
+    }
+    /**
+     * [return the documentElement]
+     * @return {Object}
+     */
+
+  }, {
     key: "_getElement",
     value: function _getElement() {
       return document.documentElement;

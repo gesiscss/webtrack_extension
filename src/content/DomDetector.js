@@ -18,9 +18,45 @@
      } else {
          this._decide();
      }
+
+     this.current_hash = window.location.hash;
+     this.createLocationChangeEvent();
+
      var dummy = document.createElement("div");
      this._getElement().appendChild(dummy);
      this._getElement().removeChild(dummy);
+   }
+
+   /**
+    * [ create locationchange to window ]
+    */
+   createLocationChangeEvent(){
+
+     history.pushState = ( f => function pushState(){
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new Event('pushState'));
+        window.dispatchEvent(new Event('locationchange'));
+        return ret;
+      })(history.pushState);
+
+      history.replaceState = ( f => function replaceState(){
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new Event('replaceState'));
+        window.dispatchEvent(new Event('locationchange'));
+        return ret;
+      })(history.replaceState);
+
+      window.addEventListener('popstate', (ev) => {
+        if (ev.target.location.hash == this.current_hash){
+          window.dispatchEvent(new Event('locationchange'));
+        } else {
+          this.current_hash = ev.target.location.hash;
+        }
+      });
+
+      window.addEventListener('locationchange', function(event){
+        console.log('location changed!');
+      })
    }
 
    /**
