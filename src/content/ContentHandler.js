@@ -92,21 +92,29 @@ export default class ContentHandler {
       type = 'event';
     }
 
-    this.data = Object.assign({
-      startTime: this.startTime,
-      createData: + new Date(),
-      location_url: window.location.href,
-      content: [],
-      source: [],
-      links: [],
-      events: [],
-      meta: Object.assign({
-        description: '',
-        keywords: ''
-      }),
-      favicon: '',
-      count: 0
-    }, this.data, object, {count: this.count})
+    this.data = Object.assign(
+      {
+        startTime: this.startTime,
+        createData: + new Date(),
+        location_url: '',
+        content: [],
+        source: [],
+        links: [],
+        events: [],
+        meta: Object.assign({
+          description: '',
+          keywords: ''
+        }),
+        favicon: '',
+        count: 0
+      }, 
+      this.data, 
+      object, 
+      {
+        count: this.count,
+        location_url: window.location.href
+      }
+    );
     
     switch (type) {
       case 'html':
