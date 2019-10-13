@@ -55,6 +55,7 @@ export default class Extension {
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.DEFAULT_TAB_CONTENT = {allow: true, disabled: false}
 
+    this.DEBUG = true;
   }
 
   /**
@@ -172,10 +173,13 @@ export default class Extension {
    * ]
    */
   _onTabUpdate(tabId, info, tab){
-    // console.log('Info', info, tab);
-    if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
+    if (this.DEBUG) console.log('-> Extension._onTabUpdate');
+    if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') 
+      && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
+      if (this.DEBUG) console.log('==== Emit Event: onTabUpdate ====');
       this.event.emit(EVENT_NAMES.tabUpdate, {tabId: tabId, openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: null, tab: tab}, false);
     }//if
+    if (this.DEBUG) console.log('<- Extension._onTabUpdate');
   }
 
   /**
@@ -198,32 +202,29 @@ export default class Extension {
    *  ]
    */
   _onTabContent(msg, sender, sendResponse){
-      if(this.tabs.hasOwnProperty(sender.tab.id)) this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
+      if (this.DEBUG) console.log('-> _onTabContent');
+      if(this.tabs.hasOwnProperty(sender.tab.id)) {
+        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
+      }
       if(msg==='ontracking'){
+        if (this.DEBUG) console.log('# ontracking');
         sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
       }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
       }else if((!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')) && this.tabs.hasOwnProperty(sender.tab.id)){
-        // console.log(msg);
-
         // if(typeof msg.html == 'boolean' && msg.html == false){
-        // console.log(msg.content[0]);
         if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false){
-
-          console.log('DISABLE TRACKING');
           this.setImage(false);
           sendResponse(false);
         }else{
           this.setImage(true);
-          // if(msg.count == 1){
-             msg = Object.assign(msg, {
-               sender_url: sender.tab.url,
-               url: msg.location_url,
-               title: sender.tab.title
-             })
-          // }
-          // console.log(msg);
+          msg = Object.assign(msg, {
+            sender_url: sender.tab.url,
+            url: msg.unhashed_url,
+            title: sender.tab.title
+          })
           msg.tabId = sender.tab.id;
+          if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
         }
@@ -232,6 +233,7 @@ export default class Extension {
       }else{
         sendResponse(false);
       }
+      console.log('<- _onTabContent');
   }
 
   /**
