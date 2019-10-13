@@ -28,7 +28,7 @@ export default class TabHandler {
 
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
-    this.DEBUG = false;
+    this.DEBUG = true;
   }
 
 
@@ -96,11 +96,11 @@ export default class TabHandler {
    * @param  {Boolean}  tabRemove [remove the db entry]
    */
   async closeTab(tabId, openerTabId, close=true, tabRemove=false){
+    if (this.DEBUG) console.log('-> closeTab(...)');
     if(openerTabId!=null){
       if(!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
       if(!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
     }
-    console.log('openerTabId2tab', this.openerTabId2tab);
     if(this.tabs.hasOwnProperty(tabId)){
       if(this.tabs[tabId].hasContent()) {
           this.setPrecursor_id(tabId, this.tabs[tabId].get().id);
@@ -108,7 +108,7 @@ export default class TabHandler {
       if(close && !tabRemove) {
         this.tabs[tabId].close(page => {
           if(page!=null){
-           console.log('==== Send Page ====');
+           if (this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
            this.event.emit(EVENT_NAMES.page, page, false);
           }
         });
@@ -118,11 +118,7 @@ export default class TabHandler {
     }else{
       console.log('TabId %s not found', tabId);
     }
-
-
-
-    // delete this.tabs[tabId];
-
+    if (this.DEBUG) console.log('<- closeTab(...)');
   }
 
   /**
@@ -163,6 +159,7 @@ export default class TabHandler {
 
 
   _pushData(data, count=0){
+    if (this.DEBUG) console.log('-> _pushData(...)');
     if(typeof data != 'object'){
       console.warn('data is no object');
     }else if(this.tabs.hasOwnProperty(data.tabId)){
@@ -179,7 +176,6 @@ export default class TabHandler {
 
       //close the tab if the data count lower than the old count
       if(data.count < this.tabs[data.tabId].get().count){
-        console.log('Tab close');
         this.closeTab(data.tabId, undefined);
       }
       if(!this.tabs[data.tabId].get().hasOwnProperty('precursor_id')){
@@ -187,12 +183,12 @@ export default class TabHandler {
       }
       this.tabs[data.tabId].addUpdate(data)
     }else if(count <= 10){
-
       console.log('Timeout', data, count);
       setTimeout(()=> this._pushData(data, count+1), 1000);
     }else{
       console.warn('Timeout over', data);
     }
+    if (this.DEBUG) console.log('<- _pushData(...)');
   }
 
   async closeLostTabs(lostIds=[]){
@@ -209,13 +205,13 @@ export default class TabHandler {
 
         await tab.cleanTab(page => {
           if(page!=null){
-             console.log('==== Send Page ====');
+             if (this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
              this.event.emit(EVENT_NAMES.page, page, false);
           }
         })
-        console.log('Tryed to delete tab', id);
+        if (this.DEBUG) console.log('Tried to delete tab', id);
         await this.tabCache.deleteTab(id)
-        console.log('Delete the Tab %s', id);
+        if (this.DEBUG) console.log('Delete the Tab %s', id);
         // console.log('clean', id)
 
         this.closeLostTabs(lostIds)
@@ -315,12 +311,26 @@ export default class TabHandler {
         });
         //on tab update
         this.extension.event.on('onTabUpdate', e => {
+          if (this.DEBUG) console.log('-> TabHandler.onTabUpdate');
           if(!this.isClose){
-            console.log('#onTabUpdate', e);
             this._onFocus();
+
             //close the tab if the urls are different
-            this.closeTab(e.tabId, e.openerTabId, this.tabs.hasOwnProperty(e.tabId) && this.tabs[e.tabId].get().url != e.tab.url);
+            let will_close = false;
+            if (this.hasOwnProperty('tabs')){
+              if (this.tabs.hasOwnProperty(e.tabId)){
+                let tab_url = this.tabs[e.tabId].get().url;
+                if (tab_url){
+                  let event_url = this.get_unhashed_href(e.tab.url);
+                  if (event_url != tab_url){
+                    will_close = true;
+                  }
+                }
+              }
+            }        
+            this.closeTab(e.tabId, e.openerTabId, will_close);
           }
+          if (this.DEBUG) console.log('<- TabHandler.onTabUpdate');
         });
         //on tab data send
         this.extension.event.on('onTabContent', data => {
@@ -342,7 +352,18 @@ export default class TabHandler {
     });
   }
 
-
-
+  /**
+  * [rebuild and href without hash]
+  * @return href without hashes
+  */
+  get_unhashed_href(event_url) {
+    let location = document.createElement('a');
+    location.href = event_url;
+    return location.protocol+'//'+
+      location.hostname+
+     (location.port?":"+location.port:"")+
+      location.pathname+
+     (location.search?location.search:"");
+  }
 
 }

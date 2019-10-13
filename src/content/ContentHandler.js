@@ -60,6 +60,19 @@ export default class ContentHandler {
 
 
   /**
+  * [rebuild and href without hash]
+  * @return href without hashes
+  */
+  get_unhashed_href() {
+    let location = window.location;
+      return location.protocol+'//'+
+      location.hostname+
+     (location.port?":"+location.port:"")+
+      location.pathname+
+     (location.search?location.search:"");
+ }
+
+  /**
    * [send message to the background]
    * @param  {Object} [object={}]
    */
@@ -96,7 +109,8 @@ export default class ContentHandler {
       {
         startTime: this.startTime,
         createData: + new Date(),
-        location_url: '',
+        unhashed_url: this.get_unhashed_href(),
+        full_url: window.location.href,
         content: [],
         source: [],
         links: [],
@@ -111,24 +125,34 @@ export default class ContentHandler {
       this.data, 
       object, 
       {
-        count: this.count,
-        location_url: window.location.href
+        count: this.count
       }
     );
+
+    console.log('before switch');
+    console.log(this.data);
     
     switch (type) {
       case 'html':
+          console.log('html switch');
           let now = +new Date();
           if (now - this.last > this.DELAY) {
+              console.log('delay check');
+
               this.last = now;
               // console.log('sendMessage %s', this.count, object);
               try {
+                console.log('sendMessage');
                 this.browser.runtime.sendMessage(this.data, (response)=>{
+                  console.log('responded');
+                  console.log(response);
                   if(response==undefined){
+                    console.log(response);
                     this.close();
                     console.log('Close');                  
                   }                
                 });
+                console.log('success sendMessage');
               } catch(err){
                 if (err.message == "Extension context invalidated."){
                   console.log('Could not sendMessage. Did you reload the extension?');

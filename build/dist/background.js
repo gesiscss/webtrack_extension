@@ -31897,6 +31897,7 @@ function () {
       allow: true,
       disabled: false
     };
+    this.DEBUG = true;
   }
   /**
    * [_onActivWindows listenen the active windowId for check the active tab]
@@ -32072,8 +32073,10 @@ function () {
   }, {
     key: "_onTabUpdate",
     value: function _onTabUpdate(tabId, info, tab) {
-      // console.log('Info', info, tab);
+      if (this.DEBUG) console.log('-> Extension._onTabUpdate');
+
       if (!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')) {
+        if (this.DEBUG) console.log('==== Emit Event: onTabUpdate ====');
         this.event.emit(EVENT_NAMES.tabUpdate, {
           tabId: tabId,
           openerTabId: tab.hasOwnProperty('openerTabId') ? tab.openerTabId : null,
@@ -32081,6 +32084,8 @@ function () {
         }, false);
       } //if
 
+
+      if (this.DEBUG) console.log('<- Extension._onTabUpdate');
     }
     /**
      * [_onTabContent
@@ -32105,9 +32110,14 @@ function () {
   }, {
     key: "_onTabContent",
     value: function _onTabContent(msg, sender, sendResponse) {
-      if (this.tabs.hasOwnProperty(sender.tab.id)) this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url));
+      if (this.DEBUG) console.log('-> _onTabContent');
+
+      if (this.tabs.hasOwnProperty(sender.tab.id)) {
+        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url));
+      }
 
       if (msg === 'ontracking') {
+        if (this.DEBUG) console.log('# ontracking');
         sendResponse({
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter
@@ -32115,24 +32125,19 @@ function () {
       } else if (!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')) {
         this.setImage(false);
       } else if (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)) {
-        // console.log(msg);
         // if(typeof msg.html == 'boolean' && msg.html == false){
-        // console.log(msg.content[0]);
         if (typeof msg.content[0].html == 'boolean' && msg.content[0].html == false) {
-          console.log('DISABLE TRACKING');
           this.setImage(false);
           sendResponse(false);
         } else {
-          this.setImage(true); // if(msg.count == 1){
-
+          this.setImage(true);
           msg = Object.assign(msg, {
             sender_url: sender.tab.url,
-            url: msg.location_url,
+            url: msg.unhashed_url,
             title: sender.tab.title
-          }); // }
-          // console.log(msg);
-
+          });
           msg.tabId = sender.tab.id;
+          if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
         } // return true;
@@ -32140,6 +32145,8 @@ function () {
       } else {
         sendResponse(false);
       }
+
+      console.log('<- _onTabContent');
     }
     /**
      * [setTabPrivate set tab disabled]
@@ -35205,7 +35212,7 @@ function () {
 
     this.tabId = tabId;
     this.isInit = false;
-    this.DEBUG = false;
+    this.DEBUG = true;
     this.nr = 1;
     this.queue = Tab_defineProperty({}, this.nr, {
       active: false,
@@ -35541,18 +35548,20 @@ function () {
   }, {
     key: "addUpdate",
     value: function addUpdate(data) {
+      if (this.DEBUG) console.log('-> addUpdate(nr)');
+
       if (!this.queue.hasOwnProperty(this.nr)) {
         this.queue[this.nr] = {
           active: false,
-          data: [] // if(this.DEBUG) console.log('create nr ', this.nr, this.queue[this.nr]);
-
+          data: []
         };
-      } // if(this.DEBUG) console.log('add', this.nr, this.queue[this.nr].data.length, this.queue[this.nr].active);
+      }
 
-
-      this.queue[this.nr].data.push(data); // if(this.DEBUG) console.log(this.queue[this.nr].data);
+      this.queue[this.nr].data.push(data);
 
       this._update(this.nr);
+
+      if (this.DEBUG) console.log('<- addUpdate(nr)');
     }
     /**
      * [run the queue to update the tab]
@@ -35572,67 +35581,69 @@ function () {
             switch (_context4.prev = _context4.next) {
               case 0:
                 if (!(this.queue[nr].active || this.queue[nr].data.length == 0)) {
-                  _context4.next = 2;
+                  _context4.next = 4;
                   break;
                 }
 
                 return _context4.abrupt("return");
 
-              case 2:
-                this.queue[nr].active = true; // this.queue[nr].data = this.queue[nr].data.sort((a, b) => {
-                //   if (a.hasOwnProperty('source') && !b.hasOwnProperty('source')) return 1;
-                //   if (b.hasOwnProperty('source') && !a.hasOwnProperty('source')) return -1;
-                //   // if (a.hasOwnProperty('html') && !b.hasOwnProperty('html')) return 1;
-                //   return 0;
-                // });
-
+              case 4:
+                if (this.DEBUG) console.log('-> _update(nr)');
+                this.queue[nr].active = true;
                 data = this.queue[nr].data[0]; // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
-                _context4.prev = 4;
-                if (this.DEBUG) console.log('---------');
-                if (this.DEBUG) console.log('#Start#', 'nr', nr, 'count', data.count, 'data', data); // if(!this.hasContent() && data.count == 1){
+                _context4.prev = 7;
 
                 if (this.hasContent()) {
-                  _context4.next = 12;
+                  _context4.next = 15;
                   break;
                 }
 
-                _context4.next = 10;
+                if (this.DEBUG) console.log('-> _firstUpdate(data, nr)');
+                _context4.next = 12;
                 return this._firstUpdate(data, nr);
 
-              case 10:
-                _context4.next = 14;
+              case 12:
+                if (this.DEBUG) console.log('<- _firstUpdate(data, nr)');
+                _context4.next = 19;
                 break;
 
-              case 12:
-                _context4.next = 14;
+              case 15:
+                if (this.DEBUG) console.log('-> _secondUpdate(data, nr)');
+                _context4.next = 18;
                 return this._secondUpdate(data, nr);
 
-              case 14:
+              case 18:
+                if (this.DEBUG) console.log('-< _secondUpdate(data, nr)');
+
+              case 19:
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
                 if (this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
 
                 this._update(nr);
 
-                _context4.next = 26;
+                _context4.next = 31;
                 break;
 
-              case 20:
-                _context4.prev = 20;
-                _context4.t0 = _context4["catch"](4);
+              case 25:
+                _context4.prev = 25;
+                _context4.t0 = _context4["catch"](7);
                 console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context4.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
 
                 this._update(nr);
 
-              case 26:
+              case 31:
+                if (this.DEBUG) console.log('<- _update(nr)');
+
+              case 32:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[4, 20]]);
+        }, _callee4, this, [[7, 25]]);
       }));
 
       return function _update(_x7) {
@@ -35650,12 +35661,11 @@ function () {
   }, {
     key: "_firstUpdate",
     value: function _firstUpdate(data, nr) {
-      if (this.DEBUG) console.log('=>CREATE');
       var now = new Date();
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
-        id: this._getRandomString(),
-        url: data.url,
+        id: data.full_url + '(' + +new Date() + ')',
+        url: data.unhashed_url,
         title: data.title,
         precursor_id: data.precursor_id,
         meta: Object.assign({
@@ -35677,17 +35687,13 @@ function () {
   }, {
     key: "_secondUpdate",
     value: function _secondUpdate(data, nr) {
-      if (this.DEBUG) console.log('=>UPDATE');
-      var oldData = this.get(nr); // if(data.hasOwnProperty('links')){
-      //   data.links = oldData.links.concat(data.links)
-      // }
+      var oldData = this.get(nr);
 
       if (data.hasOwnProperty('source')) {
         data.source = oldData.source.concat(data.source);
       }
 
       data.nr = nr;
-      if (this.DEBUG) console.log(data);
       return this.tabCache.update(data, true);
     }
     /**
@@ -35760,7 +35766,7 @@ function () {
     this.event = new eventemitter3_default.a();
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
-    this.DEBUG = false;
+    this.DEBUG = true;
   }
   /**
    * [_getHashCode return hashcode from string]
@@ -35870,13 +35876,12 @@ function () {
               case 0:
                 close = _args.length > 2 && _args[2] !== undefined ? _args[2] : true;
                 tabRemove = _args.length > 3 && _args[3] !== undefined ? _args[3] : false;
+                if (this.DEBUG) console.log('-> closeTab(...)');
 
                 if (openerTabId != null) {
                   if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
                   if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
                 }
-
-                console.log('openerTabId2tab', this.openerTabId2tab);
 
                 if (this.tabs.hasOwnProperty(tabId)) {
                   if (this.tabs[tabId].hasContent()) {
@@ -35886,7 +35891,7 @@ function () {
                   if (close && !tabRemove) {
                     this.tabs[tabId].close(function (page) {
                       if (page != null) {
-                        console.log('==== Send Page ====');
+                        if (_this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
 
                         _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                       }
@@ -35896,10 +35901,11 @@ function () {
                   }
                 } else {
                   console.log('TabId %s not found', tabId);
-                } // delete this.tabs[tabId];
+                }
 
+                if (this.DEBUG) console.log('<- closeTab(...)');
 
-              case 5:
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -36063,6 +36069,7 @@ function () {
       var _this3 = this;
 
       var count = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      if (this.DEBUG) console.log('-> _pushData(...)');
 
       if (TabHandler_typeof(data) != 'object') {
         console.warn('data is no object');
@@ -36079,7 +36086,6 @@ function () {
         // }
         //close the tab if the data count lower than the old count
         if (data.count < this.tabs[data.tabId].get().count) {
-          console.log('Tab close');
           this.closeTab(data.tabId, undefined);
         }
 
@@ -36096,6 +36102,8 @@ function () {
       } else {
         console.warn('Timeout over', data);
       }
+
+      if (this.DEBUG) console.log('<- _pushData(...)');
     }
   }, {
     key: "closeLostTabs",
@@ -36144,19 +36152,19 @@ function () {
                 _context4.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
-                    console.log('==== Send Page ====');
+                    if (_this4.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
 
                     _this4.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                   }
                 });
 
               case 14:
-                console.log('Tryed to delete tab', id);
+                if (this.DEBUG) console.log('Tried to delete tab', id);
                 _context4.next = 17;
                 return this.tabCache.deleteTab(id);
 
               case 17:
-                console.log('Delete the Tab %s', id); // console.log('clean', id)
+                if (this.DEBUG) console.log('Delete the Tab %s', id); // console.log('clean', id)
 
                 this.closeLostTabs(lostIds);
                 _context4.next = 25;
@@ -36422,14 +36430,32 @@ function () {
 
 
                   _this6.extension.event.on('onTabUpdate', function (e) {
-                    if (!_this6.isClose) {
-                      console.log('#onTabUpdate', e);
+                    if (_this6.DEBUG) console.log('-> TabHandler.onTabUpdate');
 
+                    if (!_this6.isClose) {
                       _this6._onFocus(); //close the tab if the urls are different
 
 
-                      _this6.closeTab(e.tabId, e.openerTabId, _this6.tabs.hasOwnProperty(e.tabId) && _this6.tabs[e.tabId].get().url != e.tab.url);
+                      var will_close = false;
+
+                      if (_this6.hasOwnProperty('tabs')) {
+                        if (_this6.tabs.hasOwnProperty(e.tabId)) {
+                          var tab_url = _this6.tabs[e.tabId].get().url;
+
+                          if (tab_url) {
+                            var event_url = _this6.get_unhashed_href(e.tab.url);
+
+                            if (event_url != tab_url) {
+                              will_close = true;
+                            }
+                          }
+                        }
+                      }
+
+                      _this6.closeTab(e.tabId, e.openerTabId, will_close);
                     }
+
+                    if (_this6.DEBUG) console.log('<- TabHandler.onTabUpdate');
                   }); //on tab data send
 
 
@@ -36469,6 +36495,18 @@ function () {
           return _ref2.apply(this, arguments);
         };
       }());
+    }
+    /**
+    * [rebuild and href without hash]
+    * @return href without hashes
+    */
+
+  }, {
+    key: "get_unhashed_href",
+    value: function get_unhashed_href(event_url) {
+      var location = document.createElement('a');
+      location.href = event_url;
+      return location.protocol + '//' + location.hostname + (location.port ? ":" + location.port : "") + location.pathname + (location.search ? location.search : "");
     }
   }]);
 
@@ -37229,7 +37267,7 @@ function () {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = true;
+    this.DEBUG = true;
 
     try {
       this.projectId = this.config.getSelect();
@@ -37401,6 +37439,8 @@ function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                if (this.DEBUG) console.log('-> _addPage(page)');
+
                 try {
                   // console.log('DISBALE SAVE PAGE  !!!');
                   // return;
@@ -37417,7 +37457,9 @@ function () {
                   if (this.SENDDATAAUTOMATICALLY) this.sendData();
                 }
 
-              case 1:
+                if (this.DEBUG) console.log('<- _addPage(page)');
+
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -37450,11 +37492,11 @@ function () {
                 _context3.prev = 1;
                 this.extension.setPrivateMode(privateMode);
                 _context3.next = 5;
-                return this.extension.start();
+                return this.tabHandler.start();
 
               case 5:
                 _context3.next = 7;
-                return this.tabHandler.start();
+                return this.extension.start();
 
               case 7:
                 this.tabHandler.event.on('onPage', this._addPage);
@@ -37592,6 +37634,7 @@ function () {
               switch (_context5.prev = _context5.next) {
                 case 0:
                   _context5.prev = 0;
+                  if (_this4.DEBUG) console.log('-> sendData');
 
                   _this4.cleanDeadReferenceInEvent('onSend');
 
@@ -37612,40 +37655,40 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 62;
+                    _context5.next = 63;
                     break;
                   }
 
-                  if (_this4.debug) console.log('====UPLOAD====', pageIds);
+                  if (_this4.DEBUG) console.log('====UPLOAD====', pageIds);
                   max = _this4.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
                   count = 0;
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context5.prev = 13;
+                  _context5.prev = 14;
                   _iterator2 = pageIds[Symbol.iterator]();
 
-                case 15:
+                case 16:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 47;
+                    _context5.next = 48;
                     break;
                   }
 
                   id = _step2.value;
                   page = null;
-                  _context5.prev = 18;
-                  if (_this4.debug) console.log('====UPDATE pageID ====', id);
-                  _context5.next = 22;
+                  _context5.prev = 19;
+                  if (_this4.DEBUG) console.log('====UPDATE pageID ====', id);
+                  _context5.next = 23;
                   return _this4.pageCache.update({
                     id: id,
                     send: true
                   }, undefined, true);
 
-                case 22:
-                  _context5.next = 24;
+                case 23:
+                  _context5.next = 25;
                   return _this4.pageCache.getOnly(id);
 
-                case 24:
+                case 25:
                   page = _context5.sent;
 
                   if (page.start instanceof Date) {
@@ -37653,18 +37696,18 @@ function () {
                   } // @tico, if I ever manage to install a minifier in the extension
                   // for (let i in page.content) {
                   //   try {
-                  //       if(this.debug) console.log('minify');
+                  //       if(this.DEBUG) console.log('minify');
                   //       //var minify = require('html-minifier').minify;
                   //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
                   //     } catch (err) {
                   //       debugger;
-                  //       if(this.debug) console.log('Failed to minify html');
+                  //       if(this.DEBUG) console.log('Failed to minify html');
                   //     }
                   // }
 
 
-                  if (_this4.debug) console.log('====Transfer ====', page.url);
-                  _context5.next = 29;
+                  if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
+                  _context5.next = 30;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
                     projectId: _this4.projectId,
@@ -37679,7 +37722,7 @@ function () {
                     // });
                   });
 
-                case 29:
+                case 30:
                   send = _context5.sent;
                   count += 1;
 
@@ -37704,13 +37747,13 @@ function () {
                   _this4.pageCache.cleanSource(page.id); //.catch(console.warn);
 
 
-                  if (_this4.debug) console.log('==== Source cleaned ====');
-                  _context5.next = 44;
+                  if (_this4.DEBUG) console.log('<- sendData');
+                  _context5.next = 45;
                   break;
 
-                case 37:
-                  _context5.prev = 37;
-                  _context5.t0 = _context5["catch"](18);
+                case 38:
+                  _context5.prev = 38;
+                  _context5.t0 = _context5["catch"](19);
                   count += 1; // this.event.emit('error', e, true);
 
                   console.log(page);
@@ -37723,61 +37766,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 44:
+                case 45:
                   _iteratorNormalCompletion2 = true;
-                  _context5.next = 15;
+                  _context5.next = 16;
                   break;
 
-                case 47:
-                  _context5.next = 53;
+                case 48:
+                  _context5.next = 54;
                   break;
 
-                case 49:
-                  _context5.prev = 49;
-                  _context5.t1 = _context5["catch"](13);
+                case 50:
+                  _context5.prev = 50;
+                  _context5.t1 = _context5["catch"](14);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 53:
-                  _context5.prev = 53;
+                case 54:
                   _context5.prev = 54;
+                  _context5.prev = 55;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 56:
-                  _context5.prev = 56;
+                case 57:
+                  _context5.prev = 57;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 59;
+                    _context5.next = 60;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 59:
-                  return _context5.finish(56);
-
                 case 60:
-                  return _context5.finish(53);
+                  return _context5.finish(57);
 
                 case 61:
+                  return _context5.finish(54);
+
+                case 62:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 62:
+                case 63:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 73;
+                  _context5.next = 74;
                   break;
 
-                case 66:
-                  _context5.prev = 66;
+                case 67:
+                  _context5.prev = 67;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37790,19 +37833,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 73:
-                  _context5.prev = 73;
+                case 74:
+                  _context5.prev = 74;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(73);
+                  return _context5.finish(74);
 
-                case 76:
+                case 77:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 66, 73, 76], [13, 49, 53, 61], [18, 37], [54,, 56, 60]]);
+          }, _callee5, null, [[0, 67, 74, 77], [14, 50, 54, 62], [19, 38], [55,, 57, 61]]);
         }));
 
         return function (_x4, _x5) {

@@ -26,7 +26,7 @@ export default class TrackingHandler {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new EventEmitter();
-    this.debug = true;
+    this.DEBUG = true;
     try {
 
       this.projectId = this.config.getSelect();
@@ -133,6 +133,7 @@ export default class TrackingHandler {
    * @param {Object} page
    */
   async _addPage(page){
+    if (this.DEBUG) console.log('-> _addPage(page)');
     try {
       // console.log('DISBALE SAVE PAGE  !!!');
       // return;
@@ -148,6 +149,7 @@ export default class TrackingHandler {
     } finally {
       if(this.SENDDATAAUTOMATICALLY) this.sendData();
     }
+    if (this.DEBUG) console.log('<- _addPage(page)');
   }
 
   /**
@@ -157,8 +159,8 @@ export default class TrackingHandler {
   async start(privateMode=this.extension.privateMode){
     try {
       this.extension.setPrivateMode(privateMode);
-      await this.extension.start();
       await this.tabHandler.start();
+      await this.extension.start();      
       this.tabHandler.event.on('onPage', this._addPage);
     } catch (e) {
       console.warn(e);
@@ -209,6 +211,7 @@ export default class TrackingHandler {
   sendData(pages=null, nonClosed=false){
       return new Promise(async (resolve, reject) => {
         try {
+          if(this.DEBUG) console.log('-> sendData');
           this.cleanDeadReferenceInEvent('onSend');
           this.event.emit('onSend', true);
           this.setSending(true);
@@ -219,7 +222,7 @@ export default class TrackingHandler {
           }
 
           if(pageIds.length>0){
-            if(this.debug) console.log('====UPLOAD====', pageIds);
+            if(this.DEBUG) console.log('====UPLOAD====', pageIds);
             const max = this.settings.STORAGE_DESTINATION? pageIds.length*2: pageIds.length;
             let count = 0;
 
@@ -227,7 +230,7 @@ export default class TrackingHandler {
 
               var page = null
               try {
-                if(this.debug) console.log('====UPDATE pageID ====', id);
+                if(this.DEBUG) console.log('====UPDATE pageID ====', id);
                 await this.pageCache.update({id: id, send: true}, undefined, true)
                 page = await this.pageCache.getOnly(id);
                 if(page.start instanceof Date){
@@ -237,16 +240,16 @@ export default class TrackingHandler {
                 // @tico, if I ever manage to install a minifier in the extension
                 // for (let i in page.content) {
                 //   try {
-                //       if(this.debug) console.log('minify');
+                //       if(this.DEBUG) console.log('minify');
                 //       //var minify = require('html-minifier').minify;
                 //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
                 //     } catch (err) {
                 //       debugger;
-                //       if(this.debug) console.log('Failed to minify html');
+                //       if(this.DEBUG) console.log('Failed to minify html');
                 //     }
                 // }
 
-                if(this.debug) console.log('====Transfer ====', page.url);
+                if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
@@ -273,7 +276,7 @@ export default class TrackingHandler {
                 this.pageCache.update({id: page.id, sendTime: new Date(), content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
                 this.pageCache.cleanSource(page.id);//.catch(console.warn);
 
-                if(this.debug) console.log('==== Source cleaned ====');
+                if(this.DEBUG) console.log('<- sendData');
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);

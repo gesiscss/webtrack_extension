@@ -36,7 +36,7 @@ export default class Tab {
     // this.tabCache = tabCache;
     this.tabId = tabId;
     this.isInit = false;
-    this.DEBUG = false;
+    this.DEBUG = true;
     this.nr = 1;
     this.queue = {
       [this.nr]: {
@@ -194,17 +194,16 @@ export default class Tab {
    * @param {Object} data
    */
   addUpdate(data){
+    if(this.DEBUG) console.log('-> addUpdate(nr)');
     if(!this.queue.hasOwnProperty(this.nr)){
       this.queue[this.nr] = {
         active: false,
         data: []
       }
-      // if(this.DEBUG) console.log('create nr ', this.nr, this.queue[this.nr]);
     }
-    // if(this.DEBUG) console.log('add', this.nr, this.queue[this.nr].data.length, this.queue[this.nr].active);
     this.queue[this.nr].data.push(data);
-    // if(this.DEBUG) console.log(this.queue[this.nr].data);
     this._update(this.nr);
+    if(this.DEBUG) console.log('<- addUpdate(nr)');
   }
 
   /**
@@ -213,49 +212,42 @@ export default class Tab {
    * @return {Promise}
    */
   async _update(nr){
-    // return;
-    if(this.queue[nr].active || this.queue[nr].data.length==0) return;
-    this.queue[nr].active = true;
+    if(this.queue[nr].active || this.queue[nr].data.length==0) {
+      return;
+    } else{
+      if(this.DEBUG) console.log('-> _update(nr)');
+      this.queue[nr].active = true;
 
-    // this.queue[nr].data = this.queue[nr].data.sort((a, b) => {
-    //   if (a.hasOwnProperty('source') && !b.hasOwnProperty('source')) return 1;
-    //   if (b.hasOwnProperty('source') && !a.hasOwnProperty('source')) return -1;
-    //   // if (a.hasOwnProperty('html') && !b.hasOwnProperty('html')) return 1;
-    //   return 0;
-    // });
+      let data = this.queue[nr].data[0]
 
-    let data = this.queue[nr].data[0]
+      // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
-
-    // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
-
-    try {
-      if(this.DEBUG) console.log('---------');
-      if(this.DEBUG) console.log('#Start#', 'nr', nr, 'count', data.count, 'data', data);
-
-
-      // if(!this.hasContent() && data.count == 1){
-      if(!this.hasContent()){
-        await this._firstUpdate(data, nr)
-      }else{
-      //   // try {
-
+      try {
+        // if(!this.hasContent() && data.count == 1){
+        if(!this.hasContent()){
+          if(this.DEBUG) console.log('-> _firstUpdate(data, nr)');
+          await this._firstUpdate(data, nr)
+          if(this.DEBUG) console.log('<- _firstUpdate(data, nr)');
+        }else{
+          if(this.DEBUG) console.log('-> _secondUpdate(data, nr)');
           await this._secondUpdate(data, nr);
-        // } catch (e) {
-        //   console.warn(e);
-        // }
+          if(this.DEBUG) console.log('-< _secondUpdate(data, nr)');
+        }
+        this.queue[nr].data.shift();
+        this.queue[nr].active = false;
+        if(this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
+          'count', data.count, 'queue.length', this.queue[nr].data.length);
+        this._update(nr);
 
+      } catch (e) {
+        console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', e, 
+          'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
+        this.queue[nr].data.shift();
+        this.queue[nr].active = false;
+        this._update(nr);
       }
-      this.queue[nr].data.shift();
-      this.queue[nr].active = false;
-      if(this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
-      this._update(nr);
-    } catch (e) {
-      console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', e, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
-      this.queue[nr].data.shift();
-      this.queue[nr].active = false;
-      this._update(nr);
     }
+    if(this.DEBUG) console.log('<- _update(nr)');
   }//_update()
 
   /**
@@ -265,13 +257,12 @@ export default class Tab {
    * @return {Promise}
    */
   _firstUpdate(data, nr){
-    if(this.DEBUG) console.log('=>CREATE');
     let now = new Date();
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
-        id: this._getRandomString(),
-        url: data.url,
+        id: data.full_url + '(' + +new Date() + ')' ,
+        url: data.unhashed_url,
         title: data.title,
         precursor_id: data.precursor_id,
         meta: Object.assign({
@@ -292,17 +283,11 @@ export default class Tab {
    * @return {Promise}
    */
   _secondUpdate(data, nr){
-    if(this.DEBUG) console.log('=>UPDATE');
-
     let oldData = this.get(nr);
-    // if(data.hasOwnProperty('links')){
-    //   data.links = oldData.links.concat(data.links)
-    // }
     if(data.hasOwnProperty('source')){
       data.source = oldData.source.concat(data.source)
     }
     data.nr = nr;
-    if(this.DEBUG) console.log(data);
     return this.tabCache.update(data, true);
   }
 
@@ -317,7 +302,5 @@ export default class Tab {
     for (let i = 0; i < length; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
     return text;
   }
-
-
 
 }//class
