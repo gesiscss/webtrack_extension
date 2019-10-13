@@ -36,6 +36,7 @@ export default class Tab {
     this.tabCache = new TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT);
     // this.tabCache = tabCache;
     this.tabId = tabId;
+    this.id = -1;
     this.isInit = false;
     this.DEBUG = true;
     this.nr = 1;
@@ -259,10 +260,11 @@ export default class Tab {
    */
   _firstUpdate(data, nr){
     let now = new Date();
+    this.id = data.unhashed_url + '(' + +new Date() + ')';
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
-        id: data.unhashed_url + '(' + +new Date() + ')' ,
+        id: this.id,
         url: data.unhashed_url,
         hashes: [],
         landing_url: data.landing_url,

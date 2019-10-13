@@ -35220,6 +35220,7 @@ function () {
     this.tabCache = new TabCache_TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT); // this.tabCache = tabCache;
 
     this.tabId = tabId;
+    this.id = -1;
     this.isInit = false;
     this.DEBUG = true;
     this.nr = 1;
@@ -35671,9 +35672,10 @@ function () {
     key: "_firstUpdate",
     value: function _firstUpdate(data, nr) {
       var now = new Date();
+      this.id = data.unhashed_url + '(' + +new Date() + ')';
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
-        id: data.unhashed_url + '(' + +new Date() + ')',
+        id: this.id,
         url: data.unhashed_url,
         hashes: [],
         landing_url: data.landing_url,
@@ -35777,6 +35779,7 @@ function () {
     this.event = new eventemitter3_default.a();
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
+    this.tabID2Opener = {};
     this.DEBUG = true;
   }
   /**
@@ -35812,39 +35815,36 @@ function () {
       var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
       var id = this.tab2precursor_id.hasOwnProperty(tabId) ? this.tab2precursor_id[tabId] : null;
 
-      if (id == null && url.length > 0 && Object.keys(this.tabs).length > 0) {
+      if (id == null) {
+        //} && url.length>0 && Object.keys(this.tabs).length > 0){
         //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
-        var hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
-        var found = [];
+        //let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
+        //let found = [];
+        if (this.tabID2Opener.hasOwnProperty(tabId)) {
+          var openerid = this.tabID2Opener[tabId]; //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
 
-        for (var _i = 0, _Object$keys = Object.keys(this.tabs); _i < _Object$keys.length; _i++) {
-          var _tabId = _Object$keys[_i];
-          var tab = this.tabs[_tabId];
-          if (tab.is() && tab.hasContent() && tab.get().links == undefined) console.log('no Links', tab.get());
-
-          if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)) {
-            console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===');
-            found.push({
-              tabId: _tabId,
-              id: tab.get().id
-            });
+          if (this.tabs.hasOwnProperty(openerid)) {
+            id = this.tabs[openerid].id;
           }
-        } //for
+        } // for (let _tabId of Object.keys(this.tabs)) {
+        //   let tab = this.tabs[_tabId];
+        //   if(tab.is() && tab.hasContent() && tab.get().links==undefined) console.log('no Links', tab.get());
+        //   if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)){
+        //     console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===')
+        //     found.push({tabId: _tabId, id: tab.get().id})
+        //   }
+        // }//for
+        // if(found.length===1){
+        //   return found[0].id
+        // }else if(found.length>1){
+        //   for (let e of found) {
+        //     if(this.openerTabId2tab.hasOwnProperty(e.tabId) && this.openerTabId2tab[e.tabId].includes(tabId)){
+        //       return e.id;
+        //     }
+        //   }
+        //   id = found[found.length-1].id
+        // }
 
-
-        if (found.length === 1) {
-          return found[0].id;
-        } else if (found.length > 1) {
-          for (var _i2 = 0, _found = found; _i2 < _found.length; _i2++) {
-            var e = _found[_i2];
-
-            if (this.openerTabId2tab.hasOwnProperty(e.tabId) && this.openerTabId2tab[e.tabId].includes(tabId)) {
-              return e.id;
-            }
-          }
-
-          id = found[found.length - 1].id;
-        }
       }
 
       return id;
@@ -35891,6 +35891,7 @@ function () {
                 if (openerTabId != null) {
                   if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
                   if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
+                  this.tabID2Opener[tabId] = openerTabId;
                 }
 
                 if (this.tabs.hasOwnProperty(tabId)) {

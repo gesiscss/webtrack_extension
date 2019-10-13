@@ -28,6 +28,8 @@ export default class TabHandler {
 
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
+    this.tabID2Opener = {};
+
     this.DEBUG = true;
   }
 
@@ -52,28 +54,36 @@ export default class TabHandler {
    */
   getPrecursor_id(tabId, url=''){
     let id = this.tab2precursor_id.hasOwnProperty(tabId)? this.tab2precursor_id[tabId]: null;
-    if(id==null && url.length>0 && Object.keys(this.tabs).length > 0){
+    if(id==null) { //} && url.length>0 && Object.keys(this.tabs).length > 0){
       //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
-      let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
-      let found = [];
-      for (let _tabId of Object.keys(this.tabs)) {
-        let tab = this.tabs[_tabId];
-        if(tab.is() && tab.hasContent() && tab.get().links==undefined) console.log('no Links', tab.get());
-        if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)){
-          console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===')
-          found.push({tabId: _tabId, id: tab.get().id})
+      //let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
+      //let found = [];
+      if (this.tabID2Opener.hasOwnProperty(tabId)){
+        let openerid = this.tabID2Opener[tabId];
+        //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
+        if (this.tabs.hasOwnProperty(openerid)){
+          id = this.tabs[openerid].id;
         }
-      }//for
-      if(found.length===1){
-        return found[0].id
-      }else if(found.length>1){
-        for (let e of found) {
-          if(this.openerTabId2tab.hasOwnProperty(e.tabId) && this.openerTabId2tab[e.tabId].includes(tabId)){
-            return e.id;
-          }
-        }
-        id = found[found.length-1].id
       }
+
+      // for (let _tabId of Object.keys(this.tabs)) {
+      //   let tab = this.tabs[_tabId];
+      //   if(tab.is() && tab.hasContent() && tab.get().links==undefined) console.log('no Links', tab.get());
+      //   if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)){
+      //     console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===')
+      //     found.push({tabId: _tabId, id: tab.get().id})
+      //   }
+      // }//for
+      // if(found.length===1){
+      //   return found[0].id
+      // }else if(found.length>1){
+      //   for (let e of found) {
+      //     if(this.openerTabId2tab.hasOwnProperty(e.tabId) && this.openerTabId2tab[e.tabId].includes(tabId)){
+      //       return e.id;
+      //     }
+      //   }
+      //   id = found[found.length-1].id
+      // }
     }
     return id;
   }
@@ -100,6 +110,7 @@ export default class TabHandler {
     if(openerTabId!=null){
       if(!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
       if(!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
+      this.tabID2Opener[tabId] = openerTabId;
     }
     if(this.tabs.hasOwnProperty(tabId)){
       if(this.tabs[tabId].hasContent()) {
