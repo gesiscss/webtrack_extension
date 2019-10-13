@@ -261,8 +261,9 @@ export default class Tab {
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
-        id: data.full_url + '(' + +new Date() + ')' ,
+        id: data.landing_url + '(' + +new Date() + ')' ,
         url: data.unhashed_url,
+        landing_url: data.landing_url,
         title: data.title,
         precursor_id: data.precursor_id,
         meta: Object.assign({

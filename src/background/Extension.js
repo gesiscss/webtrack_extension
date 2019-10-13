@@ -219,7 +219,7 @@ export default class Extension {
         }else{
           this.setImage(true);
           msg = Object.assign(msg, {
-            sender_url: sender.tab.url,
+            departing_url: sender.tab.url,
             url: msg.unhashed_url,
             title: sender.tab.title
           })

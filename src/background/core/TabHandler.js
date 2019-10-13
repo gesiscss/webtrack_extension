@@ -83,7 +83,6 @@ export default class TabHandler {
    */
   setPrecursor_id(tabId, id){
     this.tab2precursor_id[tabId] = id;
-    console.log('setPrecursor_id', this.tab2precursor_id[tabId]);
   }
 
   /**
