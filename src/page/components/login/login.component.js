@@ -137,9 +137,6 @@ export default class Login extends Component {
               <Col tag="span">
                 <Button disabled={this.state.id.length<this.MIN_LENGTH} onClick={this.handleSignIn} fill>{lang.loggin.submit}</Button>
               </Col>
-              <Col tag="span">
-                <Button onClick={this.handleAbortLogin} >{lang.modal.abort}</Button>
-              </Col>
             </Block>
           </List>
         </form>

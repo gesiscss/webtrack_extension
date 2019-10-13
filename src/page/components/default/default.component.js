@@ -93,13 +93,13 @@ export default class Project extends Component {
   confirm(options={}){
     return new Promise((resolve, reject) => {
       let buttons = [
-        {
-          text: lang.modal.abort,
-          onClick: () => {
-            this.closeDialog();
-            resolve(false);
-          }
-        },
+        // {
+        //   text: lang.modal.abort,
+        //   onClick: () => {
+        //     this.closeDialog();
+        //     resolve(false);
+        //   }
+        // },
         {
           text:  lang.modal.success,
           color: "green",
