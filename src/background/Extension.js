@@ -173,13 +173,13 @@ export default class Extension {
    * ]
    */
   _onTabUpdate(tabId, info, tab){
-    if (this.DEBUG) console.log('-> Extension._onTabUpdate');
+    //if (this.DEBUG) console.log('-> Extension._onTabUpdate');
     if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') 
       && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
       if (this.DEBUG) console.log('==== Emit Event: onTabUpdate ====');
       this.event.emit(EVENT_NAMES.tabUpdate, {tabId: tabId, openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: null, tab: tab}, false);
     }//if
-    if (this.DEBUG) console.log('<- Extension._onTabUpdate');
+    //if (this.DEBUG) console.log('<- Extension._onTabUpdate');
   }
 
   /**

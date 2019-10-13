@@ -12,6 +12,7 @@ const DEFAULT_TAB_CONTANT = {
     description: '',
     keywords: ''
   },
+  hashes: [],
   source: [],
   links: [],
   start: +new Date(),
@@ -261,8 +262,9 @@ export default class Tab {
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
-        id: data.landing_url + '(' + +new Date() + ')' ,
+        id: data.unhashed_url + '(' + +new Date() + ')' ,
         url: data.unhashed_url,
+        hashes: [],
         landing_url: data.landing_url,
         title: data.title,
         precursor_id: data.precursor_id,

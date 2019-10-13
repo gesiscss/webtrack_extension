@@ -314,19 +314,36 @@ export default class TabHandler {
           if(!this.isClose){
             this._onFocus();
 
-            //close the tab if the urls are different
+            
             let will_close = false;
             if (this.hasOwnProperty('tabs')){
               if (this.tabs.hasOwnProperty(e.tabId)){
-                let tab_url = this.tabs[e.tabId].get().url;
-                if (tab_url){
-                  let event_url = this.get_unhashed_href(e.tab.url);
-                  if (event_url != tab_url){
+                let tab = this.tabs[e.tabId].get();
+
+                let location = this.get_location(e.tab.url);
+                let event_url = this.get_unhashed_href(location);
+
+                //let's collect the hashes
+                if (tab.hasOwnProperty('hashes')){
+                  console.log('hashshshshs');
+                  console.log(location.hash);
+                  tab.hashes.push(location.hash);
+                }else{
+                  console.log('no hashshshshs');
+                  console.log(location.hash);
+
+                }
+
+                //indicate to close the tab if the urls are different
+                if (tab.url){
+                  if (event_url != tab.url){
                     will_close = true;
                   }
                 }
               }
-            }        
+            }
+
+
             this.closeTab(e.tabId, e.openerTabId, will_close);
           }
           if (this.DEBUG) console.log('<- TabHandler.onTabUpdate');
@@ -352,12 +369,20 @@ export default class TabHandler {
   }
 
   /**
-  * [rebuild and href without hash]
+  * [return a location from an url]
   * @return href without hashes
   */
-  get_unhashed_href(event_url) {
+  get_location(event_url) {
     let location = document.createElement('a');
     location.href = event_url;
+    return location;
+  }
+
+  /**
+  * [rebuild an href without hash]
+  * @return href without hashes
+  */
+  get_unhashed_href(location) {
     return location.protocol+'//'+
       location.hostname+
      (location.port?":"+location.port:"")+

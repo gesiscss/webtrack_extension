@@ -32073,8 +32073,7 @@ function () {
   }, {
     key: "_onTabUpdate",
     value: function _onTabUpdate(tabId, info, tab) {
-      if (this.DEBUG) console.log('-> Extension._onTabUpdate');
-
+      //if (this.DEBUG) console.log('-> Extension._onTabUpdate');
       if (!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')) {
         if (this.DEBUG) console.log('==== Emit Event: onTabUpdate ====');
         this.event.emit(EVENT_NAMES.tabUpdate, {
@@ -32083,9 +32082,8 @@ function () {
           tab: tab
         }, false);
       } //if
+      //if (this.DEBUG) console.log('<- Extension._onTabUpdate');
 
-
-      if (this.DEBUG) console.log('<- Extension._onTabUpdate');
     }
     /**
      * [_onTabContent
@@ -35185,6 +35183,7 @@ var DEFAULT_TAB_CONTANT = {
     description: '',
     keywords: ''
   },
+  hashes: [],
   source: [],
   links: [],
   start: +new Date(),
@@ -35664,8 +35663,9 @@ function () {
       var now = new Date();
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
-        id: data.landing_url + '(' + +new Date() + ')',
+        id: data.unhashed_url + '(' + +new Date() + ')',
         url: data.unhashed_url,
+        hashes: [],
         landing_url: data.landing_url,
         title: data.title,
         precursor_id: data.precursor_id,
@@ -36433,19 +36433,31 @@ function () {
                     if (_this6.DEBUG) console.log('-> TabHandler.onTabUpdate');
 
                     if (!_this6.isClose) {
-                      _this6._onFocus(); //close the tab if the urls are different
-
+                      _this6._onFocus();
 
                       var will_close = false;
 
                       if (_this6.hasOwnProperty('tabs')) {
                         if (_this6.tabs.hasOwnProperty(e.tabId)) {
-                          var tab_url = _this6.tabs[e.tabId].get().url;
+                          var tab = _this6.tabs[e.tabId].get();
 
-                          if (tab_url) {
-                            var event_url = _this6.get_unhashed_href(e.tab.url);
+                          var location = _this6.get_location(e.tab.url);
 
-                            if (event_url != tab_url) {
+                          var event_url = _this6.get_unhashed_href(location); //let's collect the hashes
+
+
+                          if (tab.hasOwnProperty('hashes')) {
+                            console.log('hashshshshs');
+                            console.log(location.hash);
+                            tab.hashes.push(location.hash);
+                          } else {
+                            console.log('no hashshshshs');
+                            console.log(location.hash);
+                          } //indicate to close the tab if the urls are different
+
+
+                          if (tab.url) {
+                            if (event_url != tab.url) {
                               will_close = true;
                             }
                           }
@@ -36497,15 +36509,25 @@ function () {
       }());
     }
     /**
-    * [rebuild and href without hash]
+    * [return a location from an url]
+    * @return href without hashes
+    */
+
+  }, {
+    key: "get_location",
+    value: function get_location(event_url) {
+      var location = document.createElement('a');
+      location.href = event_url;
+      return location;
+    }
+    /**
+    * [rebuild an href without hash]
     * @return href without hashes
     */
 
   }, {
     key: "get_unhashed_href",
-    value: function get_unhashed_href(event_url) {
-      var location = document.createElement('a');
-      location.href = event_url;
+    value: function get_unhashed_href(location) {
       return location.protocol + '//' + location.hostname + (location.port ? ":" + location.port : "") + location.pathname + (location.search ? location.search : "");
     }
   }]);
