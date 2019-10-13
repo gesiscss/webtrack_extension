@@ -53,7 +53,8 @@ export default class TabHandler {
   getPrecursor_id(tabId, url=''){
     let id = this.tab2precursor_id.hasOwnProperty(tabId)? this.tab2precursor_id[tabId]: null;
     if(id==null && url.length>0 && Object.keys(this.tabs).length > 0){
-      let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
+      //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
+      let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
       let found = [];
       for (let _tabId of Object.keys(this.tabs)) {
         let tab = this.tabs[_tabId];

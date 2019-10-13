@@ -27,7 +27,7 @@ export default class Tracker extends MultiFetch {
       description: [],
       keywords: []
     };
-    this.hashLinks = [];
+    this.links = [];
     this.lastURL = location.pathname;
   }
 
@@ -268,15 +268,16 @@ export default class Tracker extends MultiFetch {
    * [deliver list of hash numbers from urls]
    * @return {Array<number>}
    */
-  getHASHLinks(){
+  fetchHASHLinks(){
     let e = document.querySelectorAll('a[href]');
     let urls = [];
     for (var i = 0; i < e.length; i++) {
-      let hash = this._getHashCode(e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), ''))
-      if(!this.hashLinks.includes(hash)){
-        this.hashLinks.push(hash);
-        urls.push(hash);
-      }
+      //let hash = this._getHashCode(e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
+      // if(!this.links.includes(hash)){
+      //   this.links.push(hash);
+      // }
+      let hash = e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), '');
+      urls.push(hash);
     }
     return urls;
   }
@@ -368,8 +369,8 @@ export default class Tracker extends MultiFetch {
   fetchLinks(){
     return new Promise(async (resolve, reject)=>{
       try {
-        let links = this.getHASHLinks();
-        this.eventEmitter.emit(EVENT_NAMES.data, {links: links}, false);
+        this.fetchHASHLinks();
+        //this.eventEmitter.emit(EVENT_NAMES.data, {links: links}, false);
         resolve();
       } catch (err) {
         reject(err)
@@ -394,6 +395,7 @@ export default class Tracker extends MultiFetch {
         console.log("FETCHING...");
         this.eventEmitter.emit(EVENT_NAMES.data, {
           html: html, 
+          //links: this.fetchHASHLinks(),
           create: +new Date()
         }, false);
         resolve(true);

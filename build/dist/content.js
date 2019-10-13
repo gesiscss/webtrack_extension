@@ -10091,7 +10091,7 @@ function (_MultiFetch) {
       description: [],
       keywords: []
     };
-    _this.hashLinks = [];
+    _this.links = [];
     _this.lastURL = location.pathname;
     return _this;
   }
@@ -10541,18 +10541,18 @@ function (_MultiFetch) {
      */
 
   }, {
-    key: "getHASHLinks",
-    value: function getHASHLinks() {
+    key: "fetchHASHLinks",
+    value: function fetchHASHLinks() {
       var e = document.querySelectorAll('a[href]');
       var urls = [];
 
       for (var i = 0; i < e.length; i++) {
-        var hash = this._getHashCode(e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
-
-        if (!this.hashLinks.includes(hash)) {
-          this.hashLinks.push(hash);
-          urls.push(hash);
-        }
+        //let hash = this._getHashCode(e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
+        // if(!this.links.includes(hash)){
+        //   this.links.push(hash);
+        // }
+        var hash = e[i].getAttribute("href").replace(new RegExp('^http(s)?:\/\/', 'g'), '');
+        urls.push(hash);
       }
 
       return urls;
@@ -10735,17 +10735,13 @@ function (_MultiFetch) {
         var _ref4 = _asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee4(resolve, reject) {
-          var links;
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
                   try {
-                    links = _this6.getHASHLinks();
+                    _this6.fetchHASHLinks(); //this.eventEmitter.emit(EVENT_NAMES.data, {links: links}, false);
 
-                    _this6.eventEmitter.emit(EVENT_NAMES.data, {
-                      links: links
-                    }, false);
 
                     resolve();
                   } catch (err) {
@@ -10805,6 +10801,7 @@ function (_MultiFetch) {
 
                     _this7.eventEmitter.emit(EVENT_NAMES.data, {
                       html: html,
+                      //links: this.fetchHASHLinks(),
                       create: +new Date()
                     }, false);
 
@@ -14229,6 +14226,7 @@ function () {
         }
 
         object = {
+          //links: object['links'],
           content: [object]
         };
         type = 'html';
@@ -14257,7 +14255,6 @@ function () {
         landing_url: window.location.href,
         content: [],
         source: [],
-        links: [],
         events: [],
         meta: Object.assign({
           description: '',
@@ -14345,11 +14342,10 @@ function () {
         // this.createTracker();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
-        if (data.hasOwnProperty('html') && data.html != false) {
-          _this3.tracker.fetchLinks(); //this.tracker.fetchSource(data.html);
-
-        }
-
+        //if(data.hasOwnProperty('html') && data.html != false){
+        //this.tracker.fetchHASHLinks();
+        //this.tracker.fetchSource(data.html);
+        //}
         _this3.sendMessage(data);
       });
       this.tracker.eventEmitter.on('onStart',

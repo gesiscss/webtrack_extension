@@ -253,7 +253,17 @@ export default class Configuration {
    * @return {Integer}
    */
   getSelect(){
-    return this.select.get();
+    let select = this.select.get();
+    if (select == null) {
+      for (let index in this.projects) {
+        if (this.projects[index].NAME == 'Default') {
+          select = this.projects[index].ID;
+          console.log(select);
+
+        }
+      }
+    }
+    return select;
   }
 
   /**

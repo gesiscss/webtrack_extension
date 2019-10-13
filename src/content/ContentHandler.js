@@ -89,7 +89,10 @@ export default class ContentHandler {
           console.log((object['html']).length);
         }
       }
-      object = {content: [object]};
+      object = {
+        //links: object['links'],
+        content: [object]
+      };
       type = 'html';
     } else if(object.hasOwnProperty('links')){
       // object = {links: this.data.links.concat(object.links)}
@@ -112,7 +115,6 @@ export default class ContentHandler {
         landing_url: window.location.href,
         content: [],
         source: [],
-        links: [],
         events: [],
         meta: Object.assign({
           description: '',
@@ -125,7 +127,7 @@ export default class ContentHandler {
       object, 
       {
         unhashed_url: this.get_unhashed_href(),
-        count: this.count
+        count: this.count,
       }
     );
     
@@ -198,10 +200,10 @@ export default class ContentHandler {
       // this.createTracker();
     })
     this.tracker.eventEmitter.on('onData', data => {
-       if(data.hasOwnProperty('html') && data.html != false){
-         this.tracker.fetchLinks();
+       //if(data.hasOwnProperty('html') && data.html != false){
+         //this.tracker.fetchHASHLinks();
          //this.tracker.fetchSource(data.html);
-       }
+       //}
        this.sendMessage(data);
     });
     this.tracker.eventEmitter.on('onStart', async delay => {

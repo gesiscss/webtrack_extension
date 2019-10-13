@@ -31591,7 +31591,18 @@ function () {
   }, {
     key: "getSelect",
     value: function getSelect() {
-      return this.select.get();
+      var select = this.select.get();
+
+      if (select == null) {
+        for (var index in this.projects) {
+          if (this.projects[index].NAME == 'Default') {
+            select = this.projects[index].ID;
+            console.log(select);
+          }
+        }
+      }
+
+      return select;
     }
     /**
      * [load // fetch all required settings from server]
@@ -35802,8 +35813,8 @@ function () {
       var id = this.tab2precursor_id.hasOwnProperty(tabId) ? this.tab2precursor_id[tabId] : null;
 
       if (id == null && url.length > 0 && Object.keys(this.tabs).length > 0) {
-        var hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
-
+        //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
+        var hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
         var found = [];
 
         for (var _i = 0, _Object$keys = Object.keys(this.tabs); _i < _Object$keys.length; _i++) {
