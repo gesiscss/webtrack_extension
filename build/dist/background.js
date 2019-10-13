@@ -34419,7 +34419,6 @@ function () {
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
                       if (_this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout != null) {
-                        if (_this2.debug) console.log('ClearTimeout', props, _this2.timeouts[id]);
                         clearTimeout(_this2.timeouts[id].timeout);
 
                         _this2.timeouts[id].resolve();
@@ -36447,12 +36446,7 @@ function () {
 
 
                           if (tab.hasOwnProperty('hashes')) {
-                            console.log('hashshshshs');
-                            console.log(location.hash);
                             tab.hashes.push(location.hash);
-                          } else {
-                            console.log('no hashshshshs');
-                            console.log(location.hash);
                           } //indicate to close the tab if the urls are different
 
 
@@ -37677,40 +37671,38 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 63;
+                    _context5.next = 61;
                     break;
                   }
 
-                  if (_this4.DEBUG) console.log('====UPLOAD====', pageIds);
                   max = _this4.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
                   count = 0;
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context5.prev = 14;
+                  _context5.prev = 13;
                   _iterator2 = pageIds[Symbol.iterator]();
 
-                case 16:
+                case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 48;
+                    _context5.next = 46;
                     break;
                   }
 
                   id = _step2.value;
                   page = null;
-                  _context5.prev = 19;
-                  if (_this4.DEBUG) console.log('====UPDATE pageID ====', id);
-                  _context5.next = 23;
+                  _context5.prev = 18;
+                  _context5.next = 21;
                   return _this4.pageCache.update({
                     id: id,
                     send: true
                   }, undefined, true);
 
-                case 23:
-                  _context5.next = 25;
+                case 21:
+                  _context5.next = 23;
                   return _this4.pageCache.getOnly(id);
 
-                case 25:
+                case 23:
                   page = _context5.sent;
 
                   if (page.start instanceof Date) {
@@ -37729,7 +37721,7 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
-                  _context5.next = 30;
+                  _context5.next = 28;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
                     projectId: _this4.projectId,
@@ -37744,7 +37736,7 @@ function () {
                     // });
                   });
 
-                case 30:
+                case 28:
                   send = _context5.sent;
                   count += 1;
 
@@ -37770,12 +37762,12 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('<- sendData');
-                  _context5.next = 45;
+                  _context5.next = 43;
                   break;
 
-                case 38:
-                  _context5.prev = 38;
-                  _context5.t0 = _context5["catch"](19);
+                case 36:
+                  _context5.prev = 36;
+                  _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
                   console.log(page);
@@ -37788,61 +37780,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 45:
+                case 43:
                   _iteratorNormalCompletion2 = true;
-                  _context5.next = 16;
+                  _context5.next = 15;
+                  break;
+
+                case 46:
+                  _context5.next = 52;
                   break;
 
                 case 48:
-                  _context5.next = 54;
-                  break;
-
-                case 50:
-                  _context5.prev = 50;
-                  _context5.t1 = _context5["catch"](14);
+                  _context5.prev = 48;
+                  _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 54:
-                  _context5.prev = 54;
-                  _context5.prev = 55;
+                case 52:
+                  _context5.prev = 52;
+                  _context5.prev = 53;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 57:
-                  _context5.prev = 57;
+                case 55:
+                  _context5.prev = 55;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 60;
+                    _context5.next = 58;
                     break;
                   }
 
                   throw _iteratorError2;
 
+                case 58:
+                  return _context5.finish(55);
+
+                case 59:
+                  return _context5.finish(52);
+
                 case 60:
-                  return _context5.finish(57);
-
-                case 61:
-                  return _context5.finish(54);
-
-                case 62:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 63:
+                case 61:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 74;
+                  _context5.next = 72;
                   break;
 
-                case 67:
-                  _context5.prev = 67;
+                case 65:
+                  _context5.prev = 65;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37855,19 +37847,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 74:
-                  _context5.prev = 74;
+                case 72:
+                  _context5.prev = 72;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(74);
+                  return _context5.finish(72);
 
-                case 77:
+                case 75:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 67, 74, 77], [14, 50, 54, 62], [19, 38], [55,, 57, 61]]);
+          }, _callee5, null, [[0, 65, 72, 75], [13, 48, 52, 60], [18, 36], [53,, 55, 59]]);
         }));
 
         return function (_x4, _x5) {

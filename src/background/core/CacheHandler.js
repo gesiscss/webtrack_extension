@@ -123,7 +123,6 @@ export default class CacheHandler {
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
-            if(this.debug) console.log('ClearTimeout', props, this.timeouts[id]);
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();
             this.timeouts[id].resolve = resolve

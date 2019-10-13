@@ -222,7 +222,6 @@ export default class TrackingHandler {
           }
 
           if(pageIds.length>0){
-            if(this.DEBUG) console.log('====UPLOAD====', pageIds);
             const max = this.settings.STORAGE_DESTINATION? pageIds.length*2: pageIds.length;
             let count = 0;
 
@@ -230,7 +229,6 @@ export default class TrackingHandler {
 
               var page = null
               try {
-                if(this.DEBUG) console.log('====UPDATE pageID ====', id);
                 await this.pageCache.update({id: id, send: true}, undefined, true)
                 page = await this.pageCache.getOnly(id);
                 if(page.start instanceof Date){

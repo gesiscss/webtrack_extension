@@ -325,13 +325,7 @@ export default class TabHandler {
 
                 //let's collect the hashes
                 if (tab.hasOwnProperty('hashes')){
-                  console.log('hashshshshs');
-                  console.log(location.hash);
                   tab.hashes.push(location.hash);
-                }else{
-                  console.log('no hashshshshs');
-                  console.log(location.hash);
-
                 }
 
                 //indicate to close the tab if the urls are different
