@@ -369,8 +369,8 @@ export default class Tracker extends MultiFetch {
   fetchLinks(){
     return new Promise(async (resolve, reject)=>{
       try {
-        this.fetchHASHLinks();
-        //this.eventEmitter.emit(EVENT_NAMES.data, {links: links}, false);
+        //this.fetchHASHLinks();
+        this.eventEmitter.emit(EVENT_NAMES.data, {}, false);
         resolve();
       } catch (err) {
         reject(err)

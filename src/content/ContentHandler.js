@@ -200,10 +200,10 @@ export default class ContentHandler {
       // this.createTracker();
     })
     this.tracker.eventEmitter.on('onData', data => {
-       //if(data.hasOwnProperty('html') && data.html != false){
-         //this.tracker.fetchHASHLinks();
+       if(data.hasOwnProperty('html') && data.html != false){
+         this.tracker.fetchLinks();
          //this.tracker.fetchSource(data.html);
-       //}
+       }
        this.sendMessage(data);
     });
     this.tracker.eventEmitter.on('onStart', async delay => {

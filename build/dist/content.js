@@ -10740,8 +10740,8 @@ function (_MultiFetch) {
               switch (_context4.prev = _context4.next) {
                 case 0:
                   try {
-                    _this6.fetchHASHLinks(); //this.eventEmitter.emit(EVENT_NAMES.data, {links: links}, false);
-
+                    //this.fetchHASHLinks();
+                    _this6.eventEmitter.emit(EVENT_NAMES.data, {}, false);
 
                     resolve();
                   } catch (err) {
@@ -14342,10 +14342,11 @@ function () {
         // this.createTracker();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
-        //if(data.hasOwnProperty('html') && data.html != false){
-        //this.tracker.fetchHASHLinks();
-        //this.tracker.fetchSource(data.html);
-        //}
+        if (data.hasOwnProperty('html') && data.html != false) {
+          _this3.tracker.fetchLinks(); //this.tracker.fetchSource(data.html);
+
+        }
+
         _this3.sendMessage(data);
       });
       this.tracker.eventEmitter.on('onStart',
