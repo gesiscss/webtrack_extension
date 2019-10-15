@@ -20,7 +20,7 @@
      }
 
      this.current_hash = window.location.hash;
-     this.createLocationChangeEvent();
+     //this.createLocationChangeEvent();
 
      var dummy = document.createElement("div");
      this._getElement().appendChild(dummy);
