@@ -13507,10 +13507,10 @@ function (_Tracker) {
       var svgs = target.querySelectorAll(this.eventElements.svg_protected);
 
       if (svgs.length > 0) {
-        console.log('protected');
+        if (this.debug) console.log('protected');
         return false;
       } else {
-        console.log('not protected');
+        if (this.debug) console.log('not protected');
         return true;
       } // for (var i = 0; i < svgs.length; i++) {
       //   if (svgs[i].hasAttribute('aria-label')) {
@@ -13573,7 +13573,7 @@ function (_Tracker) {
 
           var id = this._getId(articels[i]);
 
-          if (debug) console.log('ID detected: ' + id);
+          if (this.debug) console.log('ID detected: ' + id);
 
           if (id == null) {// TODO: what to do in case of error detecting id.
           } else {
