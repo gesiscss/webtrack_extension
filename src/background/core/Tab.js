@@ -260,7 +260,8 @@ export default class Tab {
    */
   _firstUpdate(data, nr){
     let now = new Date();
-    this.id = data.unhashed_url + '(' + +new Date() + ')';
+    let _id = '(' + nr + this.tabId + now + ')';
+    this.id = data.unhashed_url.substr(0, 255 - _id.length) + _id;
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
