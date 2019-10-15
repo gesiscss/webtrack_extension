@@ -28,7 +28,8 @@ export default class Tracker extends MultiFetch {
       keywords: []
     };
     this.links = [];
-    this.lastURL = location.pathname;
+    this.lastURL = '';
+    this.original_url = '';
   }
 
   /**
@@ -36,6 +37,9 @@ export default class Tracker extends MultiFetch {
    * @return {[type]} [description]
    */
   start(){
+    this.lastURL = location.pathname;
+    this.original_url = this.get_unhashed_href();
+
     this.onStart(delay => {
       this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
     });
@@ -52,6 +56,13 @@ export default class Tracker extends MultiFetch {
   }
 
   /**
+    * [is_url_change check if the url has changed]
+    */
+  is_url_change(){
+    return this.original_url != this.get_unhashed_href();
+  }
+
+  /**
    * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
   checkURL(){
@@ -61,6 +72,18 @@ export default class Tracker extends MultiFetch {
       this.eventEmitter.emit(EVENT_NAMES.newURL, true, false)
     }
   }
+
+  /**
+  * [rebuild and href without hash]
+  * @return href without hashes
+  */
+  get_unhashed_href() {
+    return location.protocol+'//'+
+      location.hostname+
+     (location.port?":"+location.port:"")+
+      location.pathname+
+     (location.search?location.search:"");
+ }
 
   /**
    * [fetchMetaData fetch and search meta-data]
@@ -387,18 +410,23 @@ export default class Tracker extends MultiFetch {
       console.log(+new Date()+' fetchDom');
       let html = await this.getDom();
 
-      if(typeof html == 'boolean' && html == false){
-        // console.log('HTML is false');
-        this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
+      if (this.is_url_change()){
+        this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
         resolve(false);
-      }else{
-        console.log("FETCHING...");
-        this.eventEmitter.emit(EVENT_NAMES.data, {
-          html: html, 
-          //links: this.fetchHASHLinks(),
-          create: +new Date()
-        }, false);
-        resolve(true);
+      } else {
+        if(typeof html == 'boolean' && html == false){
+          // console.log('HTML is false');
+          this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
+          resolve(false);
+        }else{
+          console.log("FETCHING...");
+          this.eventEmitter.emit(EVENT_NAMES.data, {
+            html: html, 
+            //links: this.fetchHASHLinks(),
+            create: +new Date()
+          }, false);
+          resolve(true);
+        }
       }
     });
   }
