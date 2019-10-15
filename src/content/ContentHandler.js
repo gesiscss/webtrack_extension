@@ -10,20 +10,24 @@ export default class ContentHandler {
    * [constructor]
    */
   constructor(){
+    // probably not used
     this.page = null;
+    this.allow = false;
+    this.isSend = false;
+
+    // initialized only once
+    this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
+    this.param = null;
+    this.DELAY = 1000;
+    this.debug = true;
+    
+    // needs to be initialized, if restarting
     this.tracker = null;
     this.count = 0;
-    this.allow = false;
-    this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
-    this.tracker = null
-    this.param = null;
-    this.isSend = false;
     this.data = {}
-    this.DELAY = 1000;
     this.last = 0;
-    this.debug = true;
   }
 
   /**
@@ -130,7 +134,16 @@ export default class ContentHandler {
         count: this.count,
       }
     );
-    
+
+    // console.log(this.data.landing_url);
+    // if (now - this.last > this.DELAY) {
+    // console.log(this.data.unhashed_url);
+    // try {
+    //   console.log(this.data.content[0].html);
+    // } catch (e){
+    //   console.log('no content');
+    // }
+
     switch (type) {
       case 'html':
           let now = +new Date();
@@ -195,9 +208,15 @@ export default class ContentHandler {
     const Tracker = this._getTracker();
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
-      // console.clear();
-      // this.count = 0;
-      // this.createTracker();
+      this.close();
+      this.tracker = null;
+      this.count = 0;
+      this.domDetector = new DomDetector();
+      this.startTime = +new Date();
+      this.data = {}
+      this.last = 0;
+      this.createTracker();
+        
     })
     this.tracker.eventEmitter.on('onData', data => {
        if(data.hasOwnProperty('html') && data.html != false){
