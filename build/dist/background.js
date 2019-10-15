@@ -35673,7 +35673,7 @@ function () {
     value: function _firstUpdate(data, nr) {
       var now = new Date();
 
-      var _id = '(' + nr + this.tabId + now + ')';
+      var _id = '(' + nr + '-' + this.tabId + '-' + +now + ')';
 
       this.id = data.unhashed_url.substr(0, 255 - _id.length) + _id;
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
