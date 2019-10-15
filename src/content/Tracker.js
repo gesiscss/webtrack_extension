@@ -59,6 +59,8 @@ export default class Tracker extends MultiFetch {
     * [is_url_change check if the url has changed]
     */
   is_url_change(){
+    console.log(this.original_url);
+    console.log(this.get_unhashed_href());
     return this.original_url != this.get_unhashed_href();
   }
 

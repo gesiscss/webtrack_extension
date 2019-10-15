@@ -10092,7 +10092,8 @@ function (_MultiFetch) {
       keywords: []
     };
     _this.links = [];
-    _this.lastURL = location.pathname;
+    _this.lastURL = '';
+    _this.original_url = '';
     return _this;
   }
   /**
@@ -10106,6 +10107,8 @@ function (_MultiFetch) {
     value: function start() {
       var _this2 = this;
 
+      this.lastURL = location.pathname;
+      this.original_url = this.get_unhashed_href();
       this.onStart(function (delay) {
         _this2.eventEmitter.emit(EVENT_NAMES.start, delay, false);
       }); // and any time that the locationchange
@@ -10117,6 +10120,17 @@ function (_MultiFetch) {
       //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
       //   });
       // }.bind(this));
+    }
+    /**
+      * [is_url_change check if the url has changed]
+      */
+
+  }, {
+    key: "is_url_change",
+    value: function is_url_change() {
+      console.log(this.original_url);
+      console.log(this.get_unhashed_href());
+      return this.original_url != this.get_unhashed_href();
     }
     /**
      * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
@@ -10131,6 +10145,16 @@ function (_MultiFetch) {
         this.lastURL = location.pathname;
         this.eventEmitter.emit(EVENT_NAMES.newURL, true, false);
       }
+    }
+    /**
+    * [rebuild and href without hash]
+    * @return href without hashes
+    */
+
+  }, {
+    key: "get_unhashed_href",
+    value: function get_unhashed_href() {
+      return location.protocol + '//' + location.hostname + (location.port ? ":" + location.port : "") + location.pathname + (location.search ? location.search : "");
     }
     /**
      * [fetchMetaData fetch and search meta-data]
@@ -10789,23 +10813,31 @@ function (_MultiFetch) {
                 case 3:
                   html = _context5.sent;
 
-                  if (typeof html == 'boolean' && html == false) {
-                    // console.log('HTML is false');
-                    _this7.eventEmitter.emit(EVENT_NAMES.data, {
+                  if (_this7.is_url_change()) {
+                    _this7.eventEmitter.emit(EVENT_NAMES.newURL, {
                       html: false
                     }, false);
 
                     resolve(false);
                   } else {
-                    console.log("FETCHING...");
+                    if (typeof html == 'boolean' && html == false) {
+                      // console.log('HTML is false');
+                      _this7.eventEmitter.emit(EVENT_NAMES.data, {
+                        html: false
+                      }, false);
 
-                    _this7.eventEmitter.emit(EVENT_NAMES.data, {
-                      html: html,
-                      //links: this.fetchHASHLinks(),
-                      create: +new Date()
-                    }, false);
+                      resolve(false);
+                    } else {
+                      console.log("FETCHING...");
 
-                    resolve(true);
+                      _this7.eventEmitter.emit(EVENT_NAMES.data, {
+                        html: html,
+                        //links: this.fetchHASHLinks(),
+                        create: +new Date()
+                      }, false);
+
+                      resolve(true);
+                    }
                   }
 
                 case 5:
@@ -13208,10 +13240,6 @@ function (_Tracker) {
 // CONCATENATED MODULE: ./src/content/addon/TwitterTracker.js
 function TwitterTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { TwitterTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { TwitterTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return TwitterTracker_typeof(obj); }
 
-function TwitterTracker_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function TwitterTracker_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { TwitterTracker_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { TwitterTracker_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function TwitterTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function TwitterTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -13317,6 +13345,7 @@ function (_Tracker) {
     _this.elements = [];
     _this.elementStrings = '';
     _this.tweetId2Element = {};
+    _this.tweets_exist = true;
     console.log(+new Date());
     return _this;
   }
@@ -13560,8 +13589,8 @@ function (_Tracker) {
      */
 
   }, {
-    key: "_getPublicArticels",
-    value: function _getPublicArticels() {
+    key: "addPublicArticels",
+    value: function addPublicArticels() {
       var articels = this._getElements(this.eventElements.articels, document, {
         setBorder: false
       });
@@ -13582,11 +13611,11 @@ function (_Tracker) {
         } else {
           delete articels[i];
         }
-      }
+      } //return articels.filter(e => e!=undefined);
+      //return if at least one article was added
 
-      return articels.filter(function (e) {
-        return e != undefined;
-      });
+
+      return articels.lenght > 0;
     }
     /**
      * [_setEventLikeButton set like-events for un-/like buttons from articel]
@@ -13822,8 +13851,56 @@ function (_Tracker) {
       }
     }
     /**
-     * [getDom return html content from public articel]
+     * [assembleDom with the existent html]
      * @return {String}
+     */
+
+  }, {
+    key: "assembleDom",
+    value: function assembleDom() {
+      var elementStrings = '';
+      var counter = 0;
+
+      for (var key in this.tweetId2Element) {
+        if (this.tweetId2Element.hasOwnProperty(key)) {
+          elementStrings += this.tweetId2Element[key].outerHTML;
+          counter += 1;
+        }
+      }
+
+      if (this.debug) console.log('DOOMING: ' + counter);
+
+      if (elementStrings == '') {
+        if (this.debug) console.log('No public tweets/replies found');
+        return '<html>' + this._getHead() + '<body> All tweets are private </body>' + '</html>';
+      } else {
+        if (this.debug) console.log('RESOLVING....');
+        return '<html>' + this._getHead() + '<body>' + elementStrings + '</body>' + '</html>';
+      }
+    }
+    /**
+     * [return dom as string]
+     * @return {Promise}
+     */
+
+  }, {
+    key: "_getDom",
+    value: function _getDom() {
+      var tclone = document.documentElement.cloneNode(true); //clean all scripts to minimize the size
+
+      var r = tclone.querySelectorAll('script:not([src]),svg,style');
+
+      for (var i = r.length - 1; i >= 0; i--) {
+        if (r[i].getAttribute('id') != 'a') {
+          r[i].parentNode.removeChild(r[i]);
+        }
+      }
+
+      return tclone.outerHTML; //resolve(document.documentElement.outerHTML);
+    }
+    /**
+     * [return dom as string]
+     * @return {Promise}
      */
 
   }, {
@@ -13834,61 +13911,101 @@ function (_Tracker) {
       if (this._isNotLoggedTwitter()) {
         return _get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
       } else {
-        return new Promise(
-        /*#__PURE__*/
-        function () {
-          var _ref = TwitterTracker_asyncToGenerator(
-          /*#__PURE__*/
-          regeneratorRuntime.mark(function _callee(resolve, reject) {
-            var found, elementStrings, counter, key;
-            return regeneratorRuntime.wrap(function _callee$(_context) {
-              while (1) {
-                switch (_context.prev = _context.next) {
-                  case 0:
-                    found = _this8._getPublicArticels(); //this._eventListenComment();
-                    //this._eventListenRetweet();
-                    //this._eventListenTweetstorm();
-                    //this._eventListenPermalinkOverlay();
-                    //for (var i = 0; i < found.length; i++) {
-                    //this.elements.push(found[i]);
-                    //this.elementStrings += found[i].outerHTML;
-                    //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-                    //}
+        return new Promise(function (resolve, reject) {
+          var found = _this8.addPublicArticels();
 
-                    elementStrings = '';
-                    counter = 0;
+          _this8.tweets_exist = found | _this8.tweets_exist;
 
-                    for (key in _this8.tweetId2Element) {
-                      if (_this8.tweetId2Element.hasOwnProperty(key)) {
-                        elementStrings += _this8.tweetId2Element[key].outerHTML;
-                        counter += 1;
-                      }
-                    }
+          if (_this8.tweets_exist) {
+            //SEND
+            resolve(_this8.assembleDom());
+          } else if (_this8.tweets_exist == false) {
+            // just send the entire html
+            resolve(_this8._getDom());
+          } // var tclone = document.documentElement.cloneNode(true);
+          // //clean all scripts to minimize the size
+          // var r = tclone.querySelectorAll('script:not([src]),svg,style');
+          // for (var i = (r.length-1); i >= 0; i--) {
+          //     if(r[i].getAttribute('id') != 'a'){
+          //         r[i].parentNode.removeChild(r[i]);
+          //     }
+          // }
+          // resolve(tclone.outerHTML);
+          //resolve(assembleDom());
+          //resolve(document.documentElement.outerHTML);
 
-                    if (_this8.debug) console.log('DOOMING: ' + counter);
-
-                    if (elementStrings == '') {
-                      if (_this8.debug) console.log('No public tweets/replies found');
-                      resolve(false);
-                    } else {
-                      if (_this8.debug) console.log('RESOLVING....');
-                      resolve('<html>' + _this8._getHead() + '<body>' + elementStrings + '</body>' + '</html>');
-                    }
-
-                  case 6:
-                  case "end":
-                    return _context.stop();
-                }
-              }
-            }, _callee);
-          }));
-
-          return function (_x, _x2) {
-            return _ref.apply(this, arguments);
-          };
-        }());
+        });
       }
-    }
+    } //   /**
+    //    * [getDom return html content from public articel]
+    //    * @return {String}
+    //    */
+    //   getDom(){
+    //     if (this._isNotLoggedTwitter()){
+    //         return super.getDom();
+    //     } else {
+    //       return new Promise(async (resolve, reject) => {
+    //         //this._eventListenComment();
+    //         //this._eventListenRetweet();
+    //         //this._eventListenTweetstorm();
+    //         //this._eventListenPermalinkOverlay();
+    //         //for (var i = 0; i < found.length; i++) {
+    //           //this.elements.push(found[i]);
+    //           //this.elementStrings += found[i].outerHTML;
+    //           //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+    //         //}
+    //         // update the existance of tweets
+    //         //this.tweets_exist = found | this.tweets_exist;
+    //         // if (this.is_url_change()){
+    //         //   console.log('url is changed');
+    //         //   this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
+    //         //   resolve(false);
+    //         // } else {
+    //           console.log('url is not changed')
+    //           let found = this.addPublicArticels();
+    //           if (this.found){
+    //               //SEND
+    //             resolve(this.assembleDom());
+    //           } else if (this.tweets_exist == false) {
+    //             // just send the entire html
+    //             resolve(await super.getDom());
+    //           }
+    //           this.tweets_exist = found | this.tweets_exist;
+    //         // }
+    //             /*      
+    //           resolve(this.assembleDom());
+    //           // url has not changed 
+    //           if (this.original_url == this.get_unhashed_href()){
+    //             let found = this.addPublicArticels();
+    //             if (this.found){
+    //               //SEND
+    //               resolve(this.assembleDom());
+    //             } else if (this.tweets_exist == false) {
+    //               // just send the entire html
+    //               resolve(await super.getDom());
+    //             }
+    //             this.tweets_exist = found | this.tweets_exist;
+    //           // url has changed
+    //           } else {
+    //             // clean tweets (a new page has been open)
+    //             this.tweetId2Element = {};
+    //             this.tweets_exist = false;
+    //             let found = this.addPublicArticels();
+    //             if (found){
+    //               this.tweets_exist = true;
+    //               //SEND
+    //               resolve(this.assembleDom());
+    //             } else {
+    //               // just send the entire html
+    //               resolve(await super.getDom());
+    //             }
+    //           }
+    //         }
+    // */            
+    //       })
+    //     }
+    //   }
+
     /**
      * [onStart on start event]
      * @param  {Function} fn
@@ -13942,8 +14059,8 @@ function () {
       this._decide();
     }
 
-    this.current_hash = window.location.hash;
-    this.createLocationChangeEvent();
+    this.current_hash = window.location.hash; //this.createLocationChangeEvent();
+
     var dummy = document.createElement("div");
 
     this._getElement().appendChild(dummy);
@@ -14134,20 +14251,22 @@ function () {
   function ContentHandler() {
     ContentHandler_classCallCheck(this, ContentHandler);
 
+    // probably not used
     this.page = null;
+    this.allow = false;
+    this.isSend = false; // initialized only once
+
+    this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
+    this.param = null;
+    this.DELAY = 1000;
+    this.debug = true; // needs to be initialized, if restarting
+
     this.tracker = null;
     this.count = 0;
-    this.allow = false;
-    this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
-    this.tracker = null;
-    this.param = null;
-    this.isSend = false;
     this.data = {};
-    this.DELAY = 1000;
     this.last = 0;
-    this.debug = true;
   }
   /**
    * [return specific tracker for the current page]
@@ -14265,7 +14384,14 @@ function () {
       }, this.data, object, {
         unhashed_url: this.get_unhashed_href(),
         count: this.count
-      });
+      }); // console.log(this.data.landing_url);
+      // if (now - this.last > this.DELAY) {
+      // console.log(this.data.unhashed_url);
+      // try {
+      //   console.log(this.data.content[0].html);
+      // } catch (e){
+      //   console.log('no content');
+      // }
 
       switch (type) {
         case 'html':
@@ -14337,16 +14463,23 @@ function () {
       var Tracker = this._getTracker();
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
-      this.tracker.eventEmitter.on('onNewURL', function () {// console.clear();
-        // this.count = 0;
-        // this.createTracker();
+      this.tracker.eventEmitter.on('onNewURL', function () {
+        _this3.close();
+
+        _this3.tracker = null;
+        _this3.count = 0;
+        _this3.domDetector = new DomDetector();
+        _this3.startTime = +new Date();
+        _this3.data = {};
+        _this3.last = 0;
+
+        _this3.createTracker();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
-        if (data.hasOwnProperty('html') && data.html != false) {
-          _this3.tracker.fetchLinks(); //this.tracker.fetchSource(data.html);
-
-        }
-
+        // if(data.hasOwnProperty('html') && data.html != false){
+        //   this.tracker.fetchLinks();
+        //this.tracker.fetchSource(data.html);
+        //}
         _this3.sendMessage(data);
       });
       this.tracker.eventEmitter.on('onStart',

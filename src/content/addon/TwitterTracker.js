@@ -77,6 +77,7 @@ export default class TwitterTracker extends Tracker{
     this.elements = [];
     this.elementStrings = '';
     this.tweetId2Element = {};
+    this.tweets_exist = true;
     console.log(+ new Date());
   }
 
@@ -255,7 +256,7 @@ export default class TwitterTracker extends Tracker{
    * [_getPublicArticels return elements of public articels]
    * @return {Array} articels
    */
-  _getPublicArticels(){
+  addPublicArticels(){
     let articels = this._getElements(this.eventElements.articels, document, {setBorder: false});
     for (var i = 0; i < articels.length; i++) {
       if(this._isPublic(articels[i])){
@@ -275,7 +276,9 @@ export default class TwitterTracker extends Tracker{
         delete articels[i]
       }
     }
-    return articels.filter(e => e!=undefined);
+    //return articels.filter(e => e!=undefined);
+    //return if at least one article was added
+    return articels.lenght > 0;
   }
 
   /**
@@ -437,48 +440,180 @@ export default class TwitterTracker extends Tracker{
 
   }
 
+
   /**
-   * [getDom return html content from public articel]
+   * [assembleDom with the existent html]
    * @return {String}
+   */
+  assembleDom(){
+    var elementStrings = '';
+    var counter = 0;
+    for (var key in this.tweetId2Element) {
+      if (this.tweetId2Element.hasOwnProperty(key)){
+        elementStrings += this.tweetId2Element[key].outerHTML;
+        counter += 1;
+      }
+    }
+
+    if(this.debug) console.log('DOOMING: ' + counter);
+
+    if(elementStrings==''){
+      if(this.debug) console.log('No public tweets/replies found');
+
+      return '<html>'+this._getHead()+'<body> All tweets are private </body>'+'</html>'
+      
+    }else{
+      if(this.debug) console.log('RESOLVING....');
+      return '<html>'+this._getHead()+'<body>'+elementStrings+'</body>'+'</html>';
+    }
+  }
+
+
+  /**
+   * [return dom as string]
+   * @return {Promise}
+   */
+  _getDom(){
+    var tclone = document.documentElement.cloneNode(true);
+    //clean all scripts to minimize the size
+    var r = tclone.querySelectorAll('script:not([src]),svg,style');
+    for (var i = (r.length-1); i >= 0; i--) {
+        if(r[i].getAttribute('id') != 'a'){
+            r[i].parentNode.removeChild(r[i]);
+        }
+    }
+
+    return tclone.outerHTML;
+    //resolve(document.documentElement.outerHTML);
+
+  }
+
+
+  /**
+   * [return dom as string]
+   * @return {Promise}
    */
   getDom(){
     if (this._isNotLoggedTwitter()){
         return super.getDom();
     } else {
-      return new Promise(async (resolve, reject) => {
-        let found = this._getPublicArticels();
-        //this._eventListenComment();
-        //this._eventListenRetweet();
-        //this._eventListenTweetstorm();
-        //this._eventListenPermalinkOverlay();
-        //for (var i = 0; i < found.length; i++) {
-          //this.elements.push(found[i]);
-          //this.elementStrings += found[i].outerHTML;
-          //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-        //}
+      return new Promise((resolve, reject) => {
+        let found = this.addPublicArticels();
 
+        this.tweets_exist = found | this.tweets_exist;
+
+        if (this.tweets_exist){
+            //SEND
+          resolve(this.assembleDom());
+        } else if (this.tweets_exist == false) {
+          // just send the entire html
+          resolve(this._getDom());
+        }
         
-        var elementStrings = '';
-        var counter = 0;
-        for (var key in this.tweetId2Element) {
-          if (this.tweetId2Element.hasOwnProperty(key)){
-            elementStrings += this.tweetId2Element[key].outerHTML;
-            counter += 1;
-          }
-        }
 
-        if(this.debug) console.log('DOOMING: ' + counter);
 
-        if(elementStrings==''){
-          if(this.debug) console.log('No public tweets/replies found');
-          resolve(false);
-        }else{
-          if(this.debug) console.log('RESOLVING....');
-          resolve('<html>'+this._getHead()+'<body>'+elementStrings+'</body>'+'</html>');
-        }
-      })
+        // var tclone = document.documentElement.cloneNode(true);
+        // //clean all scripts to minimize the size
+        // var r = tclone.querySelectorAll('script:not([src]),svg,style');
+        // for (var i = (r.length-1); i >= 0; i--) {
+        //     if(r[i].getAttribute('id') != 'a'){
+        //         r[i].parentNode.removeChild(r[i]);
+        //     }
+        // }
+
+        // resolve(tclone.outerHTML);
+
+        //resolve(assembleDom());
+        //resolve(document.documentElement.outerHTML);
+      });
     }
   }
+
+//   /**
+//    * [getDom return html content from public articel]
+//    * @return {String}
+//    */
+//   getDom(){
+//     if (this._isNotLoggedTwitter()){
+//         return super.getDom();
+//     } else {
+//       return new Promise(async (resolve, reject) => {
+        
+//         //this._eventListenComment();
+//         //this._eventListenRetweet();
+//         //this._eventListenTweetstorm();
+//         //this._eventListenPermalinkOverlay();
+//         //for (var i = 0; i < found.length; i++) {
+//           //this.elements.push(found[i]);
+//           //this.elementStrings += found[i].outerHTML;
+//           //this.elementStrings += "<div>" + found[i].textContent + "</div>";
+//         //}
+
+//         // update the existance of tweets
+        
+//         //this.tweets_exist = found | this.tweets_exist;
+
+//         // if (this.is_url_change()){
+//         //   console.log('url is changed');
+//         //   this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
+//         //   resolve(false);
+//         // } else {
+//           console.log('url is not changed')
+//           let found = this.addPublicArticels();
+
+//           if (this.found){
+//               //SEND
+//             resolve(this.assembleDom());
+//           } else if (this.tweets_exist == false) {
+//             // just send the entire html
+//             resolve(await super.getDom());
+//           }
+//           this.tweets_exist = found | this.tweets_exist;
+//         // }
+//             /*      
+//           resolve(this.assembleDom());
+
+
+//           // url has not changed 
+//           if (this.original_url == this.get_unhashed_href()){
+//             let found = this.addPublicArticels();
+//             if (this.found){
+//               //SEND
+//               resolve(this.assembleDom());
+//             } else if (this.tweets_exist == false) {
+//               // just send the entire html
+//               resolve(await super.getDom());
+//             }
+//             this.tweets_exist = found | this.tweets_exist;
+
+//           // url has changed
+//           } else {
+//             // clean tweets (a new page has been open)
+//             this.tweetId2Element = {};
+//             this.tweets_exist = false;
+
+//             let found = this.addPublicArticels();
+//             if (found){
+//               this.tweets_exist = true;
+
+//               //SEND
+//               resolve(this.assembleDom());
+              
+//             } else {
+//               // just send the entire html
+//               resolve(await super.getDom());
+//             }
+
+//           }
+//         }
+// */            
+        
+
+//       })
+//     }
+//   }
+
+
 
   /**
    * [onStart on start event]
