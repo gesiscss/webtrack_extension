@@ -56,6 +56,7 @@ export default class ContentHandler {
    */
   _getParam(){
     return new Promise((resolve, reject)=>{
+      if (this.debug) console.log('sendMessage("ontracking")');
       this.browser.runtime.sendMessage('ontracking', (response) => {
         resolve(response);
       });
@@ -152,7 +153,8 @@ export default class ContentHandler {
               this.last = now;
               // console.log('sendMessage %s', this.count, object);
               try {
-                if (this.debug) console.log('sendMessage');
+                if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
+                if (this.debug) console.log(this.data);
                 this.browser.runtime.sendMessage(this.data, (response)=>{
                   if(response==undefined){
                     this.close();
@@ -172,6 +174,8 @@ export default class ContentHandler {
         if(this.data.content.length>0){
           // console.log('sendMessage %s', this.count, object);
           try{
+            if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
+            if (this.debug) console.log(this.data);
             this.browser.runtime.sendMessage(this.data, (response)=>{
               if(response==undefined){
                 this.close();
@@ -219,14 +223,16 @@ export default class ContentHandler {
         
     })
     this.tracker.eventEmitter.on('onData', data => {
-       // if(data.hasOwnProperty('html') && data.html != false){
-       //   this.tracker.fetchLinks();
+       //if(data.hasOwnProperty('html') && data.html != false){
+         //this.tracker.fetchLinks();
          //this.tracker.fetchSource(data.html);
        //}
+       if (this.debug) console.log('onData: this.sendMessage');
        this.sendMessage(data);
     });
     this.tracker.eventEmitter.on('onStart', async delay => {
       // this.DELAY = delay;
+      if (this.debug) console.log('onStart this.sendMessage');
        try {
          this.sendMessage({
            startTime: this.startTime,
