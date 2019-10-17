@@ -412,15 +412,15 @@ export default class Tracker extends MultiFetch {
   fetchHTML(){
     return new Promise(async (resolve, reject)=>{
       console.log(+new Date()+' fetchDom');
+      let html = await this.getDom();
+
       // sometimes the content is updated before the url, the timeout here
       // makes the code wait for the updates in the url. This is not ideal,
       // but I don't see other way. Even if one could capture popstate and
       // pushstate eventss (which is not working in the extension), the 
       // problem would persist: the content was modified first and then the
       // url!
-      setTimeout( function() {        
-        let html = await this.getDom();
-
+      setTimeout( function() {
         if (this.is_url_change()){
           this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
           resolve(false);
