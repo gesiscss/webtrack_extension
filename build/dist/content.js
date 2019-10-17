@@ -13345,7 +13345,7 @@ function (_Tracker) {
     _this.elements = [];
     _this.elementStrings = '';
     _this.tweetId2Element = {};
-    _this.tweets_exist = true;
+    _this.tweets_exist = false;
     console.log(+new Date());
     return _this;
   }
@@ -13509,113 +13509,6 @@ function (_Tracker) {
           resolve(_this2.allow);
         }
       });
-    }
-    /**
-     * [_getHead return header of HTML-Dom]
-     * @return {String}
-     */
-
-  }, {
-    key: "_getHead",
-    value: function _getHead() {
-      this.documentHead = document.querySelectorAll('head')[0].outerHTML;
-      return this.documentHead;
-    }
-    /**
-     * [_isPublic checks if element is for the public oder private]
-     * @param  {Object}  target [DomElement]
-     * @return {Boolean}
-     */
-
-  }, {
-    key: "_isPublic",
-    value: function _isPublic(target) {
-      var ispublic = true; //var svgs = target.getElementsByTagName('svg');
-      //var svgs = target.querySelectorAll('svg[aria-label="Protected account"]');
-
-      var svgs = target.querySelectorAll(this.eventElements.svg_protected);
-
-      if (svgs.length > 0) {
-        if (this.debug) console.log('protected');
-        return false;
-      } else {
-        if (this.debug) console.log('not protected');
-        return true;
-      } // for (var i = 0; i < svgs.length; i++) {
-      //   if (svgs[i].hasAttribute('aria-label')) {
-      //     if (svgs[i].getAttribute('aria-label') == 'Protected account') {
-      //       ispublic = false;
-      //       break;
-      //     }
-      //   }
-      // }
-      //return ispublic;
-      //return !target.querySelectorAl                                                                                                                                            l('[class="Icon Icon--protected"]').length>0;
-
-    }
-    /**
-     * [_getId looks for an href that contains the id of the element]
-     * @param  {Object}  target [DomElement]
-     * @return {int}
-     */
-
-  }, {
-    key: "_getId",
-    value: function _getId(article) {
-      try {
-        var _clone = article.cloneNode(true);
-
-        var times = article.querySelectorAll(this.eventElements.time_tweetid);
-
-        if (times.length > 0) {
-          return times[0].parentNode.getAttribute('href').match(this.eventElements.time_tweetid_regex)[1];
-        } else {
-          var svgs = article.querySelectorAll(this.eventElements.svg_maintweet_tweetid);
-
-          if (svgs.length > 0) {
-            return svgs[0].parentNode.parentNode.parentNode.getAttribute('href').match(this.eventElements.svg_maintweet_tweetid_regex)[1];
-          }
-        }
-      } catch (error) {
-        console.log(error);
-        console.log('Unexpected error getting Twitter ID in TwitterTracker');
-      }
-
-      return null;
-    }
-    /**
-     * [_getPublicArticels return elements of public articels]
-     * @return {Array} articels
-     */
-
-  }, {
-    key: "addPublicArticels",
-    value: function addPublicArticels() {
-      var articels = this._getElements(this.eventElements.articels, document, {
-        setBorder: false
-      });
-
-      for (var i = 0; i < articels.length; i++) {
-        if (this._isPublic(articels[i])) {
-          this._setBorder(articels[i]); //let id = articels[i].getAttribute('data-tweet-id');
-
-
-          var id = this._getId(articels[i]);
-
-          if (this.debug) console.log('ID detected: ' + id);
-
-          if (id == null) {// TODO: what to do in case of error detecting id.
-          } else {
-            this.tweetId2Element[id] = articels[i].cloneNode(true); //this._setEventLikeButton(id);
-          }
-        } else {
-          delete articels[i];
-        }
-      } //return articels.filter(e => e!=undefined);
-      //return if at least one article was added
-
-
-      return articels.lenght > 0;
     }
     /**
      * [_setEventLikeButton set like-events for un-/like buttons from articel]
@@ -13851,6 +13744,104 @@ function (_Tracker) {
       }
     }
     /**
+     * [_getHead return header of HTML-Dom]
+     * @return {String}
+     */
+
+  }, {
+    key: "_getHead",
+    value: function _getHead() {
+      this.documentHead = document.querySelectorAll('head')[0].outerHTML;
+      return this.documentHead;
+    }
+    /**
+     * [_isPublic checks if element is for the public oder private]
+     * @param  {Object}  target [DomElement]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "_isPublic",
+    value: function _isPublic(target) {
+      var ispublic = true;
+      var svgs = target.querySelectorAll(this.eventElements.svg_protected);
+
+      if (svgs.length > 0) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    /**
+     * [_getId looks for an href that contains the id of the element]
+     * @param  {Object}  target [DomElement]
+     * @return {int}
+     */
+
+  }, {
+    key: "_getId",
+    value: function _getId(article) {
+      try {
+        var _clone = article.cloneNode(true);
+
+        var times = article.querySelectorAll(this.eventElements.time_tweetid);
+
+        if (times.length > 0) {
+          return times[0].parentNode.getAttribute('href').match(this.eventElements.time_tweetid_regex)[1];
+        } else {
+          var svgs = article.querySelectorAll(this.eventElements.svg_maintweet_tweetid);
+
+          if (svgs.length > 0) {
+            return svgs[0].parentNode.parentNode.parentNode.getAttribute('href').match(this.eventElements.svg_maintweet_tweetid_regex)[1];
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        console.log('Unexpected error getting Twitter ID in TwitterTracker');
+      }
+
+      return null;
+    }
+    /**
+     * [_getPublicArticels return elements of public articels]
+     * @return {Array} articels
+     */
+
+  }, {
+    key: "addPublicArticles",
+    value: function addPublicArticles() {
+      var articels = this._getElements(this.eventElements.articels, document, {
+        setBorder: false
+      });
+
+      for (var i = 0; i < articels.length; i++) {
+        //let id = articels[i].getAttribute('data-tweet-id');
+        var id = this._getId(articels[i]);
+
+        if (id == null) {
+          // This does not seem to be a tweet
+          delete articels[i];
+        } else {
+          if (this._isPublic(articels[i])) {
+            this._setBorder(articels[i]);
+
+            var _id = this._getId(articels[i]);
+
+            if (this.debug) console.log('ID detected: ' + _id);
+            this.tweetId2Element[_id] = articels[i].cloneNode(true);
+          } else {
+            if (this.debug) console.log('Not public: ', articels[i]);
+          }
+        }
+      }
+
+      console.log(articels);
+      console.log(articels.length); //return articels.filter(e => e!=undefined);
+      //return if at least one article was added
+
+      return articels.length > 0;
+    }
+    /**
      * [assembleDom with the existent html]
      * @return {String}
      */
@@ -13888,7 +13879,7 @@ function (_Tracker) {
     value: function _getDom() {
       var tclone = document.documentElement.cloneNode(true); //clean all scripts to minimize the size
 
-      var r = tclone.querySelectorAll('script:not([src]),svg,style');
+      var r = tclone.querySelectorAll('script:not([src]),svg,style,noscript');
 
       for (var i = r.length - 1; i >= 0; i--) {
         if (r[i].getAttribute('id') != 'a') {
@@ -13912,100 +13903,25 @@ function (_Tracker) {
         return _get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
       } else {
         return new Promise(function (resolve, reject) {
-          var found = _this8.addPublicArticels();
+          var found = _this8.addPublicArticles(); //this._eventListenComment();
+          //this._eventListenRetweet();
+          //this._eventListenTweetstorm();
+          //this._eventListenPermalinkOverlay();
 
-          _this8.tweets_exist = found | _this8.tweets_exist;
+
+          _this8.tweets_exist = found || _this8.tweets_exist;
 
           if (_this8.tweets_exist) {
             //SEND
             resolve(_this8.assembleDom());
           } else if (_this8.tweets_exist == false) {
-            // just send the entire html
-            resolve(_this8._getDom());
-          } // var tclone = document.documentElement.cloneNode(true);
-          // //clean all scripts to minimize the size
-          // var r = tclone.querySelectorAll('script:not([src]),svg,style');
-          // for (var i = (r.length-1); i >= 0; i--) {
-          //     if(r[i].getAttribute('id') != 'a'){
-          //         r[i].parentNode.removeChild(r[i]);
-          //     }
-          // }
-          // resolve(tclone.outerHTML);
-          //resolve(assembleDom());
-          //resolve(document.documentElement.outerHTML);
+            if (_this8.debug) console.log('No tweets were found'); // just send the entire html
 
+            resolve(_this8._getDom());
+          }
         });
       }
-    } //   /**
-    //    * [getDom return html content from public articel]
-    //    * @return {String}
-    //    */
-    //   getDom(){
-    //     if (this._isNotLoggedTwitter()){
-    //         return super.getDom();
-    //     } else {
-    //       return new Promise(async (resolve, reject) => {
-    //         //this._eventListenComment();
-    //         //this._eventListenRetweet();
-    //         //this._eventListenTweetstorm();
-    //         //this._eventListenPermalinkOverlay();
-    //         //for (var i = 0; i < found.length; i++) {
-    //           //this.elements.push(found[i]);
-    //           //this.elementStrings += found[i].outerHTML;
-    //           //this.elementStrings += "<div>" + found[i].textContent + "</div>";
-    //         //}
-    //         // update the existance of tweets
-    //         //this.tweets_exist = found | this.tweets_exist;
-    //         // if (this.is_url_change()){
-    //         //   console.log('url is changed');
-    //         //   this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
-    //         //   resolve(false);
-    //         // } else {
-    //           console.log('url is not changed')
-    //           let found = this.addPublicArticels();
-    //           if (this.found){
-    //               //SEND
-    //             resolve(this.assembleDom());
-    //           } else if (this.tweets_exist == false) {
-    //             // just send the entire html
-    //             resolve(await super.getDom());
-    //           }
-    //           this.tweets_exist = found | this.tweets_exist;
-    //         // }
-    //             /*      
-    //           resolve(this.assembleDom());
-    //           // url has not changed 
-    //           if (this.original_url == this.get_unhashed_href()){
-    //             let found = this.addPublicArticels();
-    //             if (this.found){
-    //               //SEND
-    //               resolve(this.assembleDom());
-    //             } else if (this.tweets_exist == false) {
-    //               // just send the entire html
-    //               resolve(await super.getDom());
-    //             }
-    //             this.tweets_exist = found | this.tweets_exist;
-    //           // url has changed
-    //           } else {
-    //             // clean tweets (a new page has been open)
-    //             this.tweetId2Element = {};
-    //             this.tweets_exist = false;
-    //             let found = this.addPublicArticels();
-    //             if (found){
-    //               this.tweets_exist = true;
-    //               //SEND
-    //               resolve(this.assembleDom());
-    //             } else {
-    //               // just send the entire html
-    //               resolve(await super.getDom());
-    //             }
-    //           }
-    //         }
-    // */            
-    //       })
-    //     }
-    //   }
-
+    }
     /**
      * [onStart on start event]
      * @param  {Function} fn
