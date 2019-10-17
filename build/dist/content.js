@@ -13843,6 +13843,15 @@ function (_Tracker) {
       return null;
     }
     /**
+     * [_getPublicArticels start tracking an article]
+     */
+
+  }, {
+    key: "trackArticle",
+    value: function trackArticle(id, article) {
+      this.tweetId2Element[id] = article.cloneNode(true);
+    }
+    /**
      * [_getPublicArticels return elements of public articels]
      * @return {Array} true if at least one article was found
      */
@@ -13863,7 +13872,8 @@ function (_Tracker) {
             var _id = this._getHeaderId(); //if (this.debug) console.log('HEADER ID detected: ' + id);
 
 
-            this.tweetId2Element[_id] = articles[i].cloneNode(true);
+            this.trackArticle(_id, articles[i]);
+            debugger;
             counter += 1;
           } else {
             // This does not seem to be a tweet
@@ -13872,10 +13882,9 @@ function (_Tracker) {
         } else {
           if (this._isPublic(articles[i])) {
             //this._setBorder(articles[i]);
-            var _id2 = this._getId(articles[i]); //if (this.debug) console.log('ID detected: ' + id);
-
-
-            this.tweetId2Element[_id2] = articles[i].cloneNode(true);
+            //let id = this._getId(articles[i]);
+            //if (this.debug) console.log('ID detected: ' + id);
+            this.trackArticle(id, articles[i]);
             counter += 1;
           } else {//if (this.debug) console.log('Not public: ', articles[i]);
           }
@@ -13951,6 +13960,7 @@ function (_Tracker) {
 
       for (var key in this.tweetId2Element) {
         if (this.tweetId2Element.hasOwnProperty(key)) {
+          this.tweetId2Element[key].setAttribute('webtrack-tweet-id', key);
           tweet_strings += this.tweetId2Element[key].outerHTML;
           counter += 1;
         }
@@ -13974,7 +13984,14 @@ function (_Tracker) {
         if (this.debug) console.log('No public tweets/replies found');
       }
 
-      var sidebar = document.querySelector('div[data-testid="sidebarColumn"]').outerHTML;
+      var sidebar = document.querySelector('div[data-testid="sidebarColumn"]');
+
+      if (sidebar) {
+        sidebar = sidebar.outerHTML;
+      } else {
+        sidebar = '';
+      }
+
       if (this.debug) console.log('Sending ' + counter + ' tweets');
       return '<html>' + this._getHead() + '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div><h1>Who To Follow</h1><div class="WhoToFollow">' + who_strings + '</div><h1>SideBar</h1><div class="sidebar">' + sidebar + '</div></body>' + '</html>';
     }
