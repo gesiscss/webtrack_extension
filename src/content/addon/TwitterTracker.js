@@ -77,6 +77,7 @@ export default class TwitterTracker extends Tracker{
     this.elements = [];
     this.elementStrings = '';
     this.tweetId2Element = {};
+    this.whoId2Element = {};
     this.tweets_exist = false;
     console.log(+ new Date());
   }
@@ -471,26 +472,89 @@ export default class TwitterTracker extends Tracker{
 
 
   /**
-   * [assembleDom with the existent html]
-   * @return {String}
+   * [_getId looks for a user id to follow]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
    */
-  assembleDom(){
-    var elementStrings = '';
-    var counter = 0;
-    for (var key in this.tweetId2Element) {
-      if (this.tweetId2Element.hasOwnProperty(key)){
-        elementStrings += this.tweetId2Element[key].outerHTML;
+  _getWhoId(article){
+    try {
+      var _clone = article.cloneNode(true);
+      var _anchor = article.querySelector('a[href]');
+      if (_anchor){
+        return _anchor.getAttribute('href');
+      }
+    }
+    catch(error) {
+      console.log(error);
+      console.log('Unexpected error getting Twitter ID in TwitterTracker');
+    }
+    
+    return null;
+  }
+
+  /**
+   * [_getPublicArticels return elements of public articels]
+   * @return {Array} true if at least one article was found
+   */
+  addWhoToFollow(){
+    let who = document.querySelectorAll('div[data-testid="primaryColumn"] div[data-testid="UserCell"]')
+
+    counter = 0;
+    for (var i = 0; i < who.length; i++) {
+      //let id = who[i].getAttribute('data-tweet-id');
+      let id = this._getWhoId(who[i]);
+      if (id != null) {
+        //if (this.debug) console.log('ID detected: ' + id);
+        this.whoId2Element[id] = who[i].cloneNode(true);
         counter += 1;
       }
     }
 
-    if(elementStrings==''){
-      if(this.debug) console.log('No public tweets/replies found');
-      return '<html>'+this._getHead()+'<body> All tweets are private </body>'+'</html>'
-    }else{
-      if(this.debug) console.log('Sending ' + counter + ' tweets');
-      return '<html>'+this._getHead()+'<body>'+elementStrings+'</body>'+'</html>';
+    if (this.debug) console.log('WhoToFollow: ' + who.length);
+    if (this.debug) console.log('WhoToFollow correct: ' + counter);
+
+    // return True if at lest one article was found (regardless it being public/private)
+    return who.length > 0;
+  }
+
+
+  /**
+   * [assembleDom with the existent html]
+   * @return {String}
+   */
+  assembleDom(){
+    var tweet_strings = '';
+    var counter = 0;
+    for (var key in this.tweetId2Element) {
+      if (this.tweetId2Element.hasOwnProperty(key)){
+        tweet_strings += this.tweetId2Element[key].outerHTML;
+        counter += 1;
+      }
     }
+    if(counter == 0){
+      if(this.debug) console.log('No public tweets/replies found');
+    }
+
+    var who_strings = '';
+    var counter = 0;
+    for (var key in this.whoId2Element) {
+      if (this.whoId2Element.hasOwnProperty(key)){
+        who_strings += this.whoId2Element[key].outerHTML;
+        counter += 1;
+      }
+    }
+    if(counter == 0){
+      if(this.debug) console.log('No public tweets/replies found');
+    }
+
+    var sidebar = document.querySelector('div[data-testid="sidebarColumn"]').outerHTML;    
+
+    if(this.debug) console.log('Sending ' + counter + ' tweets');
+    return '<html>' + this._getHead() + 
+       '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
+      '</div><h1>Who To Follow</h1><div class="WhoToFollow">' + who_strings + 
+      '</div><h1>SideBar</h1><div class="sidebar">' + sidebar +  '</div></body>'+'</html>';
+    
   }
 
 
