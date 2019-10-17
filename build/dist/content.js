@@ -10094,6 +10094,7 @@ function (_MultiFetch) {
     _this.links = [];
     _this.lastURL = '';
     _this.original_url = '';
+    _this.debug = true;
     return _this;
   }
   /**
@@ -10224,6 +10225,7 @@ function (_MultiFetch) {
         result[_name] = this.metadata[_name].join(',');
       }
 
+      if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       this.eventEmitter.emit(EVENT_NAMES.data, {
         meta: result
       }, false);
@@ -10812,33 +10814,35 @@ function (_MultiFetch) {
 
                 case 3:
                   html = _context5.sent;
-
-                  if (_this7.is_url_change()) {
-                    _this7.eventEmitter.emit(EVENT_NAMES.newURL, {
-                      html: false
-                    }, false);
-
-                    resolve(false);
-                  } else {
-                    if (typeof html == 'boolean' && html == false) {
-                      // console.log('HTML is false');
-                      _this7.eventEmitter.emit(EVENT_NAMES.data, {
+                  // sometimes the content is updated before the url, the timeout here
+                  // makes the code wait for the updates in the url. This is not ideal,
+                  // but I don't see other way. Even if one could capture popstate and
+                  // pushstate eventss (which is not working in the extension), the 
+                  // problem would persist: the content was modified first and then the
+                  // url!
+                  setTimeout(function () {
+                    if (this.is_url_change()) {
+                      this.eventEmitter.emit(EVENT_NAMES.newURL, {
                         html: false
                       }, false);
-
                       resolve(false);
                     } else {
-                      console.log("FETCHING...");
-
-                      _this7.eventEmitter.emit(EVENT_NAMES.data, {
-                        html: html,
-                        //links: this.fetchHASHLinks(),
-                        create: +new Date()
-                      }, false);
-
-                      resolve(true);
+                      if (typeof html == 'boolean' && html == false) {
+                        console.log("NOT FETCHING...");
+                        this.eventEmitter.emit(EVENT_NAMES.data, {
+                          html: false
+                        }, false);
+                        resolve(false);
+                      } else {
+                        console.log("FETCHING...");
+                        this.eventEmitter.emit(EVENT_NAMES.data, {
+                          html: html,
+                          create: +new Date()
+                        }, false);
+                        resolve(true);
+                      }
                     }
-                  }
+                  }.bind(_this7), 500);
 
                 case 5:
                 case "end":
@@ -14220,6 +14224,8 @@ function () {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
+        if (_this.debug) console.log('sendMessage("ontracking")');
+
         _this.browser.runtime.sendMessage('ontracking', function (response) {
           resolve(response);
         });
@@ -14286,7 +14292,7 @@ function () {
 
       this.data = Object.assign({
         startTime: this.startTime,
-        createData: +new Date(),
+        createData: new Date(),
         landing_url: window.location.href,
         content: [],
         source: [],
@@ -14317,7 +14323,8 @@ function () {
             this.last = now; // console.log('sendMessage %s', this.count, object);
 
             try {
-              if (this.debug) console.log('sendMessage');
+              if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
+              if (this.debug) console.log(this.data);
               this.browser.runtime.sendMessage(this.data, function (response) {
                 if (response == undefined) {
                   _this2.close();
@@ -14339,6 +14346,8 @@ function () {
           if (this.data.content.length > 0) {
             // console.log('sendMessage %s', this.count, object);
             try {
+              if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
+              if (this.debug) console.log(this.data);
               this.browser.runtime.sendMessage(this.data, function (response) {
                 if (response == undefined) {
                   _this2.close();
@@ -14392,10 +14401,12 @@ function () {
         _this3.createTracker();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
-        // if(data.hasOwnProperty('html') && data.html != false){
-        //   this.tracker.fetchLinks();
+        //if(data.hasOwnProperty('html') && data.html != false){
+        //this.tracker.fetchLinks();
         //this.tracker.fetchSource(data.html);
         //}
+        if (_this3.debug) console.log('onData: this.sendMessage');
+
         _this3.sendMessage(data);
       });
       this.tracker.eventEmitter.on('onStart',
@@ -14408,36 +14419,38 @@ function () {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  _context.prev = 0;
+                  // this.DELAY = delay;
+                  if (_this3.debug) console.log('onStart this.sendMessage');
+                  _context.prev = 1;
 
                   _this3.sendMessage({
                     startTime: _this3.startTime,
-                    createData: +new Date()
+                    createData: new Date()
                   });
 
-                  _context.next = 4;
+                  _context.next = 5;
                   return _this3.tracker.fetchHTML();
 
-                case 4:
+                case 5:
                   if (!_context.sent) {
-                    _context.next = 6;
+                    _context.next = 7;
                     break;
                   }
 
                   //this.tracker.fetchFavicon();
                   _this3.tracker.fetchMetaData();
 
-                case 6:
-                  _context.next = 11;
+                case 7:
+                  _context.next = 12;
                   break;
 
-                case 8:
-                  _context.prev = 8;
-                  _context.t0 = _context["catch"](0);
+                case 9:
+                  _context.prev = 9;
+                  _context.t0 = _context["catch"](1);
                   console.log(_context.t0);
 
-                case 11:
-                  _context.prev = 11;
+                case 12:
+                  _context.prev = 12;
 
                   _this3.domDetector.onChange(function () {
                     console.log('Dom Change');
@@ -14445,14 +14458,14 @@ function () {
                     _this3.tracker.fetchHTML();
                   }, delay);
 
-                  return _context.finish(11);
+                  return _context.finish(12);
 
-                case 14:
+                case 15:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 8, 11, 14]]);
+          }, _callee, null, [[1, 9, 12, 15]]);
         }));
 
         return function (_x) {

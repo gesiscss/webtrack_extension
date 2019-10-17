@@ -116,7 +116,7 @@ export default class ContentHandler {
     this.data = Object.assign(
       {
         startTime: this.startTime,
-        createData: + new Date(),
+        createData: new Date(),
         landing_url: window.location.href,
         content: [],
         source: [],
@@ -236,7 +236,7 @@ export default class ContentHandler {
        try {
          this.sendMessage({
            startTime: this.startTime,
-           createData: +new Date()
+           createData: new Date()
          })
          if(await this.tracker.fetchHTML()){
            //this.tracker.fetchFavicon();
