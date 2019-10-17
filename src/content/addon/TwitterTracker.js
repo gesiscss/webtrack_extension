@@ -179,8 +179,6 @@ export default class TwitterTracker extends Tracker{
   }
 
 
-
-
   /**
    * [_setEventLikeButton set like-events for un-/like buttons from articel]
    * @param {number} id
@@ -370,6 +368,38 @@ export default class TwitterTracker extends Tracker{
 
 
   /**
+   * [_isHeaderTweet checks if element is the one open (header Tweet) ]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isHeaderTweet(target){
+    if (target.hasChildNodes()){
+      // Hackish way to detect the header
+      if(target.children[0].childElementCount > 2) {
+        return true;
+      }
+    }
+    return false; 
+  }
+
+    /**
+   * [_getHeaderId get the tweet header id from the location bar]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
+   */
+  _getHeaderId(article){
+    
+    var match = location.pathname.match(this.eventElements.time_tweetid_regex);
+    if (match != null){
+      return match[1];
+    }
+    return null;
+
+  }
+
+
+
+  /**
    * [_getId looks for an href that contains the id of the element]
    * @param  {Object}  target [DomElement]
    * @return {int}
@@ -398,39 +428,45 @@ export default class TwitterTracker extends Tracker{
 
   /**
    * [_getPublicArticels return elements of public articels]
-   * @return {Array} articels
+   * @return {Array} true if at least one article was found
    */
   addPublicArticles(){
-    let articels = this._getElements(this.eventElements.articels, document, {setBorder: false});
+    let articles = document.querySelectorAll('article');
 
+    let counter = 0;
 
-    for (var i = 0; i < articels.length; i++) {
-
-      //let id = articels[i].getAttribute('data-tweet-id');
-      let id = this._getId(articels[i]);
-
+    for (var i = 0; i < articles.length; i++) {
+      //let id = articles[i].getAttribute('data-tweet-id');
+      let id = this._getId(articles[i]);
       if (id == null) {
-        // This does not seem to be a tweet
-        delete articels[i];
+        // Heeader Tweet
+        if ((i == 0) && this._isHeaderTweet(articles[i])){
+          let id = this._getHeaderId();
+          //if (this.debug) console.log('HEADER ID detected: ' + id);
+          this.tweetId2Element[id] = articles[i].cloneNode(true);
+          counter += 1;
+        } else {
+          // This does not seem to be a tweet
+          delete articles[i];
+        }
       } else {
-        if(this._isPublic(articels[i])){
-          this._setBorder(articels[i]);
-
-          let id = this._getId(articels[i]);
-          if (this.debug) console.log('ID detected: ' + id);
-        
-          this.tweetId2Element[id] = articels[i].cloneNode(true);
+        if(this._isPublic(articles[i])){
+          //this._setBorder(articles[i]);
+          let id = this._getId(articles[i]);
+          //if (this.debug) console.log('ID detected: ' + id);
+          this.tweetId2Element[id] = articles[i].cloneNode(true);
+          counter += 1;
         }else{
-          if (this.debug) console.log('Not public: ', articels[i]);
+          //if (this.debug) console.log('Not public: ', articles[i]);
         }
       }
     }
 
-    console.log(articels);
-    console.log(articels.length);
-    //return articels.filter(e => e!=undefined);
-    //return if at least one article was added
-    return articels.length > 0;
+    if (this.debug) console.log('Articles Found: ' + articles.length);
+    if (this.debug) console.log('Public Articles: ' + counter);
+
+    // return True if at lest one article was found (regardless it being public/private)
+    return articles.length > 0;
   }
 
 
@@ -448,15 +484,11 @@ export default class TwitterTracker extends Tracker{
       }
     }
 
-    if(this.debug) console.log('DOOMING: ' + counter);
-
     if(elementStrings==''){
       if(this.debug) console.log('No public tweets/replies found');
-
       return '<html>'+this._getHead()+'<body> All tweets are private </body>'+'</html>'
-      
     }else{
-      if(this.debug) console.log('RESOLVING....');
+      if(this.debug) console.log('Sending ' + counter + ' tweets');
       return '<html>'+this._getHead()+'<body>'+elementStrings+'</body>'+'</html>';
     }
   }
@@ -519,8 +551,8 @@ export default class TwitterTracker extends Tracker{
   onStart(fn){
     setTimeout(() => {
       if(this.debug) console.log('START!!!!');
-      fn(2000);
-    }, 1000);
+      fn(1000);
+    }, 500);
   }
 
 }//class

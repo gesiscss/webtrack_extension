@@ -10828,13 +10828,13 @@ function (_MultiFetch) {
                       resolve(false);
                     } else {
                       if (typeof html == 'boolean' && html == false) {
-                        console.log("NOT FETCHING...");
+                        if (this.debug) console.log('======Emit Event: onData (NO DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: false
                         }, false);
                         resolve(false);
                       } else {
-                        console.log("FETCHING...");
+                        if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: html,
                           create: +new Date()
@@ -13777,6 +13777,41 @@ function (_Tracker) {
       }
     }
     /**
+     * [_isHeaderTweet checks if element is the one open (header Tweet) ]
+     * @param  {Object}  target [DomElement]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "_isHeaderTweet",
+    value: function _isHeaderTweet(target) {
+      if (target.hasChildNodes()) {
+        // Hackish way to detect the header
+        if (target.children[0].childElementCount > 2) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+    /**
+    * [_getHeaderId get the tweet header id from the location bar]
+    * @param  {Object}  target [DomElement]
+    * @return {int}
+    */
+
+  }, {
+    key: "_getHeaderId",
+    value: function _getHeaderId(article) {
+      var match = location.pathname.match(this.eventElements.time_tweetid_regex);
+
+      if (match != null) {
+        return match[1];
+      }
+
+      return null;
+    }
+    /**
      * [_getId looks for an href that contains the id of the element]
      * @param  {Object}  target [DomElement]
      * @return {int}
@@ -13808,42 +13843,48 @@ function (_Tracker) {
     }
     /**
      * [_getPublicArticels return elements of public articels]
-     * @return {Array} articels
+     * @return {Array} true if at least one article was found
      */
 
   }, {
     key: "addPublicArticles",
     value: function addPublicArticles() {
-      var articels = this._getElements(this.eventElements.articels, document, {
-        setBorder: false
-      });
+      var articles = document.querySelectorAll('article');
+      var counter = 0;
 
-      for (var i = 0; i < articels.length; i++) {
-        //let id = articels[i].getAttribute('data-tweet-id');
-        var id = this._getId(articels[i]);
+      for (var i = 0; i < articles.length; i++) {
+        //let id = articles[i].getAttribute('data-tweet-id');
+        var id = this._getId(articles[i]);
 
         if (id == null) {
-          // This does not seem to be a tweet
-          delete articels[i];
-        } else {
-          if (this._isPublic(articels[i])) {
-            this._setBorder(articels[i]);
+          // Heeader Tweet
+          if (i == 0 && this._isHeaderTweet(articles[i])) {
+            var _id = this._getHeaderId(); //if (this.debug) console.log('HEADER ID detected: ' + id);
 
-            var _id = this._getId(articels[i]);
 
-            if (this.debug) console.log('ID detected: ' + _id);
-            this.tweetId2Element[_id] = articels[i].cloneNode(true);
+            this.tweetId2Element[_id] = articles[i].cloneNode(true);
+            counter += 1;
           } else {
-            if (this.debug) console.log('Not public: ', articels[i]);
+            // This does not seem to be a tweet
+            delete articles[i];
+          }
+        } else {
+          if (this._isPublic(articles[i])) {
+            //this._setBorder(articles[i]);
+            var _id2 = this._getId(articles[i]); //if (this.debug) console.log('ID detected: ' + id);
+
+
+            this.tweetId2Element[_id2] = articles[i].cloneNode(true);
+            counter += 1;
+          } else {//if (this.debug) console.log('Not public: ', articles[i]);
           }
         }
       }
 
-      console.log(articels);
-      console.log(articels.length); //return articels.filter(e => e!=undefined);
-      //return if at least one article was added
+      if (this.debug) console.log('Articles Found: ' + articles.length);
+      if (this.debug) console.log('Public Articles: ' + counter); // return True if at lest one article was found (regardless it being public/private)
 
-      return articels.length > 0;
+      return articles.length > 0;
     }
     /**
      * [assembleDom with the existent html]
@@ -13863,13 +13904,11 @@ function (_Tracker) {
         }
       }
 
-      if (this.debug) console.log('DOOMING: ' + counter);
-
       if (elementStrings == '') {
         if (this.debug) console.log('No public tweets/replies found');
         return '<html>' + this._getHead() + '<body> All tweets are private </body>' + '</html>';
       } else {
-        if (this.debug) console.log('RESOLVING....');
+        if (this.debug) console.log('Sending ' + counter + ' tweets');
         return '<html>' + this._getHead() + '<body>' + elementStrings + '</body>' + '</html>';
       }
     }
@@ -13938,8 +13977,8 @@ function (_Tracker) {
 
       setTimeout(function () {
         if (_this9.debug) console.log('START!!!!');
-        fn(2000);
-      }, 1000);
+        fn(1000);
+      }, 500);
     }
   }]);
 
@@ -14258,11 +14297,10 @@ function () {
 
       if (object.hasOwnProperty('html')) {
         if (this.debug) {
-          console.log('Counter');
-          console.log(this.count);
+          console.log('Count: ' + this.count);
 
           if (object['html']) {
-            console.log(object['html'].length);
+            console.log('HTML length: ' + object['html'].length);
           }
         }
 
@@ -14324,7 +14362,6 @@ function () {
 
             try {
               if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
-              if (this.debug) console.log(this.data);
               this.browser.runtime.sendMessage(this.data, function (response) {
                 if (response == undefined) {
                   _this2.close();
@@ -14347,7 +14384,6 @@ function () {
             // console.log('sendMessage %s', this.count, object);
             try {
               if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
-              if (this.debug) console.log(this.data);
               this.browser.runtime.sendMessage(this.data, function (response) {
                 if (response == undefined) {
                   _this2.close();

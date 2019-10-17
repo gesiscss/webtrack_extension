@@ -426,11 +426,11 @@ export default class Tracker extends MultiFetch {
           resolve(false);
         } else {
           if(typeof html == 'boolean' && html == false){
-             console.log("NOT FETCHING...");
+            if (this.debug) console.log('======Emit Event: onData (NO DATA) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
             resolve(false);
           }else{
-            console.log("FETCHING...");
+            if (this.debug) console.log('======Emit Event: onData (DATA) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
               html: html, 
               create: +new Date()

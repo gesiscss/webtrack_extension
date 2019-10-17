@@ -87,11 +87,10 @@ export default class ContentHandler {
     let type = null;
     if(object.hasOwnProperty('html')){
       if (this.debug){
-        console.log('Counter');
-        console.log(this.count);
+        console.log('Count: ' + this.count);
 
         if(object['html']) {
-          console.log((object['html']).length);
+          console.log('HTML length: ' + (object['html']).length);
         }
       }
       object = {
@@ -154,7 +153,6 @@ export default class ContentHandler {
               // console.log('sendMessage %s', this.count, object);
               try {
                 if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
-                if (this.debug) console.log(this.data);
                 this.browser.runtime.sendMessage(this.data, (response)=>{
                   if(response==undefined){
                     this.close();
@@ -175,7 +173,6 @@ export default class ContentHandler {
           // console.log('sendMessage %s', this.count, object);
           try{
             if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
-            if (this.debug) console.log(this.data);
             this.browser.runtime.sendMessage(this.data, (response)=>{
               if(response==undefined){
                 this.close();
