@@ -37,6 +37,9 @@ window.addEventListener("unhandledrejection", event => {
     config.onError = (err) => {
       throw err
     };
+
+    let private_mode = config.defaultId.get()==null;
+
     await config.load();
     console.log('<Config load>');
 
@@ -44,7 +47,7 @@ window.addEventListener("unhandledrejection", event => {
     // window.pageHandler.event.on('error', error => errorCache.add(error));
 
     if(config.getSelect()!=null && config.getRunProjectTmpSettings() && (config.getRunProjectTmpSettings().clientId != null || !config.getProject(config.getSelect()).SETTINGS.ENTERID)){
-      window.pageHandler.selectProject(config.getSelect());
+      window.pageHandler.selectProject(config.getSelect(), private_mode);
     }
 
 

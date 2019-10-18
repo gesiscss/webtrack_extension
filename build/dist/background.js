@@ -37342,6 +37342,7 @@ function () {
     value: function init() {
       var _this2 = this;
 
+      var private_mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       console.log('init');
       return new Promise(
       /*#__PURE__*/
@@ -37377,7 +37378,7 @@ function () {
                   // data immediately
 
 
-                  if (_this2.AUTOSTART) _this2.start(true);
+                  if (_this2.AUTOSTART) _this2.start(private_mode);
 
                   if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
                     console.log('Autostart send');
@@ -38077,6 +38078,7 @@ function () {
       var _this2 = this;
 
       var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var private_mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -38122,7 +38124,7 @@ function () {
                   }
 
                   _context.next = 12;
-                  return _this2._getCurrentTracker().init();
+                  return _this2._getCurrentTracker().init(private_mode);
 
                 case 12:
                   // if setting enterid false then will be disabled the private mode
@@ -38332,7 +38334,7 @@ window.addEventListener("unhandledrejection", function (event) {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer;
+    var transfer, private_mode;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -38359,32 +38361,33 @@ window.addEventListener("unhandledrejection", function (event) {
               throw err;
             };
 
-            _context.next = 13;
+            private_mode = config.defaultId.get() == null;
+            _context.next = 14;
             return config.load();
 
-          case 13:
+          case 14:
             console.log('<Config load>');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker); // window.pageHandler.event.on('error', error => errorCache.add(error));
 
             if (config.getSelect() != null && config.getRunProjectTmpSettings() && (config.getRunProjectTmpSettings().clientId != null || !config.getProject(config.getSelect()).SETTINGS.ENTERID)) {
-              window.pageHandler.selectProject(config.getSelect());
+              window.pageHandler.selectProject(config.getSelect(), private_mode);
             }
 
-            _context.next = 22;
+            _context.next = 23;
             break;
 
-          case 18:
-            _context.prev = 18;
+          case 19:
+            _context.prev = 19;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 22:
+          case 23:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 18]]);
+    }, _callee, null, [[0, 19]]);
   }));
 
   return function main() {

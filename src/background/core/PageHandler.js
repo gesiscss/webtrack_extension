@@ -103,7 +103,7 @@ export default class PageHandler {
    * @param  {number} [id=null]
    * @return {Promise}
    */
-  selectProject(id=null){
+  selectProject(id=null, private_mode=true){
     return new Promise(async (resolve, reject) => {
       try {
         // console.log(parseInt(id, 10) , this.config.getSelect());
@@ -122,7 +122,7 @@ export default class PageHandler {
           this.config.setSelect(id);
           if(id != null){
             if(this._createTracker()){
-              await this._getCurrentTracker().init();
+              await this._getCurrentTracker().init(private_mode);
               // if setting enterid false then will be disabled the private mode
               console.log('ENTERID', this._getCurrentTracker().settings.ENTERID);
               // this._setCurrentTrackerPrivateMode(false);
