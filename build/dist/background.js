@@ -38166,11 +38166,6 @@ function () {
     key: "setClientId",
     value: function setClientId(clientId) {
       if (this.debug) console.log('setClientId', clientId);
-
-      if (this.tracker == null) {
-        this._createTracker();
-      }
-
       return this.config.setClientId(clientId, this.config.getSelect());
     }
     /**
