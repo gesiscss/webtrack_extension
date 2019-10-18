@@ -151,7 +151,6 @@ export default class PageHandler {
     if(this.tracker==null){
       this._createTracker();
     }
-    this._setCurrentTrackerPrivateMode(false);
     return this.config.setClientId(clientId, this.config.getSelect());
   }
 

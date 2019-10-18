@@ -51,8 +51,10 @@ export default class Login extends Component {
     return new Promise(async (resolve, reject)=>{
       try {
        if(await this.pageHandler.setClientId(clientId)){
+        this.pageHandler._setCurrentTrackerPrivateMode(false);
         resolve();
        }else{
+        this.pageHandler._setCurrentTrackerPrivateMode(true);
         reject(lang.project.id_not_found);
        }
       } catch (e) {

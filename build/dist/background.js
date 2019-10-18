@@ -37342,6 +37342,7 @@ function () {
     value: function init() {
       var _this2 = this;
 
+      console.log('init');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -37372,9 +37373,11 @@ function () {
                   _context.prev = 9;
                   console.log('AUTOSTART', _this2.AUTOSTART);
 
-                  _this2.startTimeoutScheudle();
+                  _this2.startTimeoutScheudle(); // I am forcing it to start in private mode so it doesnt try to collect
+                  // data immediately
 
-                  if (_this2.AUTOSTART) _this2.start();
+
+                  if (_this2.AUTOSTART) _this2.start(true);
 
                   if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
                     console.log('Autostart send');
@@ -38167,8 +38170,6 @@ function () {
       if (this.tracker == null) {
         this._createTracker();
       }
-
-      this._setCurrentTrackerPrivateMode(false);
 
       return this.config.setClientId(clientId, this.config.getSelect());
     }

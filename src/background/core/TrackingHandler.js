@@ -67,6 +67,7 @@ export default class TrackingHandler {
    *  @return Promise
    */
    init(){
+      console.log('init');
       return new Promise(async (resolve, reject) =>{
         try {
           await this.pageCache.init();
@@ -76,7 +77,9 @@ export default class TrackingHandler {
         } finally{
           console.log('AUTOSTART', this.AUTOSTART);
           this.startTimeoutScheudle();
-          if(this.AUTOSTART) this.start();
+          // I am forcing it to start in private mode so it doesnt try to collect
+          // data immediately
+          if(this.AUTOSTART) this.start(true);
           if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
             console.log('Autostart send');
             this.sendData(null, true);
