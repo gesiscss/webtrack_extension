@@ -10098,6 +10098,7 @@ function (_MultiFetch) {
     _this.original_url = '';
     _this.debug = true;
     _this.subpath_blacklist = [];
+    _this.header_clone = null;
     return _this;
   }
   /**
@@ -10124,6 +10125,18 @@ function (_MultiFetch) {
       //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
       //   });
       // }.bind(this));
+    }
+    /**
+    * [_getHead return header of HTML-Dom]
+    * @return {String}
+    */
+
+  }, {
+    key: "_getHead",
+    value: function _getHead() {
+      this.header_clone = document.querySelectorAll('head')[0].cloneNode(true);
+      this.header_clone = this._clean_embedded_scripts(this.header_clone, 'script:not([src]),svg,style,noscript');
+      return this.header_clone.outerHTML;
     }
     /**
      * [isAllow returns if the path is allowed in social media platforms]
@@ -10621,6 +10634,25 @@ function (_MultiFetch) {
       return urls;
     }
     /**
+     * [return element without embedd js, css, etc]
+     * @return {Promise}
+     */
+
+  }, {
+    key: "_clean_embedded_scripts",
+    value: function _clean_embedded_scripts(target) {
+      var selectors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'script:not([src]),svg,style';
+      var r = target.querySelectorAll(selectors);
+
+      for (var i = r.length - 1; i >= 0; i--) {
+        if (r[i].getAttribute('id') != 'a') {
+          r[i].parentNode.removeChild(r[i]);
+        }
+      }
+
+      return target;
+    }
+    /**
      * [return dom as string]
      * @return {Promise}
      */
@@ -10628,17 +10660,12 @@ function (_MultiFetch) {
   }, {
     key: "getDom",
     value: function getDom() {
+      var _this4 = this;
+
       return new Promise(function (resolve, reject) {
-        var tclone = document.documentElement.cloneNode(true); //clean all scripts to minimize the size
+        var tclone = document.documentElement.cloneNode(true); // clean unnecessary scripts
 
-        var r = tclone.querySelectorAll('script:not([src]),svg,style');
-
-        for (var i = r.length - 1; i >= 0; i--) {
-          if (r[i].getAttribute('id') != 'a') {
-            r[i].parentNode.removeChild(r[i]);
-          }
-        }
-
+        tclone = _this4._clean_embedded_scripts(tclone);
         resolve(tclone.outerHTML); //resolve(document.documentElement.outerHTML);
       });
     }
@@ -10651,7 +10678,7 @@ function (_MultiFetch) {
   }, {
     key: "fetchSource",
     value: function fetchSource(dom) {
-      var _this4 = this;
+      var _this5 = this;
 
       return new Promise(
       /*#__PURE__*/
@@ -10666,14 +10693,14 @@ function (_MultiFetch) {
                 case 0:
                   _context2.prev = 0;
                   _context2.next = 3;
-                  return _this4.fetch(_this4._getSourceLinks(dom));
+                  return _this5.fetch(_this5._getSourceLinks(dom));
 
                 case 3:
                   source = _context2.sent;
                   source = source.filter(function (e) {
                     return e["new"];
                   }).map(function (e) {
-                    _this4.urls2data[e.url]["new"] = false;
+                    _this5.urls2data[e.url]["new"] = false;
                     delete e["new"];
                     return e;
                   }); // this.eventEmitter.emit(EVENT_NAMES.data, {source: source}, false)
@@ -10684,7 +10711,7 @@ function (_MultiFetch) {
                   }));
 
                   for (i = 0; i < sources.length; i++) {
-                    _this4.eventEmitter.emit(EVENT_NAMES.data, {
+                    _this5.eventEmitter.emit(EVENT_NAMES.data, {
                       source: sources[i]
                     }, false);
                   }
@@ -10718,7 +10745,7 @@ function (_MultiFetch) {
   }, {
     key: "fetchFavicon",
     value: function fetchFavicon() {
-      var _this5 = this;
+      var _this6 = this;
 
       return new Promise(
       /*#__PURE__*/
@@ -10734,12 +10761,12 @@ function (_MultiFetch) {
                 case 0:
                   _context3.prev = 0;
                   _context3.next = 3;
-                  return _this5.getFavicon();
+                  return _this6.getFavicon();
 
                 case 3:
                   _favicon = _context3.sent;
 
-                  _this5.eventEmitter.emit(EVENT_NAMES.data, {
+                  _this6.eventEmitter.emit(EVENT_NAMES.data, {
                     favicon: _favicon
                   }, false);
 
@@ -10773,7 +10800,7 @@ function (_MultiFetch) {
   }, {
     key: "fetchLinks",
     value: function fetchLinks() {
-      var _this6 = this;
+      var _this7 = this;
 
       return new Promise(
       /*#__PURE__*/
@@ -10787,7 +10814,7 @@ function (_MultiFetch) {
                 case 0:
                   try {
                     //this.fetchHASHLinks();
-                    _this6.eventEmitter.emit(EVENT_NAMES.data, {}, false);
+                    _this7.eventEmitter.emit(EVENT_NAMES.data, {}, false);
 
                     resolve();
                   } catch (err) {
@@ -10815,7 +10842,7 @@ function (_MultiFetch) {
   }, {
     key: "fetchHTML",
     value: function fetchHTML() {
-      var _this7 = this;
+      var _this8 = this;
 
       return new Promise(
       /*#__PURE__*/
@@ -10830,7 +10857,7 @@ function (_MultiFetch) {
                 case 0:
                   console.log(+new Date() + ' fetchDom');
                   _context5.next = 3;
-                  return _this7.getDom();
+                  return _this8.getDom();
 
                 case 3:
                   html = _context5.sent;
@@ -10878,7 +10905,7 @@ function (_MultiFetch) {
                         resolve(true);
                       }
                     }
-                  }.bind(_this7), 500);
+                  }.bind(_this8), 500);
 
                 case 5:
                 case "end":
@@ -13382,7 +13409,6 @@ function (_Tracker) {
       time_tweetid_regex: /.*status\/(\d+).*/
     };
     _this.lastUrlPath = '';
-    _this.documentHead = '';
     _this.values = [];
     _this.elements = [];
     _this.elementStrings = '';
@@ -13788,17 +13814,6 @@ function (_Tracker) {
       }
     }
     /**
-     * [_getHead return header of HTML-Dom]
-     * @return {String}
-     */
-
-  }, {
-    key: "_getHead",
-    value: function _getHead() {
-      this.documentHead = document.querySelectorAll('head')[0].outerHTML;
-      return this.documentHead;
-    }
-    /**
      * [_isPublic checks if element is for the public oder private]
      * @param  {Object}  target [DomElement]
      * @return {Boolean}
@@ -14042,16 +14057,8 @@ function (_Tracker) {
   }, {
     key: "_getDom",
     value: function _getDom() {
-      var tclone = document.documentElement.cloneNode(true); //clean all scripts to minimize the size
-
-      var r = tclone.querySelectorAll('script:not([src]),svg,style,noscript');
-
-      for (var i = r.length - 1; i >= 0; i--) {
-        if (r[i].getAttribute('id') != 'a') {
-          r[i].parentNode.removeChild(r[i]);
-        }
-      }
-
+      var tclone = document.documentElement.cloneNode(true);
+      tclone = this._clean_embedded_scripts(tclone, 'script:not([src]),svg,style,noscript');
       return tclone.outerHTML; //resolve(document.documentElement.outerHTML);
     }
     /**

@@ -72,7 +72,7 @@ export default class TwitterTracker extends Tracker{
     };
 
     this.lastUrlPath = '';
-    this.documentHead = '';
+
     this.values = [];
     this.elements = [];
     this.elementStrings = '';
@@ -342,18 +342,6 @@ export default class TwitterTracker extends Tracker{
 
   }
 
-
-  /**
-   * [_getHead return header of HTML-Dom]
-   * @return {String}
-   */
-  _getHead(){
-    this.documentHead = document.querySelectorAll('head')[0].outerHTML;
-    return this.documentHead;
-  }
-
-
-
   /**
    * [_isPublic checks if element is for the public oder private]
    * @param  {Object}  target [DomElement]
@@ -584,13 +572,8 @@ export default class TwitterTracker extends Tracker{
    */
   _getDom(){
     var tclone = document.documentElement.cloneNode(true);
-    //clean all scripts to minimize the size
-    var r = tclone.querySelectorAll('script:not([src]),svg,style,noscript');
-    for (var i = (r.length-1); i >= 0; i--) {
-        if(r[i].getAttribute('id') != 'a'){
-            r[i].parentNode.removeChild(r[i]);
-        }
-    }
+
+    tclone = this._clean_embedded_scripts(tclone, 'script:not([src]),svg,style,noscript');
 
     return tclone.outerHTML;
     //resolve(document.documentElement.outerHTML);

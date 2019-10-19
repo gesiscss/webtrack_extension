@@ -34,6 +34,8 @@ export default class Tracker extends MultiFetch {
     this.debug = true;
 
     this.subpath_blacklist = [];
+
+    this.header_clone = null;
   }
 
   /**
@@ -57,6 +59,17 @@ export default class Tracker extends MultiFetch {
     //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
     //   });
     // }.bind(this));
+  }
+
+    /**
+   * [_getHead return header of HTML-Dom]
+   * @return {String}
+   */
+  _getHead(){
+    this.header_clone = document.querySelectorAll('head')[0].cloneNode(true);
+    this.header_clone = this._clean_embedded_scripts(this.header_clone, 'script:not([src]),svg,style,noscript');
+
+    return this.header_clone.outerHTML;
   }
 
   /**
@@ -341,6 +354,20 @@ export default class Tracker extends MultiFetch {
   }
 
   /**
+   * [return element without embedd js, css, etc]
+   * @return {Promise}
+   */
+  _clean_embedded_scripts(target, selectors='script:not([src]),svg,style'){
+    var r = target.querySelectorAll(selectors);
+    for (var i = (r.length-1); i >= 0; i--) {
+        if(r[i].getAttribute('id') != 'a'){
+            r[i].parentNode.removeChild(r[i]);
+        }
+    }
+    return target;
+  }
+
+  /**
    * [return dom as string]
    * @return {Promise}
    */
@@ -348,13 +375,9 @@ export default class Tracker extends MultiFetch {
     return new Promise((resolve, reject) => {
 
       var tclone = document.documentElement.cloneNode(true);
-      //clean all scripts to minimize the size
-      var r = tclone.querySelectorAll('script:not([src]),svg,style');
-      for (var i = (r.length-1); i >= 0; i--) {
-          if(r[i].getAttribute('id') != 'a'){
-              r[i].parentNode.removeChild(r[i]);
-          }
-      }
+
+      // clean unnecessary scripts
+      tclone = this._clean_embedded_scripts(tclone);
 
       resolve(tclone.outerHTML);
       //resolve(document.documentElement.outerHTML);
