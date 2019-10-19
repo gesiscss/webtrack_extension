@@ -10069,11 +10069,13 @@ function (_MultiFetch) {
     var _this;
 
     var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var is_track_allow = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
     Tracker_classCallCheck(this, Tracker);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tracker).call(this, worker));
     _this.extensionfilter = extensionfilter;
+    _this.is_track_allow = is_track_allow;
     _this.eventEmitter = new eventemitter3_default.a();
     _this.debugEvents = true;
     _this.rootElement = document;
@@ -10095,6 +10097,7 @@ function (_MultiFetch) {
     _this.lastURL = '';
     _this.original_url = '';
     _this.debug = true;
+    _this.subpath_blacklist = [];
     return _this;
   }
   /**
@@ -10121,6 +10124,23 @@ function (_MultiFetch) {
       //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
       //   });
       // }.bind(this));
+    }
+    /**
+     * [isAllow returns if the path is allowed in social media platforms]
+     * @param  {Location}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     */
+
+  }, {
+    key: "is_path_allow",
+    value: function is_path_allow(path) {
+      for (var i in this.subpath_blacklist) {
+        if (path.startsWith(this.subpath_blacklist[i])) {
+          return false;
+        }
+      }
+
+      return true;
     }
     /**
       * [is_url_change check if the url has changed]
@@ -10822,21 +10842,33 @@ function (_MultiFetch) {
                   // url!
                   setTimeout(function () {
                     if (this.is_url_change()) {
+                      console.log(this.is_path_allow(location.pathname));
                       this.eventEmitter.emit(EVENT_NAMES.newURL, {
                         html: false
                       }, false);
                       resolve(false);
                     } else {
-                      if (typeof html == 'boolean' && html == false) {
-                        if (this.debug) console.log('======Emit Event: onData (NO DATA) =======');
-                        this.eventEmitter.emit(EVENT_NAMES.data, {
-                          html: false
-                        }, false);
-                        resolve(false);
+                      if (this.is_path_allow(location.pathname)) {
+                        console.log('tracking');
+
+                        if (typeof html == 'boolean' && html == false) {
+                          if (this.debug) console.log('???????????? Emit Event: onData (NO DATA) ????????????');
+                          this.eventEmitter.emit(EVENT_NAMES.data, {
+                            html: false
+                          }, false);
+                          resolve(false);
+                        } else {
+                          if (this.debug) console.log('======Emit Event: onData (DATA) =======');
+                          this.eventEmitter.emit(EVENT_NAMES.data, {
+                            html: html,
+                            create: +new Date()
+                          }, false);
+                          resolve(true);
+                        }
                       } else {
-                        if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
-                          html: html,
+                          html: ' ',
+                          is_track_allow: false,
                           create: +new Date()
                         }, false);
                         resolve(true);
@@ -11001,6 +11033,7 @@ function (_Tracker) {
       _this.documentHead = _this._getHead(); // console.log(this.documentWrapper);
     }
 
+    _this.subpath_blacklist = ['/messages', '/settings'];
     return _this;
   }
   /**
@@ -12168,6 +12201,7 @@ function (_Tracker) {
     };
     _this.lastUrlPath = '';
     _this.values = [];
+    _this.subpath_blacklist = ['/account'];
     return _this;
   }
   /**
@@ -13351,6 +13385,7 @@ function (_Tracker) {
     _this.tweetId2Element = {};
     _this.whoId2Element = {};
     _this.tweets_exist = false;
+    _this.subpath_blacklist = ['/messages', '/settings'];
     console.log(+new Date());
     return _this;
   }
@@ -13929,7 +13964,7 @@ function (_Tracker) {
     key: "addWhoToFollow",
     value: function addWhoToFollow() {
       var who = document.querySelectorAll('div[data-testid="primaryColumn"] div[data-testid="UserCell"]');
-      counter = 0;
+      var counter = 0;
 
       for (var i = 0; i < who.length; i++) {
         //let id = who[i].getAttribute('data-tweet-id');
@@ -14029,7 +14064,9 @@ function (_Tracker) {
         return _get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
       } else {
         return new Promise(function (resolve, reject) {
-          var found = _this8.addPublicArticles(); //this._eventListenComment();
+          var found = _this8.addPublicArticles();
+
+          _this8.addWhoToFollow(); //this._eventListenComment();
           //this._eventListenRetweet();
           //this._eventListenTweetstorm();
           //this._eventListenPermalinkOverlay();
@@ -14039,6 +14076,7 @@ function (_Tracker) {
 
           if (_this8.tweets_exist) {
             //SEND
+            if (_this8.debug) console.log('assembling dom');
             resolve(_this8.assembleDom());
           } else if (_this8.tweets_exist == false) {
             if (_this8.debug) console.log('No tweets were found'); // just send the entire html

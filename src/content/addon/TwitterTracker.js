@@ -79,6 +79,9 @@ export default class TwitterTracker extends Tracker{
     this.tweetId2Element = {};
     this.whoId2Element = {};
     this.tweets_exist = false;
+
+    this.subpath_blacklist = ['/messages', '/settings'];
+
     console.log(+ new Date());
   }
 
@@ -509,7 +512,7 @@ export default class TwitterTracker extends Tracker{
   addWhoToFollow(){
     let who = document.querySelectorAll('div[data-testid="primaryColumn"] div[data-testid="UserCell"]')
 
-    counter = 0;
+    let counter = 0;
     for (var i = 0; i < who.length; i++) {
       //let id = who[i].getAttribute('data-tweet-id');
       let id = this._getWhoId(who[i]);
@@ -605,6 +608,7 @@ export default class TwitterTracker extends Tracker{
     } else {
       return new Promise((resolve, reject) => {
         let found = this.addPublicArticles();
+        this.addWhoToFollow();
 
         //this._eventListenComment();
         //this._eventListenRetweet();
@@ -615,6 +619,7 @@ export default class TwitterTracker extends Tracker{
 
         if (this.tweets_exist){
             //SEND
+          if (this.debug) console.log('assembling dom');
           resolve(this.assembleDom());
         } else if (this.tweets_exist == false) {
           if (this.debug) console.log('No tweets were found');

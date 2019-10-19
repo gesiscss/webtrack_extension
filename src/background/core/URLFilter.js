@@ -5,6 +5,14 @@ export default class URLFilter {
     this.white_or_black = white_or_black;
     this.list = list;
     this.cache = {};
+
+    this.smp_blacklist = {
+      'twitter': ['/messages', '/settings'],
+      'facebook': ['/messages', '/settings'],
+      'youtube': ['/account'],
+      'instagram': ['/accounts', '/settings'],
+      //'google': ['messages', 'settings'],
+    }
   }
 
 
@@ -76,23 +84,81 @@ export default class URLFilter {
 
 
   /**
+   * [return specific social media platform for the current page]
+   * @return {[str]} [the ]
+   */
+  _getSMP(domain){
+    if(domain.indexOf('facebook')>=0){
+      return 'facebook';
+    }else if(domain.indexOf('youtube')>=0){
+      return 'youtube';
+    }else if(domain.indexOf('twitter')>=0){
+      return 'twitter';
+    }else if(domain.indexOf('instagram')>=0){
+      return 'instagram';
+    }
+    return null;
+  }
+
+  /**
+  * [return a location from an url]
+  * @return href without hashes
+  */
+  get_location(event_url) {
+    let location = document.createElement('a');
+    location.href = event_url;
+    return location;
+  }
+
+
+  /**
+   * [isAllow returns if the path is allowed in social media platforms]
+   * @param  {Location}  [the location element to analyze the url]
+   * @return {Boolean}   [if it is allow according to social media platforms rules]
+   */
+  is_smp_allow(location){
+    let platform = this._getSMP(location.hostname);
+    if (platform != null) {
+      let path = location.pathname;
+      let subpaths = this.smp_blacklist[platform];
+      for (let i in subpaths) {
+        if (path.startsWith(subpaths[i])){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+  /**
    * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
    * @param  {String}  url [description]
    * @return {Boolean}     [description]
    */
   isAllow(url){
-    if(this.active){     
-      var hostname = this.extractHostname(url);
-      if(!this.cache.hasOwnProperty(hostname)){
-        var isinlist = this.isincluded(hostname);
-        this.cache[hostname] = isinlist;
+    if(this.active){
+      var location = this.get_location(url);
+
+      if(!this.cache.hasOwnProperty(location.hostname)){
+        let isinlist = this.isincluded(location.hostname);
+       
+        let is_allow = 
+              // is in whitelist
+              (isinlist && this.white_or_black) ||
+              // is not in blacklist
+              (!isinlist && !this.white_or_black);
+        this.cache[location.hostname] = is_allow;
       }
-      var isinlist = this.isincluded(hostname);
-      if(this.white_or_black){
-        return this.cache[hostname];
-      } else {
-        return !this.cache[hostname];
-      }
+      let is_allow = this.cache[location.hostname];
+            
+      // if (is_allow){
+      //   is_allow = this.is_smp_allow(location);
+      // }
+      
+      //console.log('Allowed in social media?', is_allow);
+
+      return is_allow;
     }else{
       return true;
     }

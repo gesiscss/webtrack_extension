@@ -9,9 +9,10 @@ const EVENT_NAMES = {
 
 export default class Tracker extends MultiFetch {
 
-  constructor(worker, extensionfilter=[]) {
+  constructor(worker, extensionfilter=[], is_track_allow=true) {
     super(worker);
     this.extensionfilter = extensionfilter;
+    this.is_track_allow = is_track_allow;
     this.eventEmitter = new EventEmitter();
     this.debugEvents = true;
     this.rootElement = document;
@@ -31,6 +32,8 @@ export default class Tracker extends MultiFetch {
     this.lastURL = '';
     this.original_url = '';
     this.debug = true;
+
+    this.subpath_blacklist = [];
   }
 
   /**
@@ -55,6 +58,21 @@ export default class Tracker extends MultiFetch {
     //   });
     // }.bind(this));
   }
+
+  /**
+   * [isAllow returns if the path is allowed in social media platforms]
+   * @param  {Location}  [the location element to analyze the url]
+   * @return {Boolean}   [if it is allow according to social media platforms rules]
+   */
+  is_path_allow(path){
+    for (let i in this.subpath_blacklist) {
+      if (path.startsWith(this.subpath_blacklist[i])){
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   /**
     * [is_url_change check if the url has changed]
@@ -412,8 +430,8 @@ export default class Tracker extends MultiFetch {
   fetchHTML(){
     return new Promise(async (resolve, reject)=>{
       console.log(+new Date()+' fetchDom');
-      let html = await this.getDom();
-
+      var html = await this.getDom();
+      
       // sometimes the content is updated before the url, the timeout here
       // makes the code wait for the updates in the url. This is not ideal,
       // but I don't see other way. Even if one could capture popstate and
@@ -422,22 +440,37 @@ export default class Tracker extends MultiFetch {
       // url!
       setTimeout( function() {
         if (this.is_url_change()){
-          this.eventEmitter.emit(EVENT_NAMES.newURL, {html: false}, false);
+          console.log(this.is_path_allow(location.pathname));
+          this.eventEmitter.emit(EVENT_NAMES.newURL, {
+            html: false,
+            }, false);
           resolve(false);
         } else {
-          if(typeof html == 'boolean' && html == false){
-            if (this.debug) console.log('======Emit Event: onData (NO DATA) =======');
-            this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
-            resolve(false);
-          }else{
-            if (this.debug) console.log('======Emit Event: onData (DATA) =======');
+          if (this.is_path_allow(location.pathname)){
+            console.log('tracking')
+            if(typeof html == 'boolean' && html == false){
+              if (this.debug) console.log('???????????? Emit Event: onData (NO DATA) ????????????');
+              this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
+              resolve(false);
+            }else{
+              if (this.debug) console.log('======Emit Event: onData (DATA) =======');
+              this.eventEmitter.emit(EVENT_NAMES.data, {
+                html: html, 
+                create: +new Date()
+              }, false);
+              resolve(true);
+            }
+          } else {
             this.eventEmitter.emit(EVENT_NAMES.data, {
-              html: html, 
-              create: +new Date()
-            }, false);
-            resolve(true);
+                html: ' ', 
+                is_track_allow: false,
+                create: +new Date()
+              }, false);
+            resolve(true)
+
           }
         }
+
       }.bind(this), 500);
     });
   }

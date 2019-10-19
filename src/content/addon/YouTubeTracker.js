@@ -70,6 +70,9 @@ export default class YouTubeTracker extends Tracker{
     };
     this.lastUrlPath = '';
     this.values = [];
+
+    this.subpath_blacklist = ['/account'];
+    
   }
 
   /**
