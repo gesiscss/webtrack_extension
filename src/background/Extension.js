@@ -211,30 +211,36 @@ export default class Extension {
         sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
       }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
-      }else if((!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')) && this.tabs.hasOwnProperty(sender.tab.id)){
+
+      // background controls
+      }else if((!this.privateMode 
+        && !this.tabs[sender.tab.id].getState('disabled')) 
+        && this.tabs.hasOwnProperty(sender.tab.id)){
+
         // if(typeof msg.html == 'boolean' && msg.html == false){
         if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false){
           this.setImage(false);
           sendResponse(false);
-        }else{
+        }else {
 
           // if the property indicated that is allow to not trach the content
           // then update the indicator, otherwise assume that it is allowed
           if (msg.content[0].hasOwnProperty('is_track_allow')){
             this.setImage(msg.content[0].is_track_allow);
+            sendResponse(false);
           } else {
             this.setImage(true);
-          }
+            msg = Object.assign(msg, {
+              departing_url: sender.tab.url,
+              url: msg.unhashed_url,
+              title: sender.tab.title
+            })
+            msg.tabId = sender.tab.id;
+            if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
+            this.event.emit(EVENT_NAMES.tabContent, msg, false);
+            sendResponse(true);
 
-          msg = Object.assign(msg, {
-            departing_url: sender.tab.url,
-            url: msg.unhashed_url,
-            title: sender.tab.title
-          })
-          msg.tabId = sender.tab.id;
-          if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
-          this.event.emit(EVENT_NAMES.tabContent, msg, false);
-          sendResponse(true);
+          }
         }
         
         // return true;
