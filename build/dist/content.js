@@ -10978,7 +10978,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.allow = true;
-    _this.debug = false;
+    _this.debug = true;
     _this.debugEvents = false;
     _this.elements = [];
     _this.elementStrings = '';
@@ -11068,21 +11068,11 @@ function (_Tracker) {
     return _this;
   }
   /**
-   * [_getHead return header of HTML-Dom]
-   * @return {String}
+   * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
 
 
   FacebookTracker_createClass(FacebookTracker, [{
-    key: "_getHead",
-    value: function _getHead() {
-      return document.querySelectorAll('head')[0].outerHTML;
-    }
-    /**
-     * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
-     */
-
-  }, {
     key: "_setAllow",
     value: function _setAllow() {
       var _this2 = this;
@@ -11252,6 +11242,52 @@ function (_Tracker) {
       return values;
     }
     /**
+     * [_isPublic checks if element is for the public oder private]
+     * @param  {Object}  target [DomElement]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "_isPublic",
+    value: function _isPublic(target) {
+      //let a_list = target.querySelectorAll('.fwn.fcg a');
+      //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
+      var friends_list = target.querySelectorAll('i.sx_b75a4a');
+      var onlyme_list = target.querySelectorAll('i.sx_e89a24'); // let c = 0;
+      // for (let a in a_list.length) {
+      //   let attr = a_list[a].getAttribute("data-hovercard");
+      //   if(attr != null && attr.indexOf('user') > 0){
+      //     c++;
+      //   }
+      // }
+      //return c==0 && 
+
+      return friends_list.length == 0 && onlyme_list.length == 0;
+    }
+    /**
+     * [_isPublic checks if element is for the public oder private]
+     * @param  {Object}  target [DomElement]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "_isPrivate",
+    value: function _isPrivate(target) {
+      //let a_list = target.querySelectorAll('.fwn.fcg a');
+      var a_list = target.querySelectorAll('.sx_b75a4a');
+      var c = 0;
+
+      for (var a in a_list.length) {
+        var attr = a_list[a].getAttribute("data-hovercard");
+
+        if (attr != null && attr.indexOf('user') > 0) {
+          c++;
+        }
+      }
+
+      return c == 0 && a_list.length > 0;
+    }
+    /**
      * [_getPublicArticels return elements of public articels]
      * @return {Array} found
      */
@@ -11272,18 +11308,8 @@ function (_Tracker) {
 
           for (var i = 0; i < length; i++) {
             found[i].classList.add('tracked');
-            var a_list = found[i].querySelectorAll('.fwn.fcg a');
-            var c = 0;
 
-            for (var a in a_list.length) {
-              var attr = a_list[a].getAttribute("data-hovercard");
-
-              if (attr != null && attr.indexOf('user') > 0) {
-                c++;
-              }
-            }
-
-            if (c == 0 && a_list.length > 0) {
+            if (this._isPublic(found[i])) {
               if (this.debug) found[i].setAttribute("style", "border:2px solid red !important;");
 
               this._setLikeEvent(found[i]);

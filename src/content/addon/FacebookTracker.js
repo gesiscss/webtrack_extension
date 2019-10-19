@@ -8,7 +8,7 @@ export default class FacebookTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     this.allow = true;
-    this.debug = false;
+    this.debug = true;
     this.debugEvents = false;
     this.elements = [];
     this.elementStrings = '';
@@ -47,13 +47,6 @@ export default class FacebookTracker extends Tracker{
     this.subpath_blacklist = ['/messages', '/settings'];
   }
 
-  /**
-   * [_getHead return header of HTML-Dom]
-   * @return {String}
-   */
-  _getHead(){
-    return document.querySelectorAll('head')[0].outerHTML;
-  }
 
   /**
    * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
@@ -164,6 +157,51 @@ export default class FacebookTracker extends Tracker{
     return values;
   }
 
+
+  /**
+   * [_isPublic checks if element is for the public oder private]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isPublic(target){
+    //let a_list = target.querySelectorAll('.fwn.fcg a');
+    //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
+    let friends_list = target.querySelectorAll('i.sx_b75a4a');
+    let onlyme_list = target.querySelectorAll('i.sx_e89a24');
+    
+    // let c = 0;
+    // for (let a in a_list.length) {
+    //   let attr = a_list[a].getAttribute("data-hovercard");
+    //   if(attr != null && attr.indexOf('user') > 0){
+    //     c++;
+    //   }
+    // }
+
+    //return c==0 && 
+    return ((friends_list.length == 0) && (onlyme_list.length==0));
+  }
+
+
+
+  /**
+   * [_isPublic checks if element is for the public oder private]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isPrivate(target){
+    //let a_list = target.querySelectorAll('.fwn.fcg a');
+    let a_list = target.querySelectorAll('.sx_b75a4a');    
+    let c = 0;
+    for (let a in a_list.length) {
+      let attr = a_list[a].getAttribute("data-hovercard");
+      if(attr != null && attr.indexOf('user') > 0){
+        c++;
+      }
+    }
+    return c==0 && a_list.length > 0;
+  }
+
+
   /**
    * [_getPublicArticels return elements of public articels]
    * @return {Array} found
@@ -177,15 +215,7 @@ export default class FacebookTracker extends Tracker{
       let length = found.length;
       for (var i = 0; i < length; i++) {
         found[i].classList.add('tracked');
-        let a_list = found[i].querySelectorAll('.fwn.fcg a')
-        let c = 0;
-        for (let a in a_list.length) {
-          let attr = a_list[a].getAttribute("data-hovercard");
-          if(attr != null && attr.indexOf('user') > 0){
-            c++;
-          }
-        }
-        if(c==0 && a_list.length > 0){
+        if (this._isPublic(found[i])){
           if(this.debug) found[i].setAttribute("style", "border:2px solid red !important;");
           this._setLikeEvent(found[i]);
           this._setCommentEvent(found[i]);
