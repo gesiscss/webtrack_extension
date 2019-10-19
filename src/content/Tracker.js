@@ -439,15 +439,21 @@ export default class Tracker extends MultiFetch {
       // problem would persist: the content was modified first and then the
       // url!
       setTimeout( function() {
+        // check if the URL has changed
         if (this.is_url_change()){
           console.log(this.is_path_allow(location.pathname));
           this.eventEmitter.emit(EVENT_NAMES.newURL, {
             html: false,
             }, false);
           resolve(false);
+
+        // if the URL has not changed
         } else {
+
+          // is it ok to tracke the current address?
           if (this.is_path_allow(location.pathname)){
-            console.log('Tracking')
+
+            // if there is html to send, go ahead
             if (html) {
               if (this.debug) console.log('======Emit Event: onData (DATA) =======');
               this.eventEmitter.emit(EVENT_NAMES.data, {
@@ -455,11 +461,17 @@ export default class Tracker extends MultiFetch {
                 create: +new Date()
               }, false);
               resolve(true);
+
+
+            // No html was load, this shall not occur, but if it does, just send
+            // and empty html
             } else {
-              console.error('???????????? Emit Event: onData (NO DATA) ????????????');
+              console.warn('???????????? Emit Event: onData (NO DATA) ????????????');
               this.eventEmitter.emit(EVENT_NAMES.data, {html: ''}, false);
               resolve(false);
             }
+
+          // if not send empty html
           } else {
             // if the content is blocked send an empty html
             this.eventEmitter.emit(EVENT_NAMES.data, {
