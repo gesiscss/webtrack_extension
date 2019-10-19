@@ -32206,7 +32206,14 @@ function () {
           this.setImage(false);
           sendResponse(false);
         } else {
-          this.setImage(true);
+          // if the property indicated that is allow to not trach the content
+          // then update the indicator, otherwise assume that it is allowed
+          if (msg.content[0].hasOwnProperty('is_track_allow')) {
+            this.setImage(msg.content[0].is_track_allow);
+          } else {
+            this.setImage(true);
+          }
+
           msg = Object.assign(msg, {
             departing_url: sender.tab.url,
             url: msg.unhashed_url,
