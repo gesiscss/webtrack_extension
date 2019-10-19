@@ -10978,7 +10978,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.allow = true;
-    _this.debug = true;
+    _this.debug = false;
     _this.debugEvents = false;
     _this.elements = [];
     _this.elementStrings = '';
