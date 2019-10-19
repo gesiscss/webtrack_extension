@@ -447,27 +447,27 @@ export default class Tracker extends MultiFetch {
           resolve(false);
         } else {
           if (this.is_path_allow(location.pathname)){
-            console.log('tracking')
-            if(typeof html == 'boolean' && html == false){
-              if (this.debug) console.log('???????????? Emit Event: onData (NO DATA) ????????????');
-              this.eventEmitter.emit(EVENT_NAMES.data, {html: false}, false);
-              resolve(false);
-            }else{
+            console.log('Tracking')
+            if (html) {
               if (this.debug) console.log('======Emit Event: onData (DATA) =======');
               this.eventEmitter.emit(EVENT_NAMES.data, {
                 html: html, 
                 create: +new Date()
               }, false);
               resolve(true);
+            } else {
+              console.error('???????????? Emit Event: onData (NO DATA) ????????????');
+              this.eventEmitter.emit(EVENT_NAMES.data, {html: ''}, false);
+              resolve(false);
             }
           } else {
+            // if the content is blocked send an empty html
             this.eventEmitter.emit(EVENT_NAMES.data, {
                 html: ' ', 
                 is_track_allow: false,
                 create: +new Date()
               }, false);
             resolve(true)
-
           }
         }
 
