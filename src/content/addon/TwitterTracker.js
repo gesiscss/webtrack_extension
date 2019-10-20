@@ -6,6 +6,8 @@ export default class TwitterTracker extends Tracker{
     super(worker);
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
+    this.is_allowed = null;
+    
     this.allow = false;
     this.debug = true;
     this.debugEvents = false;
