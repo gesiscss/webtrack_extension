@@ -479,10 +479,10 @@ export default class FacebookTracker extends Tracker{
     switch (nr) {
       case 1: value = 'like'; break;
       case 2: value = 'love'; break;
-      case 3: value = 'haha'; break;
-      case 4: value = 'wow'; break;
-      case 5: value = 'sad'; break;
-      case 6: value = 'angry'; break;
+      case 3: value = 'wow'; break;
+      case 4: value = 'haha'; break;
+      case 7: value = 'sad'; break;
+      case 8: value = 'angry'; break;
       default:
         value = 'unkown';
     }
@@ -551,10 +551,10 @@ export default class FacebookTracker extends Tracker{
    */
   _setLikeEvent(articel){
     setTimeout(() => {
-      for (let query of this.eventElements.likearticelButton) {
+      for (let query of ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)']) {
         let buttons = articel.querySelectorAll(query);
         for (var i = 0; i < buttons.length; i++) {
-          if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
           buttons[i].addEventListener('click', ()=>{
             this.eventFn.onEvent(
               {
@@ -572,10 +572,14 @@ export default class FacebookTracker extends Tracker{
             this._toolbarHandler(nr => {
               this.eventFn.onEvent(
                 {
-                  event: 'like',
+                  event: 'reaction',
                   type: 'articel',
                   values: this._getValues(articel).concat([
-                    {name: 'like-value', value: this.getValueOfLikeNumber(nr)}
+                    {name: 'reation-value', 
+                     value: nr['data_reaction'],
+                     aria_label: nr['aria_label'],
+                     reaction: this.getValueOfLikeNumber(nr['data_reaction'])
+                    }
                   ])
                 }
               )
@@ -583,7 +587,7 @@ export default class FacebookTracker extends Tracker{
           })
         }
       }
-    }, 500)
+    }, 300)
   }
 
   /**
@@ -595,9 +599,9 @@ export default class FacebookTracker extends Tracker{
       let length = this.trackedToolbarButtons.length || 0
       for (let b = 0; b < length; b++) {
         this.trackedToolbarButtons[b].classList.remove("tracked");
-        if(this.facebook_debug) this.trackedToolbarButtons[b].setAttribute("style", "border: none");
+        if(this.facebook_debug) this.trackedToolbarButtons[b].setAttribute("style", "border: green");
         this.trackedToolbarButtons[b].onclick = e => {};
-        this.trackedToolbarButtons[b].onmouseover = e => {};
+        //this.trackedToolbarButtons[b].onmouseover = e => {};
         delete this.trackedToolbarButtons[b];
       }
       this.trackedToolbarButtons = this.trackedToolbarButtons.filter(e => e!= undefined);
@@ -608,16 +612,19 @@ export default class FacebookTracker extends Tracker{
       for (let a = 0; a < buttons.length; a++) {
         buttons[a].classList.add('tracked');
         this.trackedToolbarButtons.push(buttons[a]);
-        if(this.facebook_debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
+        if(this.facebook_debug) buttons[a].setAttribute("style", "border:2px solid blue !important;");
         buttons[a].onclick = e => {
           if(this.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
-          fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10))
+          fn({
+            arial_label: e.srcElement.parentElement.parentElement.getAttribute("aria-label"),
+            data_reaction: parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10)
+          })
         }
-        if(this.facebook_events_debug) buttons[a].onmouseover = e =>{
-          console.log('mouseOver');
-          layer.stop();
-          fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10))
-        }
+        // if(this.facebook_events_debug) buttons[a].onmouseover = e =>{
+        //   console.log('mouseOver');
+        //   layer.stop();
+        //   fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10))
+        // }
       }
     }
 

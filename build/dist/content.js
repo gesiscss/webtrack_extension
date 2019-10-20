@@ -11715,18 +11715,18 @@ function (_Tracker) {
           break;
 
         case 3:
-          value = 'haha';
-          break;
-
-        case 4:
           value = 'wow';
           break;
 
-        case 5:
+        case 4:
+          value = 'haha';
+          break;
+
+        case 7:
           value = 'sad';
           break;
 
-        case 6:
+        case 8:
           value = 'angry';
           break;
 
@@ -11848,59 +11848,42 @@ function (_Tracker) {
       var _this7 = this;
 
       setTimeout(function () {
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
+        for (var _i2 = 0, _arr = ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)']; _i2 < _arr.length; _i2++) {
+          var query = _arr[_i2];
+          var buttons = articel.querySelectorAll(query);
 
-        try {
-          for (var _iterator7 = _this7.eventElements.likearticelButton[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-            var query = _step7.value;
-            var buttons = articel.querySelectorAll(query);
+          for (var i = 0; i < buttons.length; i++) {
+            if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
+            buttons[i].addEventListener('click', function () {
+              _this7.eventFn.onEvent({
+                event: 'like',
+                type: 'articel',
+                values: _this7._getValues(articel).concat([{
+                  name: 'like-value',
+                  value: _this7.getValueOfLikeNumber(1)
+                }])
+              });
 
-            for (var i = 0; i < buttons.length; i++) {
-              if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
-              buttons[i].addEventListener('click', function () {
+              if (_this7.facebook_debug) console.log('like 1', articel);
+            });
+            buttons[i].addEventListener('mouseover', function () {
+              // console.log(this._getValues(articel));
+              _this7._toolbarHandler(function (nr) {
                 _this7.eventFn.onEvent({
-                  event: 'like',
+                  event: 'reaction',
                   type: 'articel',
                   values: _this7._getValues(articel).concat([{
-                    name: 'like-value',
-                    value: _this7.getValueOfLikeNumber(1)
+                    name: 'reation-value',
+                    value: nr['data_reaction'],
+                    aria_label: nr['aria_label'],
+                    reaction: _this7.getValueOfLikeNumber(nr['data_reaction'])
                   }])
                 });
-
-                if (_this7.facebook_debug) console.log('like 1', articel);
               });
-              buttons[i].addEventListener('mouseover', function () {
-                // console.log(this._getValues(articel));
-                _this7._toolbarHandler(function (nr) {
-                  _this7.eventFn.onEvent({
-                    event: 'like',
-                    type: 'articel',
-                    values: _this7._getValues(articel).concat([{
-                      name: 'like-value',
-                      value: _this7.getValueOfLikeNumber(nr)
-                    }])
-                  });
-                });
-              });
-            }
-          }
-        } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
-              _iterator7["return"]();
-            }
-          } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
-            }
+            });
           }
         }
-      }, 500);
+      }, 300);
     }
     /**
      * [_toolbarHandler event for reaction of smileys]
@@ -11920,11 +11903,10 @@ function (_Tracker) {
         for (var b = 0; b < length; b++) {
           _this8.trackedToolbarButtons[b].classList.remove("tracked");
 
-          if (_this8.facebook_debug) _this8.trackedToolbarButtons[b].setAttribute("style", "border: none");
+          if (_this8.facebook_debug) _this8.trackedToolbarButtons[b].setAttribute("style", "border: green");
 
-          _this8.trackedToolbarButtons[b].onclick = function (e) {};
+          _this8.trackedToolbarButtons[b].onclick = function (e) {}; //this.trackedToolbarButtons[b].onmouseover = e => {};
 
-          _this8.trackedToolbarButtons[b].onmouseover = function (e) {};
 
           delete _this8.trackedToolbarButtons[b];
         }
@@ -11942,18 +11924,20 @@ function (_Tracker) {
 
           _this8.trackedToolbarButtons.push(buttons[a]);
 
-          if (_this8.facebook_debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
+          if (_this8.facebook_debug) buttons[a].setAttribute("style", "border:2px solid blue !important;");
 
           buttons[a].onclick = function (e) {
             if (_this8.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
-            fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
-          };
+            fn({
+              arial_label: e.srcElement.parentElement.parentElement.getAttribute("aria-label"),
+              data_reaction: parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10)
+            });
+          }; // if(this.facebook_events_debug) buttons[a].onmouseover = e =>{
+          //   console.log('mouseOver');
+          //   layer.stop();
+          //   fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10))
+          // }
 
-          if (_this8.facebook_events_debug) buttons[a].onmouseover = function (e) {
-            console.log('mouseOver');
-            layer.stop();
-            fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
-          };
         }
       };
 
@@ -12015,13 +11999,13 @@ function (_Tracker) {
     value: function _joinGroup() {
       var _this9 = this;
 
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
+      var _iteratorNormalCompletion7 = true;
+      var _didIteratorError7 = false;
+      var _iteratorError7 = undefined;
 
       try {
-        for (var _iterator8 = this.eventElements.joinGroup[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-          var query = _step8.value;
+        for (var _iterator7 = this.eventElements.joinGroup[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          var query = _step7.value;
           var buttons = document.querySelectorAll(query + ':not(.tracked)');
 
           for (var i = 0; i < buttons.length; i++) {
@@ -12092,16 +12076,16 @@ function (_Tracker) {
 
         }
       } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
+        _didIteratorError7 = true;
+        _iteratorError7 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
-            _iterator8["return"]();
+          if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+            _iterator7["return"]();
           }
         } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
+          if (_didIteratorError7) {
+            throw _iteratorError7;
           }
         }
       }
