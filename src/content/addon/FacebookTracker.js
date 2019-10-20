@@ -9,8 +9,8 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
 
     this.is_allowed = null;
-    this.facebook_debug = false;
-    this.facebook_events_debug = false;
+    this.facebook_debug = true;
+    this.facebook_events_debug = true;
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
@@ -270,25 +270,26 @@ export default class FacebookTracker extends Tracker{
   _getPublicArticels(){
     let bucket = [];
 
-    for (let query of this.eventElements.articels) {
-      let found = document.querySelectorAll(query+':not(.tracked)');
+    //for (let query of this.eventElements.articels) {
+    let found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
 
-      let length = found.length;
-      for (var i = 0; i < length; i++) {
-        found[i].classList.add('tracked');
-        if (this._isPublic(found[i])){
-          if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
-          this._setLikeEvent(found[i]);
-          this._setCommentEvent(found[i]);
-          this._eventcommentFromCommentButton(found[i]);
-          this._setLikeCommentEvent(found[i]);
-          this._setShareEvent(found[i]);
-        }else{
-          delete found[i];
-        }
-        bucket.push(found[i])
+
+    let length = found.length;
+    for (var i = 0; i < length; i++) {
+      found[i].classList.add('tracked');
+      if (this._isPublic(found[i])){
+        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
+        this._setLikeEvent(found[i]);
+        this._setCommentEvent(found[i]);
+        this._eventcommentFromCommentButton(found[i]);
+        this._setLikeCommentEvent(found[i]);
+        this._setShareEvent(found[i]);
+      }else{
+        delete found[i];
       }
+      bucket.push(found[i])
     }
+    //}
     return bucket.filter(e => e!=undefined);
   }
 

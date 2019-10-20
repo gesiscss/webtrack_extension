@@ -11009,8 +11009,8 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.is_allowed = null;
-    _this.facebook_debug = false;
-    _this.facebook_events_debug = false;
+    _this.facebook_debug = true;
+    _this.facebook_events_debug = true;
     _this.elements = [];
     _this.elementStrings = '';
     _this.trackedToolbarButtons = [];
@@ -11358,53 +11358,33 @@ function (_Tracker) {
   }, {
     key: "_getPublicArticels",
     value: function _getPublicArticels() {
-      var bucket = [];
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var bucket = []; //for (let query of this.eventElements.articels) {
 
-      try {
-        for (var _iterator2 = this.eventElements.articels[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var query = _step2.value;
-          var found = document.querySelectorAll(query + ':not(.tracked)');
-          var length = found.length;
+      var found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
+      var length = found.length;
 
-          for (var i = 0; i < length; i++) {
-            found[i].classList.add('tracked');
+      for (var i = 0; i < length; i++) {
+        found[i].classList.add('tracked');
 
-            if (this._isPublic(found[i])) {
-              if (this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
+        if (this._isPublic(found[i])) {
+          if (this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
 
-              this._setLikeEvent(found[i]);
+          this._setLikeEvent(found[i]);
 
-              this._setCommentEvent(found[i]);
+          this._setCommentEvent(found[i]);
 
-              this._eventcommentFromCommentButton(found[i]);
+          this._eventcommentFromCommentButton(found[i]);
 
-              this._setLikeCommentEvent(found[i]);
+          this._setLikeCommentEvent(found[i]);
 
-              this._setShareEvent(found[i]);
-            } else {
-              delete found[i];
-            }
-
-            bucket.push(found[i]);
-          }
+          this._setShareEvent(found[i]);
+        } else {
+          delete found[i];
         }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
+
+        bucket.push(found[i]);
+      } //}
+
 
       return bucket.filter(function (e) {
         return e != undefined;
@@ -11421,13 +11401,13 @@ function (_Tracker) {
       var _this2 = this;
 
       setTimeout(function () {
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator3 = _this2.eventElements.commentButton[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var query = _step3.value;
+          for (var _iterator2 = _this2.eventElements.commentButton[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var query = _step2.value;
             var commentButtons = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentButtons.length; i++) {
@@ -11453,16 +11433,16 @@ function (_Tracker) {
             }
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-              _iterator3["return"]();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
           } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
@@ -11481,13 +11461,13 @@ function (_Tracker) {
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
       setTimeout(function () {
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
           var _loop = function _loop() {
-            var s = _step4.value;
+            var s = _step3.value;
             var commentButtons = articel.querySelectorAll(s.query + ':not(.tracked)');
 
             for (i = 0; i < commentButtons.length; i++) {
@@ -11534,23 +11514,23 @@ function (_Tracker) {
             }
           };
 
-          for (var _iterator4 = _this3.eventElements.commentFromCommentButton[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          for (var _iterator3 = _this3.eventElements.commentFromCommentButton[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var i;
 
             _loop();
           } //for commentFromCommentButton
 
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-              _iterator4["return"]();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
             }
           } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -11571,13 +11551,13 @@ function (_Tracker) {
       var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
       var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
       setTimeout(function () {
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator5 = _this4.eventElements.commentfields[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var query = _step5.value;
+          for (var _iterator4 = _this4.eventElements.commentfields[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var query = _step4.value;
             var commentfields = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentfields.length; i++) {
@@ -11601,16 +11581,16 @@ function (_Tracker) {
           } //for
 
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-              _iterator5["return"]();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
@@ -11668,13 +11648,13 @@ function (_Tracker) {
       };
 
       setTimeout(function () {
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator6 = _this5.eventElements.shareButtonBevor[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-            var query = _step6.value;
+          for (var _iterator5 = _this5.eventElements.shareButtonBevor[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var query = _step5.value;
             var shares = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < shares.length; i++) {
@@ -11699,16 +11679,16 @@ function (_Tracker) {
           } //for
 
         } catch (err) {
-          _didIteratorError6 = true;
-          _iteratorError6 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
-              _iterator6["return"]();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
           } finally {
-            if (_didIteratorError6) {
-              throw _iteratorError6;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -11769,13 +11749,13 @@ function (_Tracker) {
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
       setTimeout(function () {
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
 
         try {
           var _loop2 = function _loop2() {
-            var s = _step7.value;
+            var s = _step6.value;
             var buttons = articel.querySelectorAll(s.query);
 
             for (i = 0; i < buttons.length; i++) {
@@ -11836,22 +11816,22 @@ function (_Tracker) {
             }
           };
 
-          for (var _iterator7 = _this6.eventElements.likeComment[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          for (var _iterator6 = _this6.eventElements.likeComment[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             var i;
 
             _loop2();
           }
         } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
+          _didIteratorError6 = true;
+          _iteratorError6 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
-              _iterator7["return"]();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
           } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
+            if (_didIteratorError6) {
+              throw _iteratorError6;
             }
           }
         }
@@ -11868,13 +11848,13 @@ function (_Tracker) {
       var _this7 = this;
 
       setTimeout(function () {
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
         try {
-          for (var _iterator8 = _this7.eventElements.likearticelButton[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-            var query = _step8.value;
+          for (var _iterator7 = _this7.eventElements.likearticelButton[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+            var query = _step7.value;
             var buttons = articel.querySelectorAll(query);
 
             for (var i = 0; i < buttons.length; i++) {
@@ -11907,16 +11887,16 @@ function (_Tracker) {
             }
           }
         } catch (err) {
-          _didIteratorError8 = true;
-          _iteratorError8 = err;
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
-              _iterator8["return"]();
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
             }
           } finally {
-            if (_didIteratorError8) {
-              throw _iteratorError8;
+            if (_didIteratorError7) {
+              throw _iteratorError7;
             }
           }
         }
@@ -12035,13 +12015,13 @@ function (_Tracker) {
     value: function _joinGroup() {
       var _this9 = this;
 
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
 
       try {
-        for (var _iterator9 = this.eventElements.joinGroup[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-          var query = _step9.value;
+        for (var _iterator8 = this.eventElements.joinGroup[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var query = _step8.value;
           var buttons = document.querySelectorAll(query + ':not(.tracked)');
 
           for (var i = 0; i < buttons.length; i++) {
@@ -12112,16 +12092,16 @@ function (_Tracker) {
 
         }
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
-            _iterator9["return"]();
+          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+            _iterator8["return"]();
           }
         } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
+          if (_didIteratorError8) {
+            throw _iteratorError8;
           }
         }
       }
