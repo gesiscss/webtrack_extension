@@ -10077,7 +10077,6 @@ function (_MultiFetch) {
     _this.extensionfilter = extensionfilter;
     _this.is_track_allow = is_track_allow;
     _this.eventEmitter = new eventemitter3_default.a();
-    _this.debugEvents = true;
     _this.rootElement = document;
     _this.eventElements = {
       root: ['#primary']
@@ -10096,6 +10095,7 @@ function (_MultiFetch) {
     _this.links = [];
     _this.lastURL = '';
     _this.original_url = '';
+    _this.events_debug = false;
     _this.debug = true;
     _this.startswith_blacklist = [];
     _this.pos_2nd_blacklist = [];
@@ -10178,7 +10178,7 @@ function (_MultiFetch) {
       return this.original_url != this.get_unhashed_href();
     }
     /**
-     * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
+     * [checkURL check if url changed and search in dom if find some elements they not allowed and set this.allow]
      */
 
   }, {
@@ -10284,7 +10284,7 @@ function (_MultiFetch) {
     key: "_setBorder",
     value: function _setBorder(target) {
       var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'red';
-      if (this.debugEvents) target.setAttribute("style", "border:2px solid " + color + " !important;");
+      if (this.events_debug) target.setAttribute("style", "border:2px solid " + color + " !important;");
     }
     /**
      * [_getElements search and return elements and set tracking class]
@@ -10866,7 +10866,9 @@ function (_MultiFetch) {
             while (1) {
               switch (_context5.prev = _context5.next) {
                 case 0:
-                  console.log(+new Date() + ' fetchDom');
+                  if (_this8.debug) console.log('fetchHTML: ' + new Date()); // if the tracker notices that the content is private, it will return
+                  // false instead, this is used to control what to send on the bottom
+
                   _context5.next = 3;
                   return _this8.getDom();
 
@@ -10887,27 +10889,18 @@ function (_MultiFetch) {
                       }, false);
                       resolve(false); // if the URL has not changed
                     } else {
-                      // is it ok to tracke the current address?
-                      if (this.is_path_allow(location.pathname)) {
-                        // if there is html to send, go ahead
-                        if (html) {
-                          if (this.debug) console.log('======Emit Event: onData (DATA) =======');
-                          this.eventEmitter.emit(EVENT_NAMES.data, {
-                            html: html,
-                            create: +new Date()
-                          }, false);
-                          resolve(true); // No html was load, this shall not occur, but if it does, just send
-                          // and empty html
-                        } else {
-                          console.warn('???????????? Emit Event: onData (NO DATA) ????????????');
-                          this.eventEmitter.emit(EVENT_NAMES.data, {
-                            html: ''
-                          }, false);
-                          resolve(false);
-                        } // if not send empty html
-
+                      // if is it ok to track the current address, and some html was
+                      // recovered, then send the data
+                      if (html && this.is_path_allow(location.pathname)) {
+                        if (this.debug) console.log('======Emit Event: onData (DATA) =======');
+                        this.eventEmitter.emit(EVENT_NAMES.data, {
+                          html: html,
+                          create: +new Date()
+                        }, false);
+                        resolve(true); // if the content is blocked send an empty html, and notified the backend
+                        // to turn off the icon
                       } else {
-                        // if the content is blocked send an empty html
+                        if (this.debug) console.log('======Emit Event: onData (DISALLOW) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: ' ',
                           is_track_allow: false,
@@ -10989,8 +10982,8 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.allow = true;
-    _this.debug = false;
-    _this.debugEvents = false;
+    _this.facebook_debug = false;
+    _this.facebook_events_debug = false;
     _this.elements = [];
     _this.elementStrings = '';
     _this.trackedToolbarButtons = [];
@@ -11093,31 +11086,29 @@ function (_Tracker) {
         // console.log(this.lastURL!==location.pathname, this.lastURL, location.pathname);
         if (_this2.lastUrlPath !== location.pathname) {
           setTimeout(function () {
-            _this2.lastUrlPath = location.pathname;
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+            _this2.lastUrlPath = location.pathname; // assume it is allowed
 
-            try {
-              for (var _iterator = _this2.eventElements.allowNotToTracked[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var query = _step.value;
-                var found = document.querySelectorAll(query + ':not(.tracked)'); // console.log('found', found);
+            _this2.allow = true; //for (let query of this.eventElements.allowNotToTracked) {
+            //let found = document.querySelectorAll(query+':not(.tracked)');
+            // console.log('found', found);
+            //this.allow = !found.length>0
+            //}
+            // console.log('ALLOW?', this.allow);
+            // own profile
+            // if (document.querySelector('fbProfileCoverPhotoSelector')){
+            //   this.allow = true;
+            // }
+            //public page
+            // if (document.querySelector('#entity_sidebar')){
+            //   this.allow = true;
+            // }
 
-                _this2.allow = !found.length > 0;
-              } // console.log('ALLOW?', this.allow);
+            var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
-            } catch (err) {
-              _didIteratorError = true;
-              _iteratorError = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                  _iterator["return"]();
-                }
-              } finally {
-                if (_didIteratorError) {
-                  throw _iteratorError;
-                }
+            if (sidebar_timeline) {
+              // this is not my own timeline
+              if (!sidebar_timeline.querySelector('._6a._m')) {
+                _this2.allow = false;
               }
             }
 
@@ -11209,13 +11200,13 @@ function (_Tracker) {
 
         try {
           var value = s["default"];
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
           try {
-            for (var _iterator2 = s.query[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var query = _step2.value;
+            for (var _iterator = s.query[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var query = _step.value;
               var r = target.querySelectorAll(query);
 
               if (r.length > 0) {
@@ -11226,16 +11217,16 @@ function (_Tracker) {
             } //for
 
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
               }
             } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
+              if (_didIteratorError) {
+                throw _iteratorError;
               }
             }
           }
@@ -11308,13 +11299,13 @@ function (_Tracker) {
     key: "_getPublicArticels",
     value: function _getPublicArticels() {
       var bucket = [];
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator3 = this.eventElements.articels[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var query = _step3.value;
+        for (var _iterator2 = this.eventElements.articels[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var query = _step2.value;
           var found = document.querySelectorAll(query + ':not(.tracked)');
           var length = found.length;
 
@@ -11322,7 +11313,7 @@ function (_Tracker) {
             found[i].classList.add('tracked');
 
             if (this._isPublic(found[i])) {
-              if (this.debug) found[i].setAttribute("style", "border:2px solid red !important;");
+              if (this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
 
               this._setLikeEvent(found[i]);
 
@@ -11341,16 +11332,16 @@ function (_Tracker) {
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
       }
@@ -11370,18 +11361,18 @@ function (_Tracker) {
       var _this3 = this;
 
       setTimeout(function () {
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator4 = _this3.eventElements.commentButton[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var query = _step4.value;
+          for (var _iterator3 = _this3.eventElements.commentButton[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var query = _step3.value;
             var commentButtons = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentButtons.length; i++) {
               commentButtons[i].classList.add('tracked');
-              if (_this3.debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this3.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
               commentButtons[i].addEventListener('click', function () {
                 _this3._eventComment(articel, function (comment) {
                   _this3.eventFn.onEvent({
@@ -11402,16 +11393,16 @@ function (_Tracker) {
             }
           }
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-              _iterator4["return"]();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
             }
           } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -11430,18 +11421,18 @@ function (_Tracker) {
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
       setTimeout(function () {
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
           var _loop = function _loop() {
-            var s = _step5.value;
+            var s = _step4.value;
             var commentButtons = articel.querySelectorAll(s.query + ':not(.tracked)');
 
             for (i = 0; i < commentButtons.length; i++) {
               commentButtons[i].classList.add('tracked');
-              if (_this4.debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this4.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
               commentButtons[i].addEventListener('click', function (e) {
                 if (s.hasOwnProperty('previousElement')) {
                   var found = _this4.getParentElement(e.srcElement, s.previousElement);
@@ -11476,30 +11467,30 @@ function (_Tracker) {
                       }])
                     });
 
-                    if (_this4.debug) console.log('commtent  ' + comment + ' auf comment ' + text);
+                    if (_this4.facebook_debug) console.log('commtent  ' + comment + ' auf comment ' + text);
                   }, 0);
                 }, 500);
               });
             }
           };
 
-          for (var _iterator5 = _this4.eventElements.commentFromCommentButton[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          for (var _iterator4 = _this4.eventElements.commentFromCommentButton[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
             var i;
 
             _loop();
           } //for commentFromCommentButton
 
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-              _iterator5["return"]();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
@@ -11520,27 +11511,27 @@ function (_Tracker) {
       var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
       var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
       setTimeout(function () {
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator6 = _this5.eventElements.commentfields[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-            var query = _step6.value;
+          for (var _iterator5 = _this5.eventElements.commentfields[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var query = _step5.value;
             var commentfields = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentfields.length; i++) {
               commentfields[i].classList.add('tracked');
-              if (_this5.debug) commentfields[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this5.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid red !important;");
               commentfields[i].addEventListener('keyup', function (e) {
                 var spans = e.srcElement.querySelectorAll('span[data-text="true"]');
 
                 if (spans.length > 0) {
                   var comment = spans[spans.length - 1].textContent;
-                  if (_this5.debugEvents) fn('TEST ' + comment);
+                  if (_this5.facebook_events_debug) fn('TEST ' + comment);
 
                   if (e.keyCode == 13) {
-                    if (_this5.debug) console.log('comment', comment);
+                    if (_this5.facebook_debug) console.log('comment', comment);
                     fn(comment);
                   }
                 }
@@ -11550,16 +11541,16 @@ function (_Tracker) {
           } //for
 
         } catch (err) {
-          _didIteratorError6 = true;
-          _iteratorError6 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
-              _iterator6["return"]();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
           } finally {
-            if (_didIteratorError6) {
-              throw _iteratorError6;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -11583,12 +11574,12 @@ function (_Tracker) {
         setTimeout(function () {
           for (var i = 0; i < shareButton.length; i++) {
             shareButton[i].classList.add('tracked');
-            if (_this6.debug) shareButton[i].setAttribute("style", "border:2px solid red !important;");
+            if (_this6.facebook_debug) shareButton[i].setAttribute("style", "border:2px solid red !important;");
             var shares = shareButton[i].querySelectorAll('ul li a:not(.tracked)');
 
             for (var i = 0; i < shares.length; i++) {
               shares[i].classList.add('tracked');
-              if (_this6.debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this6.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
               shares[i].addEventListener('click', function (e) {
                 _this6.eventFn.onEvent({
                   event: 'share',
@@ -11601,7 +11592,7 @@ function (_Tracker) {
 
                 console.log('share', e.srcElement.textContent);
               });
-              if (_this6.debugEvents) shares[i].addEventListener('mouseover', function (e) {
+              if (_this6.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
                 _this6.eventFn.onEvent({
                   event: 'share',
                   type: 'postanswer',
@@ -11617,21 +11608,21 @@ function (_Tracker) {
       };
 
       setTimeout(function () {
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
 
         try {
-          for (var _iterator7 = _this6.eventElements.shareButtonBevor[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-            var query = _step7.value;
+          for (var _iterator6 = _this6.eventElements.shareButtonBevor[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            var query = _step6.value;
             var shares = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < shares.length; i++) {
               shares[i].classList.add('tracked');
-              if (_this6.debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this6.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
 
               if (after == false) {
-                if (_this6.debugEvents) shares[i].addEventListener('mouseover', function (e) {
+                if (_this6.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
                   setTimeout(function () {
                     return _this6._setShareEvent(articel, true);
                   }, 100);
@@ -11648,16 +11639,16 @@ function (_Tracker) {
           } //for
 
         } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
+          _didIteratorError6 = true;
+          _iteratorError6 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
-              _iterator7["return"]();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
           } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
+            if (_didIteratorError6) {
+              throw _iteratorError6;
             }
           }
         }
@@ -11718,17 +11709,17 @@ function (_Tracker) {
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
       setTimeout(function () {
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
         try {
           var _loop2 = function _loop2() {
-            var s = _step8.value;
+            var s = _step7.value;
             var buttons = articel.querySelectorAll(s.query);
 
             for (i = 0; i < buttons.length; i++) {
-              if (_this7.debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
               buttons[i].addEventListener('click', function (e) {
                 var text = _this7.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
 
@@ -11752,7 +11743,7 @@ function (_Tracker) {
                   }])
                 });
 
-                if (_this7.debug) console.log('like comment 1 text => ', text);
+                if (_this7.facebook_debug) console.log('like comment 1 text => ', text);
               });
               buttons[i].addEventListener('mouseover', function (e) {
                 var text = _this7.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
@@ -11785,22 +11776,22 @@ function (_Tracker) {
             }
           };
 
-          for (var _iterator8 = _this7.eventElements.likeComment[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          for (var _iterator7 = _this7.eventElements.likeComment[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
             var i;
 
             _loop2();
           }
         } catch (err) {
-          _didIteratorError8 = true;
-          _iteratorError8 = err;
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
-              _iterator8["return"]();
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
             }
           } finally {
-            if (_didIteratorError8) {
-              throw _iteratorError8;
+            if (_didIteratorError7) {
+              throw _iteratorError7;
             }
           }
         }
@@ -11817,17 +11808,17 @@ function (_Tracker) {
       var _this8 = this;
 
       setTimeout(function () {
-        var _iteratorNormalCompletion9 = true;
-        var _didIteratorError9 = false;
-        var _iteratorError9 = undefined;
+        var _iteratorNormalCompletion8 = true;
+        var _didIteratorError8 = false;
+        var _iteratorError8 = undefined;
 
         try {
-          for (var _iterator9 = _this8.eventElements.likearticelButton[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var query = _step9.value;
+          for (var _iterator8 = _this8.eventElements.likearticelButton[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+            var query = _step8.value;
             var buttons = articel.querySelectorAll(query);
 
             for (var i = 0; i < buttons.length; i++) {
-              if (_this8.debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this8.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
               buttons[i].addEventListener('click', function () {
                 _this8.eventFn.onEvent({
                   event: 'like',
@@ -11838,7 +11829,7 @@ function (_Tracker) {
                   }])
                 });
 
-                if (_this8.debug) console.log('like 1', articel);
+                if (_this8.facebook_debug) console.log('like 1', articel);
               });
               buttons[i].addEventListener('mouseover', function () {
                 // console.log(this._getValues(articel));
@@ -11856,16 +11847,16 @@ function (_Tracker) {
             }
           }
         } catch (err) {
-          _didIteratorError9 = true;
-          _iteratorError9 = err;
+          _didIteratorError8 = true;
+          _iteratorError8 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
-              _iterator9["return"]();
+            if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+              _iterator8["return"]();
             }
           } finally {
-            if (_didIteratorError9) {
-              throw _iteratorError9;
+            if (_didIteratorError8) {
+              throw _iteratorError8;
             }
           }
         }
@@ -11889,7 +11880,7 @@ function (_Tracker) {
         for (var b = 0; b < length; b++) {
           _this9.trackedToolbarButtons[b].classList.remove("tracked");
 
-          if (_this9.debug) _this9.trackedToolbarButtons[b].setAttribute("style", "border: none");
+          if (_this9.facebook_debug) _this9.trackedToolbarButtons[b].setAttribute("style", "border: none");
 
           _this9.trackedToolbarButtons[b].onclick = function (e) {};
 
@@ -11911,14 +11902,14 @@ function (_Tracker) {
 
           _this9.trackedToolbarButtons.push(buttons[a]);
 
-          if (_this9.debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
+          if (_this9.facebook_debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
 
           buttons[a].onclick = function (e) {
-            if (_this9.debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
+            if (_this9.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
             fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
           };
 
-          if (_this9.debugEvents) buttons[a].onmouseover = function (e) {
+          if (_this9.facebook_events_debug) buttons[a].onmouseover = function (e) {
             console.log('mouseOver');
             layer.stop();
             fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
@@ -11930,14 +11921,14 @@ function (_Tracker) {
         var layer = document.querySelectorAll('.uiLayer div[role="toolbar"]');
 
         var _loop3 = function _loop3(i) {
-          if (_this9.debug) layer[i].setAttribute("style", "border:2px solid red !important;");
+          if (_this9.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(function () {
-            if (_this9.debug) console.log('START REMOVE');
-            if (_this9.debug) layer[i].setAttribute("style", "border: none");
+            if (_this9.facebook_debug) console.log('START REMOVE');
+            if (_this9.facebook_debug) layer[i].setAttribute("style", "border: none");
             remove();
           }, 2000));
-          if (_this9.debug) console.log('start=>', layer[i].timeouts);
+          if (_this9.facebook_debug) console.log('start=>', layer[i].timeouts);
 
           layer[i].stop = function () {
             for (var c in layer[i].timeouts) {
@@ -11950,13 +11941,13 @@ function (_Tracker) {
             layer[i].timeouts = layer[i].timeouts.filter(function (e) {
               return e != undefined;
             });
-            if (_this9.debug) console.log('STOP', layer[i].timeouts);
+            if (_this9.facebook_debug) console.log('STOP', layer[i].timeouts);
           };
 
           layer[i].onmouseleave = function (e) {
             layer[i].stop();
             layer[i].timeouts.push(setTimeout(function () {
-              if (_this9.debug) layer[i].setAttribute("style", "border: none");
+              if (_this9.facebook_debug) layer[i].setAttribute("style", "border: none");
               remove();
             }, 1100));
           };
@@ -11984,17 +11975,17 @@ function (_Tracker) {
     value: function _joinGroup() {
       var _this10 = this;
 
-      var _iteratorNormalCompletion10 = true;
-      var _didIteratorError10 = false;
-      var _iteratorError10 = undefined;
+      var _iteratorNormalCompletion9 = true;
+      var _didIteratorError9 = false;
+      var _iteratorError9 = undefined;
 
       try {
-        for (var _iterator10 = this.eventElements.joinGroup[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-          var query = _step10.value;
+        for (var _iterator9 = this.eventElements.joinGroup[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+          var query = _step9.value;
           var buttons = document.querySelectorAll(query + ':not(.tracked)');
 
           for (var i = 0; i < buttons.length; i++) {
-            if (this.debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+            if (this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
             buttons[i].classList.add('tracked');
             buttons[i].addEventListener('click', function (e) {
               var elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
@@ -12015,9 +12006,9 @@ function (_Tracker) {
                 name = elementsOfGroupname[0].textContent;
               }
 
-              if (_this10.debug) console.log('join group', lastpost, id, link, name, countGroupUser);
+              if (_this10.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
             });
-            if (this.debugEvents) buttons[i].addEventListener('mouseover', function (e) {
+            if (this.facebook_events_debug) buttons[i].addEventListener('mouseover', function (e) {
               var elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
                   elementsOfGroupname = document.querySelectorAll('#seo_h1_tag a'),
                   name = '',
@@ -12061,16 +12052,16 @@ function (_Tracker) {
 
         }
       } catch (err) {
-        _didIteratorError10 = true;
-        _iteratorError10 = err;
+        _didIteratorError9 = true;
+        _iteratorError9 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
-            _iterator10["return"]();
+          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+            _iterator9["return"]();
           }
         } finally {
-          if (_didIteratorError10) {
-            throw _iteratorError10;
+          if (_didIteratorError9) {
+            throw _iteratorError9;
           }
         }
       }
@@ -12119,7 +12110,7 @@ function (_Tracker) {
 
                               resolve('<html>' + _this11.documentHead + '<body>' + _this11.elementStrings + '</body>' + '</html>');
                             } else {
-                              if (_this11.debug) console.log('Not allow');
+                              if (_this11.facebook_debug) console.log('Not allow');
                               resolve(false);
                             }
 
@@ -12167,7 +12158,7 @@ function (_Tracker) {
       var _this12 = this;
 
       setTimeout(function () {
-        if (_this12.debug) console.log('START!!!!');
+        if (_this12.facebook_debug) console.log('START!!!!');
         fn(2500);
       }, 1000);
     }

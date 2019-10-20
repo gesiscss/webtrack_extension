@@ -14,7 +14,7 @@ export default class Tracker extends MultiFetch {
     this.extensionfilter = extensionfilter;
     this.is_track_allow = is_track_allow;
     this.eventEmitter = new EventEmitter();
-    this.debugEvents = true;
+
     this.rootElement = document;
     this.eventElements = {
       root: ['#primary']
@@ -31,6 +31,8 @@ export default class Tracker extends MultiFetch {
     this.links = [];
     this.lastURL = '';
     this.original_url = '';
+
+    this.events_debug = false;
     this.debug = true;
 
     this.startswith_blacklist = [];
@@ -108,7 +110,7 @@ export default class Tracker extends MultiFetch {
   }
 
   /**
-   * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [checkURL check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
   checkURL(){
     console.log(this.lastURL!==location.pathname, this.lastURL, location.pathname);
@@ -173,7 +175,7 @@ export default class Tracker extends MultiFetch {
    * @param {String} [color='red'] [description]
    */
   _setBorder(target, color='red'){
-    if(this.debugEvents) target.setAttribute("style", "border:2px solid "+color+" !important;");
+    if(this.events_debug) target.setAttribute("style", "border:2px solid "+color+" !important;");
   }
 
   /**
@@ -463,9 +465,12 @@ export default class Tracker extends MultiFetch {
    */
   fetchHTML(){
     return new Promise(async (resolve, reject)=>{
-      console.log(+new Date()+' fetchDom');
+      if(this.debug) console.log('fetchHTML: ' + new Date());
+
+      // if the tracker notices that the content is private, it will return
+      // false instead, this is used to control what to send on the bottom
       var html = await this.getDom();
-      
+
       // sometimes the content is updated before the url, the timeout here
       // makes the code wait for the updates in the url. This is not ideal,
       // but I don't see other way. Even if one could capture popstate and
@@ -483,31 +488,21 @@ export default class Tracker extends MultiFetch {
 
         // if the URL has not changed
         } else {
+          // if is it ok to track the current address, and some html was
+          // recovered, then send the data
+          if (html && this.is_path_allow(location.pathname)){
 
-          // is it ok to tracke the current address?
-          if (this.is_path_allow(location.pathname)){
+            if (this.debug) console.log('======Emit Event: onData (DATA) =======');
+            this.eventEmitter.emit(EVENT_NAMES.data, {
+              html: html, 
+              create: +new Date()
+            }, false);
+            resolve(true);
 
-            // if there is html to send, go ahead
-            if (html) {
-              if (this.debug) console.log('======Emit Event: onData (DATA) =======');
-              this.eventEmitter.emit(EVENT_NAMES.data, {
-                html: html, 
-                create: +new Date()
-              }, false);
-              resolve(true);
-
-
-            // No html was load, this shall not occur, but if it does, just send
-            // and empty html
-            } else {
-              console.warn('???????????? Emit Event: onData (NO DATA) ????????????');
-              this.eventEmitter.emit(EVENT_NAMES.data, {html: ''}, false);
-              resolve(false);
-            }
-
-          // if not send empty html
+          // if the content is blocked send an empty html, and notified the backend
+          // to turn off the icon
           } else {
-            // if the content is blocked send an empty html
+            if (this.debug) console.log('======Emit Event: onData (DISALLOW) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
                 html: ' ', 
                 is_track_allow: false,
