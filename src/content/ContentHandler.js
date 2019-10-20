@@ -37,22 +37,29 @@ export default class ContentHandler {
    * @return {[type]} [description]
    */
   _getTracker(){
-    let str = location.hostname;
-    if(str.indexOf('facebook')>=0){
-      console.log('FacebookTracker');
-      return FacebookTracker;
-    }else if(str.indexOf('youtube')>=0){
-      console.log('YouTubeTracker');
-      return YouTubeTracker;
-    }else if(str.indexOf('twitter')>=0){
-      console.log('TwitterTracker');
-      return TwitterTracker;
-    }else if(str.indexOf('instagram')>=0){
-      console.log('InstagramTracker');
-      return InstagramTracker;
-    }else if(str.indexOf('google')>=0){
-      console.log('GoogleTracker');
-      return GoogleTracker;
+    let hostname_parts = location.hostname.split('.');
+
+    if (hostname_parts.length > 1) {
+
+      let str = hostname_parts[hostname_parts.length - 2];
+
+      if(str.endsWith('facebook')){
+        console.log('FacebookTracker');
+        return FacebookTracker;
+      }else if(str.endsWith('youtube')){
+        console.log('YouTubeTracker');
+        return YouTubeTracker;
+      }else if(str.endsWith('twitter')){
+        console.log('TwitterTracker');
+        return TwitterTracker;
+      }else if(str.endsWith('instagram')){
+        console.log('InstagramTracker');
+        return InstagramTracker;
+      }else if(str.endsWith('google')){
+        console.log('GoogleTracker');
+        return GoogleTracker;
+      }
+
     }
     console.log('Tracker');
     return Tracker
