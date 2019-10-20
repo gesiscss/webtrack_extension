@@ -1,2 +1,2 @@
 
-this.subpath_blacklist = ['/accounts', '/settings'];
+this.startswith_blacklist = ['/accounts', '/settings'];

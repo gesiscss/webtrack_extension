@@ -33,7 +33,8 @@ export default class Tracker extends MultiFetch {
     this.original_url = '';
     this.debug = true;
 
-    this.subpath_blacklist = [];
+    this.startswith_blacklist = [];
+    this.pos_2nd_blacklist = [];
 
     this.header_clone = null;
   }
@@ -78,11 +79,21 @@ export default class Tracker extends MultiFetch {
    * @return {Boolean}   [if it is allow according to social media platforms rules]
    */
   is_path_allow(path){
-    for (let i in this.subpath_blacklist) {
-      if (path.startsWith(this.subpath_blacklist[i])){
+    for (let i in this.startswith_blacklist) {
+      if (path.startsWith(this.startswith_blacklist[i])){
         return false;
       }
     }
+
+    if (this.pos_2nd_blacklist.length > 0){
+      let path_2nd = path.split('/')[2];
+      for (let i in this.pos_2nd_blacklist) {
+       if (path_2nd == this.pos_2nd_blacklist[i]){
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 

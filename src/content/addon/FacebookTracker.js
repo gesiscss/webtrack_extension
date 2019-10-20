@@ -44,7 +44,14 @@ export default class FacebookTracker extends Tracker{
       // console.log(this.documentWrapper);
     }
 
-    this.subpath_blacklist = ['/messages', '/settings'];
+    this.startswith_blacklist = [
+      '/events', '/stories', '/friends', '/messages', '/photo', 
+      '/marketplace', '/fundraisers', '/saved', '/recommendations', 
+      '/crisisresponse', '/settings'];
+
+    this.pos_2nd_blacklist = ['about', 'friends_mutual', 
+      'followers', 'following']
+
   }
 
 

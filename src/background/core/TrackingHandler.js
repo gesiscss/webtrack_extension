@@ -235,7 +235,8 @@ export default class TrackingHandler {
                 await this.pageCache.update({id: id, send: true}, undefined, true)
                 page = await this.pageCache.getOnly(id);
                 if(page.start instanceof Date){
-                  page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
+                  //page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
+                  page.start = moment.utc(page.start).format();
                 }  
 
                 // @tico, if I ever manage to install a minifier in the extension
@@ -251,6 +252,7 @@ export default class TrackingHandler {
                 // }
 
                 if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
+                console.log(page.start);
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,

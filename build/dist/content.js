@@ -10097,7 +10097,8 @@ function (_MultiFetch) {
     _this.lastURL = '';
     _this.original_url = '';
     _this.debug = true;
-    _this.subpath_blacklist = [];
+    _this.startswith_blacklist = [];
+    _this.pos_2nd_blacklist = [];
     _this.header_clone = null;
     return _this;
   }
@@ -10147,9 +10148,19 @@ function (_MultiFetch) {
   }, {
     key: "is_path_allow",
     value: function is_path_allow(path) {
-      for (var i in this.subpath_blacklist) {
-        if (path.startsWith(this.subpath_blacklist[i])) {
+      for (var i in this.startswith_blacklist) {
+        if (path.startsWith(this.startswith_blacklist[i])) {
           return false;
+        }
+      }
+
+      if (this.pos_2nd_blacklist.length > 0) {
+        var path_2nd = path.split('/')[2];
+
+        for (var _i in this.pos_2nd_blacklist) {
+          if (path_2nd == this.pos_2nd_blacklist[_i]) {
+            return false;
+          }
         }
       }
 
@@ -11064,7 +11075,8 @@ function (_Tracker) {
       _this.documentHead = _this._getHead(); // console.log(this.documentWrapper);
     }
 
-    _this.subpath_blacklist = ['/messages', '/settings'];
+    _this.startswith_blacklist = ['/events', '/stories', '/friends', '/messages', '/photo', '/marketplace', '/fundraisers', '/saved', '/recommendations', '/crisisresponse', '/settings'];
+    _this.pos_2nd_blacklist = ['about', 'friends_mutual', 'followers', 'following'];
     return _this;
   }
   /**
@@ -12258,7 +12270,7 @@ function (_Tracker) {
     };
     _this.lastUrlPath = '';
     _this.values = [];
-    _this.subpath_blacklist = ['/account'];
+    _this.startswith_blacklist = ['/account'];
     return _this;
   }
   /**
@@ -13441,7 +13453,7 @@ function (_Tracker) {
     _this.tweetId2Element = {};
     _this.whoId2Element = {};
     _this.tweets_exist = false;
-    _this.subpath_blacklist = ['/messages', '/settings'];
+    _this.startswith_blacklist = ['/messages', '/settings'];
     console.log(+new Date());
     return _this;
   }

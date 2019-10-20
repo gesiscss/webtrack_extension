@@ -42,7 +42,7 @@ export default class FacebookTracker extends Tracker{
       // console.log(this.documentWrapper);
     }
 
-    this.subpath_blacklist = ['/messages', '/settings'];
+    this.startswith_blacklist = ['/messages', '/settings'];
 
   }
 

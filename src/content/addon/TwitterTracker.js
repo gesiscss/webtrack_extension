@@ -80,7 +80,7 @@ export default class TwitterTracker extends Tracker{
     this.whoId2Element = {};
     this.tweets_exist = false;
 
-    this.subpath_blacklist = ['/messages', '/settings'];
+    this.startswith_blacklist = ['/messages', '/settings'];
 
     console.log(+ new Date());
   }

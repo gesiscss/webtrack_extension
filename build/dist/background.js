@@ -35270,7 +35270,7 @@ var DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  start: +new Date(),
+  start: new Date(),
   duration: 0,
   close: false,
   sendTime: null,
@@ -37764,7 +37764,7 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 61;
+                    _context5.next = 62;
                     break;
                   }
 
@@ -37778,7 +37778,7 @@ function () {
 
                 case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 46;
+                    _context5.next = 47;
                     break;
                   }
 
@@ -37799,7 +37799,8 @@ function () {
                   page = _context5.sent;
 
                   if (page.start instanceof Date) {
-                    page.start = moment_default()(page.start).format('YYYY-MM-DD HH:mm:ss');
+                    //page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
+                    page.start = moment_default.a.utc(page.start).format();
                   } // @tico, if I ever manage to install a minifier in the extension
                   // for (let i in page.content) {
                   //   try {
@@ -37814,7 +37815,8 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
-                  _context5.next = 28;
+                  console.log(page.start);
+                  _context5.next = 29;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
                     projectId: _this4.projectId,
@@ -37829,7 +37831,7 @@ function () {
                     // });
                   });
 
-                case 28:
+                case 29:
                   send = _context5.sent;
                   count += 1;
 
@@ -37855,11 +37857,11 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('<- sendData');
-                  _context5.next = 43;
+                  _context5.next = 44;
                   break;
 
-                case 36:
-                  _context5.prev = 36;
+                case 37:
+                  _context5.prev = 37;
                   _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
@@ -37873,61 +37875,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 43:
+                case 44:
                   _iteratorNormalCompletion2 = true;
                   _context5.next = 15;
                   break;
 
-                case 46:
-                  _context5.next = 52;
+                case 47:
+                  _context5.next = 53;
                   break;
 
-                case 48:
-                  _context5.prev = 48;
+                case 49:
+                  _context5.prev = 49;
                   _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 52:
-                  _context5.prev = 52;
+                case 53:
                   _context5.prev = 53;
+                  _context5.prev = 54;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 55:
-                  _context5.prev = 55;
+                case 56:
+                  _context5.prev = 56;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 58;
+                    _context5.next = 59;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 58:
-                  return _context5.finish(55);
-
                 case 59:
-                  return _context5.finish(52);
+                  return _context5.finish(56);
 
                 case 60:
+                  return _context5.finish(53);
+
+                case 61:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 61:
+                case 62:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 72;
+                  _context5.next = 73;
                   break;
 
-                case 65:
-                  _context5.prev = 65;
+                case 66:
+                  _context5.prev = 66;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37940,19 +37942,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 72:
-                  _context5.prev = 72;
+                case 73:
+                  _context5.prev = 73;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(72);
+                  return _context5.finish(73);
 
-                case 75:
+                case 76:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 65, 72, 75], [13, 48, 52, 60], [18, 36], [53,, 55, 59]]);
+          }, _callee5, null, [[0, 66, 73, 76], [13, 49, 53, 61], [18, 37], [54,, 56, 60]]);
         }));
 
         return function (_x4, _x5) {

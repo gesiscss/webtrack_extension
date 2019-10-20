@@ -15,7 +15,7 @@ const DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  start: +new Date(),
+  start: new Date(),
   duration: 0,
   close: false,
   sendTime: null,
