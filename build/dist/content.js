@@ -13410,6 +13410,7 @@ function (_Tracker) {
     _this = TwitterTracker_possibleConstructorReturn(this, TwitterTracker_getPrototypeOf(TwitterTracker).call(this, worker));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(TwitterTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
     _this.allow = false;
     _this.debug = true;
     _this.debugEvents = false;
@@ -14198,6 +14199,84 @@ function (_Tracker) {
 
 
 
+// CONCATENATED MODULE: ./src/content/addon/InstagramTracker.js
+function InstagramTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { InstagramTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { InstagramTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return InstagramTracker_typeof(obj); }
+
+function InstagramTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function InstagramTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function InstagramTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) InstagramTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) InstagramTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function InstagramTracker_possibleConstructorReturn(self, call) { if (call && (InstagramTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return InstagramTracker_assertThisInitialized(self); }
+
+function InstagramTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function InstagramTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { InstagramTracker_get = Reflect.get; } else { InstagramTracker_get = function _get(target, property, receiver) { var base = InstagramTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return InstagramTracker_get(target, property, receiver || target); }
+
+function InstagramTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = InstagramTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function InstagramTracker_getPrototypeOf(o) { InstagramTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return InstagramTracker_getPrototypeOf(o); }
+
+function InstagramTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) InstagramTracker_setPrototypeOf(subClass, superClass); }
+
+function InstagramTracker_setPrototypeOf(o, p) { InstagramTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return InstagramTracker_setPrototypeOf(o, p); }
+
+
+
+var InstagramTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  InstagramTracker_inherits(InstagramTracker, _Tracker);
+
+  function InstagramTracker(worker) {
+    var _this;
+
+    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    InstagramTracker_classCallCheck(this, InstagramTracker);
+
+    _this = InstagramTracker_possibleConstructorReturn(this, InstagramTracker_getPrototypeOf(InstagramTracker).call(this, worker));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(InstagramTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
+    _this.instagram_debug = false;
+    _this.startswith_blacklist = ['/accounts', '/settings'];
+    return _this;
+  }
+  /**
+   * [return dom as string]
+   * @return {Promise}
+   */
+
+
+  InstagramTracker_createClass(InstagramTracker, [{
+    key: "getDom",
+    value: function getDom() {
+      return InstagramTracker_get(InstagramTracker_getPrototypeOf(InstagramTracker.prototype), "getDom", this).call(this);
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      var _this2 = this;
+
+      setTimeout(function () {
+        if (_this2.debug) console.log('START!!!!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return InstagramTracker;
+}(Tracker_Tracker); //class
+
+
+
 // CONCATENATED MODULE: ./src/content/DomDetector.js
 function DomDetector_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -14412,6 +14491,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 
+
 var ContentHandler_ContentHandler =
 /*#__PURE__*/
 function () {
@@ -14458,6 +14538,9 @@ function () {
       } else if (str.indexOf('twitter') >= 0) {
         console.log('TwitterTracker');
         return TwitterTracker;
+      } else if (str.indexOf('instagram') >= 0) {
+        console.log('InstagramTracker');
+        return InstagramTracker;
       }
 
       console.log('Tracker');
