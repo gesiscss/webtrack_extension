@@ -36,6 +36,7 @@ export default class Tracker extends MultiFetch {
     this.debug = true;
 
     this.startswith_blacklist = [];
+    this.startswith_whitelist = [];
     this.pos_2nd_blacklist = [];
 
     this.header_clone = null;
@@ -84,6 +85,12 @@ export default class Tracker extends MultiFetch {
     for (let i in this.startswith_blacklist) {
       if (path.startsWith(this.startswith_blacklist[i])){
         return false;
+      }
+    }
+
+    for (let i in this.startswith_whitelist) {
+      if (path.startsWith(this.startswith_whitelist[i])){
+        return true;
       }
     }
 

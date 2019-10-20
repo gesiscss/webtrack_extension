@@ -10098,6 +10098,7 @@ function (_MultiFetch) {
     _this.events_debug = false;
     _this.debug = true;
     _this.startswith_blacklist = [];
+    _this.startswith_whitelist = [];
     _this.pos_2nd_blacklist = [];
     _this.header_clone = null;
     return _this;
@@ -10154,11 +10155,17 @@ function (_MultiFetch) {
         }
       }
 
+      for (var _i in this.startswith_whitelist) {
+        if (path.startsWith(this.startswith_whitelist[_i])) {
+          return true;
+        }
+      }
+
       if (this.pos_2nd_blacklist.length > 0) {
         var path_2nd = path.split('/')[2];
 
-        for (var _i in this.pos_2nd_blacklist) {
-          if (path_2nd == this.pos_2nd_blacklist[_i]) {
+        for (var _i2 in this.pos_2nd_blacklist) {
+          if (path_2nd == this.pos_2nd_blacklist[_i2]) {
             return false;
           }
         }
@@ -11076,7 +11083,8 @@ function (_Tracker) {
     }
 
     _this.startswith_blacklist = ['/events', '/stories', '/friends', '/messages', '/photo', '/marketplace', '/fundraisers', '/saved', '/recommendations', '/crisisresponse', '/settings'];
-    _this.pos_2nd_blacklist = ['about', 'friends_mutual', 'followers', 'following'];
+    _this.startswith_whitelist = ['/pg'];
+    _this.pos_2nd_blacklist = ['about', 'friends_mutual', 'followers', 'following', 'friends', 'photos'];
     return _this;
   }
   /**
@@ -11089,7 +11097,17 @@ function (_Tracker) {
     value: function is_content_allowed() {
       if (this.is_allowed == null) {
         // assume it is allowed
-        this.is_allowed = true; // detect the sidebar of the timelines, not always allowed to track timelines
+        this.is_allowed = true; //own profile
+
+        if (document.querySelector('fbProfileCoverPhotoSelector')) {
+          this.is_allowed = true;
+          return this.is_allowed;
+        } //public page
+        // if (document.querySelector('#entity_sidebar')){
+        //   this.allow = true;
+        // }
+        // detect the sidebar of the timelines, not always allowed to track timelines
+
 
         var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
@@ -11097,11 +11115,58 @@ function (_Tracker) {
           // this is not my own timeline
           if (!sidebar_timeline.querySelector('._6a._m')) {
             this.is_allowed = false;
+            return this.is_allowed;
+          }
+        } // this is a profile, only allow if it is the same user
+
+
+        var logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+
+        if (logged_uid) {
+          var profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+
+          if (profile_uid) {
+            if (logged_uid != profile_uid) {
+              this.is_allowed = false;
+              return this.is_allowed;
+            }
           }
         }
       }
 
       return this.is_allowed;
+    }
+  }, {
+    key: "findGetParameter",
+    value: function findGetParameter(params, parameterName) {
+      var tmp = [];
+      var items = params.substr(1).split("&");
+
+      for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+
+        if (tmp[0] === parameterName) {
+          return decodeURIComponent(tmp[1]);
+        }
+      }
+
+      return null;
+    }
+  }, {
+    key: "get_username_or_id",
+    value: function get_username_or_id(location) {
+      if (location) {
+        var username = location.pathname.split('/');
+
+        if (username.length > 1) {
+          return username[1];
+        }
+
+        var id = findGetParameter('id', location.search);
+        return id;
+      }
+
+      return null;
     }
     /**
      * [_getValues return values of articel]

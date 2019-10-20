@@ -49,8 +49,10 @@ export default class FacebookTracker extends Tracker{
       '/marketplace', '/fundraisers', '/saved', '/recommendations', 
       '/crisisresponse', '/settings'];
 
+    this.startswith_whitelist = ['/pg']
+
     this.pos_2nd_blacklist = ['about', 'friends_mutual', 
-      'followers', 'following']
+      'followers', 'following', 'friends', 'photos']
 
   }
 
@@ -64,6 +66,17 @@ export default class FacebookTracker extends Tracker{
       // assume it is allowed
       this.is_allowed = true;
 
+      //own profile
+      if (document.querySelector('fbProfileCoverPhotoSelector')){
+        this.is_allowed = true;
+        return this.is_allowed;
+      }
+
+      //public page
+      // if (document.querySelector('#entity_sidebar')){
+      //   this.allow = true;
+      // }
+
 
       // detect the sidebar of the timelines, not always allowed to track timelines
       let sidebar_timeline = document.querySelector('#timeline_small_column');
@@ -73,11 +86,50 @@ export default class FacebookTracker extends Tracker{
         // this is not my own timeline
         if (!(sidebar_timeline.querySelector('._6a._m'))){
           this.is_allowed = false;
+          return this.is_allowed;
         }
       }
+
+      // this is a profile, only allow if it is the same user
+      let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+      if (logged_uid){
+        let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+        if (profile_uid){
+          if (logged_uid != profile_uid) {
+            this.is_allowed = false;
+            return this.is_allowed;
+          }
+        }
+      }
+
     }
     return this.is_allowed;
+  }
 
+
+  findGetParameter(params, parameterName) {
+    var tmp = [];
+    var items = params.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) {
+          return decodeURIComponent(tmp[1]);
+        } 
+    }
+    return null;
+  }
+
+  get_username_or_id(location){
+    if (location) {
+      let username = location.pathname.split('/');
+      if (username.length > 1) {
+        return username[1];
+      }
+
+      let id = findGetParameter('id', location.search);
+      return id;
+    }
+    return null;
   }
 
   /**
