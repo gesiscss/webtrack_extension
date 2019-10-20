@@ -91,19 +91,41 @@ export default class FacebookTracker extends Tracker{
       }
 
       // this is a profile, only allow if it is the same user
-      let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
-      if (logged_uid){
-        let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
-        if (profile_uid){
-          if (logged_uid != profile_uid) {
-            this.is_allowed = false;
-            return this.is_allowed;
-          }
+      // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+      // if (logged_uid){
+      //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+      //   if (profile_uid){
+      //     if (logged_uid != profile_uid) {
+      //       this.is_allowed = false;
+      //       return this.is_allowed;
+      //     }
+      //   }
+      // }
+
+      // this is a profile, only allow if it is the same user  (or if this cannot 
+      // be identified)
+      let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
+      if (is_user_profile != null){
+
+        if (!is_user_profile){
+          this.is_allowed = false;
+          return this.is_allowed;
         }
       }
 
     }
     return this.is_allowed;
+  }
+
+  is_link_same_as_logged_user(target, selector){
+    let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+    if (logged_uid){
+      let profile_uid = this.get_username_or_id(target.querySelector(selector));
+      if (profile_uid){
+        return logged_uid == profile_uid;
+      }
+    }
+    return null;
   }
 
 
@@ -220,11 +242,23 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_isPublic checks if element is for the public oder private]
+   * [_isPublicOrLogInUser checks if element is for the public oder private]
    * @param  {Object}  target [DomElement]
    * @return {Boolean}
    */
-  _isPublic(target){
+  _isPublicOrLogInUser(target){
+
+
+    // try to detect if the is the same user as logged in
+    let is_same = this.is_link_same_as_logged_user(target, '.fwn.fcg a');
+
+    if (is_same !=  null){
+      if (is_same){
+        return true;
+      }
+    }
+
+
     //let a_list = target.querySelectorAll('.fwn.fcg a');
     //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
     let friends_list = target.querySelectorAll('i.sx_b75a4a');
@@ -249,7 +283,7 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_isPublic checks if element is for the public oder private]
+   * [_isPrivate checks if element is for the public oder private]
    * @param  {Object}  target [DomElement]
    * @return {Boolean}
    */
@@ -281,7 +315,7 @@ export default class FacebookTracker extends Tracker{
     let length = found.length;
     for (var i = 0; i < length; i++) {
       found[i].classList.add('tracked');
-      if (this._isPublic(found[i])){
+      if (this._isPublicOrLogInUser(found[i])){
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
         this._setLikeEvent(found[i]);
         this._setCommentEvent(found[i]);
