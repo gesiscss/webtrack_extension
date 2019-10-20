@@ -2,6 +2,7 @@ import FacebookTracker from './addon/FacebookTracker';
 import YouTubeTracker from './addon/YouTubeTracker';
 import TwitterTracker from './addon/TwitterTracker';
 import InstagramTracker from './addon/InstagramTracker';
+import GoogleTracker from './addon/GoogleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
 
@@ -49,6 +50,9 @@ export default class ContentHandler {
     }else if(str.indexOf('instagram')>=0){
       console.log('InstagramTracker');
       return InstagramTracker;
+    }else if(str.indexOf('google')>=0){
+      console.log('GoogleTracker');
+      return GoogleTracker;
     }
     console.log('Tracker');
     return Tracker

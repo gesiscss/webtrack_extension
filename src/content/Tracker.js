@@ -396,6 +396,15 @@ export default class Tracker extends MultiFetch {
   }
 
   /**
+   * [return element without detected sensitive information]
+   * @return {Promise}
+   */
+  _clean_sensitive_content_elements(target){
+    return target;
+  }
+
+
+  /**
    * [return dom as string]
    * @return {Promise}
    */
@@ -406,6 +415,8 @@ export default class Tracker extends MultiFetch {
 
       // clean unnecessary scripts
       tclone = this._clean_embedded_scripts(tclone);
+
+      tclone = this._clean_sensitive_content_elements(tclone);
 
       resolve(tclone.outerHTML);
       //resolve(document.documentElement.outerHTML);

@@ -10680,6 +10680,16 @@ function (_MultiFetch) {
       return target;
     }
     /**
+     * [return element without detected sensitive information]
+     * @return {Promise}
+     */
+
+  }, {
+    key: "_clean_sensitive_content_elements",
+    value: function _clean_sensitive_content_elements(target) {
+      return target;
+    }
+    /**
      * [return dom as string]
      * @return {Promise}
      */
@@ -10693,6 +10703,7 @@ function (_MultiFetch) {
         var tclone = document.documentElement.cloneNode(true); // clean unnecessary scripts
 
         tclone = _this4._clean_embedded_scripts(tclone);
+        tclone = _this4._clean_sensitive_content_elements(tclone);
         resolve(tclone.outerHTML); //resolve(document.documentElement.outerHTML);
       });
     }
@@ -14277,6 +14288,100 @@ function (_Tracker) {
 
 
 
+// CONCATENATED MODULE: ./src/content/addon/GoogleTracker.js
+function GoogleTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { GoogleTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { GoogleTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return GoogleTracker_typeof(obj); }
+
+function GoogleTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function GoogleTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function GoogleTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) GoogleTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) GoogleTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function GoogleTracker_possibleConstructorReturn(self, call) { if (call && (GoogleTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return GoogleTracker_assertThisInitialized(self); }
+
+function GoogleTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function GoogleTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { GoogleTracker_get = Reflect.get; } else { GoogleTracker_get = function _get(target, property, receiver) { var base = GoogleTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return GoogleTracker_get(target, property, receiver || target); }
+
+function GoogleTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = GoogleTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function GoogleTracker_getPrototypeOf(o) { GoogleTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return GoogleTracker_getPrototypeOf(o); }
+
+function GoogleTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) GoogleTracker_setPrototypeOf(subClass, superClass); }
+
+function GoogleTracker_setPrototypeOf(o, p) { GoogleTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return GoogleTracker_setPrototypeOf(o, p); }
+
+
+
+var GoogleTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  GoogleTracker_inherits(GoogleTracker, _Tracker);
+
+  function GoogleTracker(worker) {
+    var _this;
+
+    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    GoogleTracker_classCallCheck(this, GoogleTracker);
+
+    _this = GoogleTracker_possibleConstructorReturn(this, GoogleTracker_getPrototypeOf(GoogleTracker).call(this, worker));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(GoogleTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
+    _this.instagram_debug = false;
+    _this.startswith_blacklist = ['/accounts', '/settings'];
+    return _this;
+  }
+  /**
+   * [return element without detected sensitive information]
+   * @return {Promise}
+   */
+
+
+  GoogleTracker_createClass(GoogleTracker, [{
+    key: "_clean_sensitive_content_elements",
+    value: function _clean_sensitive_content_elements(target) {
+      var a_account = target.querySelector('a.gb_B.gb_Da.gb_g');
+
+      if (a_account) {
+        a_account.parentNode.removeChild(a_account);
+      }
+
+      return target;
+    }
+    /**
+     * [return dom as string]
+     * @return {Promise}
+     */
+
+  }, {
+    key: "getDom",
+    value: function getDom() {
+      return GoogleTracker_get(GoogleTracker_getPrototypeOf(GoogleTracker.prototype), "getDom", this).call(this);
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      var _this2 = this;
+
+      setTimeout(function () {
+        if (_this2.debug) console.log('START!!!!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return GoogleTracker;
+}(Tracker_Tracker); //class
+
+
+
 // CONCATENATED MODULE: ./src/content/DomDetector.js
 function DomDetector_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -14492,6 +14597,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 
+
 var ContentHandler_ContentHandler =
 /*#__PURE__*/
 function () {
@@ -14541,6 +14647,9 @@ function () {
       } else if (str.indexOf('instagram') >= 0) {
         console.log('InstagramTracker');
         return InstagramTracker;
+      } else if (str.indexOf('google') >= 0) {
+        console.log('GoogleTracker');
+        return GoogleTracker;
       }
 
       console.log('Tracker');
