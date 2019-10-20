@@ -9,7 +9,7 @@ export default class TwitterTracker extends Tracker{
     this.allow = false;
     this.debug = true;
     this.debugEvents = false;
-    this.eventElements = {
+    this.selectors = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
       articels: ['article'],//#['#stream-items-id li > .tweet'],
@@ -45,9 +45,10 @@ export default class TwitterTracker extends Tracker{
       svg_home_deactivated: 'nav a svg g path[d="M22.46 7.57L12.357 2.115c-.223-.12-.49-.12-.713 0L1.543 7.57c-.364.197-.5.652-.303 1.017.135.25.394.393.66.393.12 0 .243-.03.356-.09l.815-.44L4.7 19.963c.214 1.215 1.308 2.062 2.658 2.062h9.282c1.352 0 2.445-.848 2.663-2.087l1.626-11.49.818.442c.364.193.82.06 1.017-.304.196-.363.06-.818-.304-1.016zm-4.638 12.133c-.107.606-.703.822-1.18.822H7.36c-.48 0-1.075-.216-1.178-.798L4.48 7.69 12 3.628l7.522 4.06-1.7 12.015z"]',
       
       //svg_maintweet_protected: ':not(article) svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
-      //svg_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      //svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
 
-      svg_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      svg_account_protected: ':not(article) svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
 
       // assumes that the target is the tweet/comment
       //svg_proeet_favorite: ':not(article) svg g path[d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"]',
@@ -168,7 +169,7 @@ export default class TwitterTracker extends Tracker{
         setTimeout(() => {
           this.lastUrlPath = location.pathname
           console.log('?????????????????');
-          for (let query of this.eventElements.allow) {
+          for (let query of this.selectors.allow) {
             let found = document.querySelectorAll(query+':not(.tracked)');
             console.log('found', found);
             this.allow = !found.length>0
@@ -183,12 +184,23 @@ export default class TwitterTracker extends Tracker{
   }
 
 
+  is_content_allowed() {
+    if (this.is_allowed == null){
+      this.is_allowed = true;
+      if (document.querySelector(this.selectors.svg_account_protected)){
+        this.is_allowed = false;
+        return this.is_allowed;
+      }
+    }
+    return this.is_allowed;
+  }
+
   /**
    * [_setEventLikeButton set like-events for un-/like buttons from articel]
    * @param {number} id
    */
   _setEventLikeButton(id){
-    let likeButton = this._getElements(this.eventElements.likeButton, this.tweetId2Element[id]);
+    let likeButton = this._getElements(this.selectors.likeButton, this.tweetId2Element[id]);
     for (var i = 0; i < likeButton.length; i++) {
       likeButton[i].addEventListener('click', e => {
         let value = 'like';
@@ -208,13 +220,13 @@ export default class TwitterTracker extends Tracker{
    * [_eventListenComment listen the comment dialog and fire comment event if the user write some comment]
    */
   _eventListenComment(){
-    let tweet = this._getElements(this.eventElements.commentDialog.id, document);
+    let tweet = this._getElements(this.selectors.commentDialog.id, document);
     if(tweet.length>0){
       let id = tweet[0].getAttribute("data-tweet-id");
       if(Object.keys(this.tweetId2Element).includes(id)){
-        let wrapper = this._getElements(this.eventElements.commentDialog.wrapper, document, {setBorder: false})[0];
-        let content = this._getElements(this.eventElements.commentDialog.content, wrapper)[0];
-        let submitButton = this._getElements(this.eventElements.commentDialog.submitButton, wrapper)[0];
+        let wrapper = this._getElements(this.selectors.commentDialog.wrapper, document, {setBorder: false})[0];
+        let content = this._getElements(this.selectors.commentDialog.content, wrapper)[0];
+        let submitButton = this._getElements(this.selectors.commentDialog.submitButton, wrapper)[0];
         submitButton.addEventListener('click', e => {
           this.eventFn.onEvent({
             event: 'comment',
@@ -232,13 +244,13 @@ export default class TwitterTracker extends Tracker{
    * [_eventListenComment listen the retweet dialog and fire retweet-event if the user write some new retweet]
    */
   _eventListenRetweet(){
-    let tweet = this._getElements(this.eventElements.retweetDialog.id, document);
+    let tweet = this._getElements(this.selectors.retweetDialog.id, document);
     if(tweet.length>0){
       let id = tweet[0].getAttribute("data-tweet-id");
       if(Object.keys(this.tweetId2Element).includes(id)){
-        let wrapper = this._getElements(this.eventElements.retweetDialog.wrapper, document, {setBorder: false})[0];
-        let content = this._getElements(this.eventElements.retweetDialog.content, wrapper)[0];
-        let submitButtons = this._getElements(this.eventElements.retweetDialog.submitButton, wrapper);
+        let wrapper = this._getElements(this.selectors.retweetDialog.wrapper, document, {setBorder: false})[0];
+        let content = this._getElements(this.selectors.retweetDialog.content, wrapper)[0];
+        let submitButtons = this._getElements(this.selectors.retweetDialog.submitButton, wrapper);
         for (var i = 0; i < submitButtons.length; i++) {
           submitButtons[i].addEventListener('click', e => {
             this.eventFn.onEvent({
@@ -258,18 +270,18 @@ export default class TwitterTracker extends Tracker{
    * [_eventListenTweetstorm listen the tweetstorm-dialog and fire event if the user write new threds]
    */
   _eventListenTweetstorm(){
-    let tweet = this._getElements(this.eventElements.tweetstormDialog.id, document);
+    let tweet = this._getElements(this.selectors.tweetstormDialog.id, document);
     if(tweet.length>0){
       let id = tweet[0].getAttribute("data-tweet-id");
       if(Object.keys(this.tweetId2Element).includes(id)){
 
-        let wrapper = this._getElements(this.eventElements.tweetstormDialog.wrapper, document, {setBorder: false})[0];
-        let content = this._getElements(this.eventElements.tweetstormDialog.content, wrapper);
-        let submitButton = this._getElements(this.eventElements.tweetstormDialog.submitButton, wrapper)[0];
-        let newTweetButton = this._getElements(this.eventElements.tweetstormDialog.newTweetButton, wrapper)[0];
+        let wrapper = this._getElements(this.selectors.tweetstormDialog.wrapper, document, {setBorder: false})[0];
+        let content = this._getElements(this.selectors.tweetstormDialog.content, wrapper);
+        let submitButton = this._getElements(this.selectors.tweetstormDialog.submitButton, wrapper)[0];
+        let newTweetButton = this._getElements(this.selectors.tweetstormDialog.newTweetButton, wrapper)[0];
 
         newTweetButton.addEventListener('click', () => setTimeout(()=>{
-          let newContent = this._getElements(this.eventElements.tweetstormDialog.content, wrapper);
+          let newContent = this._getElements(this.selectors.tweetstormDialog.content, wrapper);
           content = content.concat(newContent);
         }, 500))
 
@@ -294,13 +306,13 @@ export default class TwitterTracker extends Tracker{
    * [_eventListenPermalinkOverlay description]
    */
   _eventListenPermalinkOverlay(){
-    let articels = this._getElements(this.eventElements.permalinkOverlay.content, document);
+    let articels = this._getElements(this.selectors.permalinkOverlay.content, document);
     if(articels.length==1 && this._isPublic(articels[0])){
       let id = articels[0].getAttribute("data-tweet-id");
       this.tweetId2Element[id] = articels[0];
-      let wrapper = this._getElements(this.eventElements.permalinkOverlay.wrapper, document)[0];
-      let content = this._getElements(this.eventElements.permalinkOverlay.comment.text, wrapper)[0];
-      let submitButton = this._getElements(this.eventElements.permalinkOverlay.comment.submitButton, wrapper)[0];
+      let wrapper = this._getElements(this.selectors.permalinkOverlay.wrapper, document)[0];
+      let content = this._getElements(this.selectors.permalinkOverlay.comment.text, wrapper)[0];
+      let submitButton = this._getElements(this.selectors.permalinkOverlay.comment.submitButton, wrapper)[0];
       submitButton.addEventListener('click', e => {
         this.eventFn.onEvent({
           event: 'comment',
@@ -324,13 +336,13 @@ export default class TwitterTracker extends Tracker{
     //var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
 
     var svgs = document.documentElement.querySelectorAll(
-      this.eventElements.svg_home_deactivated);
+      this.selectors.svg_home_deactivated);
     if (svgs.length > 0){
       if(this.debug) console.log(' ++++ Logged!!!!!! +++');
       return false;
     } else {
       var svgs = document.documentElement.querySelectorAll(
-        this.eventElements.svg_home_activated);
+        this.selectors.svg_home_activated);
       if (svgs.length > 0){
         if(this.debug) console.log(' ++++ Logged!!!!!! +++');
         return false;
@@ -349,7 +361,7 @@ export default class TwitterTracker extends Tracker{
    */
   _isPublic(target){
     var ispublic = true;
-    var svgs = target.querySelectorAll(this.eventElements.svg_protected);  
+    var svgs = target.querySelectorAll(this.selectors.svg_tweet_protected);  
 
     if (svgs.length > 0) {
       return false;
@@ -381,7 +393,7 @@ export default class TwitterTracker extends Tracker{
    */
   _getHeaderId(article){
     
-    var match = location.pathname.match(this.eventElements.time_tweetid_regex);
+    var match = location.pathname.match(this.selectors.time_tweetid_regex);
     if (match != null){
       return match[1];
     }
@@ -400,13 +412,13 @@ export default class TwitterTracker extends Tracker{
     try {
 
       var _clone = article.cloneNode(true);
-      var times = article.querySelectorAll(this.eventElements.time_tweetid);
+      var times = article.querySelectorAll(this.selectors.time_tweetid);
       if (times.length > 0){
-        return times[0].parentNode.getAttribute('href').match(this.eventElements.time_tweetid_regex)[1];
+        return times[0].parentNode.getAttribute('href').match(this.selectors.time_tweetid_regex)[1];
       } else {
-        var svgs = article.querySelectorAll(this.eventElements.svg_maintweet_tweetid);
+        var svgs = article.querySelectorAll(this.selectors.svg_maintweet_tweetid);
         if (svgs.length > 0){
-          return svgs[0].parentNode.parentNode.parentNode.getAttribute('href').match(this.eventElements.svg_maintweet_tweetid_regex)[1];
+          return svgs[0].parentNode.parentNode.parentNode.getAttribute('href').match(this.selectors.svg_maintweet_tweetid_regex)[1];
         }
       }
     }
