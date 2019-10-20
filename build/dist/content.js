@@ -11316,7 +11316,8 @@ function (_Tracker) {
       //let a_list = target.querySelectorAll('.fwn.fcg a');
       //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
       var friends_list = target.querySelectorAll('i.sx_b75a4a');
-      var onlyme_list = target.querySelectorAll('i.sx_e89a24'); // let c = 0;
+      var onlyme_list = target.querySelectorAll('i.sx_e89a24');
+      var friendoffriend_list = target.querySelectorAll('i.sx_6be848'); // let c = 0;
       // for (let a in a_list.length) {
       //   let attr = a_list[a].getAttribute("data-hovercard");
       //   if(attr != null && attr.indexOf('user') > 0){
@@ -11325,7 +11326,7 @@ function (_Tracker) {
       // }
       //return c==0 && 
 
-      return friends_list.length == 0 && onlyme_list.length == 0;
+      return friends_list.length == 0 && onlyme_list.length == 0 && friendoffriend_list.length == 0;
     }
     /**
      * [_isPublic checks if element is for the public oder private]

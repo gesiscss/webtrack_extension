@@ -229,6 +229,8 @@ export default class FacebookTracker extends Tracker{
     //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
     let friends_list = target.querySelectorAll('i.sx_b75a4a');
     let onlyme_list = target.querySelectorAll('i.sx_e89a24');
+    let friendoffriend_list = target.querySelectorAll('i.sx_6be848');
+    
     
     // let c = 0;
     // for (let a in a_list.length) {
@@ -239,7 +241,9 @@ export default class FacebookTracker extends Tracker{
     // }
 
     //return c==0 && 
-    return ((friends_list.length == 0) && (onlyme_list.length==0));
+    return ((friends_list.length == 0) 
+      && (onlyme_list.length==0)
+      && (friendoffriend_list.length==0));
   }
 
 
