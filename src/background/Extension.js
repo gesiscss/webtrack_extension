@@ -227,20 +227,23 @@ export default class Extension {
           // then update the indicator, otherwise assume that it is allowed
           if (msg.content[0].hasOwnProperty('is_track_allow')){
             this.setImage(msg.content[0].is_track_allow);
-            sendResponse(false);
+            //sendResponse(false);
           } else {
             this.setImage(true);
-            msg = Object.assign(msg, {
-              departing_url: sender.tab.url,
-              url: msg.unhashed_url,
-              title: sender.tab.title
-            })
-            msg.tabId = sender.tab.id;
-            if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
-            this.event.emit(EVENT_NAMES.tabContent, msg, false);
-            sendResponse(true);
-
           }
+
+          // even if the content is block, the metainformation is sent in order to
+          // keep track of the precursors
+          msg = Object.assign(msg, {
+            departing_url: sender.tab.url,
+            url: msg.unhashed_url,
+            title: sender.tab.title
+          })
+          msg.tabId = sender.tab.id;
+          if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
+          this.event.emit(EVENT_NAMES.tabContent, msg, false);
+          sendResponse(true);
+
         }
         
         // return true;
