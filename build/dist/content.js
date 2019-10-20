@@ -11797,11 +11797,13 @@ function (_Tracker) {
 
                 _this6._toolbarHandler(function (nr) {
                   _this6.eventFn.onEvent({
-                    event: 'like',
+                    event: 'reaction',
                     type: 'postanswer',
                     values: _this6._getValues(articel).concat([{
-                      name: 'like-value',
-                      value: _this6.getValueOfLikeNumber(nr)
+                      name: 'reation-value',
+                      value: nr['data_reaction'],
+                      aria_label: nr['aria_label'],
+                      reaction: _this6.getValueOfLikeNumber(nr['data_reaction'])
                     }, {
                       name: 'postanswer-count-likes',
                       value: count

@@ -528,12 +528,21 @@ export default class FacebookTracker extends Tracker{
             this._toolbarHandler(nr => {
               this.eventFn.onEvent(
                 {
-                  event: 'like',
+                  event: 'reaction',
                   type: 'postanswer',
-                  values: this._getValues(articel).concat([
-                    {name: 'like-value', value: this.getValueOfLikeNumber(nr)},
-                    {name: 'postanswer-count-likes', value: count},
-                    {name: 'postText', value: text}
+                  values: this._getValues(articel).concat([{
+                     name: 'reation-value', 
+                     value: nr['data_reaction'],
+                     aria_label: nr['aria_label'],
+                     reaction: this.getValueOfLikeNumber(nr['data_reaction'])
+                    },
+                    {
+                      name: 'postanswer-count-likes', 
+                      value: count
+                    },{
+                      name: 'postText', 
+                      value: text
+                    }
                   ])
                 }
               )
