@@ -10167,6 +10167,15 @@ function (_MultiFetch) {
       return true;
     }
     /**
+     * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
+     */
+
+  }, {
+    key: "is_content_allowed",
+    value: function is_content_allowed() {
+      return true;
+    }
+    /**
       * [is_url_change check if the url has changed]
       */
 
@@ -10891,7 +10900,7 @@ function (_MultiFetch) {
                     } else {
                       // if is it ok to track the current address, and some html was
                       // recovered, then send the data
-                      if (html && this.is_path_allow(location.pathname)) {
+                      if (html && this.is_path_allow(location.pathname) && this.is_content_allowed()) {
                         if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: html,
@@ -10981,7 +10990,7 @@ function (_Tracker) {
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
-    _this.allow = true;
+    _this.is_allowed = null;
     _this.facebook_debug = false;
     _this.facebook_events_debug = false;
     _this.elements = [];
@@ -11060,8 +11069,6 @@ function (_Tracker) {
     _this.documentHead = '';
     _this.lastUrlPath = '';
 
-    _this._setAllow();
-
     if (_this.allow) {
       _this._joinGroup();
 
@@ -11073,51 +11080,28 @@ function (_Tracker) {
     return _this;
   }
   /**
-   * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
 
 
   FacebookTracker_createClass(FacebookTracker, [{
-    key: "_setAllow",
-    value: function _setAllow() {
-      var _this2 = this;
+    key: "is_content_allowed",
+    value: function is_content_allowed() {
+      if (this.is_allowed == null) {
+        // assume it is allowed
+        this.is_allowed = true; // detect the sidebar of the timelines, not always allowed to track timelines
 
-      return new Promise(function (resolve, reject) {
-        // console.log(this.lastURL!==location.pathname, this.lastURL, location.pathname);
-        if (_this2.lastUrlPath !== location.pathname) {
-          setTimeout(function () {
-            _this2.lastUrlPath = location.pathname; // assume it is allowed
+        var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
-            _this2.allow = true; //for (let query of this.eventElements.allowNotToTracked) {
-            //let found = document.querySelectorAll(query+':not(.tracked)');
-            // console.log('found', found);
-            //this.allow = !found.length>0
-            //}
-            // console.log('ALLOW?', this.allow);
-            // own profile
-            // if (document.querySelector('fbProfileCoverPhotoSelector')){
-            //   this.allow = true;
-            // }
-            //public page
-            // if (document.querySelector('#entity_sidebar')){
-            //   this.allow = true;
-            // }
-
-            var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
-
-            if (sidebar_timeline) {
-              // this is not my own timeline
-              if (!sidebar_timeline.querySelector('._6a._m')) {
-                _this2.allow = false;
-              }
-            }
-
-            resolve();
-          }, 300);
-        } else {
-          resolve();
+        if (sidebar_timeline) {
+          // this is not my own timeline
+          if (!sidebar_timeline.querySelector('._6a._m')) {
+            this.is_allowed = false;
+          }
         }
-      });
+      }
+
+      return this.is_allowed;
     }
     /**
      * [_getValues return values of articel]
@@ -11358,7 +11342,7 @@ function (_Tracker) {
   }, {
     key: "_setCommentEvent",
     value: function _setCommentEvent(articel) {
-      var _this3 = this;
+      var _this2 = this;
 
       setTimeout(function () {
         var _iteratorNormalCompletion3 = true;
@@ -11366,28 +11350,28 @@ function (_Tracker) {
         var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator3 = _this3.eventElements.commentButton[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          for (var _iterator3 = _this2.eventElements.commentButton[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var query = _step3.value;
             var commentButtons = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentButtons.length; i++) {
               commentButtons[i].classList.add('tracked');
-              if (_this3.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this2.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
               commentButtons[i].addEventListener('click', function () {
-                _this3._eventComment(articel, function (comment) {
-                  _this3.eventFn.onEvent({
+                _this2._eventComment(articel, function (comment) {
+                  _this2.eventFn.onEvent({
                     event: 'comment',
                     type: 'articel',
-                    values: _this3._getValues(articel).concat([{
+                    values: _this2._getValues(articel).concat([{
                       name: 'comment',
                       value: comment
                     }])
                   });
                 });
 
-                _this3._eventcommentFromCommentButton(articel);
+                _this2._eventcommentFromCommentButton(articel);
 
-                _this3._setLikeCommentEvent(articel, 1500); // this._setCommentEvent(articel);
+                _this2._setLikeCommentEvent(articel, 1500); // this._setCommentEvent(articel);
 
               });
             }
@@ -11417,7 +11401,7 @@ function (_Tracker) {
   }, {
     key: "_eventcommentFromCommentButton",
     value: function _eventcommentFromCommentButton(articel) {
-      var _this4 = this;
+      var _this3 = this;
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
       setTimeout(function () {
@@ -11432,14 +11416,14 @@ function (_Tracker) {
 
             for (i = 0; i < commentButtons.length; i++) {
               commentButtons[i].classList.add('tracked');
-              if (_this4.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this3.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
               commentButtons[i].addEventListener('click', function (e) {
                 if (s.hasOwnProperty('previousElement')) {
-                  var found = _this4.getParentElement(e.srcElement, s.previousElement);
+                  var found = _this3.getParentElement(e.srcElement, s.previousElement);
 
                   var comment = found.previousElementSibling;
                 } else if (s.hasOwnProperty('nextElement')) {
-                  var comment = _this4.getParentElement(e.srcElement, s.nextElement);
+                  var comment = _this3.getParentElement(e.srcElement, s.nextElement);
 
                   var found = comment.nextElementSibling; // comment box
                 }
@@ -11450,12 +11434,12 @@ function (_Tracker) {
                       count = 0;
                   if (countElements.length > 0) count = parseInt(countElements[0].textContent, 10);
 
-                  _this4._eventComment(found, function (comment) {
+                  _this3._eventComment(found, function (comment) {
                     // console.log(found, comment);
-                    _this4.eventFn.onEvent({
+                    _this3.eventFn.onEvent({
                       event: 'comment',
                       type: 'postanswer',
-                      values: _this4._getValues(articel).concat([{
+                      values: _this3._getValues(articel).concat([{
                         name: 'comment',
                         value: comment
                       }, {
@@ -11467,14 +11451,14 @@ function (_Tracker) {
                       }])
                     });
 
-                    if (_this4.facebook_debug) console.log('commtent  ' + comment + ' auf comment ' + text);
+                    if (_this3.facebook_debug) console.log('commtent  ' + comment + ' auf comment ' + text);
                   }, 0);
                 }, 500);
               });
             }
           };
 
-          for (var _iterator4 = _this4.eventElements.commentFromCommentButton[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          for (var _iterator4 = _this3.eventElements.commentFromCommentButton[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
             var i;
 
             _loop();
@@ -11506,7 +11490,7 @@ function (_Tracker) {
   }, {
     key: "_eventComment",
     value: function _eventComment(articel) {
-      var _this5 = this;
+      var _this4 = this;
 
       var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
       var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000;
@@ -11516,22 +11500,22 @@ function (_Tracker) {
         var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator5 = _this5.eventElements.commentfields[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          for (var _iterator5 = _this4.eventElements.commentfields[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
             var query = _step5.value;
             var commentfields = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < commentfields.length; i++) {
               commentfields[i].classList.add('tracked');
-              if (_this5.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this4.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid red !important;");
               commentfields[i].addEventListener('keyup', function (e) {
                 var spans = e.srcElement.querySelectorAll('span[data-text="true"]');
 
                 if (spans.length > 0) {
                   var comment = spans[spans.length - 1].textContent;
-                  if (_this5.facebook_events_debug) fn('TEST ' + comment);
+                  if (_this4.facebook_events_debug) fn('TEST ' + comment);
 
                   if (e.keyCode == 13) {
-                    if (_this5.facebook_debug) console.log('comment', comment);
+                    if (_this4.facebook_debug) console.log('comment', comment);
                     fn(comment);
                   }
                 }
@@ -11565,7 +11549,7 @@ function (_Tracker) {
   }, {
     key: "_setShareEvent",
     value: function _setShareEvent(articel) {
-      var _this6 = this;
+      var _this5 = this;
 
       var after = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -11574,17 +11558,17 @@ function (_Tracker) {
         setTimeout(function () {
           for (var i = 0; i < shareButton.length; i++) {
             shareButton[i].classList.add('tracked');
-            if (_this6.facebook_debug) shareButton[i].setAttribute("style", "border:2px solid red !important;");
+            if (_this5.facebook_debug) shareButton[i].setAttribute("style", "border:2px solid red !important;");
             var shares = shareButton[i].querySelectorAll('ul li a:not(.tracked)');
 
             for (var i = 0; i < shares.length; i++) {
               shares[i].classList.add('tracked');
-              if (_this6.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this5.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
               shares[i].addEventListener('click', function (e) {
-                _this6.eventFn.onEvent({
+                _this5.eventFn.onEvent({
                   event: 'share',
                   type: 'articel',
-                  values: _this6._getValues(articel).concat([{
+                  values: _this5._getValues(articel).concat([{
                     name: 'choice',
                     value: e.srcElement.textContent
                   }])
@@ -11592,11 +11576,11 @@ function (_Tracker) {
 
                 console.log('share', e.srcElement.textContent);
               });
-              if (_this6.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
-                _this6.eventFn.onEvent({
+              if (_this5.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
+                _this5.eventFn.onEvent({
                   event: 'share',
                   type: 'postanswer',
-                  values: _this6._getValues(articel).concat([{
+                  values: _this5._getValues(articel).concat([{
                     name: 'value',
                     value: e.srcElement.textContent
                   }])
@@ -11613,18 +11597,18 @@ function (_Tracker) {
         var _iteratorError6 = undefined;
 
         try {
-          for (var _iterator6 = _this6.eventElements.shareButtonBevor[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          for (var _iterator6 = _this5.eventElements.shareButtonBevor[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             var query = _step6.value;
             var shares = articel.querySelectorAll(query + ':not(.tracked)');
 
             for (var i = 0; i < shares.length; i++) {
               shares[i].classList.add('tracked');
-              if (_this6.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this5.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
 
               if (after == false) {
-                if (_this6.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
+                if (_this5.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
                   setTimeout(function () {
-                    return _this6._setShareEvent(articel, true);
+                    return _this5._setShareEvent(articel, true);
                   }, 100);
                 });
               }
@@ -11705,7 +11689,7 @@ function (_Tracker) {
   }, {
     key: "_setLikeCommentEvent",
     value: function _setLikeCommentEvent(articel) {
-      var _this7 = this;
+      var _this6 = this;
 
       var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
       setTimeout(function () {
@@ -11719,21 +11703,21 @@ function (_Tracker) {
             var buttons = articel.querySelectorAll(s.query);
 
             for (i = 0; i < buttons.length; i++) {
-              if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this6.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
               buttons[i].addEventListener('click', function (e) {
-                var text = _this7.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
+                var text = _this6.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
 
                 var count = 0,
-                    countElements = _this7.getParentElement(e.srcElement, s.countComment.parent).querySelectorAll(s.countComment.query);
+                    countElements = _this6.getParentElement(e.srcElement, s.countComment.parent).querySelectorAll(s.countComment.query);
 
                 if (countElements.length > 0) count = parseInt(countElements[0].textContent, 10);
 
-                _this7.eventFn.onEvent({
+                _this6.eventFn.onEvent({
                   event: 'like',
                   type: 'postanswer',
-                  values: _this7._getValues(articel).concat([{
+                  values: _this6._getValues(articel).concat([{
                     name: 'like-value',
-                    value: _this7.getValueOfLikeNumber(1)
+                    value: _this6.getValueOfLikeNumber(1)
                   }, {
                     name: 'postanswer-count-likes',
                     value: count
@@ -11743,25 +11727,25 @@ function (_Tracker) {
                   }])
                 });
 
-                if (_this7.facebook_debug) console.log('like comment 1 text => ', text);
+                if (_this6.facebook_debug) console.log('like comment 1 text => ', text);
               });
               buttons[i].addEventListener('mouseover', function (e) {
-                var text = _this7.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
+                var text = _this6.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
 
                 var count = 0,
-                    countElements = _this7.getParentElement(e.srcElement, s.countComment.parent).querySelectorAll(s.countComment.query);
+                    countElements = _this6.getParentElement(e.srcElement, s.countComment.parent).querySelectorAll(s.countComment.query);
 
                 if (countElements.length > 0) {
                   count = parseInt(countElements[0].textContent, 10);
                 }
 
-                _this7._toolbarHandler(function (nr) {
-                  _this7.eventFn.onEvent({
+                _this6._toolbarHandler(function (nr) {
+                  _this6.eventFn.onEvent({
                     event: 'like',
                     type: 'postanswer',
-                    values: _this7._getValues(articel).concat([{
+                    values: _this6._getValues(articel).concat([{
                       name: 'like-value',
-                      value: _this7.getValueOfLikeNumber(nr)
+                      value: _this6.getValueOfLikeNumber(nr)
                     }, {
                       name: 'postanswer-count-likes',
                       value: count
@@ -11776,7 +11760,7 @@ function (_Tracker) {
             }
           };
 
-          for (var _iterator7 = _this7.eventElements.likeComment[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          for (var _iterator7 = _this6.eventElements.likeComment[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
             var i;
 
             _loop2();
@@ -11805,7 +11789,7 @@ function (_Tracker) {
   }, {
     key: "_setLikeEvent",
     value: function _setLikeEvent(articel) {
-      var _this8 = this;
+      var _this7 = this;
 
       setTimeout(function () {
         var _iteratorNormalCompletion8 = true;
@@ -11813,33 +11797,33 @@ function (_Tracker) {
         var _iteratorError8 = undefined;
 
         try {
-          for (var _iterator8 = _this8.eventElements.likearticelButton[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          for (var _iterator8 = _this7.eventElements.likearticelButton[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
             var query = _step8.value;
             var buttons = articel.querySelectorAll(query);
 
             for (var i = 0; i < buttons.length; i++) {
-              if (_this8.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+              if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
               buttons[i].addEventListener('click', function () {
-                _this8.eventFn.onEvent({
+                _this7.eventFn.onEvent({
                   event: 'like',
                   type: 'articel',
-                  values: _this8._getValues(articel).concat([{
+                  values: _this7._getValues(articel).concat([{
                     name: 'like-value',
-                    value: _this8.getValueOfLikeNumber(1)
+                    value: _this7.getValueOfLikeNumber(1)
                   }])
                 });
 
-                if (_this8.facebook_debug) console.log('like 1', articel);
+                if (_this7.facebook_debug) console.log('like 1', articel);
               });
               buttons[i].addEventListener('mouseover', function () {
                 // console.log(this._getValues(articel));
-                _this8._toolbarHandler(function (nr) {
-                  _this8.eventFn.onEvent({
+                _this7._toolbarHandler(function (nr) {
+                  _this7.eventFn.onEvent({
                     event: 'like',
                     type: 'articel',
-                    values: _this8._getValues(articel).concat([{
+                    values: _this7._getValues(articel).concat([{
                       name: 'like-value',
-                      value: _this8.getValueOfLikeNumber(nr)
+                      value: _this7.getValueOfLikeNumber(nr)
                     }])
                   });
                 });
@@ -11870,26 +11854,26 @@ function (_Tracker) {
   }, {
     key: "_toolbarHandler",
     value: function _toolbarHandler() {
-      var _this9 = this;
+      var _this8 = this;
 
       var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
       var remove = function remove() {
-        var length = _this9.trackedToolbarButtons.length || 0;
+        var length = _this8.trackedToolbarButtons.length || 0;
 
         for (var b = 0; b < length; b++) {
-          _this9.trackedToolbarButtons[b].classList.remove("tracked");
+          _this8.trackedToolbarButtons[b].classList.remove("tracked");
 
-          if (_this9.facebook_debug) _this9.trackedToolbarButtons[b].setAttribute("style", "border: none");
+          if (_this8.facebook_debug) _this8.trackedToolbarButtons[b].setAttribute("style", "border: none");
 
-          _this9.trackedToolbarButtons[b].onclick = function (e) {};
+          _this8.trackedToolbarButtons[b].onclick = function (e) {};
 
-          _this9.trackedToolbarButtons[b].onmouseover = function (e) {};
+          _this8.trackedToolbarButtons[b].onmouseover = function (e) {};
 
-          delete _this9.trackedToolbarButtons[b];
+          delete _this8.trackedToolbarButtons[b];
         }
 
-        _this9.trackedToolbarButtons = _this9.trackedToolbarButtons.filter(function (e) {
+        _this8.trackedToolbarButtons = _this8.trackedToolbarButtons.filter(function (e) {
           return e != undefined;
         });
       };
@@ -11900,16 +11884,16 @@ function (_Tracker) {
         for (var a = 0; a < buttons.length; a++) {
           buttons[a].classList.add('tracked');
 
-          _this9.trackedToolbarButtons.push(buttons[a]);
+          _this8.trackedToolbarButtons.push(buttons[a]);
 
-          if (_this9.facebook_debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
+          if (_this8.facebook_debug) buttons[a].setAttribute("style", "border:2px solid red !important;");
 
           buttons[a].onclick = function (e) {
-            if (_this9.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
+            if (_this8.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
             fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
           };
 
-          if (_this9.facebook_events_debug) buttons[a].onmouseover = function (e) {
+          if (_this8.facebook_events_debug) buttons[a].onmouseover = function (e) {
             console.log('mouseOver');
             layer.stop();
             fn(parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10));
@@ -11921,14 +11905,14 @@ function (_Tracker) {
         var layer = document.querySelectorAll('.uiLayer div[role="toolbar"]');
 
         var _loop3 = function _loop3(i) {
-          if (_this9.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
+          if (_this8.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(function () {
-            if (_this9.facebook_debug) console.log('START REMOVE');
-            if (_this9.facebook_debug) layer[i].setAttribute("style", "border: none");
+            if (_this8.facebook_debug) console.log('START REMOVE');
+            if (_this8.facebook_debug) layer[i].setAttribute("style", "border: none");
             remove();
           }, 2000));
-          if (_this9.facebook_debug) console.log('start=>', layer[i].timeouts);
+          if (_this8.facebook_debug) console.log('start=>', layer[i].timeouts);
 
           layer[i].stop = function () {
             for (var c in layer[i].timeouts) {
@@ -11941,13 +11925,13 @@ function (_Tracker) {
             layer[i].timeouts = layer[i].timeouts.filter(function (e) {
               return e != undefined;
             });
-            if (_this9.facebook_debug) console.log('STOP', layer[i].timeouts);
+            if (_this8.facebook_debug) console.log('STOP', layer[i].timeouts);
           };
 
           layer[i].onmouseleave = function (e) {
             layer[i].stop();
             layer[i].timeouts.push(setTimeout(function () {
-              if (_this9.facebook_debug) layer[i].setAttribute("style", "border: none");
+              if (_this8.facebook_debug) layer[i].setAttribute("style", "border: none");
               remove();
             }, 1100));
           };
@@ -11973,7 +11957,7 @@ function (_Tracker) {
   }, {
     key: "_joinGroup",
     value: function _joinGroup() {
-      var _this10 = this;
+      var _this9 = this;
 
       var _iteratorNormalCompletion9 = true;
       var _didIteratorError9 = false;
@@ -12006,7 +11990,7 @@ function (_Tracker) {
                 name = elementsOfGroupname[0].textContent;
               }
 
-              if (_this10.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
+              if (_this9.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
             });
             if (this.facebook_events_debug) buttons[i].addEventListener('mouseover', function (e) {
               var elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
@@ -12027,7 +12011,7 @@ function (_Tracker) {
                 name = elementsOfGroupname[0].textContent;
               }
 
-              _this10.eventFn.onEvent({
+              _this9.eventFn.onEvent({
                 event: 'joinGroup',
                 type: 'info',
                 values: [{
@@ -12077,7 +12061,7 @@ function (_Tracker) {
       var _getDom = FacebookTracker_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2() {
-        var _this11 = this;
+        var _this10 = this;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -12094,40 +12078,26 @@ function (_Tracker) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
-                            _context.prev = 0;
-                            _context.next = 3;
-                            return _this11._setAllow();
-
-                          case 3:
-                            if (_this11.allow) {
-                              found = _this11._getPublicArticels();
+                            try {
+                              found = _this10._getPublicArticels();
 
                               for (i = 0; i < found.length; i++) {
-                                _this11.elements.push(found[i]);
+                                _this10.elements.push(found[i]);
 
-                                _this11.elementStrings += found[i].outerHTML;
+                                _this10.elementStrings += found[i].outerHTML;
                               }
 
-                              resolve('<html>' + _this11.documentHead + '<body>' + _this11.elementStrings + '</body>' + '</html>');
-                            } else {
-                              if (_this11.facebook_debug) console.log('Not allow');
-                              resolve(false);
+                              resolve('<html>' + _this10.documentHead + '<body>' + _this10.elementStrings + '</body>' + '</html>');
+                            } catch (err) {
+                              reject(err);
                             }
 
-                            _context.next = 9;
-                            break;
-
-                          case 6:
-                            _context.prev = 6;
-                            _context.t0 = _context["catch"](0);
-                            reject(_context.t0);
-
-                          case 9:
+                          case 1:
                           case "end":
                             return _context.stop();
                         }
                       }
-                    }, _callee, null, [[0, 6]]);
+                    }, _callee);
                   }));
 
                   return function (_x, _x2) {
@@ -12155,10 +12125,10 @@ function (_Tracker) {
   }, {
     key: "onStart",
     value: function onStart(fn) {
-      var _this12 = this;
+      var _this11 = this;
 
       setTimeout(function () {
-        if (_this12.facebook_debug) console.log('START!!!!');
+        if (_this11.facebook_debug) console.log('START!!!!');
         fn(2500);
       }, 1000);
     }

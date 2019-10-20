@@ -101,6 +101,14 @@ export default class Tracker extends MultiFetch {
 
 
   /**
+   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   */
+  is_content_allowed() {
+    return true;
+  }
+
+
+  /**
     * [is_url_change check if the url has changed]
     */
   is_url_change(){
@@ -490,8 +498,7 @@ export default class Tracker extends MultiFetch {
         } else {
           // if is it ok to track the current address, and some html was
           // recovered, then send the data
-          if (html && this.is_path_allow(location.pathname)){
-
+          if (html && this.is_path_allow(location.pathname) && this.is_content_allowed()){
             if (this.debug) console.log('======Emit Event: onData (DATA) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
               html: html, 

@@ -7,7 +7,8 @@ export default class FacebookTracker extends Tracker{
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
-    this.allow = true;
+
+    this.is_allowed = null;
     this.facebook_debug = false;
     this.facebook_events_debug = false;
     this.elements = [];
@@ -36,7 +37,6 @@ export default class FacebookTracker extends Tracker{
     this.documentHead = '';
 
     this.lastUrlPath = '';
-    this._setAllow();
 
     if(this.allow){
       this._joinGroup();
@@ -56,52 +56,28 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_setAllow check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
-  _setAllow(){
-    return new Promise((resolve, reject) => {
-      // console.log(this.lastURL!==location.pathname, this.lastURL, location.pathname);
-      if(this.lastUrlPath!==location.pathname){
-        setTimeout(() => {
-          this.lastUrlPath = location.pathname
-          
-          // assume it is allowed
-          this.allow = true;
+  is_content_allowed() {
+    if (this.is_allowed == null){
+
+      // assume it is allowed
+      this.is_allowed = true;
 
 
-          //for (let query of this.eventElements.allowNotToTracked) {
-            //let found = document.querySelectorAll(query+':not(.tracked)');
-            // console.log('found', found);
-            //this.allow = !found.length>0
-          //}
-          // console.log('ALLOW?', this.allow);
-          
-          // own profile
-          // if (document.querySelector('fbProfileCoverPhotoSelector')){
-          //   this.allow = true;
-          // }
-
-          //public page
-          // if (document.querySelector('#entity_sidebar')){
-          //   this.allow = true;
-          // }
-
-          
-          let sidebar_timeline = document.querySelector('#timeline_small_column');
-          // this is a timeline
-          if (sidebar_timeline){
-            // this is not my own timeline
-            if (!(sidebar_timeline.querySelector('._6a._m'))){
-              this.allow = false;
-            }
-          }
-
-          resolve();
-        }, 300)
-      }else{
-        resolve();
+      // detect the sidebar of the timelines, not always allowed to track timelines
+      let sidebar_timeline = document.querySelector('#timeline_small_column');
+      
+      // this is a timeline
+      if (sidebar_timeline){
+        // this is not my own timeline
+        if (!(sidebar_timeline.querySelector('._6a._m'))){
+          this.is_allowed = false;
+        }
       }
-    });
+    }
+    return this.is_allowed;
+
   }
 
   /**
@@ -691,19 +667,13 @@ export default class FacebookTracker extends Tracker{
    */
   async getDom(){
     return new Promise(async (resolve, reject) => {
-      try {
-        await this._setAllow();
-        if(this.allow){
-          let found = this._getPublicArticels();
-          for (var i = 0; i < found.length; i++) {
-            this.elements.push(found[i]);
-            this.elementStrings += found[i].outerHTML
-          }
-          resolve('<html>'+this.documentHead+'<body>'+this.elementStrings+'</body>'+'</html>');
-        }else{
-          if(this.facebook_debug) console.log('Not allow');
-          resolve(false);
+      try {        
+        let found = this._getPublicArticels();
+        for (var i = 0; i < found.length; i++) {
+          this.elements.push(found[i]);
+          this.elementStrings += found[i].outerHTML
         }
+        resolve('<html>'+this.documentHead+'<body>'+this.elementStrings+'</body>'+'</html>');
       } catch (err) {
         reject(err)
       }
