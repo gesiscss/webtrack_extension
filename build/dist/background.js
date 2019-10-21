@@ -35296,7 +35296,7 @@ function () {
     this.tabCache = new TabCache_TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT); // this.tabCache = tabCache;
 
     this.tabId = tabId;
-    this.id = -1;
+    this.id = '-1';
     this.isInit = false;
     this.DEBUG = true;
     this.nr = 1;
@@ -35751,7 +35751,7 @@ function () {
 
       var _id = '(' + nr + '-' + this.tabId + '-' + +now + ')';
 
-      this.id = data.unhashed_url.substr(0, 255 - _id.length) + _id;
+      this.id = data.unhashed_url.substr(0, 240 - _id.length) + _id;
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
         id: this.id,
@@ -37374,7 +37374,10 @@ function () {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.DEBUG = true;
+    this.DEBUG = true; // fields that should be anonymized
+
+    this.to_anonym = ['departing_url', 'id', 'landing_url', 'precursor_id', 'title', 'unhashed_url', 'url'];
+    this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
 
     try {
       this.projectId = this.config.getSelect();
@@ -37718,6 +37721,37 @@ function () {
         }
       }
     }
+  }, {
+    key: "escapeRegExp",
+    value: function escapeRegExp(string) {
+      return string.replace(this.regex_escapers, '\\$&'); // $& means the whole matched string
+    }
+  }, {
+    key: "anonymize",
+    value: function anonymize(page) {
+      if (page.meta.hasOwnProperty('anonym')) {
+        var anonym = page.meta.anonym;
+        var piperegex = '';
+
+        for (var key in anonym) {
+          var escaped = this.escapeRegExp(anonym[key]);
+          piperegex += escaped + "|";
+          var regex = new RegExp(escaped, "g");
+
+          for (var i = 0; i < this.to_anonym.length; i++) {
+            page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+          }
+        }
+
+        var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
+        page['content'][0].html = page['content'][0].html.replace(pipe_regex, '_______');
+        page.meta.description = page.meta.description.replace(pipe_regex, '_______');
+        page.meta.keywords = page.meta.keywords.replace(pipe_regex, '_______');
+        delete page.meta.anonym;
+      }
+
+      return page;
+    }
     /**
      * [sendData upload all pages to the target]
      * @param  {Array} [pages=null]         [description]
@@ -37766,7 +37800,7 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 62;
+                    _context5.next = 61;
                     break;
                   }
 
@@ -37780,7 +37814,7 @@ function () {
 
                 case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 47;
+                    _context5.next = 46;
                     break;
                   }
 
@@ -37817,13 +37851,12 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
-                  console.log(page.start);
-                  _context5.next = 29;
+                  _context5.next = 28;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
                     projectId: _this4.projectId,
                     versionType: _this4.config.versionType,
-                    pages: [page]
+                    pages: [_this4.anonymize(page)]
                   }), function (status) {
                     count += 1; // this.event.emit('onSendData', {
                     //   max: max,
@@ -37833,7 +37866,7 @@ function () {
                     // });
                   });
 
-                case 29:
+                case 28:
                   send = _context5.sent;
                   count += 1;
 
@@ -37859,11 +37892,11 @@ function () {
 
 
                   if (_this4.DEBUG) console.log('<- sendData');
-                  _context5.next = 44;
+                  _context5.next = 43;
                   break;
 
-                case 37:
-                  _context5.prev = 37;
+                case 36:
+                  _context5.prev = 36;
                   _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
@@ -37877,61 +37910,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 44:
+                case 43:
                   _iteratorNormalCompletion2 = true;
                   _context5.next = 15;
                   break;
 
-                case 47:
-                  _context5.next = 53;
+                case 46:
+                  _context5.next = 52;
                   break;
 
-                case 49:
-                  _context5.prev = 49;
+                case 48:
+                  _context5.prev = 48;
                   _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 53:
+                case 52:
+                  _context5.prev = 52;
                   _context5.prev = 53;
-                  _context5.prev = 54;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 56:
-                  _context5.prev = 56;
+                case 55:
+                  _context5.prev = 55;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 59;
+                    _context5.next = 58;
                     break;
                   }
 
                   throw _iteratorError2;
 
+                case 58:
+                  return _context5.finish(55);
+
                 case 59:
-                  return _context5.finish(56);
+                  return _context5.finish(52);
 
                 case 60:
-                  return _context5.finish(53);
-
-                case 61:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 62:
+                case 61:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 73;
+                  _context5.next = 72;
                   break;
 
-                case 66:
-                  _context5.prev = 66;
+                case 65:
+                  _context5.prev = 65;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37944,19 +37977,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 73:
-                  _context5.prev = 73;
+                case 72:
+                  _context5.prev = 72;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(73);
+                  return _context5.finish(72);
 
-                case 76:
+                case 75:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 66, 73, 76], [13, 49, 53, 61], [18, 37], [54,, 56, 60]]);
+          }, _callee5, null, [[0, 65, 72, 75], [13, 48, 52, 60], [18, 36], [53,, 55, 59]]);
         }));
 
         return function (_x4, _x5) {

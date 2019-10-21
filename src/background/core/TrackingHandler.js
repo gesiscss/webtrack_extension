@@ -27,6 +27,20 @@ export default class TrackingHandler {
     this.config = config;
     this.event = new EventEmitter();
     this.DEBUG = true;
+
+    // fields that should be anonymized
+    this.to_anonym = [
+        'departing_url',
+        'id',
+        'landing_url',
+        'precursor_id',
+        'title',
+        'unhashed_url',
+        'url',
+      ];
+
+    this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
+
     try {
 
       this.projectId = this.config.getSelect();
@@ -205,6 +219,34 @@ export default class TrackingHandler {
     }
   }
 
+  escapeRegExp(string) {
+    return string.replace(this.regex_escapers, '\\$&'); // $& means the whole matched string
+  }
+
+  anonymize(page){
+    if (page.meta.hasOwnProperty('anonym')){
+      let anonym = page.meta.anonym;
+      let piperegex = '';
+      for (var key in anonym) {
+        let escaped = this.escapeRegExp(anonym[key]);
+        piperegex += escaped + "|";
+        let regex = new RegExp(escaped,"g");
+        for (var i = 0; i < this.to_anonym.length; i++) {
+          page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+        }
+      }
+
+      let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
+
+      page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_______');
+      page.meta.description = page.meta.description.replace(pipe_regex,'_______');
+      page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_______');
+
+      delete page.meta.anonym;
+    }
+    return page;
+  }
+
   /**
    * [sendData upload all pages to the target]
    * @param  {Array} [pages=null]         [description]
@@ -252,12 +294,11 @@ export default class TrackingHandler {
                 // }
 
                 if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
-                console.log(page.start);
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
                   versionType: this.config.versionType,
-                  pages: [page]
+                  pages: [this.anonymize(page)]
                 }), status => {
                   count += 1;
                   // this.event.emit('onSendData', {

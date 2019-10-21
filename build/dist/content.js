@@ -14878,14 +14878,12 @@ function () {
       } else if (object.hasOwnProperty('source')) {// object = {source: this.data.source.concat(object.source)}
         // type = 'source';
       } else if (object.hasOwnProperty('meta')) {
-        console.log(object.meta);
         object = {
           meta: Object.assign({
             description: '',
             keywords: ''
           }, object.meta)
         };
-        console.log(object.meta);
         type = 'meta';
       } else if (object.hasOwnProperty('event')) {
         object = {
