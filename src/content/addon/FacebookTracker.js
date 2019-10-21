@@ -9,7 +9,7 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
 
     this.is_allowed = null;
-    this.facebook_debug = false;
+    this.facebook_debug = true;
     this.facebook_events_debug = false;
     this.elements = [];
     this.elementStrings = '';
@@ -53,6 +53,12 @@ export default class FacebookTracker extends Tracker{
 
     this.pos_2nd_blacklist = ['about', 'friends_mutual', 
       'followers', 'following', 'friends', 'photos']
+
+    this.logged_uid = null;
+    this.logged_user_id = null;
+    this.logged_username = null;
+
+    this.setup_credentials();
 
   }
 
@@ -117,18 +123,93 @@ export default class FacebookTracker extends Tracker{
     return this.is_allowed;
   }
 
+
+  /**
+   * Indicates if the html correspond to a logged in user
+   * @return {boolean} true if the html corresponds to a Log In page
+   */
+  _isLoggedIn(){
+    return this.logged_uid != null;
+  }
+
+
+  /**
+   * get the id given an anchor element using the img of the anchor
+   * @param  {Location} anchor html element (<a>)
+   * @return {src} the user id that is taken from the id of the imate
+   */
+  get_user_id_from_img(location){
+    if (location){
+      let imgid = location.querySelector('img').getAttribute('id');
+      if (imgid) {
+        let imgid_parts = imgid.split('_');
+        if (imgid_parts.length > 0){
+          return imgid_parts[imgid_parts.length-1];
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Setup the credentials for the logged user (if any)
+   */
+  setup_credentials(){
+
+
+    let location = document.querySelector('._2s25._606w');
+    this.logged_username = this.get_username(location);
+    console.log(this.logged_username);
+
+    if (this.logged_username == null){
+      this.logged_user_id = this.get_user_id(location);
+    } else {
+      this.logged_user_id = this.get_user_id_from_img(location);
+    }
+
+    if (this.logged_user_id == null){
+      // grab the user id from the about
+      this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
+    }
+    console.log(this.logged_user_id);
+
+    
+
+    if (this.logged_username){
+      this.logged_uid = this.logged_username;
+    } else {
+      this.logged_uid = this.logged_user_id;
+    }
+
+    console.log(this.logged_uid);
+    
+
+
+  }
+
+  /**
+   * Comapare an anchor selector to the logged in user
+   * @param  {target} html element
+   * @param  {str} with the selector that will be compared to the logged user
+   * @return {Boolean} if it is the same as the logged in user
+   */
   is_link_same_as_logged_user(target, selector){
-    let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
-    if (logged_uid){
+    if (this.logged_uid){
+
       let profile_uid = this.get_username_or_id(target.querySelector(selector));
       if (profile_uid){
-        return logged_uid == profile_uid;
+        return this.logged_uid == profile_uid;
       }
     }
     return null;
   }
 
-
+  /**
+   * get the value of a paraemeter in the parameters of an url
+   * @param  {str} that contains the url paramesters, e.g. ?id=000&var=x
+   * @param  {str} name of the parameter that the value is being looked for
+   * @return {str} the value  of the partameter
+   */
   findGetParameter(params, parameterName) {
     var tmp = [];
     var items = params.substr(1).split("&");
@@ -141,14 +222,46 @@ export default class FacebookTracker extends Tracker{
     return null;
   }
 
+  /**
+   * get the username or id given an anchor element
+   * @param  {Location} anchor html element (<a>)
+   * @return {[type]} the username or id found in the anchor elment
+   */
   get_username_or_id(location){
     if (location) {
+      let username = this.get_username(location);
+      if (username) {
+        return username;
+      }
+
+      return this.get_user_id(location);
+    }
+    return null;
+  }
+
+  /**
+   * Get the username in an anchor
+   * @param  {Location} html anchor (<a>) element in which the username will be searched
+   * @return {str} the username
+   */
+  get_username(location){
+    if (location && location.pathname) {
       let username = location.pathname.split('/');
       if (username.length > 1) {
         return username[1];
       }
+    }
+    return null;
+  }
 
-      let id = findGetParameter('id', location.search);
+  /**
+   * Get the id of the user in an anchor
+   * @param  {Location} html anchor (<a>) element in which the id will be searched
+   * @return {str} the id
+   */
+  get_user_id(location){
+    if (location) {
+      let id = this.findGetParameter('id', location.search);
       return id;
     }
     return null;
@@ -252,7 +365,7 @@ export default class FacebookTracker extends Tracker{
     // try to detect if the is the same user as logged in
     let is_same = this.is_link_same_as_logged_user(target, '.fwn.fcg a');
 
-    if (is_same !=  null){
+    if (is_same != null){
       if (is_same){
         return true;
       }
@@ -774,7 +887,7 @@ export default class FacebookTracker extends Tracker{
    */
   async getDom(){
     return new Promise(async (resolve, reject) => {
-      try {        
+      try {      
         let found = this._getPublicArticels();
         for (var i = 0; i < found.length; i++) {
           this.elements.push(found[i]);

@@ -11009,7 +11009,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.is_allowed = null;
-    _this.facebook_debug = false;
+    _this.facebook_debug = true;
     _this.facebook_events_debug = false;
     _this.elements = [];
     _this.elementStrings = '';
@@ -11096,6 +11096,12 @@ function (_Tracker) {
     _this.startswith_blacklist = ['/events', '/stories', '/friends', '/messages', '/photo', '/marketplace', '/fundraisers', '/saved', '/recommendations', '/crisisresponse', '/settings'];
     _this.startswith_whitelist = ['/pg'];
     _this.pos_2nd_blacklist = ['about', 'friends_mutual', 'followers', 'following', 'friends', 'photos'];
+    _this.logged_uid = null;
+    _this.logged_user_id = null;
+    _this.logged_username = null;
+
+    _this.setup_credentials();
+
     return _this;
   }
   /**
@@ -11155,21 +11161,98 @@ function (_Tracker) {
 
       return this.is_allowed;
     }
+    /**
+     * Indicates if the html correspond to a logged in user
+     * @return {boolean} true if the html corresponds to a Log In page
+     */
+
   }, {
-    key: "is_link_same_as_logged_user",
-    value: function is_link_same_as_logged_user(target, selector) {
-      var logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+    key: "_isLoggedIn",
+    value: function _isLoggedIn() {
+      return this.logged_uid != null;
+    }
+    /**
+     * get the id given an anchor element using the img of the anchor
+     * @param  {Location} anchor html element (<a>)
+     * @return {src} the user id that is taken from the id of the imate
+     */
 
-      if (logged_uid) {
-        var profile_uid = this.get_username_or_id(target.querySelector(selector));
+  }, {
+    key: "get_user_id_from_img",
+    value: function get_user_id_from_img(location) {
+      if (location) {
+        var imgid = location.querySelector('img').getAttribute('id');
 
-        if (profile_uid) {
-          return logged_uid == profile_uid;
+        if (imgid) {
+          var imgid_parts = imgid.split('_');
+
+          if (imgid_parts.length > 0) {
+            return imgid_parts[imgid_parts.length - 1];
+          }
         }
       }
 
       return null;
     }
+    /**
+     * Setup the credentials for the logged user (if any)
+     */
+
+  }, {
+    key: "setup_credentials",
+    value: function setup_credentials() {
+      var location = document.querySelector('._2s25._606w');
+      this.logged_username = this.get_username(location);
+      console.log(this.logged_username);
+
+      if (this.logged_username == null) {
+        this.logged_user_id = this.get_user_id(location);
+      } else {
+        this.logged_user_id = this.get_user_id_from_img(location);
+      }
+
+      if (this.logged_user_id == null) {
+        // grab the user id from the about
+        this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
+      }
+
+      console.log(this.logged_user_id);
+
+      if (this.logged_username) {
+        this.logged_uid = this.logged_username;
+      } else {
+        this.logged_uid = this.logged_user_id;
+      }
+
+      console.log(this.logged_uid);
+    }
+    /**
+     * Comapare an anchor selector to the logged in user
+     * @param  {target} html element
+     * @param  {str} with the selector that will be compared to the logged user
+     * @return {Boolean} if it is the same as the logged in user
+     */
+
+  }, {
+    key: "is_link_same_as_logged_user",
+    value: function is_link_same_as_logged_user(target, selector) {
+      if (this.logged_uid) {
+        var profile_uid = this.get_username_or_id(target.querySelector(selector));
+
+        if (profile_uid) {
+          return this.logged_uid == profile_uid;
+        }
+      }
+
+      return null;
+    }
+    /**
+     * get the value of a paraemeter in the parameters of an url
+     * @param  {str} that contains the url paramesters, e.g. ?id=000&var=x
+     * @param  {str} name of the parameter that the value is being looked for
+     * @return {str} the value  of the partameter
+     */
+
   }, {
     key: "findGetParameter",
     value: function findGetParameter(params, parameterName) {
@@ -11186,17 +11269,57 @@ function (_Tracker) {
 
       return null;
     }
+    /**
+     * get the username or id given an anchor element
+     * @param  {Location} anchor html element (<a>)
+     * @return {[type]} the username or id found in the anchor elment
+     */
+
   }, {
     key: "get_username_or_id",
     value: function get_username_or_id(location) {
       if (location) {
+        var username = this.get_username(location);
+
+        if (username) {
+          return username;
+        }
+
+        return this.get_user_id(location);
+      }
+
+      return null;
+    }
+    /**
+     * Get the username in an anchor
+     * @param  {Location} html anchor (<a>) element in which the username will be searched
+     * @return {str} the username
+     */
+
+  }, {
+    key: "get_username",
+    value: function get_username(location) {
+      if (location && location.pathname) {
         var username = location.pathname.split('/');
 
         if (username.length > 1) {
           return username[1];
         }
+      }
 
-        var id = findGetParameter('id', location.search);
+      return null;
+    }
+    /**
+     * Get the id of the user in an anchor
+     * @param  {Location} html anchor (<a>) element in which the id will be searched
+     * @return {str} the id
+     */
+
+  }, {
+    key: "get_user_id",
+    value: function get_user_id(location) {
+      if (location) {
+        var id = this.findGetParameter('id', location.search);
         return id;
       }
 
