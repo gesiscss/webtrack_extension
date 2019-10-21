@@ -159,8 +159,6 @@ export default class ContentHandler {
     //   console.log('no content');
     // }
 
-
-    console.log(this.data);
     switch (type) {
       case 'html':
           let now = +new Date();

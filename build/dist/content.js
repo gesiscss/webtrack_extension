@@ -11026,7 +11026,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.is_allowed = null;
-    _this.facebook_debug = true;
+    _this.facebook_debug = false;
     _this.facebook_events_debug = false;
     _this.elements = [];
     _this.elementStrings = '';
@@ -14963,8 +14963,6 @@ function () {
       // } catch (e){
       //   console.log('no content');
       // }
-
-      console.log(this.data);
 
       switch (type) {
         case 'html':

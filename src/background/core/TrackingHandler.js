@@ -281,7 +281,16 @@ export default class TrackingHandler {
                 if(page.start instanceof Date){
                   //page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
                   page.start = moment.utc(page.start).format();
-                }  
+                } 
+                if (typeof page.start === 'string') { 
+                } else {
+                  console.log('page.start is not string!');
+                  try {
+                    page.start = page.start.toString();
+                  } catch (er) {
+                    page.start = '' + page.start;
+                  }
+                }
 
                 // @tico, if I ever manage to install a minifier in the extension
                 // for (let i in page.content) {
