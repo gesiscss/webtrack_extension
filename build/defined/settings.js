@@ -2,12 +2,12 @@ var settings = {
   companie: {
     name: "WebTrack"
   },
-  id: '86.119.40.74',
+  id: 'webtracker.sowi.unibe.ch',
   lang: 'de',
   versionType: 'Chrome',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: "https://86.119.40.74:8443/"
+  server: "https://webtracker.sowi.unibe.ch:8443/"
 }
