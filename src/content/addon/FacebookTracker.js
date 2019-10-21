@@ -156,10 +156,8 @@ export default class FacebookTracker extends Tracker{
    */
   setup_credentials(){
 
-
     let location = document.querySelector('._2s25._606w');
     this.logged_username = this.get_username(location);
-    console.log(this.logged_username);
 
     if (this.logged_username == null){
       this.logged_user_id = this.get_user_id(location);
@@ -171,19 +169,12 @@ export default class FacebookTracker extends Tracker{
       // grab the user id from the about
       this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
     }
-    console.log(this.logged_user_id);
-
-    
 
     if (this.logged_username){
       this.logged_uid = this.logged_username;
     } else {
       this.logged_uid = this.logged_user_id;
     }
-
-    console.log(this.logged_uid);
-    
-
 
   }
 

@@ -11203,7 +11203,6 @@ function (_Tracker) {
     value: function setup_credentials() {
       var location = document.querySelector('._2s25._606w');
       this.logged_username = this.get_username(location);
-      console.log(this.logged_username);
 
       if (this.logged_username == null) {
         this.logged_user_id = this.get_user_id(location);
@@ -11216,15 +11215,11 @@ function (_Tracker) {
         this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
       }
 
-      console.log(this.logged_user_id);
-
       if (this.logged_username) {
         this.logged_uid = this.logged_username;
       } else {
         this.logged_uid = this.logged_user_id;
       }
-
-      console.log(this.logged_uid);
     }
     /**
      * Comapare an anchor selector to the logged in user
