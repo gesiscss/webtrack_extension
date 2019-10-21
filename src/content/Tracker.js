@@ -26,7 +26,9 @@ export default class Tracker extends MultiFetch {
     }
     this.metadata = {
       description: [],
-      keywords: []
+      keywords: [],
+      anonym: ''
+
     };
     this.links = [];
     this.lastURL = '';
@@ -180,15 +182,20 @@ export default class Tracker extends MultiFetch {
    * @param  {Object} [data={}] [the data must have the property description or keywords]
    */
   updateMetaData(data={}){
-    for (let name in this.metadata) {
-      if(data.hasOwnProperty(name)){
-        this.metadata[name] = this.metadata[name].concat(data[name]);
-      }
+    let result = {};
+    if(data.hasOwnProperty('description')){
+      this.metadata['description'] = this.metadata['description'].concat(data['description']);
+      result['description'] = this.metadata['description'].join(',');
     }
-    let result = {}
-    for (let name in this.metadata) {
-      result[name] = this.metadata[name].join(',');
+
+    if(data.hasOwnProperty('keywords')){
+      this.metadata['keywords'] = this.metadata['keywords'].concat(data['keywords']);
+      result['keywords'] = this.metadata['keywords'].join(',');
     }
+
+    this.metadata['anonym'] = this.metadata['anonym'];
+    result['anonym'] = data['anonym'];
+
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
     this.eventEmitter.emit(EVENT_NAMES.data, {meta: result}, false);
   }

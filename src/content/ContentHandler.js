@@ -120,7 +120,9 @@ export default class ContentHandler {
       // object = {source: this.data.source.concat(object.source)}
       // type = 'source';
     } else if(object.hasOwnProperty('meta')){
+      console.log(object.meta);
       object = {meta: Object.assign({description: '', keywords: '' }, object.meta)}
+      console.log(object.meta);
       type = 'meta';
     } else if(object.hasOwnProperty('event')){
       object = {events: this.data.events.concat([object])}
@@ -159,6 +161,8 @@ export default class ContentHandler {
     //   console.log('no content');
     // }
 
+
+    console.log(this.data);
     switch (type) {
       case 'html':
           let now = +new Date();

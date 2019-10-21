@@ -10090,7 +10090,8 @@ function (_MultiFetch) {
     };
     _this.metadata = {
       description: [],
-      keywords: []
+      keywords: [],
+      anonym: ''
     };
     _this.links = [];
     _this.lastURL = '';
@@ -10283,19 +10284,20 @@ function (_MultiFetch) {
     key: "updateMetaData",
     value: function updateMetaData() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-      for (var name in this.metadata) {
-        if (data.hasOwnProperty(name)) {
-          this.metadata[name] = this.metadata[name].concat(data[name]);
-        }
-      }
-
       var result = {};
 
-      for (var _name in this.metadata) {
-        result[_name] = this.metadata[_name].join(',');
+      if (data.hasOwnProperty('description')) {
+        this.metadata['description'] = this.metadata['description'].concat(data['description']);
+        result['description'] = this.metadata['description'].join(',');
       }
 
+      if (data.hasOwnProperty('keywords')) {
+        this.metadata['keywords'] = this.metadata['keywords'].concat(data['keywords']);
+        result['keywords'] = this.metadata['keywords'].join(',');
+      }
+
+      this.metadata['anonym'] = this.metadata['anonym'];
+      result['anonym'] = data['anonym'];
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       this.eventEmitter.emit(EVENT_NAMES.data, {
         meta: result
@@ -10993,9 +10995,13 @@ function FacebookTracker_createClass(Constructor, protoProps, staticProps) { if 
 
 function FacebookTracker_possibleConstructorReturn(self, call) { if (call && (FacebookTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return FacebookTracker_assertThisInitialized(self); }
 
-function FacebookTracker_getPrototypeOf(o) { FacebookTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return FacebookTracker_getPrototypeOf(o); }
-
 function FacebookTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = FacebookTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function FacebookTracker_getPrototypeOf(o) { FacebookTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return FacebookTracker_getPrototypeOf(o); }
 
 function FacebookTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) FacebookTracker_setPrototypeOf(subClass, superClass); }
 
@@ -12048,6 +12054,29 @@ function (_Tracker) {
           }
         }
       }, 300);
+    }
+    /**
+     * get the metadata from the file
+     * @return {object} the metadata of the html
+     */
+
+  }, {
+    key: "getMetadata",
+    value: function getMetadata() {
+      var metadata = _get(FacebookTracker_getPrototypeOf(FacebookTracker.prototype), "getMetadata", this).call(this);
+
+      var anonym = {};
+
+      if (this.logged_user_id) {
+        anonym['user_id'] = this.logged_user_id;
+      }
+
+      if (this.logged_username) {
+        anonym['username'] = this.logged_username;
+      }
+
+      metadata['anonym'] = anonym;
+      return metadata;
     }
     /**
      * [_toolbarHandler event for reaction of smileys]
@@ -13522,9 +13551,9 @@ function TwitterTracker_possibleConstructorReturn(self, call) { if (call && (Twi
 
 function TwitterTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+function TwitterTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { TwitterTracker_get = Reflect.get; } else { TwitterTracker_get = function _get(target, property, receiver) { var base = TwitterTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return TwitterTracker_get(target, property, receiver || target); }
 
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = TwitterTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+function TwitterTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = TwitterTracker_getPrototypeOf(object); if (object === null) break; } return object; }
 
 function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
 
@@ -14291,7 +14320,7 @@ function (_Tracker) {
       var _this8 = this;
 
       if (this._isNotLoggedTwitter()) {
-        return _get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
+        return TwitterTracker_get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
       } else {
         return new Promise(function (resolve, reject) {
           var found = _this8.addPublicArticles();
@@ -14849,12 +14878,14 @@ function () {
       } else if (object.hasOwnProperty('source')) {// object = {source: this.data.source.concat(object.source)}
         // type = 'source';
       } else if (object.hasOwnProperty('meta')) {
+        console.log(object.meta);
         object = {
           meta: Object.assign({
             description: '',
             keywords: ''
           }, object.meta)
         };
+        console.log(object.meta);
         type = 'meta';
       } else if (object.hasOwnProperty('event')) {
         object = {
@@ -14887,6 +14918,8 @@ function () {
       // } catch (e){
       //   console.log('no content');
       // }
+
+      console.log(this.data);
 
       switch (type) {
         case 'html':

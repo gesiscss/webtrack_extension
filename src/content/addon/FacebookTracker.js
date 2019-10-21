@@ -741,6 +741,30 @@ export default class FacebookTracker extends Tracker{
     }, 300)
   }
 
+
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+  getMetadata(){
+    let metadata = super.getMetadata();
+    let anonym = {};
+
+    if (this.logged_user_id) {
+      anonym['user_id'] = this.logged_user_id;
+    }
+
+    if (this.logged_username) {
+      anonym['username'] = this.logged_username;
+    }
+
+    metadata['anonym'] = anonym;
+
+    return metadata;
+
+
+  }
+
   /**
    * [_toolbarHandler event for reaction of smileys]
    * @param  {Function} fn [default: ()=>{}]
