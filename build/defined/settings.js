@@ -2,13 +2,12 @@ var settings = {
   companie: {
     name: "WebTrack"
   },
-  id: 'localhost',
+  id: '86.119.40.74',
   lang: 'de',
   versionType: 'Chrome',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: "https://localhost:8443/"
-  // server: "https://va.uni-landau.de:8443/"
+  server: "https://86.119.40.74:8443/"
 }

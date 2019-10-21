@@ -10224,11 +10224,22 @@ function (_MultiFetch) {
   }, {
     key: "fetchMetaData",
     value: function fetchMetaData() {
+      var metadata = this.getMetadata();
+      this.updateMetaData(metadata);
+    }
+    /**
+     * get the metadata from the file
+     * @return {object} the metadata of the html
+     */
+
+  }, {
+    key: "getMetadata",
+    value: function getMetadata() {
       var metas = this._getElements(['head meta[name="description"]', 'head meta[name="keywords"]'], undefined, {
         setTracked: false
       });
 
-      var data = {
+      var metadata = {
         description: [],
         keywords: []
       };
@@ -10242,8 +10253,8 @@ function (_MultiFetch) {
           var name = meta.getAttribute('name');
           var content = meta.getAttribute('content');
 
-          if (data.hasOwnProperty(name)) {
-            data[name].push(content);
+          if (metadata.hasOwnProperty(name)) {
+            metadata[name].push(content);
           }
         }
       } catch (err) {
@@ -10261,7 +10272,7 @@ function (_MultiFetch) {
         }
       }
 
-      this.updateMetaData(data);
+      return metadata;
     }
     /**
      * [updateMetaData update the meta data and fire the event handler for update]

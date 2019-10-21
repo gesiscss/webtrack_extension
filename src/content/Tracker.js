@@ -151,19 +151,28 @@ export default class Tracker extends MultiFetch {
    * [fetchMetaData fetch and search meta-data]
    */
   fetchMetaData(){
+    let metadata = this.getMetadata();
+    this.updateMetaData(metadata);
+  }
+
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+  getMetadata(){
     let metas = this._getElements(['head meta[name="description"]', 'head meta[name="keywords"]'], undefined, {setTracked: false});
-    let data = {
+    let metadata = {
       description: [],
       keywords: []
     };
     for (let meta of metas) {
       let name = meta.getAttribute('name');
       let content = meta.getAttribute('content');
-      if(data.hasOwnProperty(name)) {
-        data[name].push(content);
+      if(metadata.hasOwnProperty(name)) {
+        metadata[name].push(content);
       }
     }
-    this.updateMetaData(data);
+    return metadata;
   }
 
   /**
