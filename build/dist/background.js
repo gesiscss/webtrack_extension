@@ -35759,7 +35759,7 @@ function () {
         hashes: [],
         landing_url: data.landing_url,
         title: data.title,
-        precursor_id: data.precursor_id,
+        precursor_id: data.precursor_id == null ? '' : data.precursor_id,
         meta: Object.assign({
           description: '',
           keywords: ''
@@ -37732,14 +37732,21 @@ function () {
       if (page.meta.hasOwnProperty('anonym')) {
         var anonym = page.meta.anonym;
         var piperegex = '';
+        console.log(page);
 
         for (var key in anonym) {
           var escaped = this.escapeRegExp(anonym[key]);
           piperegex += escaped + "|";
           var regex = new RegExp(escaped, "g");
+          console.log(regex);
+          console.log(this.to_anonym);
 
           for (var i = 0; i < this.to_anonym.length; i++) {
-            page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+            console.log(this.to_anonym[i]);
+
+            try {
+              page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+            } catch (e) {}
           }
         }
 

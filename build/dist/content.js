@@ -14486,8 +14486,13 @@ function (_Tracker) {
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(GoogleTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
-    _this.instagram_debug = false;
+    _this.google_debug = false;
+    _this.logged_email = null;
+    _this.logged_fullname = null;
     _this.startswith_blacklist = ['/accounts', '/settings'];
+
+    _this.setup_credentials();
+
     return _this;
   }
   /**
@@ -14506,6 +14511,48 @@ function (_Tracker) {
       }
 
       return target;
+    }
+    /**
+     * Setup the credentials for the logged user (if any)
+     */
+
+  }, {
+    key: "setup_credentials",
+    value: function setup_credentials() {
+      var email = document.querySelector('.gb_hb');
+
+      if (email) {
+        this.logged_email = email.innerText;
+      }
+
+      var fullname = document.querySelector('.gb_fb.gb_gb');
+
+      if (fullname) {
+        this.logged_fullname = fullname.innerText;
+      }
+    }
+    /**
+     * get the metadata from the file
+     * @return {object} the metadata of the html
+     */
+
+  }, {
+    key: "getMetadata",
+    value: function getMetadata() {
+      var metadata = GoogleTracker_get(GoogleTracker_getPrototypeOf(GoogleTracker.prototype), "getMetadata", this).call(this);
+
+      var anonym = {};
+
+      if (this.logged_fullname) {
+        anonym['email'] = this.logged_email;
+      }
+
+      if (this.logged_username) {
+        anonym['fullname'] = this.logged_fullname;
+      }
+
+      metadata['anonym'] = anonym;
+      return metadata;
     }
     /**
      * [return dom as string]

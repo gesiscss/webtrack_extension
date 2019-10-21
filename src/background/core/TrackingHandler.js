@@ -232,7 +232,9 @@ export default class TrackingHandler {
         piperegex += escaped + "|";
         let regex = new RegExp(escaped,"g");
         for (var i = 0; i < this.to_anonym.length; i++) {
-          page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+          try {
+            page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+          } catch (e){}
         }
       }
 

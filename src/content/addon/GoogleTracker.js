@@ -8,9 +8,13 @@ export default class GoogleTracker extends Tracker{
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
-    this.instagram_debug = false;
+    this.google_debug = false;
+    this.logged_email = null;
+    this.logged_fullname = null;
 
     this.startswith_blacklist = ['/accounts', '/settings'];
+
+    this.setup_credentials();
 
   }
 
@@ -25,6 +29,48 @@ export default class GoogleTracker extends Tracker{
       a_account.parentNode.removeChild(a_account);
     }
     return target;
+  }
+
+
+
+  /**
+   * Setup the credentials for the logged user (if any)
+   */
+  setup_credentials(){
+    
+    let email =  document.querySelector('.gb_hb');
+    if (email){
+      this.logged_email = email.innerText;
+    }
+
+    let fullname = document.querySelector('.gb_fb.gb_gb');
+    if (fullname){
+      this.logged_fullname = fullname.innerText;
+    }
+
+  }
+
+
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+  getMetadata(){
+    let metadata = super.getMetadata();
+    let anonym = {};
+
+    if (this.logged_fullname) {
+      anonym['email'] = this.logged_email;
+    }
+
+    if (this.logged_username) {
+      anonym['fullname'] = this.logged_fullname;
+    }
+
+    metadata['anonym'] = anonym;
+
+    return metadata;
+
   }
 
   /**

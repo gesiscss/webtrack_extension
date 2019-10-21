@@ -270,7 +270,7 @@ export default class Tab {
         hashes: [],
         landing_url: data.landing_url,
         title: data.title,
-        precursor_id: data.precursor_id,
+        precursor_id: data.precursor_id==null?'':data.precursor_id,
         meta: Object.assign({
           description: '',
           keywords: ''
