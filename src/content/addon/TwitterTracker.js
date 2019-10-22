@@ -600,9 +600,9 @@ export default class TwitterTracker extends Tracker{
    * @return {Promise}
    */
   getDom(){
-    if (this._isNotLoggedTwitter()){
-        return super.getDom();
-    } else {
+    //if (this._isNotLoggedTwitter()){
+    //    return super.getDom();
+    //} else {
       return new Promise((resolve, reject) => {
         let found = this.addPublicArticles();
         this.addWhoToFollow();
@@ -624,7 +624,7 @@ export default class TwitterTracker extends Tracker{
           resolve(this._getDom());
         }      
       });
-    }
+    //}
   }
 
   /**

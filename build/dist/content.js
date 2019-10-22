@@ -13549,13 +13549,9 @@ function TwitterTracker_createClass(Constructor, protoProps, staticProps) { if (
 
 function TwitterTracker_possibleConstructorReturn(self, call) { if (call && (TwitterTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return TwitterTracker_assertThisInitialized(self); }
 
-function TwitterTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function TwitterTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { TwitterTracker_get = Reflect.get; } else { TwitterTracker_get = function _get(target, property, receiver) { var base = TwitterTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return TwitterTracker_get(target, property, receiver || target); }
-
-function TwitterTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = TwitterTracker_getPrototypeOf(object); if (object === null) break; } return object; }
-
 function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
+
+function TwitterTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function TwitterTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) TwitterTracker_setPrototypeOf(subClass, superClass); }
 
@@ -14319,31 +14315,30 @@ function (_Tracker) {
     value: function getDom() {
       var _this8 = this;
 
-      if (this._isNotLoggedTwitter()) {
-        return TwitterTracker_get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getDom", this).call(this);
-      } else {
-        return new Promise(function (resolve, reject) {
-          var found = _this8.addPublicArticles();
+      //if (this._isNotLoggedTwitter()){
+      //    return super.getDom();
+      //} else {
+      return new Promise(function (resolve, reject) {
+        var found = _this8.addPublicArticles();
 
-          _this8.addWhoToFollow(); //this._eventListenComment();
-          //this._eventListenRetweet();
-          //this._eventListenTweetstorm();
-          //this._eventListenPermalinkOverlay();
+        _this8.addWhoToFollow(); //this._eventListenComment();
+        //this._eventListenRetweet();
+        //this._eventListenTweetstorm();
+        //this._eventListenPermalinkOverlay();
 
 
-          _this8.tweets_exist = found || _this8.tweets_exist;
+        _this8.tweets_exist = found || _this8.tweets_exist;
 
-          if (_this8.tweets_exist) {
-            //SEND
-            if (_this8.debug) console.log('assembling dom');
-            resolve(_this8.assembleDom());
-          } else if (_this8.tweets_exist == false) {
-            if (_this8.debug) console.log('No tweets were found'); // just send the entire html
+        if (_this8.tweets_exist) {
+          //SEND
+          if (_this8.debug) console.log('assembling dom');
+          resolve(_this8.assembleDom());
+        } else if (_this8.tweets_exist == false) {
+          if (_this8.debug) console.log('No tweets were found'); // just send the entire html
 
-            resolve(_this8._getDom());
-          }
-        });
-      }
+          resolve(_this8._getDom());
+        }
+      }); //}
     }
     /**
      * [onStart on start event]
