@@ -10102,6 +10102,7 @@ function (_MultiFetch) {
     _this.startswith_whitelist = [];
     _this.pos_2nd_blacklist = [];
     _this.header_clone = null;
+    _this.is_logged_in = null;
     return _this;
   }
   /**
@@ -13616,7 +13617,7 @@ function (_Tracker) {
       //svg_maintweet_protected: ':not(article) svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
       //svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
       svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
-      svg_account_protected: ':not(article) svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      svg_account_protected: 'div span svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
       // assumes that the target is the tweet/comment
       //svg_proeet_favorite: ':not(article) svg g path[d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"]',
       //svg_favorite: 'article svg g path[d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"]',
@@ -13644,8 +13645,12 @@ function (_Tracker) {
     _this.elementStrings = '';
     _this.tweetId2Element = {};
     _this.whoId2Element = {};
+    _this.trendId2Element = {};
     _this.tweets_exist = false;
     _this.startswith_blacklist = ['/messages', '/settings'];
+
+    _this.setup_credentials();
+
     console.log(+new Date());
     return _this;
   }
@@ -14030,32 +14035,54 @@ function (_Tracker) {
 
     }
     /**
-     * [return true if user is logged in twitter]
-     * @return {[bool]} [description]
+     * Setup the credentials for the logged user (if any)
      */
 
   }, {
-    key: "_isNotLoggedTwitter",
-    value: function _isNotLoggedTwitter() {
+    key: "setup_credentials",
+    value: function setup_credentials() {
+      // let location = document.querySelector('._2s25._606w');
+      // this.logged_username = this.get_username(location);
+      // if (this.logged_username == null){
+      //   this.logged_user_id = this.get_user_id(location);
+      // } else {
+      //   this.logged_user_id = this.get_user_id_from_img(location);
+      // }
+      // if (this.logged_user_id == null){
+      //   // grab the user id from the about
+      //   this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
+      // }
+      // if (this.logged_username){
+      //   this.logged_uid = this.logged_username;
+      // } else {
+      //   this.logged_uid = this.logged_user_id;
+      // }
+      this.is_logged_in = this._isLoggedTwitter();
+    }
+    /**
+     * return true if user is logged in twitter
+     * @return {boolean} true if user is logged
+     */
+
+  }, {
+    key: "_isLoggedTwitter",
+    value: function _isLoggedTwitter() {
       //document.documentElement.querySelectorAll('script,link,svg,style');
       //var navs = document.documentElement.getElementsByTagName('nav');
       //var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
       var svgs = document.documentElement.querySelectorAll(this.selectors.svg_home_deactivated);
 
-      if (svgs.length > 0) {
-        if (this.debug) console.log(' ++++ Logged!!!!!! +++');
-        return false;
+      if (svgs && svgs.length > 0) {
+        return true;
       } else {
         var svgs = document.documentElement.querySelectorAll(this.selectors.svg_home_activated);
 
-        if (svgs.length > 0) {
-          if (this.debug) console.log(' ++++ Logged!!!!!! +++');
-          return false;
-        } else {
-          if (this.debug) console.log('Not logged!!!!!!');
+        if (svgs && svgs.length > 0) {
           return true;
         }
       }
+
+      return false;
     }
     /**
      * [_isPublic checks if element is for the public oder private]
@@ -14066,10 +14093,13 @@ function (_Tracker) {
   }, {
     key: "_isPublic",
     value: function _isPublic(target) {
-      var ispublic = true;
-      var svgs = target.querySelectorAll(this.selectors.svg_tweet_protected);
+      // if the user is not logged in, the content is public for sure
+      if (!this.is_logged_in) {
+        return true;
+      } // if the protected svg appear in the tweet, the content is private
 
-      if (svgs.length > 0) {
+
+      if (target.querySelector(this.selectors.svg_tweet_protected)) {
         return false;
       } else {
         return true;
@@ -14213,7 +14243,7 @@ function (_Tracker) {
         }
       } catch (error) {
         console.log(error);
-        console.log('Unexpected error getting Twitter ID in TwitterTracker');
+        console.log('Unexpected error getting Who ID in TwitterTracker');
       }
 
       return null;
@@ -14244,6 +14274,57 @@ function (_Tracker) {
       if (this.debug) console.log('WhoToFollow correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
 
       return who.length > 0;
+    }
+    /**
+     * [_getId looks for a user id to follow]
+     * @param  {DomElement}  target [DomElement]
+     * @return {string} the element
+     */
+
+  }, {
+    key: "_getTrendId",
+    value: function _getTrendId(target) {
+      try {
+        var _clone = target.cloneNode(true);
+
+        var hashtag = target.querySelector('div[dir=ltr]');
+
+        if (hashtag) {
+          return hashtag.innerText;
+        }
+      } catch (error) {
+        console.log(error);
+        console.log('Unexpected error getting Trend ID in TwitterTracker');
+      }
+
+      return null;
+    }
+    /**
+     * add trends
+     * @return number of trends
+     */
+
+  }, {
+    key: "addTrends",
+    value: function addTrends() {
+      var trend = document.querySelectorAll('div[data-testid="primaryColumn"] div[data-testid="trend"]');
+      var counter = 0;
+
+      for (var i = 0; i < trend.length; i++) {
+        //let id = trend[i].getAttribute('data-tweet-id');
+        var id = this._getTrendId(trend[i]);
+
+        if (id != null) {
+          //if (this.debug) console.log('ID detected: ' + id);
+          this.trendId2Element[id] = trend[i].cloneNode(true);
+          counter += 1;
+        }
+      }
+
+      if (this.debug) console.log('Trend: ' + trend.length);
+      if (this.debug) console.log('Trend correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
+
+      return trend.length > 0;
     }
     /**
      * [assembleDom with the existent html]
@@ -14279,7 +14360,21 @@ function (_Tracker) {
       }
 
       if (counter == 0) {
-        if (this.debug) console.log('No public tweets/replies found');
+        if (this.debug) console.log('No WhoToFollows found');
+      }
+
+      var trend_strings = '';
+      var counter = 0;
+
+      for (var key in this.trendId2Element) {
+        if (this.trendId2Element.hasOwnProperty(key)) {
+          trend_strings += this.trendId2Element[key].outerHTML;
+          counter += 1;
+        }
+      }
+
+      if (counter == 0) {
+        if (this.debug) console.log('No Trends found');
       }
 
       var sidebar = document.querySelector('div[data-testid="sidebarColumn"]');
@@ -14291,7 +14386,7 @@ function (_Tracker) {
       }
 
       if (this.debug) console.log('Sending ' + counter + ' tweets');
-      return '<html>' + this._getHead() + '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div><h1>Who To Follow</h1><div class="WhoToFollow">' + who_strings + '</div><h1>SideBar</h1><div class="sidebar">' + sidebar + '</div></body>' + '</html>';
+      return '<html>' + this._getHead() + '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + '</div><h1>Trends</h1><div class="trends">' + trend_strings + '</div><h1>SideBar</h1><div class="sidebar">' + sidebar + '</div></body>' + '</html>';
     }
     /**
      * [return dom as string]
@@ -14321,7 +14416,9 @@ function (_Tracker) {
       return new Promise(function (resolve, reject) {
         var found = _this8.addPublicArticles();
 
-        _this8.addWhoToFollow(); //this._eventListenComment();
+        _this8.addWhoToFollow();
+
+        _this8.addTrends(); //this._eventListenComment();
         //this._eventListenRetweet();
         //this._eventListenTweetstorm();
         //this._eventListenPermalinkOverlay();

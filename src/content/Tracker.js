@@ -42,6 +42,7 @@ export default class Tracker extends MultiFetch {
     this.pos_2nd_blacklist = [];
 
     this.header_clone = null;
+    this.is_logged_in = null;
   }
 
   /**
