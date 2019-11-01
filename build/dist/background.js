@@ -34634,7 +34634,7 @@ var validUrl = __webpack_require__(467);
 
 var stringDate = function stringDate(schema, post) {
   if (typeof post === 'string' && (new Date(post) === "Invalid Date" || isNaN(new Date(post)))) {
-    this.report('muste be a sting date (2019-04-02T07:16:25.879Z)');
+    this.report('must be a string date (2019-04-02T07:16:25.879Z)');
     return '_INVALID_';
   }
 
@@ -34670,6 +34670,11 @@ var schemaPages = {
         }
       }
     },
+    // adding when sending the data to the server
+    // departing_url: {
+    //   type: 'string',
+    //   exec: stringUrl,
+    // },
     duration: {
       type: 'integer'
     },
@@ -34705,6 +34710,16 @@ var schemaPages = {
       type: ['string'],
       minLength: 1
     },
+    hashes: {
+      type: 'array'
+    },
+    hostname: {
+      type: 'string'
+    },
+    landing_url: {
+      type: 'string',
+      exec: stringUrl
+    },
     links: {
       type: 'array'
     },
@@ -34722,6 +34737,14 @@ var schemaPages = {
     precursor_id: {
       type: ['number', 'string', 'null']
     },
+    // adding when sending the data to the server
+    // send: {
+    //   type: 'boolean',
+    // },
+    // sendTime: {
+    //   type: 'string',
+    //   exec: stringDate
+    // },
     source: {
       type: 'array',
       items: {
@@ -34734,7 +34757,16 @@ var schemaPages = {
       }
     },
     start: {
-      type: 'date'
+      type: 'string',
+      exec: stringDate
+    },
+    // adding when sending the data to the server
+    // startTime: {
+    //   type: 'string',
+    //   exec: stringDate
+    // },
+    tabId: {
+      type: ['integer', 'null']
     },
     title: {
       type: 'string'
@@ -35264,7 +35296,6 @@ function Tab_createClass(Constructor, protoProps, staticProps) { if (protoProps)
 var DEFAULT_TAB_CONTANT = {
   tabId: null,
   id: null,
-  url: '',
   title: '',
   favicon: '',
   precursor_id: '',
@@ -35275,7 +35306,6 @@ var DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  start: new Date(),
   duration: 0,
   close: false,
   sendTime: null,
@@ -35766,7 +35796,7 @@ function () {
           keywords: ''
         }, data.meta),
         links: data.links || [],
-        start: new Date(data.startTime),
+        start: new Date(data.startTime).toJSON(),
         duration: Math.round((+now - data.startTime) / 1000)
       }), true);
     }
@@ -37326,7 +37356,6 @@ function (_CacheHandler) {
 
 // EXTERNAL MODULE: ./node_modules/moment/moment.js
 var moment = __webpack_require__(1);
-var moment_default = /*#__PURE__*/__webpack_require__.n(moment);
 
 // CONCATENATED MODULE: ./src/background/core/TrackingHandler.js
 function TrackingHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -37781,7 +37810,7 @@ function () {
         var _ref2 = TrackingHandler_asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee5(resolve, reject) {
-          var pageIds, max, count, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, id, page, send, title;
+          var pageIds, max, count, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, id, page, sendTime, send, title;
 
           return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
@@ -37809,7 +37838,7 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 62;
+                    _context5.next = 60;
                     break;
                   }
 
@@ -37823,53 +37852,29 @@ function () {
 
                 case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 47;
+                    _context5.next = 45;
                     break;
                   }
 
                   id = _step2.value;
                   page = null;
                   _context5.prev = 18;
-                  _context5.next = 21;
+                  sendTime = new Date().toJSON();
+                  console.log(sendTime);
+                  _context5.next = 23;
                   return _this4.pageCache.update({
                     id: id,
-                    send: true
+                    send: true,
+                    sendTime: sendTime
                   }, undefined, true);
 
-                case 21:
-                  _context5.next = 23;
+                case 23:
+                  _context5.next = 25;
                   return _this4.pageCache.getOnly(id);
 
-                case 23:
+                case 25:
                   page = _context5.sent;
-
-                  if (page.start instanceof Date) {
-                    //page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
-                    page.start = moment_default.a.utc(page.start).format();
-                  }
-
-                  if (typeof page.start === 'string') {} else {
-                    console.log('page.start is not string!');
-
-                    try {
-                      page.start = page.start.toString();
-                    } catch (er) {
-                      page.start = '' + page.start;
-                    }
-                  } // @tico, if I ever manage to install a minifier in the extension
-                  // for (let i in page.content) {
-                  //   try {
-                  //       if(this.DEBUG) console.log('minify');
-                  //       //var minify = require('html-minifier').minify;
-                  //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
-                  //     } catch (err) {
-                  //       debugger;
-                  //       if(this.DEBUG) console.log('Failed to minify html');
-                  //     }
-                  // }
-
-
-                  if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
+                  if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                   _context5.next = 29;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
@@ -37894,28 +37899,16 @@ function () {
                     now: count,
                     title: page.title,
                     status: status
-                  });
-
-                  _this4.pageCache.update({
-                    id: page.id,
-                    sendTime: new Date(),
-                    content: [],
-                    links: [],
-                    source: [],
-                    events: [],
-                    meta: {}
-                  }, undefined, true); // set the page attr send to true
-
-
-                  _this4.pageCache.cleanSource(page.id); //.catch(console.warn);
+                  }); //this.pageCache.update({id: page.id, prevSendTime: sendTime, content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
+                  //this.pageCache.cleanSource(page.id);//.catch(console.warn);
 
 
                   if (_this4.DEBUG) console.log('<- sendData');
-                  _context5.next = 44;
+                  _context5.next = 42;
                   break;
 
-                case 37:
-                  _context5.prev = 37;
+                case 35:
+                  _context5.prev = 35;
                   _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
@@ -37929,61 +37922,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 44:
+                case 42:
                   _iteratorNormalCompletion2 = true;
                   _context5.next = 15;
                   break;
 
-                case 47:
-                  _context5.next = 53;
+                case 45:
+                  _context5.next = 51;
                   break;
 
-                case 49:
-                  _context5.prev = 49;
+                case 47:
+                  _context5.prev = 47;
                   _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 53:
-                  _context5.prev = 53;
-                  _context5.prev = 54;
+                case 51:
+                  _context5.prev = 51;
+                  _context5.prev = 52;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 56:
-                  _context5.prev = 56;
+                case 54:
+                  _context5.prev = 54;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 59;
+                    _context5.next = 57;
                     break;
                   }
 
                   throw _iteratorError2;
 
+                case 57:
+                  return _context5.finish(54);
+
+                case 58:
+                  return _context5.finish(51);
+
                 case 59:
-                  return _context5.finish(56);
-
-                case 60:
-                  return _context5.finish(53);
-
-                case 61:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 62:
+                case 60:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 73;
+                  _context5.next = 71;
                   break;
 
-                case 66:
-                  _context5.prev = 66;
+                case 64:
+                  _context5.prev = 64;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37996,19 +37989,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 73:
-                  _context5.prev = 73;
+                case 71:
+                  _context5.prev = 71;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(73);
+                  return _context5.finish(71);
 
-                case 76:
+                case 74:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 66, 73, 76], [13, 49, 53, 61], [18, 37], [54,, 56, 60]]);
+          }, _callee5, null, [[0, 64, 71, 74], [13, 47, 51, 59], [18, 35], [52,, 54, 58]]);
         }));
 
         return function (_x4, _x5) {

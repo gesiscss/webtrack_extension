@@ -4,7 +4,6 @@ import TabCache from './TabCache';
 const DEFAULT_TAB_CONTANT = {
   tabId: null,
   id: null,
-  url: '',
   title: '',
   favicon: '',
   precursor_id: '',
@@ -15,7 +14,6 @@ const DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  start: new Date(),
   duration: 0,
   close: false,
   sendTime: null,
@@ -276,7 +274,7 @@ export default class Tab {
           keywords: ''
         }, data.meta),
         links: data.links || [],
-        start: new Date(data.startTime),
+        start: new Date(data.startTime).toJSON(),
         duration: Math.round(((+now) - data.startTime)/1000)
       }
     ), true);

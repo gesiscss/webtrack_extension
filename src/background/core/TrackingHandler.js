@@ -281,35 +281,13 @@ export default class TrackingHandler {
 
               var page = null
               try {
-                await this.pageCache.update({id: id, send: true}, undefined, true)
+                let sendTime = (new Date()).toJSON();
+                console.log(sendTime);
+                await this.pageCache.update({id: id, send: true, sendTime: sendTime}, undefined, true);
+
                 page = await this.pageCache.getOnly(id);
-                if(page.start instanceof Date){
-                  //page.start = moment(page.start).format('YYYY-MM-DD HH:mm:ss');
-                  page.start = moment.utc(page.start).format();
-                } 
-                if (typeof page.start === 'string') { 
-                } else {
-                  console.log('page.start is not string!');
-                  try {
-                    page.start = page.start.toString();
-                  } catch (er) {
-                    page.start = '' + page.start;
-                  }
-                }
 
-                // @tico, if I ever manage to install a minifier in the extension
-                // for (let i in page.content) {
-                //   try {
-                //       if(this.DEBUG) console.log('minify');
-                //       //var minify = require('html-minifier').minify;
-                //       page.content[i].html = minify(page.content[i].html, {collapseWhitespace: true, removeComments: true});
-                //     } catch (err) {
-                //       debugger;
-                //       if(this.DEBUG) console.log('Failed to minify html');
-                //     }
-                // }
-
-                if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.url, ' <<<<<\n' + '='.repeat(50));
+                if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
@@ -333,7 +311,8 @@ export default class TrackingHandler {
                   status: status
                 });
 
-                this.pageCache.update({id: page.id, sendTime: new Date(), content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
+                // TODO: check what are this lines doing. They seem to be doing nothing
+                this.pageCache.update({id: page.id, prevSendTime: sendTime, content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
                 this.pageCache.cleanSource(page.id);//.catch(console.warn);
 
                 if(this.DEBUG) console.log('<- sendData');
