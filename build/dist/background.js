@@ -35751,10 +35751,7 @@ function () {
     key: "_firstUpdate",
     value: function _firstUpdate(data, nr) {
       var now = new Date();
-
-      var _id = nr + '-' + this.tabId + '-' + now.toJSON();
-
-      this.id = _id;
+      this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
         id: this.id,
@@ -37735,24 +37732,33 @@ function () {
     value: function anonymize(page) {
       if (page.meta.hasOwnProperty('anonym')) {
         var anonym = page.meta.anonym;
-        var piperegex = '';
 
-        for (var key in anonym) {
-          var escaped = this.escapeRegExp(anonym[key]);
-          piperegex += escaped + "|";
-          var regex = new RegExp(escaped, "g");
+        if (anonym.length > 0) {
+          var piperegex = '';
 
-          for (var i = 0; i < this.to_anonym.length; i++) {
-            try {
-              page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
-            } catch (e) {}
+          for (var key in anonym) {
+            var escaped = this.escapeRegExp(anonym[key]);
+            piperegex += escaped + "|";
+
+            if (escaped.length > 0) {
+              var regex = new RegExp(escaped, "g");
+
+              for (var i = 0; i < this.to_anonym.length; i++) {
+                try {
+                  page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+                } catch (e) {}
+              }
+            }
+          }
+
+          if (piperegex.length > 0) {
+            var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
+            page['content'][0].html = page['content'][0].html.replace(pipe_regex, '_______');
+            page.meta.description = page.meta.description.replace(pipe_regex, '_______');
+            page.meta.keywords = page.meta.keywords.replace(pipe_regex, '_______');
           }
         }
 
-        var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-        page['content'][0].html = page['content'][0].html.replace(pipe_regex, '_______');
-        page.meta.description = page.meta.description.replace(pipe_regex, '_______');
-        page.meta.keywords = page.meta.keywords.replace(pipe_regex, '_______');
         delete page.meta.anonym;
       }
 

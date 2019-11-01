@@ -224,25 +224,31 @@ export default class TrackingHandler {
   }
 
   anonymize(page){
-    if (page.meta.hasOwnProperty('anonym')){
+    if (page.meta.hasOwnProperty('anonym')){ 
       let anonym = page.meta.anonym;
-      let piperegex = '';
-      for (var key in anonym) {
-        let escaped = this.escapeRegExp(anonym[key]);
-        piperegex += escaped + "|";
-        let regex = new RegExp(escaped,"g");
-        for (var i = 0; i < this.to_anonym.length; i++) {
-          try {
-            page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
-          } catch (e){}
+      if(anonym.length > 0){
+        let piperegex = '';
+        for (var key in anonym) {
+          let escaped = this.escapeRegExp(anonym[key]);
+          piperegex += escaped + "|";
+
+          if (escaped.length > 0) {
+            let regex = new RegExp(escaped,"g");
+            for (var i = 0; i < this.to_anonym.length; i++) {
+              try {
+                page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+              } catch (e){}
+            }
+          }
+        }
+
+        if (piperegex.length > 0){
+          let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
+          page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_______');
+          page.meta.description = page.meta.description.replace(pipe_regex,'_______');
+          page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_______');
         }
       }
-
-      let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-
-      page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_______');
-      page.meta.description = page.meta.description.replace(pipe_regex,'_______');
-      page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_______');
 
       delete page.meta.anonym;
     }
