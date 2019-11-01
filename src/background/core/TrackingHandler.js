@@ -226,19 +226,18 @@ export default class TrackingHandler {
   anonymize(page){
     if (page.meta.hasOwnProperty('anonym')){ 
       let anonym = page.meta.anonym;
-      if(anonym.length > 0){
-        let piperegex = '';
-        for (var key in anonym) {
-          let escaped = this.escapeRegExp(anonym[key]);
-          piperegex += escaped + "|";
 
-          if (escaped.length > 0) {
-            let regex = new RegExp(escaped,"g");
-            for (var i = 0; i < this.to_anonym.length; i++) {
-              try {
-                page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
-              } catch (e){}
-            }
+      let piperegex = '';
+      for (var key in anonym) {
+        let escaped = this.escapeRegExp(anonym[key]);
+        piperegex += escaped + "|";
+
+        if (escaped.length > 0) {
+          let regex = new RegExp(escaped,"g");
+          for (var i = 0; i < this.to_anonym.length; i++) {
+            try {
+              page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+            } catch (e){}
           }
         }
 

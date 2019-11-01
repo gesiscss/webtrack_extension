@@ -37732,22 +37732,19 @@ function () {
     value: function anonymize(page) {
       if (page.meta.hasOwnProperty('anonym')) {
         var anonym = page.meta.anonym;
+        var piperegex = '';
 
-        if (anonym.length > 0) {
-          var piperegex = '';
+        for (var key in anonym) {
+          var escaped = this.escapeRegExp(anonym[key]);
+          piperegex += escaped + "|";
 
-          for (var key in anonym) {
-            var escaped = this.escapeRegExp(anonym[key]);
-            piperegex += escaped + "|";
+          if (escaped.length > 0) {
+            var regex = new RegExp(escaped, "g");
 
-            if (escaped.length > 0) {
-              var regex = new RegExp(escaped, "g");
-
-              for (var i = 0; i < this.to_anonym.length; i++) {
-                try {
-                  page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
-                } catch (e) {}
-              }
+            for (var i = 0; i < this.to_anonym.length; i++) {
+              try {
+                page[this.to_anonym[i]] = page[this.to_anonym[i]].replace(regex, key.substr(0, 14));
+              } catch (e) {}
             }
           }
 
