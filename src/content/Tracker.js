@@ -537,7 +537,7 @@ export default class Tracker extends MultiFetch {
             if (this.debug) console.log('======Emit Event: onData (DATA) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
               html: html, 
-              create: +new Date()
+              create: (new Date()).toJSON()
             }, false);
             resolve(true);
 
@@ -548,7 +548,7 @@ export default class Tracker extends MultiFetch {
             this.eventEmitter.emit(EVENT_NAMES.data, {
                 html: ' ', 
                 is_track_allow: false,
-                create: +new Date()
+                create: (new Date()).toJSON()
               }, false);
             resolve(true)
           }

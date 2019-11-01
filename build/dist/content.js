@@ -10936,7 +10936,7 @@ function (_MultiFetch) {
                         if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: html,
-                          create: +new Date()
+                          create: new Date().toJSON()
                         }, false);
                         resolve(true); // if the content is blocked send an empty html, and notified the backend
                         // to turn off the icon
@@ -10945,7 +10945,7 @@ function (_MultiFetch) {
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: ' ',
                           is_track_allow: false,
-                          create: +new Date()
+                          create: new Date().toJSON()
                         }, false);
                         resolve(true);
                       }
