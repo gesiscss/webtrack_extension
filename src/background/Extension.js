@@ -234,9 +234,12 @@ export default class Extension {
 
           // even if the content is block, the metainformation is sent in order to
           // keep track of the precursors
+          // TODO: This is probably unnecessary. If the content is blocked, nothing is uploaded
+          // unless the block is due to a social media tracker. 
+          // Note: Special attention to the departing_url as it is not added anywhere else.
           msg = Object.assign(msg, {
             departing_url: sender.tab.url,
-            url: msg.unhashed_url,
+            unhashed_url: msg.unhashed_url,
             title: sender.tab.title
           })
           msg.tabId = sender.tab.id;

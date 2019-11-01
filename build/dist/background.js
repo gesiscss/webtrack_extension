@@ -32214,11 +32214,14 @@ function () {
             this.setImage(true);
           } // even if the content is block, the metainformation is sent in order to
           // keep track of the precursors
+          // TODO: This is probably unnecessary. If the content is blocked, nothing is uploaded
+          // unless the block is due to a social media tracker. 
+          // Note: Special attention to the departing_url as it is not added anywhere else.
 
 
           msg = Object.assign(msg, {
             departing_url: sender.tab.url,
-            url: msg.unhashed_url,
+            unhashed_url: msg.unhashed_url,
             title: sender.tab.title
           });
           msg.tabId = sender.tab.id;
@@ -34736,7 +34739,7 @@ var schemaPages = {
     title: {
       type: 'string'
     },
-    url: {
+    unhashed_url: {
       type: 'string',
       exec: stringUrl
     }
@@ -35700,7 +35703,7 @@ function () {
                 return this._secondUpdate(data, nr);
 
               case 18:
-                if (this.DEBUG) console.log('-< _secondUpdate(data, nr)');
+                if (this.DEBUG) console.log('<- _secondUpdate(data, nr)');
 
               case 19:
                 this.queue[nr].data.shift();
@@ -35749,15 +35752,16 @@ function () {
     value: function _firstUpdate(data, nr) {
       var now = new Date();
 
-      var _id = '(' + nr + '-' + this.tabId + '-' + +now + ')';
+      var _id = nr + '-' + this.tabId + '-' + now.toJSON();
 
-      this.id = data.unhashed_url.substr(0, 240 - _id.length) + _id;
+      this.id = _id;
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
         id: this.id,
-        url: data.unhashed_url,
+        unhashed_url: data.unhashed_url,
         hashes: [],
         landing_url: data.landing_url,
+        hostname: data.hostname,
         title: data.title,
         precursor_id: data.precursor_id == null ? '' : data.precursor_id,
         meta: Object.assign({

@@ -15035,6 +15035,7 @@ function () {
         startTime: this.startTime,
         createData: new Date(),
         landing_url: window.location.href,
+        hostname: window.location.hostname,
         content: [],
         source: [],
         events: [],

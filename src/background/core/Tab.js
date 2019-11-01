@@ -233,7 +233,7 @@ export default class Tab {
         }else{
           if(this.DEBUG) console.log('-> _secondUpdate(data, nr)');
           await this._secondUpdate(data, nr);
-          if(this.DEBUG) console.log('-< _secondUpdate(data, nr)');
+          if(this.DEBUG) console.log('<- _secondUpdate(data, nr)');
         }
         this.queue[nr].data.shift();
         this.queue[nr].active = false;
@@ -260,15 +260,15 @@ export default class Tab {
    */
   _firstUpdate(data, nr){
     let now = new Date();
-    let _id = '(' + nr + '-' + this.tabId + '-' + +now + ')';
-    this.id = data.unhashed_url.substr(0, 240 - _id.length) + _id;
+    this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
         id: this.id,
-        url: data.unhashed_url,
+        unhashed_url: data.unhashed_url,
         hashes: [],
         landing_url: data.landing_url,
+        hostname: data.hostname,
         title: data.title,
         precursor_id: data.precursor_id==null?'':data.precursor_id,
         meta: Object.assign({
