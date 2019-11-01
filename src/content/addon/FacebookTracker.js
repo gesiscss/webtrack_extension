@@ -275,7 +275,7 @@ export default class FacebookTracker extends Tracker{
         name: 'articel-link',
         query: ['.fsm.fwn.fcg a'],
         default: undefined,
-        filter: e => location.href.substring(0, location.href.length-1)+e.getAttribute('href')
+        filter: e => e.href
       },
       {
         name: 'articel-headertext',
@@ -861,7 +861,7 @@ export default class FacebookTracker extends Tracker{
             countGroupUser = parseInt(elementsOfcountGroupUser[0].textContent.replace(/\D+/g, ""), 10);
           }
           if(elementsOfGroupname.length>0){
-            link = elementsOfGroupname[0].getAttribute('href')
+            link = elementsOfGroupname[0].href
             id = parseInt(link.replace(/\D+/g, ""), 10);
             name = elementsOfGroupname[0].textContent;
           }
@@ -879,7 +879,7 @@ export default class FacebookTracker extends Tracker{
             countGroupUser = parseInt(elementsOfcountGroupUser[0].textContent.replace(/\D+/g, ""), 10);
           }
           if(elementsOfGroupname.length>0){
-            link = elementsOfGroupname[0].getAttribute('href')
+            link = elementsOfGroupname[0].href
             id = parseInt(link.replace(/\D+/g, ""), 10);
             name = elementsOfGroupname[0].textContent;
           }

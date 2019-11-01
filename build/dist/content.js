@@ -11359,7 +11359,7 @@ function (_Tracker) {
         query: ['.fsm.fwn.fcg a'],
         "default": undefined,
         filter: function filter(e) {
-          return location.href.substring(0, location.href.length - 1) + e.getAttribute('href');
+          return e.href;
         }
       }, {
         name: 'articel-headertext',
@@ -12219,7 +12219,7 @@ function (_Tracker) {
               }
 
               if (elementsOfGroupname.length > 0) {
-                link = elementsOfGroupname[0].getAttribute('href');
+                link = elementsOfGroupname[0].href;
                 id = parseInt(link.replace(/\D+/g, ""), 10);
                 name = elementsOfGroupname[0].textContent;
               }
@@ -12240,7 +12240,7 @@ function (_Tracker) {
               }
 
               if (elementsOfGroupname.length > 0) {
-                link = elementsOfGroupname[0].getAttribute('href');
+                link = elementsOfGroupname[0].href;
                 id = parseInt(link.replace(/\D+/g, ""), 10);
                 name = elementsOfGroupname[0].textContent;
               }
