@@ -370,6 +370,10 @@ export default class FacebookTracker extends Tracker{
       }
     }
 
+    if (!this.is_content_allowed){
+      return false;
+    }
+
 
     //let a_list = target.querySelectorAll('.fwn.fcg a');
     //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
