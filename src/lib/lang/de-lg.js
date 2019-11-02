@@ -11,7 +11,7 @@ export default {
     startTitle: 'Starten',
   },
   loggin: {
-    invitation: 'Bitte melde Sie sich mit ihrer ID an.',
+    invitation: 'Bitte melden Sie sich mit ihrer ID an.',
     placeholder: 'Ihre ID',
     error_id_length: 'Ihre ID-Länge muss mindestens %s Zeichen betragen.',
     input_label: 'ID',
