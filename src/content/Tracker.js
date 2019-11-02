@@ -42,7 +42,8 @@ export default class Tracker extends MultiFetch {
     this.pos_2nd_blacklist = [];
 
     this.header_clone = null;
-    this.is_logged_in = null;
+    this.is_logged_in = false;
+    this.is_content_allowed = true;
   }
 
   /**
@@ -85,6 +86,14 @@ export default class Tracker extends MultiFetch {
    * @return {Boolean}   [if it is allow according to social media platforms rules]
    */
   is_path_allow(path){
+    if (!this.is_logged_in) {
+      return true;
+    }
+
+    if (!path.endsWith('/')){
+      path = path + '/';
+    }
+
     for (let i in this.startswith_blacklist) {
       if (path.startsWith(this.startswith_blacklist[i])){
         return false;
@@ -106,14 +115,6 @@ export default class Tracker extends MultiFetch {
       }
     }
 
-    return true;
-  }
-
-
-  /**
-   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
-   */
-  is_content_allowed() {
     return true;
   }
 
@@ -422,21 +423,26 @@ export default class Tracker extends MultiFetch {
 
 
   /**
+   * _getDom dom as string
+   * @return {string}
+   */
+  _getDom(){
+    var tclone = document.documentElement.cloneNode(true);
+    // clean unnecessary scripts
+    tclone = this._clean_embedded_scripts(tclone);
+    // clean sensitive information
+    tclone = this._clean_sensitive_content_elements(tclone);
+    return tclone.outerHTML;
+  }
+
+
+  /**
    * [return dom as string]
    * @return {Promise}
    */
   getDom(){
     return new Promise((resolve, reject) => {
-
-      var tclone = document.documentElement.cloneNode(true);
-
-      // clean unnecessary scripts
-      tclone = this._clean_embedded_scripts(tclone);
-
-      tclone = this._clean_sensitive_content_elements(tclone);
-
-      resolve(tclone.outerHTML);
-      //resolve(document.documentElement.outerHTML);
+      resolve(this._getDom());
     });
   }
 
@@ -533,7 +539,7 @@ export default class Tracker extends MultiFetch {
         } else {
           // if is it ok to track the current address, and some html was
           // recovered, then send the data
-          if (html && this.is_path_allow(location.pathname) && this.is_content_allowed()){
+          if (html && this.is_path_allow(location.pathname) && this.is_content_allowed){
             if (this.debug) console.log('======Emit Event: onData (DATA) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
               html: html, 

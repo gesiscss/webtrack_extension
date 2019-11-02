@@ -12,7 +12,7 @@ export default class GoogleTracker extends Tracker{
     this.logged_email = null;
     this.logged_fullname = null;
 
-    this.startswith_blacklist = ['/accounts', '/settings'];
+    this.startswith_blacklist = ['/accounts/', '/settings/'];
 
     this.setup_credentials();
 

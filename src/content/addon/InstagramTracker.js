@@ -10,7 +10,7 @@ export default class InstagramTracker extends Tracker{
     this.is_allowed = null;
     this.instagram_debug = false;
 
-    this.startswith_blacklist = ['/accounts', '/settings'];
+    this.startswith_blacklist = ['/accounts/', '/settings/'];
 
   }
 

@@ -84,7 +84,7 @@ export default class TwitterTracker extends Tracker{
     this.trendId2Element = {};
     this.tweets_exist = false;
 
-    this.startswith_blacklist = ['/messages', '/settings'];
+    this.startswith_blacklist = ['/messages/', '/settings/'];
 
     this.setup_credentials()
     console.log(+ new Date());
@@ -188,15 +188,11 @@ export default class TwitterTracker extends Tracker{
   }
 
 
-  is_content_allowed() {
-    if (this.is_allowed == null){
-      this.is_allowed = true;
-      if (document.querySelector(this.selectors.svg_account_protected)){
-        this.is_allowed = false;
-        return this.is_allowed;
-      }
+  get_content_allowed() {
+    if (document.querySelector(this.selectors.svg_account_protected)){
+      return false;
     }
-    return this.is_allowed;
+    return true;
   }
 
   /**
@@ -356,6 +352,13 @@ export default class TwitterTracker extends Tracker{
     // }
 
     this.is_logged_in = this._isLoggedTwitter();
+
+    if (this.is_logged_in){
+      this.is_content_allowed = this.get_content_allowed();
+    }else{
+      this.is_content_allowed = true;
+    }
+
 
   }
 

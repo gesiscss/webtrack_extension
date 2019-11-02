@@ -45,15 +45,16 @@ export default class FacebookTracker extends Tracker{
     }
 
     this.startswith_blacklist = [
-      '/events', '/stories', '/friends', '/messages', '/photo', 
-      '/marketplace', '/fundraisers', '/saved', '/recommendations', 
-      '/crisisresponse', '/settings'];
+      '/events/', '/stories/', '/friends/', '/messages/', '/photo/', 
+      '/marketplace/', '/fundraisers/', '/saved/', '/recommendations/', 
+      '/crisisresponse/', '/settings/'];
 
-    this.startswith_whitelist = ['/pg']
+    this.startswith_whitelist = ['/pg/']
 
     this.pos_2nd_blacklist = ['about', 'friends_mutual', 
       'followers', 'following', 'friends', 'photos']
 
+    this.entries_found = 0;
     this.logged_uid = null;
     this.logged_user_id = null;
     this.logged_username = null;
@@ -64,63 +65,57 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [get_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
-  is_content_allowed() {
-    if (this.is_allowed == null){
+  get_content_allowed() {
 
-      // assume it is allowed
-      this.is_allowed = true;
-
-      //own profile
-      if (document.querySelector('fbProfileCoverPhotoSelector')){
-        this.is_allowed = true;
-        return this.is_allowed;
-      }
-
-      //public page
-      // if (document.querySelector('#entity_sidebar')){
-      //   this.allow = true;
-      // }
-
-
-      // detect the sidebar of the timelines, not always allowed to track timelines
-      let sidebar_timeline = document.querySelector('#timeline_small_column');
-      
-      // this is a timeline
-      if (sidebar_timeline){
-        // this is not my own timeline
-        if (!(sidebar_timeline.querySelector('._6a._m'))){
-          this.is_allowed = false;
-          return this.is_allowed;
-        }
-      }
-
-      // this is a profile, only allow if it is the same user
-      // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
-      // if (logged_uid){
-      //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
-      //   if (profile_uid){
-      //     if (logged_uid != profile_uid) {
-      //       this.is_allowed = false;
-      //       return this.is_allowed;
-      //     }
-      //   }
-      // }
-
-      // this is a profile, only allow if it is the same user  (or if this cannot 
-      // be identified)
-      let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
-      if (is_user_profile != null){
-
-        if (!is_user_profile){
-          this.is_allowed = false;
-          return this.is_allowed;
-        }
-      }
-
+    //own profile
+    if (document.querySelector('fbProfileCoverPhotoSelector')){
+      //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+      return true;
     }
-    return this.is_allowed;
+
+    //public page
+    // if (document.querySelector('#entity_sidebar')){
+    //   this.allow = true;
+    // }
+
+
+    // detect the sidebar of the timelines, not always allowed to track timelines
+    let sidebar_timeline = document.querySelector('#timeline_small_column');
+    
+    // this is a timeline
+    if (sidebar_timeline){
+      //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
+      // this is not my own timeline
+      if (!(sidebar_timeline.querySelector('._6a._m'))){
+        return false;
+      }
+    }
+
+    // this is a profile, only allow if it is the same user
+    // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+    // if (logged_uid){
+    //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+    //   if (profile_uid){
+    //     if (logged_uid != profile_uid) {
+    //       return false;
+    //     }
+    //   }
+    // }
+
+    // this is a profile, only allow if it is the same user  (or if this cannot 
+    // be identified)
+    let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
+    if (is_user_profile != null){
+      //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+
+      if (!is_user_profile){
+        return false;
+      }
+    }
+
+    return true;
   }
 
 
@@ -175,6 +170,19 @@ export default class FacebookTracker extends Tracker{
     } else {
       this.logged_uid = this.logged_user_id;
     }
+
+    // logged in
+    if (this.logged_uid){
+      this.is_logged_in = true;
+      this.is_content_allowed = this.get_content_allowed();
+
+    // not logged in
+    } else {
+      this.is_logged_in = false;
+      this.is_content_allowed = true;
+    }
+
+
 
   }
 
@@ -418,6 +426,8 @@ export default class FacebookTracker extends Tracker{
 
     let length = found.length;
     for (var i = 0; i < length; i++) {
+      this.entries_found += 1;
+
       found[i].classList.add('tracked');
       if (this._isPublicOrLogInUser(found[i])){
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
@@ -903,11 +913,25 @@ export default class FacebookTracker extends Tracker{
     return new Promise(async (resolve, reject) => {
       try {      
         let found = this._getPublicArticels();
-        for (var i = 0; i < found.length; i++) {
-          this.elements.push(found[i]);
-          this.elementStrings += found[i].outerHTML
+
+        // if no entries were found, then this is not a timeline or profile page
+        if (this.entries_found == 0) {
+          // if the user is not logged in, then default to the normal tracker
+          if (!this.is_logged_in){
+            resolve(this._getDom());
+          } else {
+            resolve('<html><head></head><body></body></html>');
+          }
+
+        // otherwise, the dom can be assembled
+        } else {
+          for (var i = 0; i < found.length; i++) {
+            this.elements.push(found[i]);
+            this.elementStrings += found[i].outerHTML
+          }
+          resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
         }
-        resolve('<html>'+this.documentHead+'<body>'+this.elementStrings+'</body>'+'</html>');
+
       } catch (err) {
         reject(err)
       }

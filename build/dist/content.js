@@ -10102,7 +10102,8 @@ function (_MultiFetch) {
     _this.startswith_whitelist = [];
     _this.pos_2nd_blacklist = [];
     _this.header_clone = null;
-    _this.is_logged_in = null;
+    _this.is_logged_in = false;
+    _this.is_content_allowed = true;
     return _this;
   }
   /**
@@ -10151,6 +10152,14 @@ function (_MultiFetch) {
   }, {
     key: "is_path_allow",
     value: function is_path_allow(path) {
+      if (!this.is_logged_in) {
+        return true;
+      }
+
+      if (!path.endsWith('/')) {
+        path = path + '/';
+      }
+
       for (var i in this.startswith_blacklist) {
         if (path.startsWith(this.startswith_blacklist[i])) {
           return false;
@@ -10173,15 +10182,6 @@ function (_MultiFetch) {
         }
       }
 
-      return true;
-    }
-    /**
-     * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
-     */
-
-  }, {
-    key: "is_content_allowed",
-    value: function is_content_allowed() {
       return true;
     }
     /**
@@ -10704,6 +10704,21 @@ function (_MultiFetch) {
       return target;
     }
     /**
+     * _getDom dom as string
+     * @return {string}
+     */
+
+  }, {
+    key: "_getDom",
+    value: function _getDom() {
+      var tclone = document.documentElement.cloneNode(true); // clean unnecessary scripts
+
+      tclone = this._clean_embedded_scripts(tclone); // clean sensitive information
+
+      tclone = this._clean_sensitive_content_elements(tclone);
+      return tclone.outerHTML;
+    }
+    /**
      * [return dom as string]
      * @return {Promise}
      */
@@ -10714,11 +10729,7 @@ function (_MultiFetch) {
       var _this4 = this;
 
       return new Promise(function (resolve, reject) {
-        var tclone = document.documentElement.cloneNode(true); // clean unnecessary scripts
-
-        tclone = _this4._clean_embedded_scripts(tclone);
-        tclone = _this4._clean_sensitive_content_elements(tclone);
-        resolve(tclone.outerHTML); //resolve(document.documentElement.outerHTML);
+        resolve(_this4._getDom());
       });
     }
     /**
@@ -10932,7 +10943,7 @@ function (_MultiFetch) {
                     } else {
                       // if is it ok to track the current address, and some html was
                       // recovered, then send the data
-                      if (html && this.is_path_allow(location.pathname) && this.is_content_allowed()) {
+                      if (html && this.is_path_allow(location.pathname) && this.is_content_allowed) {
                         if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                         this.eventEmitter.emit(EVENT_NAMES.data, {
                           html: html,
@@ -11111,9 +11122,10 @@ function (_Tracker) {
       _this.documentHead = _this._getHead(); // console.log(this.documentWrapper);
     }
 
-    _this.startswith_blacklist = ['/events', '/stories', '/friends', '/messages', '/photo', '/marketplace', '/fundraisers', '/saved', '/recommendations', '/crisisresponse', '/settings'];
-    _this.startswith_whitelist = ['/pg'];
+    _this.startswith_blacklist = ['/events/', '/stories/', '/friends/', '/messages/', '/photo/', '/marketplace/', '/fundraisers/', '/saved/', '/recommendations/', '/crisisresponse/', '/settings/'];
+    _this.startswith_whitelist = ['/pg/'];
     _this.pos_2nd_blacklist = ['about', 'friends_mutual', 'followers', 'following', 'friends', 'photos'];
+    _this.entries_found = 0;
     _this.logged_uid = null;
     _this.logged_user_id = null;
     _this.logged_username = null;
@@ -11123,61 +11135,56 @@ function (_Tracker) {
     return _this;
   }
   /**
-   * [is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [get_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
 
 
   FacebookTracker_createClass(FacebookTracker, [{
-    key: "is_content_allowed",
-    value: function is_content_allowed() {
-      if (this.is_allowed == null) {
-        // assume it is allowed
-        this.is_allowed = true; //own profile
-
-        if (document.querySelector('fbProfileCoverPhotoSelector')) {
-          this.is_allowed = true;
-          return this.is_allowed;
-        } //public page
-        // if (document.querySelector('#entity_sidebar')){
-        //   this.allow = true;
-        // }
-        // detect the sidebar of the timelines, not always allowed to track timelines
+    key: "get_content_allowed",
+    value: function get_content_allowed() {
+      //own profile
+      if (document.querySelector('fbProfileCoverPhotoSelector')) {
+        //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+        return true;
+      } //public page
+      // if (document.querySelector('#entity_sidebar')){
+      //   this.allow = true;
+      // }
+      // detect the sidebar of the timelines, not always allowed to track timelines
 
 
-        var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
+      var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
-        if (sidebar_timeline) {
-          // this is not my own timeline
-          if (!sidebar_timeline.querySelector('._6a._m')) {
-            this.is_allowed = false;
-            return this.is_allowed;
-          }
-        } // this is a profile, only allow if it is the same user
-        // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
-        // if (logged_uid){
-        //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
-        //   if (profile_uid){
-        //     if (logged_uid != profile_uid) {
-        //       this.is_allowed = false;
-        //       return this.is_allowed;
-        //     }
-        //   }
-        // }
-        // this is a profile, only allow if it is the same user  (or if this cannot 
-        // be identified)
+      if (sidebar_timeline) {
+        //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
+        // this is not my own timeline
+        if (!sidebar_timeline.querySelector('._6a._m')) {
+          return false;
+        }
+      } // this is a profile, only allow if it is the same user
+      // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+      // if (logged_uid){
+      //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+      //   if (profile_uid){
+      //     if (logged_uid != profile_uid) {
+      //       return false;
+      //     }
+      //   }
+      // }
+      // this is a profile, only allow if it is the same user  (or if this cannot 
+      // be identified)
 
 
-        var is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
+      var is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
 
-        if (is_user_profile != null) {
-          if (!is_user_profile) {
-            this.is_allowed = false;
-            return this.is_allowed;
-          }
+      if (is_user_profile != null) {
+        //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+        if (!is_user_profile) {
+          return false;
         }
       }
 
-      return this.is_allowed;
+      return true;
     }
     /**
      * Indicates if the html correspond to a logged in user
@@ -11237,6 +11244,15 @@ function (_Tracker) {
         this.logged_uid = this.logged_username;
       } else {
         this.logged_uid = this.logged_user_id;
+      } // logged in
+
+
+      if (this.logged_uid) {
+        this.is_logged_in = true;
+        this.is_content_allowed = this.get_content_allowed(); // not logged in
+      } else {
+        this.is_logged_in = false;
+        this.is_content_allowed = true;
       }
     }
     /**
@@ -11533,6 +11549,7 @@ function (_Tracker) {
       var length = found.length;
 
       for (var i = 0; i < length; i++) {
+        this.entries_found += 1;
         found[i].classList.add('tracked');
 
         if (this._isPublicOrLogInUser(found[i])) {
@@ -12313,15 +12330,25 @@ function (_Tracker) {
                         switch (_context.prev = _context.next) {
                           case 0:
                             try {
-                              found = _this10._getPublicArticels();
+                              found = _this10._getPublicArticels(); // if no entries were found, then this is not a timeline or profile page
 
-                              for (i = 0; i < found.length; i++) {
-                                _this10.elements.push(found[i]);
+                              if (_this10.entries_found == 0) {
+                                // if the user is not logged in, then default to the normal tracker
+                                if (!_this10.is_logged_in) {
+                                  resolve(_this10._getDom());
+                                } else {
+                                  resolve('<html><head></head><body></body></html>');
+                                } // otherwise, the dom can be assembled
 
-                                _this10.elementStrings += found[i].outerHTML;
+                              } else {
+                                for (i = 0; i < found.length; i++) {
+                                  _this10.elements.push(found[i]);
+
+                                  _this10.elementStrings += found[i].outerHTML;
+                                }
+
+                                resolve('<html>' + _this10._getHead() + '<body>' + _this10.elementStrings + '</body>' + '</html>');
                               }
-
-                              resolve('<html>' + _this10.documentHead + '<body>' + _this10.elementStrings + '</body>' + '</html>');
                             } catch (err) {
                               reject(err);
                             }
@@ -12465,7 +12492,7 @@ function (_Tracker) {
     };
     _this.lastUrlPath = '';
     _this.values = [];
-    _this.startswith_blacklist = ['/account'];
+    _this.startswith_blacklist = ['/account/'];
     return _this;
   }
   /**
@@ -13647,7 +13674,7 @@ function (_Tracker) {
     _this.whoId2Element = {};
     _this.trendId2Element = {};
     _this.tweets_exist = false;
-    _this.startswith_blacklist = ['/messages', '/settings'];
+    _this.startswith_blacklist = ['/messages/', '/settings/'];
 
     _this.setup_credentials();
 
@@ -13816,18 +13843,13 @@ function (_Tracker) {
       });
     }
   }, {
-    key: "is_content_allowed",
-    value: function is_content_allowed() {
-      if (this.is_allowed == null) {
-        this.is_allowed = true;
-
-        if (document.querySelector(this.selectors.svg_account_protected)) {
-          this.is_allowed = false;
-          return this.is_allowed;
-        }
+    key: "get_content_allowed",
+    value: function get_content_allowed() {
+      if (document.querySelector(this.selectors.svg_account_protected)) {
+        return false;
       }
 
-      return this.is_allowed;
+      return true;
     }
     /**
      * [_setEventLikeButton set like-events for un-/like buttons from articel]
@@ -14058,6 +14080,12 @@ function (_Tracker) {
       //   this.logged_uid = this.logged_user_id;
       // }
       this.is_logged_in = this._isLoggedTwitter();
+
+      if (this.is_logged_in) {
+        this.is_content_allowed = this.get_content_allowed();
+      } else {
+        this.is_content_allowed = true;
+      }
     }
     /**
      * return true if user is logged in twitter
@@ -14501,7 +14529,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(InstagramTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
     _this.instagram_debug = false;
-    _this.startswith_blacklist = ['/accounts', '/settings'];
+    _this.startswith_blacklist = ['/accounts/', '/settings/'];
     return _this;
   }
   /**
@@ -14581,7 +14609,7 @@ function (_Tracker) {
     _this.google_debug = false;
     _this.logged_email = null;
     _this.logged_fullname = null;
-    _this.startswith_blacklist = ['/accounts', '/settings'];
+    _this.startswith_blacklist = ['/accounts/', '/settings/'];
 
     _this.setup_credentials();
 
