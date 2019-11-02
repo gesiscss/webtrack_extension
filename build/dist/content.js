@@ -13581,9 +13581,13 @@ function TwitterTracker_createClass(Constructor, protoProps, staticProps) { if (
 
 function TwitterTracker_possibleConstructorReturn(self, call) { if (call && (TwitterTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return TwitterTracker_assertThisInitialized(self); }
 
-function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
-
 function TwitterTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function TwitterTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { TwitterTracker_get = Reflect.get; } else { TwitterTracker_get = function _get(target, property, receiver) { var base = TwitterTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return TwitterTracker_get(target, property, receiver || target); }
+
+function TwitterTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = TwitterTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function TwitterTracker_getPrototypeOf(o) { TwitterTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return TwitterTracker_getPrototypeOf(o); }
 
 function TwitterTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) TwitterTracker_setPrototypeOf(subClass, superClass); }
 
@@ -14421,16 +14425,15 @@ function (_Tracker) {
       return '<html>' + this._getHead() + '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + '</div><h1>Trends</h1><div class="trends">' + trend_strings + '</div><h1>SideBar</h1><div class="sidebar">' + sidebar + '</div></body>' + '</html>';
     }
     /**
-     * [return dom as string]
+     * [return element without embedd js, css, etc]
      * @return {Promise}
      */
 
   }, {
-    key: "_getDom",
-    value: function _getDom() {
-      var tclone = document.documentElement.cloneNode(true);
-      tclone = this._clean_embedded_scripts(tclone, 'script:not([src]),svg,style,noscript');
-      return tclone.outerHTML; //resolve(document.documentElement.outerHTML);
+    key: "_clean_embedded_scripts",
+    value: function _clean_embedded_scripts(target) {
+      var selectors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'script:not([src]),svg,style';
+      return TwitterTracker_get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "_clean_embedded_scripts", this).call(this, target, selectors + ',noscript');
     }
     /**
      * [return dom as string]

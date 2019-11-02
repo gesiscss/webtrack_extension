@@ -678,19 +678,12 @@ export default class TwitterTracker extends Tracker{
 
 
   /**
-   * [return dom as string]
+   * [return element without embedd js, css, etc]
    * @return {Promise}
    */
-  _getDom(){
-    var tclone = document.documentElement.cloneNode(true);
-
-    tclone = this._clean_embedded_scripts(tclone, 'script:not([src]),svg,style,noscript');
-
-    return tclone.outerHTML;
-    //resolve(document.documentElement.outerHTML);
-
+  _clean_embedded_scripts(target, selectors='script:not([src]),svg,style'){
+    return super._clean_embedded_scripts(target, selectors + ',noscript');
   }
-
 
   /**
    * [return dom as string]
