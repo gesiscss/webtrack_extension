@@ -44,6 +44,7 @@ export default class Tab {
         data: []
       }
     }
+    this.elapsed_timer = -1;
   }
 
   /**
@@ -153,6 +154,27 @@ export default class Tab {
           await this.tabCache.update({
             nr: this.nr,
             duration: this.get().duration+addTime
+          }, false);
+        }
+        resolve();
+      } catch (err) {
+        reject(err)
+      }
+    });
+  }
+
+  /**
+   * [update the elapsed number of tab]
+   * @param  {Number} [addTime=0]
+   * @return {Promise}
+   */
+  updateElapsed(addTime=0){
+    return new Promise(async (resolve, reject) => {
+      try {
+        if(this.hasContent()){
+          await this.tabCache.update({
+            nr: this.nr,
+            elapsed: this.get().elapsed+addTime
           }, false);
         }
         resolve();
@@ -275,7 +297,8 @@ export default class Tab {
         }, data.meta),
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
-        duration: Math.round(((+now) - data.startTime)/1000)
+        duration: Math.round(((+now) - data.startTime)/1000),
+        elapsed: Math.round(((+now) - data.startTime)/1000)
       }
     ), true);
   }
@@ -292,6 +315,12 @@ export default class Tab {
       data.source = oldData.source.concat(data.source)
     }
     data.nr = nr;
+
+
+    let now = +new Date();
+    data.elapsed = oldData.elapsed  + (now - this.elapsed_timer);
+    this.elapsed_timer = now;
+
     return this.tabCache.update(data, true);
   }
 

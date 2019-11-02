@@ -32390,6 +32390,7 @@ function () {
           if (window.id > 0) _this4._onActivWindows(window.id); // if(window.id>0) console.log('Change activWindowId %s', window.id);
         });
         xbrowser.tabs.onHighlighted.addListener(function (highlightInfo) {
+          console.log(highlightInfo);
           this.event.emit(EVENT_NAMES.onFocusTab, null, false);
         }.bind(_this4));
 
@@ -34506,7 +34507,12 @@ function () {
                     bigUpdate = Math.round(+new Date() / 1000) % 5 == 0; // console.log(Object.keys(props).length == 2 , props.hasOwnProperty('duration') , this.timeouts.hasOwnProperty(id) , this.timeouts[id], bigUpdate);
 
                     if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
-                      // console.log('update duration');
+                      console.log('update duration');
+
+                      _this2.storage.set(props, true, false);
+                    } else if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
+                      console.log('update elapsed');
+
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
                       if (_this2.debug) console.log('-: CacheHandler.update() - props: ', props);
@@ -35343,6 +35349,7 @@ function () {
       active: false,
       data: []
     });
+    this.elapsed_timer = -1;
   }
   /**
    * [initialization]
@@ -35630,6 +35637,64 @@ function () {
       }());
     }
     /**
+     * [update the elapsed number of tab]
+     * @param  {Number} [addTime=0]
+     * @return {Promise}
+     */
+
+  }, {
+    key: "updateElapsed",
+    value: function updateElapsed() {
+      var _this4 = this;
+
+      var addTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      return new Promise(
+      /*#__PURE__*/
+      function () {
+        var _ref4 = Tab_asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee4(resolve, reject) {
+          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            while (1) {
+              switch (_context4.prev = _context4.next) {
+                case 0:
+                  _context4.prev = 0;
+
+                  if (!_this4.hasContent()) {
+                    _context4.next = 4;
+                    break;
+                  }
+
+                  _context4.next = 4;
+                  return _this4.tabCache.update({
+                    nr: _this4.nr,
+                    elapsed: _this4.get().elapsed + addTime
+                  }, false);
+
+                case 4:
+                  resolve();
+                  _context4.next = 10;
+                  break;
+
+                case 7:
+                  _context4.prev = 7;
+                  _context4.t0 = _context4["catch"](0);
+                  reject(_context4.t0);
+
+                case 10:
+                case "end":
+                  return _context4.stop();
+              }
+            }
+          }, _callee4, null, [[0, 7]]);
+        }));
+
+        return function (_x7, _x8) {
+          return _ref4.apply(this, arguments);
+        };
+      }());
+    }
+    /**
      * [create the localstore object]
      */
 
@@ -35647,7 +35712,7 @@ function () {
   }, {
     key: "clean",
     value: function clean(nr, callback) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (this.queue.hasOwnProperty(nr)) {
         if (this.queue[nr].data.length > 0) {
@@ -35655,7 +35720,7 @@ function () {
           this._update(nr);
 
           setTimeout(function () {
-            return _this4.clean(nr, callback);
+            return _this5.clean(nr, callback);
           }, 500);
         } else {
           this.tabCache.clear(nr);
@@ -35699,43 +35764,43 @@ function () {
     value: function () {
       var _update2 = Tab_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee4(nr) {
+      regeneratorRuntime.mark(function _callee5(nr) {
         var data;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 if (!(this.queue[nr].active || this.queue[nr].data.length == 0)) {
-                  _context4.next = 4;
+                  _context5.next = 4;
                   break;
                 }
 
-                return _context4.abrupt("return");
+                return _context5.abrupt("return");
 
               case 4:
                 if (this.DEBUG) console.log('-> _update(nr)');
                 this.queue[nr].active = true;
                 data = this.queue[nr].data[0]; // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
-                _context4.prev = 7;
+                _context5.prev = 7;
 
                 if (this.hasContent()) {
-                  _context4.next = 15;
+                  _context5.next = 15;
                   break;
                 }
 
                 if (this.DEBUG) console.log('-> _firstUpdate(data, nr)');
-                _context4.next = 12;
+                _context5.next = 12;
                 return this._firstUpdate(data, nr);
 
               case 12:
                 if (this.DEBUG) console.log('<- _firstUpdate(data, nr)');
-                _context4.next = 19;
+                _context5.next = 19;
                 break;
 
               case 15:
                 if (this.DEBUG) console.log('-> _secondUpdate(data, nr)');
-                _context4.next = 18;
+                _context5.next = 18;
                 return this._secondUpdate(data, nr);
 
               case 18:
@@ -35748,13 +35813,13 @@ function () {
 
                 this._update(nr);
 
-                _context4.next = 31;
+                _context5.next = 31;
                 break;
 
               case 25:
-                _context4.prev = 25;
-                _context4.t0 = _context4["catch"](7);
-                console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context4.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
+                _context5.prev = 25;
+                _context5.t0 = _context5["catch"](7);
+                console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context5.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
 
@@ -35765,13 +35830,13 @@ function () {
 
               case 32:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this, [[7, 25]]);
+        }, _callee5, this, [[7, 25]]);
       }));
 
-      return function _update(_x7) {
+      return function _update(_x9) {
         return _update2.apply(this, arguments);
       };
     }() //_update()
@@ -35803,7 +35868,8 @@ function () {
         }, data.meta),
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
-        duration: Math.round((+now - data.startTime) / 1000)
+        duration: Math.round((+now - data.startTime) / 1000),
+        elapsed: Math.round((+now - data.startTime) / 1000)
       }), true);
     }
     /**
@@ -35823,6 +35889,9 @@ function () {
       }
 
       data.nr = nr;
+      var now = +new Date();
+      data.elapsed = oldData.elapsed + (now - this.elapsed_timer);
+      this.elapsed_timer = now;
       return this.tabCache.update(data, true);
     }
     /**
@@ -36147,103 +36216,167 @@ function () {
       };
     }()
     /**
-     * [_startTimer set a timer to register the active duration]
+     * [_registerTime set a timer to register the active duration]
      */
 
   }, {
-    key: "startTimer",
+    key: "registerTime",
     value: function () {
-      var _startTimer = TabHandler_asyncToGenerator(
+      var _registerTime = TabHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee3() {
         var _this3 = this;
 
-        var tabIds, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, id;
+        var now, allTabIds, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, id, activeTabIds, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, _id;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
-                _context3.next = 3;
-                return this.extension.getActiveTabIds();
+                now = +new Date();
+                _context3.next = 4;
+                return this.extension.getAllTabsIds();
 
-              case 3:
+              case 4:
                 _context3.t0 = function (tabId, i) {
                   return _this3.tabs.hasOwnProperty(tabId);
                 };
 
-                tabIds = _context3.sent.filter(_context3.t0);
+                allTabIds = _context3.sent.filter(_context3.t0);
 
-                if (!(tabIds.length > 0)) {
-                  _context3.next = 25;
+                if (!(allTabIds.length > 0)) {
+                  _context3.next = 26;
                   break;
                 }
 
                 _iteratorNormalCompletion2 = true;
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
-                _context3.prev = 9;
+                _context3.prev = 10;
 
-                for (_iterator2 = tabIds[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                for (_iterator2 = allTabIds[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                   id = _step2.value;
-                  this.tabs[id].start_timer = +new Date();
+
+                  if (this.tabs[id].elapsed_timer != -1) {
+                    this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
+                    this.tabs[id].elapsed_timer = -1;
+                  }
                 }
 
-                _context3.next = 17;
+                _context3.next = 18;
                 break;
 
-              case 13:
-                _context3.prev = 13;
-                _context3.t1 = _context3["catch"](9);
+              case 14:
+                _context3.prev = 14;
+                _context3.t1 = _context3["catch"](10);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context3.t1;
 
-              case 17:
-                _context3.prev = 17;
+              case 18:
                 _context3.prev = 18;
+                _context3.prev = 19;
 
                 if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                   _iterator2["return"]();
                 }
 
-              case 20:
-                _context3.prev = 20;
+              case 21:
+                _context3.prev = 21;
 
                 if (!_didIteratorError2) {
-                  _context3.next = 23;
+                  _context3.next = 24;
                   break;
                 }
 
                 throw _iteratorError2;
 
-              case 23:
-                return _context3.finish(20);
-
               case 24:
-                return _context3.finish(17);
+                return _context3.finish(21);
 
               case 25:
-                _context3.next = 32;
+                return _context3.finish(18);
+
+              case 26:
+                _context3.next = 28;
+                return this.extension.getActiveTabIds();
+
+              case 28:
+                _context3.t2 = function (tabId, i) {
+                  return _this3.tabs.hasOwnProperty(tabId);
+                };
+
+                activeTabIds = _context3.sent.filter(_context3.t2);
+
+                if (!(activeTabIds.length > 0)) {
+                  _context3.next = 50;
+                  break;
+                }
+
+                _iteratorNormalCompletion3 = true;
+                _didIteratorError3 = false;
+                _iteratorError3 = undefined;
+                _context3.prev = 34;
+
+                for (_iterator3 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                  _id = _step3.value;
+                  this.tabs[_id].elapsed_timer = now;
+                }
+
+                _context3.next = 42;
                 break;
 
-              case 27:
-                _context3.prev = 27;
-                _context3.t2 = _context3["catch"](0);
-                console.log(_context3.t2);
-                this.startTimer();
-                this.event.emit('error', _context3.t2, true);
+              case 38:
+                _context3.prev = 38;
+                _context3.t3 = _context3["catch"](34);
+                _didIteratorError3 = true;
+                _iteratorError3 = _context3.t3;
 
-              case 32:
+              case 42:
+                _context3.prev = 42;
+                _context3.prev = 43;
+
+                if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                  _iterator3["return"]();
+                }
+
+              case 45:
+                _context3.prev = 45;
+
+                if (!_didIteratorError3) {
+                  _context3.next = 48;
+                  break;
+                }
+
+                throw _iteratorError3;
+
+              case 48:
+                return _context3.finish(45);
+
+              case 49:
+                return _context3.finish(42);
+
+              case 50:
+                _context3.next = 57;
+                break;
+
+              case 52:
+                _context3.prev = 52;
+                _context3.t4 = _context3["catch"](0);
+                console.log(_context3.t4);
+                this.registerTime();
+                this.event.emit('error', _context3.t4, true);
+
+              case 57:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[0, 27], [9, 13, 17, 25], [18,, 20, 24]]);
+        }, _callee3, this, [[0, 52], [10, 14, 18, 26], [19,, 21, 25], [34, 38, 42, 50], [43,, 45, 49]]);
       }));
 
-      return function startTimer() {
-        return _startTimer.apply(this, arguments);
+      return function registerTime() {
+        return _registerTime.apply(this, arguments);
       };
     }()
     /**
@@ -36267,6 +36400,8 @@ function () {
                 tabIds = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : null;
 
                 try {
+                  this.registerTime();
+
                   if (this.onFocusTabInterval != null) {
                     clearInterval(this.onFocusTabInterval);
                     this.onFocusTabInterval = null;
@@ -36482,7 +36617,7 @@ function () {
         var _ref2 = TabHandler_asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee7(resolve, reject) {
-          var tabIds, lostIds, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, id, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, _id;
+          var tabIds, lostIds, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, id, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, _id2;
 
           return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
@@ -36501,13 +36636,13 @@ function () {
                 case 7:
                   tabIds = _context7.sent;
                   lostIds = [];
-                  _iteratorNormalCompletion3 = true;
-                  _didIteratorError3 = false;
-                  _iteratorError3 = undefined;
+                  _iteratorNormalCompletion4 = true;
+                  _didIteratorError4 = false;
+                  _iteratorError4 = undefined;
                   _context7.prev = 12;
 
-                  for (_iterator3 = _this7.tabCache.getTabsIds()[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    id = _step3.value;
+                  for (_iterator4 = _this7.tabCache.getTabsIds()[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    id = _step4.value;
                     id = parseInt(id, 10);
 
                     if (!tabIds.includes(id)) {
@@ -36522,26 +36657,26 @@ function () {
                 case 16:
                   _context7.prev = 16;
                   _context7.t0 = _context7["catch"](12);
-                  _didIteratorError3 = true;
-                  _iteratorError3 = _context7.t0;
+                  _didIteratorError4 = true;
+                  _iteratorError4 = _context7.t0;
 
                 case 20:
                   _context7.prev = 20;
                   _context7.prev = 21;
 
-                  if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                    _iterator3["return"]();
+                  if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                    _iterator4["return"]();
                   }
 
                 case 23:
                   _context7.prev = 23;
 
-                  if (!_didIteratorError3) {
+                  if (!_didIteratorError4) {
                     _context7.next = 26;
                     break;
                   }
 
-                  throw _iteratorError3;
+                  throw _iteratorError4;
 
                 case 26:
                   return _context7.finish(23);
@@ -36553,33 +36688,33 @@ function () {
                   _this7.closeLostTabs(lostIds); //create all tabs
 
 
-                  _iteratorNormalCompletion4 = true;
-                  _didIteratorError4 = false;
-                  _iteratorError4 = undefined;
+                  _iteratorNormalCompletion5 = true;
+                  _didIteratorError5 = false;
+                  _iteratorError5 = undefined;
                   _context7.prev = 32;
-                  _iterator4 = tabIds[Symbol.iterator]();
+                  _iterator5 = tabIds[Symbol.iterator]();
 
                 case 34:
-                  if (_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done) {
+                  if (_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done) {
                     _context7.next = 43;
                     break;
                   }
 
-                  _id = _step4.value;
-                  _this7.tabs[_id] = new Tab_Tab(_this7.projectId, _id);
+                  _id2 = _step5.value;
+                  _this7.tabs[_id2] = new Tab_Tab(_this7.projectId, _id2);
                   _context7.next = 39;
-                  return _this7.tabs[_id].init();
+                  return _this7.tabs[_id2].init();
 
                 case 39:
                   //clean tab
-                  _this7.tabs[_id].cleanTab(function (page) {
+                  _this7.tabs[_id2].cleanTab(function (page) {
                     if (page != null) {
                       _this7.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                     }
                   });
 
                 case 40:
-                  _iteratorNormalCompletion4 = true;
+                  _iteratorNormalCompletion5 = true;
                   _context7.next = 34;
                   break;
 
@@ -36590,26 +36725,26 @@ function () {
                 case 45:
                   _context7.prev = 45;
                   _context7.t1 = _context7["catch"](32);
-                  _didIteratorError4 = true;
-                  _iteratorError4 = _context7.t1;
+                  _didIteratorError5 = true;
+                  _iteratorError5 = _context7.t1;
 
                 case 49:
                   _context7.prev = 49;
                   _context7.prev = 50;
 
-                  if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                    _iterator4["return"]();
+                  if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                    _iterator5["return"]();
                   }
 
                 case 52:
                   _context7.prev = 52;
 
-                  if (!_didIteratorError4) {
+                  if (!_didIteratorError5) {
                     _context7.next = 55;
                     break;
                   }
 
-                  throw _iteratorError4;
+                  throw _iteratorError5;
 
                 case 55:
                   return _context7.finish(52);

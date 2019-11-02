@@ -151,19 +151,31 @@ export default class TabHandler {
   }
 
   /**
-   * [_startTimer set a timer to register the active duration]
+   * [_registerTime set a timer to register the active duration]
    */
-  async startTimer(){
+  async registerTime(){
     try {
-      let tabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
-      if(tabIds.length>0){
-        for (let id of tabIds) {
-          this.tabs[id].start_timer = +new Date()
+      let now = +new Date();
+
+      let allTabIds = (await this.extension.getAllTabsIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
+      if(allTabIds.length>0){
+        for (let id of allTabIds) {
+          if (this.tabs[id].elapsed_timer != -1) {
+            this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
+            this.tabs[id].elapsed_timer = -1;
+          }
         }
-      }//if(tabIds.length>0)
+      }
+
+      let activeTabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
+      if(activeTabIds.length>0){
+        for (let id of activeTabIds) {
+          this.tabs[id].elapsed_timer = now;
+        }
+      }
     } catch (err) {
       console.log(err);
-      this.startTimer();
+      this.registerTime();
       this.event.emit('error', err, true);
     }
   }
@@ -175,6 +187,7 @@ export default class TabHandler {
    */
   async _onFocus(tabIds=null){
     try {
+      this.registerTime();
       if(this.onFocusTabInterval!=null){
         clearInterval(this.onFocusTabInterval);
         this.onFocusTabInterval = null;

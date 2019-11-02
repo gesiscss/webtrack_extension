@@ -119,10 +119,13 @@ export default class CacheHandler {
         let bigUpdate = Math.round(+ new Date() / 1000)%5==0;
         // console.log(Object.keys(props).length == 2 , props.hasOwnProperty('duration') , this.timeouts.hasOwnProperty(id) , this.timeouts[id], bigUpdate);
         if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
-          // console.log('update duration');
+          console.log('update duration');
+          this.storage.set(props, true, false);
+        }else if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
+          console.log('update elapsed');
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
-          if(this.debug) console.log('-: CacheHandler.update() - props: ', props)
+           if(this.debug) console.log('-: CacheHandler.update() - props: ', props)
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();

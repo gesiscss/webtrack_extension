@@ -327,6 +327,7 @@ export default class Extension {
         // if(window.id>0) console.log('Change activWindowId %s', window.id);
       })
       xbrowser.tabs.onHighlighted.addListener(function(highlightInfo) {
+        console.log(highlightInfo);
         this.event.emit(EVENT_NAMES.onFocusTab, null, false);
       }.bind(this));
 
