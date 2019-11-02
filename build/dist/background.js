@@ -31923,6 +31923,7 @@ function () {
 
     this.allow = true;
     this.disabled = false;
+    this.content_blocked = false;
   }
 
   Extension_createClass(Tab, [{
@@ -31971,10 +31972,6 @@ function () {
     this._onActivatedTab = this._onActivatedTab.bind(this);
     this._onTab = this._onTab.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
-    this.DEFAULT_TAB_CONTENT = {
-      allow: true,
-      disabled: false
-    };
     this.DEBUG = true;
   }
   /**
@@ -32109,7 +32106,7 @@ function () {
         this.event.emit(EVENT_NAMES.focusTabCallback, null, false);
         this.setImage(false);
       } else {
-        this.setImage(this.tabs[activeInfo.tabId].getState('allow') && !this.tabs[activeInfo.tabId].getState('disabled'));
+        this.setImage(this.tabs[activeInfo.tabId].getState('allow') && !this.tabs[activeInfo.tabId].getState('disabled') && !this.tabs[activeInfo.tabId].getState('content_blocked'));
       }
     }
     /**
@@ -32209,8 +32206,10 @@ function () {
           // if the property indicated that is allow to not trach the content
           // then update the indicator, otherwise assume that it is allowed
           if (msg.content[0].hasOwnProperty('is_track_allow')) {
+            this.tabs[sender.tab.id].setState('content_blocked', !msg.content[0].is_track_allow);
             this.setImage(msg.content[0].is_track_allow); //sendResponse(false);
           } else {
+            this.tabs[sender.tab.id].setState('content_blocked', false);
             this.setImage(true);
           } // even if the content is block, the metainformation is sent in order to
           // keep track of the precursors
@@ -32234,7 +32233,7 @@ function () {
         sendResponse(false);
       }
 
-      console.log('<- _onTabContent');
+      if (this.DEBUG) console.log('<- _onTabContent');
     }
     /**
      * [setTabPrivate set tab disabled]
@@ -32390,7 +32389,6 @@ function () {
           if (window.id > 0) _this4._onActivWindows(window.id); // if(window.id>0) console.log('Change activWindowId %s', window.id);
         });
         xbrowser.tabs.onHighlighted.addListener(function (highlightInfo) {
-          console.log(highlightInfo);
           this.event.emit(EVENT_NAMES.onFocusTab, null, false);
         }.bind(_this4));
 
@@ -36336,6 +36334,7 @@ function () {
                 for (_iterator3 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                   _id = _step3.value;
                   this.tabs[_id].elapsed_timer = now;
+                  this.extension.setImage(this.extension.tabs[_id].getState('allow') && !this.extension.tabs[_id].getState('disabled') && !this.extension.tabs[_id].getState('content_blocked'));
                 }
 
                 _context3.next = 42;
@@ -37392,7 +37391,7 @@ settings_settings.getBrowser = function () {
     startTitle: 'Starten'
   },
   loggin: {
-    invitation: 'Bitte melde Sie sich mit ihrer ID an.',
+    invitation: 'Bitte melden Sie sich mit ihrer ID an.',
     placeholder: 'Ihre ID',
     error_id_length: 'Ihre ID-Länge muss mindestens %s Zeichen betragen.',
     input_label: 'ID',

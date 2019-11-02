@@ -174,6 +174,9 @@ export default class TabHandler {
       if(activeTabIds.length>0){
         for (let id of activeTabIds) {
           this.tabs[id].elapsed_timer = now;
+          this.extension.setImage(this.extension.tabs[id].getState('allow') 
+            && !this.extension.tabs[id].getState('disabled')
+            && !this.extension.tabs[id].getState('content_blocked'));
         }
       }
     } catch (err) {

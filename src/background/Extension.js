@@ -14,6 +14,7 @@ class Tab {
   constructor() {
     this.allow = true;
     this.disabled = false;
+    this.content_blocked = false;
   }
 
   setState(name, boolean){
@@ -53,7 +54,6 @@ export default class Extension {
     this._onTab = this._onTab.bind(this);
 
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
-    this.DEFAULT_TAB_CONTENT = {allow: true, disabled: false}
 
     this.DEBUG = true;
   }
@@ -62,8 +62,8 @@ export default class Extension {
    * [_onActivWindows listenen the active windowId for check the active tab]
    */
   _onActivWindows(windowId){
-      this.event.emit(EVENT_NAMES.onFocusTab, null, false);
-      if(windowId>0) this.activWindowId = windowId;
+    this.event.emit(EVENT_NAMES.onFocusTab, null, false);
+    if(windowId>0) this.activWindowId = windowId;
   }
 
   /**
@@ -129,14 +129,14 @@ export default class Extension {
   _onActivatedTab(activeInfo){
     //on switch the active tabs between one window
 
-
-
         this.event.emit(EVENT_NAMES.focusTabCallback, activeInfo.tabId, false);
         if(!this.tabs.hasOwnProperty(activeInfo.tabId)){
           this.event.emit(EVENT_NAMES.focusTabCallback, null, false);
           this.setImage(false);
         }else{
-          this.setImage(this.tabs[activeInfo.tabId].getState('allow') && !this.tabs[activeInfo.tabId].getState('disabled'));
+          this.setImage(this.tabs[activeInfo.tabId].getState('allow') 
+            && !this.tabs[activeInfo.tabId].getState('disabled')
+            && !this.tabs[activeInfo.tabId].getState('content_blocked'));
         }
   }
 
@@ -226,11 +226,14 @@ export default class Extension {
           // if the property indicated that is allow to not trach the content
           // then update the indicator, otherwise assume that it is allowed
           if (msg.content[0].hasOwnProperty('is_track_allow')){
+            this.tabs[sender.tab.id].setState('content_blocked', !msg.content[0].is_track_allow);
             this.setImage(msg.content[0].is_track_allow);
             //sendResponse(false);
           } else {
+            this.tabs[sender.tab.id].setState('content_blocked', false);
             this.setImage(true);
           }
+
 
           // even if the content is block, the metainformation is sent in order to
           // keep track of the precursors
@@ -253,7 +256,7 @@ export default class Extension {
       }else{
         sendResponse(false);
       }
-      console.log('<- _onTabContent');
+      if (this.DEBUG) console.log('<- _onTabContent');
   }
 
   /**
@@ -327,7 +330,6 @@ export default class Extension {
         // if(window.id>0) console.log('Change activWindowId %s', window.id);
       })
       xbrowser.tabs.onHighlighted.addListener(function(highlightInfo) {
-        console.log(highlightInfo);
         this.event.emit(EVENT_NAMES.onFocusTab, null, false);
       }.bind(this));
 
