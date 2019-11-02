@@ -84,6 +84,10 @@ export default class TwitterTracker extends Tracker{
     this.trendId2Element = {};
     this.tweets_exist = false;
 
+    this.header = null;
+    this.sidebar_left = null;
+    this.sidebar_right = null;
+
     this.startswith_blacklist = ['/messages/', '/settings/'];
 
     this.setup_credentials()
@@ -697,6 +701,51 @@ export default class TwitterTracker extends Tracker{
 
 
   /**
+   * [assembleDom with the existent html]
+   * @return {String}
+   */
+  assemblePublicDom(){
+    var tweet_strings = '';
+    var counter = 0;
+    for (var key in this.tweetId2Element) {
+      if (this.tweetId2Element.hasOwnProperty(key)){
+        this.tweetId2Element[key].setAttribute('webtrack-tweet-id', key);
+        tweet_strings += this.tweetId2Element[key].outerHTML;
+        counter += 1;
+      }
+    }
+    if(counter == 0){
+      if(this.debug) console.log('No public tweets/replies found');
+    }
+
+    if (this.header == null) {
+      this.header = document.querySelector('.ProfileCanopy');
+      this.header = this.header? this.header.outerHTML : '';
+    }
+
+    if (this.sidebar_left == null) {
+      this.sidebar_left = document.querySelector('div.ProfileSidebar.ProfileSidebar--withLeftAlignment');
+      this.sidebar_left = this.sidebar_left? this.sidebar_left.outerHTML : '';
+    }
+
+    if (this.sidebar_right == null) {
+      this.sidebar_right = document.querySelector('div.ProfileSidebar.ProfileSidebar--withRightAlignment');
+      this.sidebar_right = this.sidebar_right? this.sidebar_right.outerHTML : '';
+    }
+
+
+    if(this.debug) console.log('Sending ' + counter + ' tweets');
+    return '<html>' + this._getHead() + '<body>' + 
+      '<h1>Header</h1><div class="sidebar">' + this.header +  '</div>'+ 
+      '<h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div>' +
+      '<h1>SideBar Left</h1><div class="whotofollow">' + this.sidebar_left + '</div>'+
+      '<h1>SideBar Right</h1><div class="trends">' + this.sidebar_right +  '</div>'+
+      '</body></html>';
+    
+  }
+
+
+  /**
    * [return element without embedd js, css, etc]
    * @return {Promise}
    */
@@ -737,20 +786,12 @@ export default class TwitterTracker extends Tracker{
         }
         else { 
           let found = this.addPublicArticlesIfLoggedOut();
-          this.addWhoToFollow();
-          this.addTrends();
-
-          //this._eventListenComment();
-          //this._eventListenRetweet();
-          //this._eventListenTweetstorm();
-          //this._eventListenPermalinkOverlay();
-
           this.tweets_exist = found || this.tweets_exist;
 
           if (this.tweets_exist){
               //SEND
             if (this.debug) console.log('assembling dom');
-            resolve(this.assembleDom());
+            resolve(this.assemblePublicDom());
           } else if (this.tweets_exist == false) {
             if (this.debug) console.log('No tweets were found');
             // just send the entire html
