@@ -30,7 +30,7 @@ export default class TabHandler {
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
 
-    this.DEBUG = true;
+    this.debug = true;
   }
 
 
@@ -106,7 +106,7 @@ export default class TabHandler {
    * @param  {Boolean}  tabRemove [remove the db entry]
    */
   async closeTab(tabId, openerTabId, close=true, tabRemove=false){
-    if (this.DEBUG) console.log('-> closeTab(...)');
+    if (this.debug) console.log('-> closeTab(...)');
     if(openerTabId!=null){
       if(!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
       if(!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
@@ -119,7 +119,7 @@ export default class TabHandler {
       if(close && !tabRemove) {
         this.tabs[tabId].close(page => {
           if(page!=null){
-           if (this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
+           if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
            this.event.emit(EVENT_NAMES.page, page, false);
           }
         });
@@ -129,7 +129,7 @@ export default class TabHandler {
     }else{
       console.log('TabId %s not found', tabId);
     }
-    if (this.DEBUG) console.log('<- closeTab(...)');
+    if (this.debug) console.log('<- closeTab(...)');
   }
 
   /**
@@ -154,6 +154,7 @@ export default class TabHandler {
    * [_registerTime set a timer to register the active duration]
    */
   async registerTime(){
+
     try {
       let now = +new Date();
 
@@ -161,6 +162,8 @@ export default class TabHandler {
       if(allTabIds.length>0){
         for (let id of allTabIds) {
           if (this.tabs[id].elapsed_timer != -1) {
+            if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
+            if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
             this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
             this.tabs[id].elapsed_timer = -1;
           }
@@ -201,7 +204,7 @@ export default class TabHandler {
 
 
   _pushData(data, count=0){
-    if (this.DEBUG) console.log('-> _pushData(...)');
+    if (this.debug) console.log('-> _pushData(...)');
     if(typeof data != 'object'){
       console.warn('data is no object');
     }else if(this.tabs.hasOwnProperty(data.tabId)){
@@ -230,7 +233,7 @@ export default class TabHandler {
     }else{
       console.warn('Timeout over', data);
     }
-    if (this.DEBUG) console.log('<- _pushData(...)');
+    if (this.debug) console.log('<- _pushData(...)');
   }
 
   async closeLostTabs(lostIds=[]){
@@ -247,13 +250,13 @@ export default class TabHandler {
 
         await tab.cleanTab(page => {
           if(page!=null){
-             if (this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
+             if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
              this.event.emit(EVENT_NAMES.page, page, false);
           }
         })
-        if (this.DEBUG) console.log('Tried to delete tab', id);
+        if (this.debug) console.log('Tried to delete tab', id);
         await this.tabCache.deleteTab(id)
-        if (this.DEBUG) console.log('Delete the Tab %s', id);
+        if (this.debug) console.log('Delete the Tab %s', id);
         // console.log('clean', id)
 
         this.closeLostTabs(lostIds)
@@ -353,7 +356,7 @@ export default class TabHandler {
         });
         //on tab update
         this.extension.event.on('onTabUpdate', e => {
-          if (this.DEBUG) console.log('-> TabHandler.onTabUpdate');
+          if (this.debug) console.log('-> TabHandler.onTabUpdate');
           if(!this.isClose){
             this._onFocus();
 
@@ -383,7 +386,7 @@ export default class TabHandler {
 
             this.closeTab(e.tabId, e.openerTabId, will_close);
           }
-          if (this.DEBUG) console.log('<- TabHandler.onTabUpdate');
+          if (this.debug) console.log('<- TabHandler.onTabUpdate');
         });
         //on tab data send
         this.extension.event.on('onTabContent', data => {

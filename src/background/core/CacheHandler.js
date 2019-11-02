@@ -69,7 +69,7 @@ export default class CacheHandler {
   add(props={}, now, inspect=false){
     let id = props[this.id];
     if(this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id);
-    if(this.debug) console.log(this.constructor.name, 'add', id);
+    if(this.debug) console.log(' -: CacheHandler.add()', id);
     if(!this.is(id)){
       // console.log('Set %s default value', id, this.DEFAULTCONTENT);
       this.content[id] = this.DEFAULTCONTENT;

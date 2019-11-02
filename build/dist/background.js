@@ -34433,7 +34433,7 @@ function () {
       var inspect = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       var id = props[this.id];
       if (this.debug) console.assert(CacheHandler_typeof(id) == this.typeofId, 'id is not ' + this.typeofId, CacheHandler_typeof(id));
-      if (this.debug) console.log(this.constructor.name, 'add', id);
+      if (this.debug) console.log(' -: CacheHandler.add()', id);
 
       if (!this.is(id)) {
         // console.log('Set %s default value', id, this.DEFAULTCONTENT);
@@ -35337,13 +35337,14 @@ function () {
   function Tab(projectId, tabId) {
     Tab_classCallCheck(this, Tab);
 
+    this.debug = true;
+    if (this.debug) console.log('-: Tab.constructor()');
     this.clean = this.clean.bind(this);
     this.tabCache = new TabCache_TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT); // this.tabCache = tabCache;
 
     this.tabId = tabId;
     this.id = '-1';
     this.isInit = false;
-    this.DEBUG = true;
     this.nr = 1;
     this.queue = Tab_defineProperty({}, this.nr, {
       active: false,
@@ -35372,11 +35373,12 @@ function () {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  _context.prev = 0;
-                  _context.next = 3;
+                  if (_this.debug) console.log('-: Tab.init() *Promise');
+                  _context.prev = 1;
+                  _context.next = 4;
                   return _this.tabCache.init();
 
-                case 3:
+                case 4:
                   _this.nr = _this.tabCache.getIds().length;
                   _this.queue = Tab_defineProperty({}, _this.nr, {
                     active: false,
@@ -35384,20 +35386,20 @@ function () {
                   });
                   _this.isInit = true;
                   resolve();
-                  _context.next = 12;
+                  _context.next = 13;
                   break;
 
-                case 9:
-                  _context.prev = 9;
-                  _context.t0 = _context["catch"](0);
+                case 10:
+                  _context.prev = 10;
+                  _context.t0 = _context["catch"](1);
                   reject(_context.t0);
 
-                case 12:
+                case 13:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 9]]);
+          }, _callee, null, [[1, 10]]);
         }));
 
         return function (_x, _x2) {
@@ -35716,7 +35718,7 @@ function () {
 
       if (this.queue.hasOwnProperty(nr)) {
         if (this.queue[nr].data.length > 0) {
-          // if(this.DEBUG) console.log('queue', this.tabId, nr, this.queue[nr].data.length);
+          // if(this.debug) console.log('queue', this.tabId, nr, this.queue[nr].data.length);
           this._update(nr);
 
           setTimeout(function () {
@@ -35738,7 +35740,7 @@ function () {
   }, {
     key: "addUpdate",
     value: function addUpdate(data) {
-      if (this.DEBUG) console.log('-> addUpdate(nr)');
+      if (this.debug) console.log('-> addUpdate(nr)');
 
       if (!this.queue.hasOwnProperty(this.nr)) {
         this.queue[this.nr] = {
@@ -35751,7 +35753,7 @@ function () {
 
       this._update(this.nr);
 
-      if (this.DEBUG) console.log('<- addUpdate(nr)');
+      if (this.debug) console.log('<- addUpdate(nr)');
     }
     /**
      * [run the queue to update the tab]
@@ -35778,9 +35780,9 @@ function () {
                 return _context5.abrupt("return");
 
               case 4:
-                if (this.DEBUG) console.log('-> _update(nr)');
+                if (this.debug) console.log('-> _update(nr)');
                 this.queue[nr].active = true;
-                data = this.queue[nr].data[0]; // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
+                data = this.queue[nr].data[0]; // if(this.debug) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
                 _context5.prev = 7;
 
@@ -35789,27 +35791,27 @@ function () {
                   break;
                 }
 
-                if (this.DEBUG) console.log('-> _firstUpdate(data, nr)');
+                if (this.debug) console.log('-> _firstUpdate(data, nr)');
                 _context5.next = 12;
                 return this._firstUpdate(data, nr);
 
               case 12:
-                if (this.DEBUG) console.log('<- _firstUpdate(data, nr)');
+                if (this.debug) console.log('<- _firstUpdate(data, nr)');
                 _context5.next = 19;
                 break;
 
               case 15:
-                if (this.DEBUG) console.log('-> _secondUpdate(data, nr)');
+                if (this.debug) console.log('-> _secondUpdate(data, nr)');
                 _context5.next = 18;
                 return this._secondUpdate(data, nr);
 
               case 18:
-                if (this.DEBUG) console.log('<- _secondUpdate(data, nr)');
+                if (this.debug) console.log('<- _secondUpdate(data, nr)');
 
               case 19:
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
-                if (this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
+                if (this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
 
                 this._update(nr);
 
@@ -35826,7 +35828,7 @@ function () {
                 this._update(nr);
 
               case 31:
-                if (this.DEBUG) console.log('<- _update(nr)');
+                if (this.debug) console.log('<- _update(nr)');
 
               case 32:
               case "end":
@@ -35853,6 +35855,9 @@ function () {
     value: function _firstUpdate(data, nr) {
       var now = new Date();
       this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
+      if (this.debug) console.log('-: _firstUpdate() - data:', data);
+      if (this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
+      if (this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
         id: this.id,
@@ -35869,7 +35874,7 @@ function () {
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
         duration: Math.round((+now - data.startTime) / 1000),
-        elapsed: Math.round((+now - data.startTime) / 1000)
+        elapsed: +now - data.startTime
       }), true);
     }
     /**
@@ -35889,9 +35894,16 @@ function () {
       }
 
       data.nr = nr;
-      var now = +new Date();
-      data.elapsed = oldData.elapsed + (now - this.elapsed_timer);
-      this.elapsed_timer = now;
+      if (this.debug) console.log('-: _secondUpdate() - data:', data);
+      if (this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
+      if (this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
+
+      if (this.elapsed_timer != -1) {
+        var now = +new Date();
+        data.elapsed = oldData.elapsed + (now - this.elapsed_timer);
+        this.elapsed_timer = now;
+      }
+
       return this.tabCache.update(data, true);
     }
     /**
@@ -35965,7 +35977,7 @@ function () {
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
-    this.DEBUG = true;
+    this.debug = true;
   }
   /**
    * [_getHashCode return hashcode from string]
@@ -36071,7 +36083,7 @@ function () {
               case 0:
                 close = _args.length > 2 && _args[2] !== undefined ? _args[2] : true;
                 tabRemove = _args.length > 3 && _args[3] !== undefined ? _args[3] : false;
-                if (this.DEBUG) console.log('-> closeTab(...)');
+                if (this.debug) console.log('-> closeTab(...)');
 
                 if (openerTabId != null) {
                   if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
@@ -36087,7 +36099,7 @@ function () {
                   if (close && !tabRemove) {
                     this.tabs[tabId].close(function (page) {
                       if (page != null) {
-                        if (_this.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
+                        if (_this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
 
                         _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                       }
@@ -36099,7 +36111,7 @@ function () {
                   console.log('TabId %s not found', tabId);
                 }
 
-                if (this.DEBUG) console.log('<- closeTab(...)');
+                if (this.debug) console.log('<- closeTab(...)');
 
               case 6:
               case "end":
@@ -36259,6 +36271,8 @@ function () {
                   id = _step2.value;
 
                   if (this.tabs[id].elapsed_timer != -1) {
+                    if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
+                    if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
                     this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
                     this.tabs[id].elapsed_timer = -1;
                   }
@@ -36431,7 +36445,7 @@ function () {
       var _this4 = this;
 
       var count = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      if (this.DEBUG) console.log('-> _pushData(...)');
+      if (this.debug) console.log('-> _pushData(...)');
 
       if (TabHandler_typeof(data) != 'object') {
         console.warn('data is no object');
@@ -36465,7 +36479,7 @@ function () {
         console.warn('Timeout over', data);
       }
 
-      if (this.DEBUG) console.log('<- _pushData(...)');
+      if (this.debug) console.log('<- _pushData(...)');
     }
   }, {
     key: "closeLostTabs",
@@ -36514,19 +36528,19 @@ function () {
                 _context5.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
-                    if (_this5.DEBUG) console.log('==== Emit Event: onPage (Send Page) ====');
+                    if (_this5.debug) console.log('==== Emit Event: onPage (Send Page) ====');
 
                     _this5.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                   }
                 });
 
               case 14:
-                if (this.DEBUG) console.log('Tried to delete tab', id);
+                if (this.debug) console.log('Tried to delete tab', id);
                 _context5.next = 17;
                 return this.tabCache.deleteTab(id);
 
               case 17:
-                if (this.DEBUG) console.log('Delete the Tab %s', id); // console.log('clean', id)
+                if (this.debug) console.log('Delete the Tab %s', id); // console.log('clean', id)
 
                 this.closeLostTabs(lostIds);
                 _context5.next = 25;
@@ -36792,7 +36806,7 @@ function () {
 
 
                   _this7.extension.event.on('onTabUpdate', function (e) {
-                    if (_this7.DEBUG) console.log('-> TabHandler.onTabUpdate');
+                    if (_this7.debug) console.log('-> TabHandler.onTabUpdate');
 
                     if (!_this7.isClose) {
                       _this7._onFocus();
@@ -36824,7 +36838,7 @@ function () {
                       _this7.closeTab(e.tabId, e.openerTabId, will_close);
                     }
 
-                    if (_this7.DEBUG) console.log('<- TabHandler.onTabUpdate');
+                    if (_this7.debug) console.log('<- TabHandler.onTabUpdate');
                   }); //on tab data send
 
 

@@ -30,13 +30,15 @@ export default class Tab {
    * @param {number} tabId
    */
   constructor(projectId, tabId) {
+    this.debug = true;
+    if (this.debug) console.log('-: Tab.constructor()');
+
     this.clean = this.clean.bind(this);
     this.tabCache = new TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT);
     // this.tabCache = tabCache;
     this.tabId = tabId;
     this.id = '-1';
     this.isInit = false;
-    this.DEBUG = true;
     this.nr = 1;
     this.queue = {
       [this.nr]: {
@@ -53,6 +55,8 @@ export default class Tab {
    */
   init(){
     return new Promise(async (resolve, reject) => {
+
+    if (this.debug) console.log('-: Tab.init() *Promise');
       try {
         await this.tabCache.init();
         this.nr = this.tabCache.getIds().length;
@@ -199,7 +203,7 @@ export default class Tab {
   clean(nr, callback){
     if(this.queue.hasOwnProperty(nr)){
       if(this.queue[nr].data.length>0){
-        // if(this.DEBUG) console.log('queue', this.tabId, nr, this.queue[nr].data.length);
+        // if(this.debug) console.log('queue', this.tabId, nr, this.queue[nr].data.length);
         this._update(nr);
         setTimeout(() => this.clean(nr, callback), 500);
       }else{
@@ -216,7 +220,7 @@ export default class Tab {
    * @param {Object} data
    */
   addUpdate(data){
-    if(this.DEBUG) console.log('-> addUpdate(nr)');
+    if(this.debug) console.log('-> addUpdate(nr)');
     if(!this.queue.hasOwnProperty(this.nr)){
       this.queue[this.nr] = {
         active: false,
@@ -225,7 +229,7 @@ export default class Tab {
     }
     this.queue[this.nr].data.push(data);
     this._update(this.nr);
-    if(this.DEBUG) console.log('<- addUpdate(nr)');
+    if(this.debug) console.log('<- addUpdate(nr)');
   }
 
   /**
@@ -237,27 +241,27 @@ export default class Tab {
     if(this.queue[nr].active || this.queue[nr].data.length==0) {
       return;
     } else{
-      if(this.DEBUG) console.log('-> _update(nr)');
+      if(this.debug) console.log('-> _update(nr)');
       this.queue[nr].active = true;
 
       let data = this.queue[nr].data[0]
 
-      // if(this.DEBUG) console.log(this.tabId, nr, this.queue[nr].data.length, data);
+      // if(this.debug) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
       try {
         // if(!this.hasContent() && data.count == 1){
         if(!this.hasContent()){
-          if(this.DEBUG) console.log('-> _firstUpdate(data, nr)');
+          if(this.debug) console.log('-> _firstUpdate(data, nr)');
           await this._firstUpdate(data, nr)
-          if(this.DEBUG) console.log('<- _firstUpdate(data, nr)');
+          if(this.debug) console.log('<- _firstUpdate(data, nr)');
         }else{
-          if(this.DEBUG) console.log('-> _secondUpdate(data, nr)');
+          if(this.debug) console.log('-> _secondUpdate(data, nr)');
           await this._secondUpdate(data, nr);
-          if(this.DEBUG) console.log('<- _secondUpdate(data, nr)');
+          if(this.debug) console.log('<- _secondUpdate(data, nr)');
         }
         this.queue[nr].data.shift();
         this.queue[nr].active = false;
-        if(this.DEBUG) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
+        if(this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
           'count', data.count, 'queue.length', this.queue[nr].data.length);
         this._update(nr);
 
@@ -269,7 +273,7 @@ export default class Tab {
         this._update(nr);
       }
     }
-    if(this.DEBUG) console.log('<- _update(nr)');
+    if(this.debug) console.log('<- _update(nr)');
   }//_update()
 
   /**
@@ -281,6 +285,13 @@ export default class Tab {
   _firstUpdate(data, nr){
     let now = new Date();
     this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
+
+    
+    if(this.debug) console.log('-: _firstUpdate() - data:', data);
+    if(this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
+    if(this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
+
+
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
         nr: nr,
@@ -298,7 +309,7 @@ export default class Tab {
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
         duration: Math.round(((+now) - data.startTime)/1000),
-        elapsed: Math.round(((+now) - data.startTime)/1000)
+        elapsed: +now - data.startTime
       }
     ), true);
   }
@@ -317,9 +328,16 @@ export default class Tab {
     data.nr = nr;
 
 
-    let now = +new Date();
-    data.elapsed = oldData.elapsed  + (now - this.elapsed_timer);
-    this.elapsed_timer = now;
+    if(this.debug) console.log('-: _secondUpdate() - data:', data);
+    if(this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
+    if(this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
+
+
+    if (this.elapsed_timer != -1){
+      let now = +new Date();
+      data.elapsed = oldData.elapsed  + (now - this.elapsed_timer);
+      this.elapsed_timer = now;
+    }
 
     return this.tabCache.update(data, true);
   }
