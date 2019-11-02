@@ -151,6 +151,24 @@ export default class TabHandler {
   }
 
   /**
+   * [_startTimer set a timer to register the active duration]
+   */
+  async startTimer(){
+    try {
+      let tabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
+      if(tabIds.length>0){
+        for (let id of tabIds) {
+          this.tabs[id].start_timer = +new Date()
+        }
+      }//if(tabIds.length>0)
+    } catch (err) {
+      console.log(err);
+      this.startTimer();
+      this.event.emit('error', err, true);
+    }
+  }
+
+  /**
    * [_onFocus add the interval time to the duration time from the tab-ids ]
    * @param  {[type]}  [tabIds=null] [description]
    * @return {Promise}               [description]

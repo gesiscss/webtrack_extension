@@ -134,7 +134,6 @@ export default class CacheHandler {
             }
           }
           this.timeouts[id].timeout = setTimeout(()=>{
-            // console.log('=>DB UPDATE', id);
             let merge = Object.assign(typeof now == 'boolean' && now == false? {}: {timestamp: now}, this.content[id], {[this.id]: id} );
             this.storage.set(merge).catch(console.warn)
             this.timeouts[id].timeout = null
