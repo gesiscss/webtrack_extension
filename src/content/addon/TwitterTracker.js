@@ -519,6 +519,25 @@ export default class TwitterTracker extends Tracker{
     return articles.length > 0;
   }
 
+  /**
+   * [_getPublicArticels return elements of public articels]
+   * @return {Array} true if at least one article was found
+   */
+  addPublicArticlesIfLoggedOut(){
+    let articles = document.querySelectorAll('#stream-items-id li > .tweet');
+    let counter = 0;
+
+    for (var i = 0; i < articles.length; i++) {
+      let id = articles[i].getAttribute('data-tweet-id');
+      if (id != null) {
+        this.trackArticle(id, articles[i]);
+        counter += 1;
+      }
+    }
+
+    return articles.length > 0;
+  }
+
 
   /**
    * [_getId looks for a user id to follow]
@@ -694,26 +713,50 @@ export default class TwitterTracker extends Tracker{
     //    return super.getDom();
     //} else {
       return new Promise((resolve, reject) => {
-        let found = this.addPublicArticles();
-        this.addWhoToFollow();
-        this.addTrends();
+        if (this.is_logged_in) { 
+          let found = this.addPublicArticles();
+          this.addWhoToFollow();
+          this.addTrends();
 
-        //this._eventListenComment();
-        //this._eventListenRetweet();
-        //this._eventListenTweetstorm();
-        //this._eventListenPermalinkOverlay();
+          //this._eventListenComment();
+          //this._eventListenRetweet();
+          //this._eventListenTweetstorm();
+          //this._eventListenPermalinkOverlay();
 
-        this.tweets_exist = found || this.tweets_exist;
+          this.tweets_exist = found || this.tweets_exist;
 
-        if (this.tweets_exist){
-            //SEND
-          if (this.debug) console.log('assembling dom');
-          resolve(this.assembleDom());
-        } else if (this.tweets_exist == false) {
-          if (this.debug) console.log('No tweets were found');
-          // just send the entire html
-          resolve(this._getDom());
-        }      
+          if (this.tweets_exist){
+              //SEND
+            if (this.debug) console.log('assembling dom');
+            resolve(this.assembleDom());
+          } else if (this.tweets_exist == false) {
+            if (this.debug) console.log('No tweets were found');
+            // just send the entire html
+            resolve(this._getDom());
+          }
+        }
+        else { 
+          let found = this.addPublicArticlesIfLoggedOut();
+          this.addWhoToFollow();
+          this.addTrends();
+
+          //this._eventListenComment();
+          //this._eventListenRetweet();
+          //this._eventListenTweetstorm();
+          //this._eventListenPermalinkOverlay();
+
+          this.tweets_exist = found || this.tweets_exist;
+
+          if (this.tweets_exist){
+              //SEND
+            if (this.debug) console.log('assembling dom');
+            resolve(this.assembleDom());
+          } else if (this.tweets_exist == false) {
+            if (this.debug) console.log('No tweets were found');
+            // just send the entire html
+            resolve(this._getDom());
+          }
+        }
       });
     //}
   }
