@@ -15,6 +15,7 @@ export default class TabCache extends CacheHandler{
    */
   constructor(projectId, tabId, defaultContent={}) {
     super();
+    this.debug = true;
     this.inspector = new Inspector()
     this.tabId = parseInt(tabId, 10);
     this.projectId = projectId;
@@ -22,10 +23,10 @@ export default class TabCache extends CacheHandler{
     this.databases = new LocalstorageHandler('tabcache_databases_'+projectId, []);
     this.config = {databaseName: 'wt_project_'+projectId, objectStoreName: tabId, defaultContent: defaultContent, id: "nr"};
     this.storage = new LocalExtensionStore(this.config);
+    if(this.debug) console.log('-: TabCache.constructor() - ', 'this.config: ', this.config, ' this.storage: ', this.storage);
     this.id = 'nr';
     this.typeofId = 'number';
     this.register = this.register.bind(this);
-    this.debug = false;
   }
 
   /**
@@ -43,9 +44,11 @@ export default class TabCache extends CacheHandler{
    * @return {Promise}
    */
   init(){
+    if(this.debug) console.log('-: TabCache.init()');
     return new Promise(async (resolve, reject) => {
       try {
         if(this.tabId!=0){
+          if(this.debug) console.log('-: TabCache.init() - this.tabId', this.tabId);
           if(this.databases.get().includes(this.getDBName(this.tabId))){
             await super.init();
           }

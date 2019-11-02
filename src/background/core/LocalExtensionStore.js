@@ -278,6 +278,7 @@ export default class LocalExtensionStore {
             }
             this.setStoreContent(STORENAME, data);
           }else{
+            debugger;
             console.warn('Timestamp older', 'content', content.timestamp, content);
             resolve();
           }

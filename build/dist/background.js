@@ -34251,6 +34251,7 @@ function () {
 
                     _this13.setStoreContent(STORENAME, data);
                   } else {
+                    debugger;
                     console.warn('Timestamp older', 'content', content.timestamp, content);
                     resolve();
                   }
@@ -34326,17 +34327,18 @@ function () {
 
     CacheHandler_classCallCheck(this, CacheHandler);
 
+    this.debug = true;
     this.DEFAULTCONTENT = {};
     this.storage = new LocalstoreDB({
       objectStoreName: 'cachehandler_' + projectId,
       defaultContent: {}
-    }); // this.source = new SourceCache(projectId);
+    });
+    if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage); // this.source = new SourceCache(projectId);
 
     this.content = {};
     this.id = 'id';
     this.typeofId = 'string';
     this.ids = [];
-    this.debug = false;
     this.DELAY = 500;
     this.last = 0;
     this.timeouts = {};
@@ -34368,23 +34370,22 @@ function () {
 
                 case 3:
                   _this.content = _context.sent;
-                  if (_this.debug) console.log('this.content', _this.content);
-                  if (_this.debug) console.log(_this.constructor.name, _this.content);
+                  if (_this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', _this.content);
                   resolve();
-                  _context.next = 12;
+                  _context.next = 11;
                   break;
 
-                case 9:
-                  _context.prev = 9;
+                case 8:
+                  _context.prev = 8;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 12:
+                case 11:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 9]]);
+          }, _callee, null, [[0, 8]]);
         }));
 
         return function (_x, _x2) {
@@ -34508,6 +34509,8 @@ function () {
                       // console.log('update duration');
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
+                      if (_this2.debug) console.log('-: CacheHandler.update() - props: ', props);
+
                       if (_this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout != null) {
                         clearTimeout(_this2.timeouts[id].timeout);
 
@@ -34865,6 +34868,7 @@ function (_CacheHandler) {
     TabCache_classCallCheck(this, TabCache);
 
     _this = TabCache_possibleConstructorReturn(this, TabCache_getPrototypeOf(TabCache).call(this));
+    _this.debug = true;
     _this.inspector = new Inspector();
     _this.tabId = parseInt(tabId, 10);
     _this.projectId = projectId; // this.config = {databaseName: this.getDBName(), objectStoreName: 'data', defaultContent: defaultContent, id: "nr"};
@@ -34877,10 +34881,10 @@ function (_CacheHandler) {
       id: "nr"
     };
     _this.storage = new LocalExtensionStore(_this.config);
+    if (_this.debug) console.log('-: TabCache.constructor() - ', 'this.config: ', _this.config, ' this.storage: ', _this.storage);
     _this.id = 'nr';
     _this.typeofId = 'number';
     _this.register = _this.register.bind(TabCache_assertThisInitialized(_this));
-    _this.debug = false;
     return _this;
   }
   /**
@@ -34908,6 +34912,7 @@ function (_CacheHandler) {
     value: function init() {
       var _this2 = this;
 
+      if (this.debug) console.log('-: TabCache.init()');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -34921,34 +34926,36 @@ function (_CacheHandler) {
                   _context.prev = 0;
 
                   if (!(_this2.tabId != 0)) {
-                    _context.next = 5;
+                    _context.next = 6;
                     break;
                   }
+
+                  if (_this2.debug) console.log('-: TabCache.init() - this.tabId', _this2.tabId);
 
                   if (!_this2.databases.get().includes(_this2.getDBName(_this2.tabId))) {
-                    _context.next = 5;
+                    _context.next = 6;
                     break;
                   }
 
-                  _context.next = 5;
+                  _context.next = 6;
                   return _get(TabCache_getPrototypeOf(TabCache.prototype), "init", _this2).call(_this2);
 
-                case 5:
+                case 6:
                   resolve();
-                  _context.next = 11;
+                  _context.next = 12;
                   break;
 
-                case 8:
-                  _context.prev = 8;
+                case 9:
+                  _context.prev = 9;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 11:
+                case 12:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 8]]);
+          }, _callee, null, [[0, 9]]);
         }));
 
         return function (_x, _x2) {
@@ -36694,7 +36701,7 @@ function PageCache_setPrototypeOf(o, p) { PageCache_setPrototypeOf = Object.setP
 
 
 
-var PageCache_PageCache =
+var PageCache =
 /*#__PURE__*/
 function (_CacheHandler) {
   PageCache_inherits(PageCache, _CacheHandler);
@@ -36714,17 +36721,14 @@ function (_CacheHandler) {
     PageCache_classCallCheck(this, PageCache);
 
     _this = PageCache_possibleConstructorReturn(this, PageCache_getPrototypeOf(PageCache).call(this));
-    _this.storage = new LocalstoreDB({
-      databaseName: 'wt_page_' + projectId,
-      objectStoreName: 'data',
-      defaultContent: {}
-    });
-    _this.delay = 500; // this.fileAttr = ['content', 'source', 'links', 'events'];
+    _this.debug = true; // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
+    // if(this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
+    // this.delay = 50;
+    // this.fileAttr = ['content', 'source', 'links', 'events'];
 
     _this.typeofId = 'string';
     _this.fileAttr = [];
     _this.LOAD_FILES_AFTER_INIT = false;
-    _this.debug = true;
     return _this;
   }
   /**
@@ -37404,7 +37408,7 @@ function () {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.DEBUG = true; // fields that should be anonymized
+    this.debug = true; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'id', 'landing_url', 'precursor_id', 'title', 'unhashed_url', 'url'];
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
@@ -37422,7 +37426,7 @@ function () {
       this.tabHandler.event.on('error', function (error) {
         _this.event.emit('error', error, true);
       });
-      this.pageCache = new PageCache_PageCache(this.projectId);
+      this.pageCache = new PageCache(this.projectId);
       this.extension.event.on('error', function (error) {
         return new ErrorCache_ErrorCache().add(error);
       });
@@ -37452,7 +37456,7 @@ function () {
       var _this2 = this;
 
       var private_mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      console.log('init');
+      if (this.debug) console.log('-: TrackingHandler.init()');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -37583,7 +37587,7 @@ function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (this.DEBUG) console.log('-> _addPage(page)');
+                if (this.debug) console.log('-> _addPage(page)');
 
                 try {
                   // console.log('DISBALE SAVE PAGE  !!!');
@@ -37601,7 +37605,7 @@ function () {
                   if (this.SENDDATAAUTOMATICALLY) this.sendData();
                 }
 
-                if (this.DEBUG) console.log('<- _addPage(page)');
+                if (this.debug) console.log('<- _addPage(page)');
 
               case 3:
               case "end":
@@ -37817,7 +37821,7 @@ function () {
               switch (_context5.prev = _context5.next) {
                 case 0:
                   _context5.prev = 0;
-                  if (_this4.DEBUG) console.log('-> sendData');
+                  if (_this4.debug) console.log('-> sendData');
 
                   _this4.cleanDeadReferenceInEvent('onSend');
 
@@ -37838,7 +37842,7 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context5.next = 60;
+                    _context5.next = 61;
                     break;
                   }
 
@@ -37852,7 +37856,7 @@ function () {
 
                 case 15:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context5.next = 45;
+                    _context5.next = 46;
                     break;
                   }
 
@@ -37860,22 +37864,21 @@ function () {
                   page = null;
                   _context5.prev = 18;
                   sendTime = new Date().toJSON();
-                  console.log(sendTime);
-                  _context5.next = 23;
+                  _context5.next = 22;
                   return _this4.pageCache.update({
                     id: id,
                     send: true,
                     sendTime: sendTime
                   }, undefined, true);
 
-                case 23:
-                  _context5.next = 25;
+                case 22:
+                  _context5.next = 24;
                   return _this4.pageCache.getOnly(id);
 
-                case 25:
+                case 24:
                   page = _context5.sent;
-                  if (_this4.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                  _context5.next = 29;
+                  if (_this4.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                  _context5.next = 28;
                   return _this4.transfer.sendingData(JSON.stringify({
                     id: _this4.getClientId(),
                     projectId: _this4.projectId,
@@ -37890,7 +37893,7 @@ function () {
                     // });
                   });
 
-                case 29:
+                case 28:
                   send = _context5.sent;
                   count += 1;
 
@@ -37899,16 +37902,30 @@ function () {
                     now: count,
                     title: page.title,
                     status: status
-                  }); //this.pageCache.update({id: page.id, prevSendTime: sendTime, content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
-                  //this.pageCache.cleanSource(page.id);//.catch(console.warn);
+                  }); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
+                  // the storage. 
 
 
-                  if (_this4.DEBUG) console.log('<- sendData');
-                  _context5.next = 42;
+                  _this4.pageCache.update({
+                    id: page.id,
+                    content: [],
+                    links: [],
+                    hashes: [],
+                    source: [],
+                    events: [],
+                    meta: {}
+                  }, undefined, true); // set the page attr send to true
+
+
+                  _this4.pageCache.cleanSource(page.id); //.catch(console.warn);
+
+
+                  if (_this4.debug) console.log('<- sendData');
+                  _context5.next = 43;
                   break;
 
-                case 35:
-                  _context5.prev = 35;
+                case 36:
+                  _context5.prev = 36;
                   _context5.t0 = _context5["catch"](18);
                   count += 1; // this.event.emit('error', e, true);
 
@@ -37922,61 +37939,61 @@ function () {
                   //   status: 'failed'
                   // });
 
-                case 42:
+                case 43:
                   _iteratorNormalCompletion2 = true;
                   _context5.next = 15;
                   break;
 
-                case 45:
-                  _context5.next = 51;
+                case 46:
+                  _context5.next = 52;
                   break;
 
-                case 47:
-                  _context5.prev = 47;
+                case 48:
+                  _context5.prev = 48;
                   _context5.t1 = _context5["catch"](13);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context5.t1;
 
-                case 51:
-                  _context5.prev = 51;
+                case 52:
                   _context5.prev = 52;
+                  _context5.prev = 53;
 
                   if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
                     _iterator2["return"]();
                   }
 
-                case 54:
-                  _context5.prev = 54;
+                case 55:
+                  _context5.prev = 55;
 
                   if (!_didIteratorError2) {
-                    _context5.next = 57;
+                    _context5.next = 58;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 57:
-                  return _context5.finish(54);
-
                 case 58:
-                  return _context5.finish(51);
+                  return _context5.finish(55);
 
                 case 59:
+                  return _context5.finish(52);
+
+                case 60:
                   //for
                   if (!_this4.SENDDATAAUTOMATICALLY) {
                     _this4.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                   }
 
-                case 60:
+                case 61:
                   //if
                   _this4.setSending(false);
 
                   resolve();
-                  _context5.next = 71;
+                  _context5.next = 72;
                   break;
 
-                case 64:
-                  _context5.prev = 64;
+                case 65:
+                  _context5.prev = 65;
                   _context5.t2 = _context5["catch"](0);
 
                   _this4.setSending(false);
@@ -37989,19 +38006,19 @@ function () {
 
                   reject(_context5.t2);
 
-                case 71:
-                  _context5.prev = 71;
+                case 72:
+                  _context5.prev = 72;
 
                   _this4.event.emit('onSend', false, false);
 
-                  return _context5.finish(71);
+                  return _context5.finish(72);
 
-                case 74:
+                case 75:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 64, 71, 74], [13, 47, 51, 59], [18, 35], [52,, 54, 58]]);
+          }, _callee5, null, [[0, 65, 72, 75], [13, 48, 52, 60], [18, 36], [53,, 55, 59]]);
         }));
 
         return function (_x4, _x5) {

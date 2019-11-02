@@ -11,14 +11,15 @@ export default class CacheHandler {
    * @param {Number} projectId
    */
   constructor(projectId=''){
+    this.debug = true;
     this.DEFAULTCONTENT = {};
     this.storage = new LocalstoreDB({objectStoreName: 'cachehandler_'+projectId, defaultContent: {}});
+    if(this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
     // this.source = new SourceCache(projectId);
     this.content = {};
     this.id = 'id';
     this.typeofId = 'string';
     this.ids = [];
-    this.debug = false;
     this.DELAY = 500;
     this.last = 0
     this.timeouts = {};
@@ -32,8 +33,7 @@ export default class CacheHandler {
     return new Promise(async (resolve, reject) => {
       try {
         this.content = await this.storage.getAll();
-        if(this.debug) console.log('this.content', this.content);
-        if(this.debug) console.log(this.constructor.name, this.content);
+        if(this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', this.content);
         resolve();
       } catch (e) {
         reject(e)
@@ -122,6 +122,7 @@ export default class CacheHandler {
           // console.log('update duration');
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
+          if(this.debug) console.log('-: CacheHandler.update() - props: ', props)
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();

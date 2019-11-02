@@ -13,13 +13,15 @@ export default class PageCache extends CacheHandler {
    */
   constructor(projectId=''){
     super();
-    this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
-    this.delay = 500;
+    this.debug = true;
+    // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
+    // if(this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
+    // this.delay = 50;
     // this.fileAttr = ['content', 'source', 'links', 'events'];
     this.typeofId = 'string';
     this.fileAttr = [];
     this.LOAD_FILES_AFTER_INIT = false;
-    this.debug = true;
+
   }
 
   /**

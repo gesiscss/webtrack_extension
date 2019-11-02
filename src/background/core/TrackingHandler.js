@@ -26,7 +26,7 @@ export default class TrackingHandler {
     this.AUTOSTART = autostart;
     this.config = config;
     this.event = new EventEmitter();
-    this.DEBUG = true;
+    this.debug = true;
 
     // fields that should be anonymized
     this.to_anonym = [
@@ -81,7 +81,7 @@ export default class TrackingHandler {
    *  @return Promise
    */
    init(private_mode=true){
-      console.log('init');
+      if (this.debug) console.log('-: TrackingHandler.init()');
       return new Promise(async (resolve, reject) =>{
         try {
           await this.pageCache.init();
@@ -150,7 +150,7 @@ export default class TrackingHandler {
    * @param {Object} page
    */
   async _addPage(page){
-    if (this.DEBUG) console.log('-> _addPage(page)');
+    if (this.debug) console.log('-> _addPage(page)');
     try {
       // console.log('DISBALE SAVE PAGE  !!!');
       // return;
@@ -166,7 +166,7 @@ export default class TrackingHandler {
     } finally {
       if(this.SENDDATAAUTOMATICALLY) this.sendData();
     }
-    if (this.DEBUG) console.log('<- _addPage(page)');
+    if (this.debug) console.log('<- _addPage(page)');
   }
 
   /**
@@ -263,7 +263,7 @@ export default class TrackingHandler {
   sendData(pages=null, nonClosed=false){
       return new Promise(async (resolve, reject) => {
         try {
-          if(this.DEBUG) console.log('-> sendData');
+          if(this.debug) console.log('-> sendData');
           this.cleanDeadReferenceInEvent('onSend');
           this.event.emit('onSend', true);
           this.setSending(true);
@@ -282,12 +282,11 @@ export default class TrackingHandler {
               var page = null
               try {
                 let sendTime = (new Date()).toJSON();
-                console.log(sendTime);
                 await this.pageCache.update({id: id, send: true, sendTime: sendTime}, undefined, true);
 
                 page = await this.pageCache.getOnly(id);
 
-                if(this.DEBUG) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                if(this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
@@ -311,11 +310,13 @@ export default class TrackingHandler {
                   status: status
                 });
 
-                // TODO: check what are this lines doing. They seem to be doing nothing
-                this.pageCache.update({id: page.id, prevSendTime: sendTime, content: [], links: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
+                // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
+                // the storage. 
+                this.pageCache.update({id: page.id, content: [], links: [], 
+                    hashes: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
                 this.pageCache.cleanSource(page.id);//.catch(console.warn);
 
-                if(this.DEBUG) console.log('<- sendData');
+                if(this.debug) console.log('<- sendData');
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);
