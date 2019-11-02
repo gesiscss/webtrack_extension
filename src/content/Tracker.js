@@ -80,6 +80,14 @@ export default class Tracker extends MultiFetch {
     return this.header_clone.outerHTML;
   }
 
+
+  /**
+   * Setup the credentials for the logged user (if any)
+   */
+  reset_credentials(){
+  }
+
+
   /**
    * [isAllow returns if the path is allowed in social media platforms]
    * @param  {Location}  [the location element to analyze the url]
@@ -527,6 +535,8 @@ export default class Tracker extends MultiFetch {
       // problem would persist: the content was modified first and then the
       // url!
       setTimeout( function() {
+
+        this.reset_credentials();
         // check if the URL has changed
         if (this.is_url_change()){
           console.log(this.is_path_allow(location.pathname));

@@ -66,6 +66,10 @@ export default class TwitterTracker extends Tracker{
       svg_retweet: 'svg g path[d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zm-10.66 3.28H7.26c-1.24 0-2.25-1.01-2.25-2.25V6.46l2.22 2.22c.148.147.34.22.532.22s.384-.073.53-.22c.293-.293.293-.768 0-1.06l-3.5-3.5c-.293-.294-.768-.294-1.06 0l-3.5 3.5c-.294.292-.294.767 0 1.06s.767.293 1.06 0l2.22-2.22V16.7c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.337-.75-.75-.75z"]',
       /** there is also the retweet with comment**/
 
+      // the username can be taken from here
+      svg_lists_deactivated: 'nav svg g path[d="M19.75 22H4.25C3.01 22 2 20.99 2 19.75V4.25C2 3.01 3.01 2 4.25 2h15.5C20.99 2 22 3.01 22 4.25v15.5c0 1.24-1.01 2.25-2.25 2.25zM4.25 3.5c-.414 0-.75.337-.75.75v15.5c0 .413.336.75.75.75h15.5c.414 0 .75-.337.75-.75V4.25c0-.413-.336-.75-.75-.75H4.25z"]',
+      svg_lists_activated: 'nav svg g path[d="M19.75 2H4.25C3.013 2 2 3.013 2 4.25v15.5C2 20.987 3.013 22 4.25 22h15.5c1.237 0 2.25-1.013 2.25-2.25V4.25C22 3.013 20.987 2 19.75 2zM11 16.75H7c-.414 0-.75-.336-.75-.75s.336-.75.75-.75h4c.414 0 .75.336.75.75s-.336.75-.75.75zm6-4H7c-.414 0-.75-.336-.75-.75s.336-.75.75-.75h10c.414 0 .75.336.75.75s-.336.75-.75.75zm0-4H7c-.414 0-.75-.336-.75-.75s.336-.75.75-.75h10c.414 0 .75.336.75.75s-.336.75-.75.75z"',
+
       // the twitter id needs to be search in the .parentNode.parentNode.parentNode.getAttribute('href'), e.g. "/username/status/995297509001048064/analytics"
       svg_maintweet_tweetid: 'a svg g path[d="M12 22c-.414 0-.75-.336-.75-.75V2.75c0-.414.336-.75.75-.75s.75.336.75.75v18.5c0 .414-.336.75-.75.75zm5.14 0c-.415 0-.75-.336-.75-.75V7.89c0-.415.335-.75.75-.75s.75.335.75.75v13.36c0 .414-.337.75-.75.75zM6.86 22c-.413 0-.75-.336-.75-.75V10.973c0-.414.337-.75.75-.75s.75.336.75.75V21.25c0 .414-.335.75-.75.75z"]',
       svg_maintweet_tweetid_regex: /.*status\/(\d+).*/,
@@ -90,7 +94,8 @@ export default class TwitterTracker extends Tracker{
 
     this.startswith_blacklist = ['/messages/', '/settings/'];
 
-    this.setup_credentials()
+    this.logged_username = null;
+
     console.log(+ new Date());
   }
 
@@ -333,7 +338,7 @@ export default class TwitterTracker extends Tracker{
   /**
    * Setup the credentials for the logged user (if any)
    */
-  setup_credentials(){
+  reset_credentials(){
 
     // let location = document.querySelector('._2s25._606w');
     // this.logged_username = this.get_username(location);
@@ -358,12 +363,38 @@ export default class TwitterTracker extends Tracker{
     this.is_logged_in = this._isLoggedTwitter();
 
     if (this.is_logged_in){
+      this.logged_username = this.get_username();
       this.is_content_allowed = this.get_content_allowed();
     }else{
       this.is_content_allowed = true;
     }
 
+  }
 
+
+  /**
+   * return true if user is logged in twitter
+   * @return {boolean} true if user is logged
+   */
+  get_username(){
+    //document.documentElement.querySelectorAll('script,link,svg,style');
+    //var navs = document.documentElement.getElementsByTagName('nav');
+    //var navs = document.documentElement.querySelectorAll('nav a[aria-label="Profile"]');
+    //document.querySelector('head link[hreflang]') 
+
+
+    var svg = document.documentElement.querySelector(
+      this.selectors.svg_lists_deactivated);
+    if (svg){
+      return svg.parentElement.parentElement.parentElement.parentElement.parentElement.pathname.split('/')[1];
+    } else {
+      var svg = document.documentElement.querySelector(
+        this.selectors.svg_lists_activated);
+      if (svg){
+        return svg.parentElement.parentElement.parentElement.parentElement.parentElement.pathname.split('/')[1];
+      } 
+    }
+    return null;
   }
 
   /**
@@ -496,7 +527,6 @@ export default class TwitterTracker extends Tracker{
           let id = this._getHeaderId();
           //if (this.debug) console.log('HEADER ID detected: ' + id);
           this.trackArticle(id, articles[i]);
-          debugger;
           counter += 1;
         } else {
           // This does not seem to be a tweet
