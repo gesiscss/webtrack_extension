@@ -162,8 +162,8 @@ export default class TabHandler {
       if(allTabIds.length>0){
         for (let id of allTabIds) {
           if (this.tabs[id].elapsed_timer != -1) {
-            if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
-            if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
+            //if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
+            //if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
             this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
             this.tabs[id].elapsed_timer = -1;
           }
@@ -191,11 +191,11 @@ export default class TabHandler {
   async _onFocus(tabIds=null){
     try {
       this.registerTime();
-      if(this.onFocusTabInterval!=null){
-        clearInterval(this.onFocusTabInterval);
-        this.onFocusTabInterval = null;
-      }
-      this.onFocusTabInterval = setInterval(this._updateDuration, this.UPDATE_INTERVAL_DURATION);
+      // if(this.onFocusTabInterval!=null){
+      //   clearInterval(this.onFocusTabInterval);
+      //   this.onFocusTabInterval = null;
+      // }
+      // this.onFocusTabInterval = setInterval(this._updateDuration, this.UPDATE_INTERVAL_DURATION);
     } catch (e) {
       this.event.emit('error', e, true);
       console.warn(e);

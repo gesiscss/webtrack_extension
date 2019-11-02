@@ -34502,16 +34502,17 @@ function () {
                   console.assert(CacheHandler_typeof(id) == _this2.typeofId, 'id is ' + CacheHandler_typeof(id));
 
                   try {
-                    _this2.content[id] = Object.assign({}, _this2.content[id], props); //do Bigupdate all 5 seconds
+                    _this2.content[id] = Object.assign({}, _this2.content[id], props); // do big update if 5 seconds have passed
+                    // ii might be unnecessary
 
                     bigUpdate = Math.round(+new Date() / 1000) % 5 == 0; // console.log(Object.keys(props).length == 2 , props.hasOwnProperty('duration') , this.timeouts.hasOwnProperty(id) , this.timeouts[id], bigUpdate);
+                    // if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
+                    //   console.log('update duration');
+                    //   this.storage.set(props, true, false);
+                    // }else 
 
-                    if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
-                      console.log('update duration');
-
-                      _this2.storage.set(props, true, false);
-                    } else if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
-                      console.log('update elapsed');
+                    if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
+                      if (_this2.debug) console.log('-: CacheHandler.update() - Update elapsed');
 
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
@@ -34683,7 +34684,7 @@ var schemaPages = {
     //   type: 'string',
     //   exec: stringUrl,
     // },
-    duration: {
+    elapsed: {
       type: 'integer'
     },
     events: {
@@ -35318,7 +35319,7 @@ var DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  duration: 0,
+  //duration: 0,
   close: false,
   sendTime: null,
   send: false,
@@ -35449,8 +35450,8 @@ function () {
 
                   if (_this2.is(nr) && _this2.hasContent(nr)) {
                     page = _this2.tabCache.getOnly(nr);
-                    page.close = new Date();
-                    page.duration = Math.round(page.duration / 1000);
+                    page.close = new Date(); //page.duration = Math.round(page.duration/1000)
+
                     callback(_this2.tabCache.getOnly(nr));
                   }
 
@@ -35538,8 +35539,7 @@ function () {
 
       if (this.is(nr) && this.hasContent(nr)) {
         page = this.get(nr);
-        page.close = new Date();
-        page.duration = Math.round(page.duration / 1000);
+        page.close = new Date(); //page.duration = Math.round(page.duration/1000)
       }
 
       this.clean(nr, function () {
@@ -35810,16 +35810,18 @@ function () {
 
               case 19:
                 this.queue[nr].data.shift();
-                this.queue[nr].active = false;
-                if (this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 'count', data.count, 'queue.length', this.queue[nr].data.length);
+                this.queue[nr].active = false; // if(this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
+                //   'count', data.count, 'queue.length', this.queue[nr].data.length);
 
-                this._update(nr);
+                if (this.queue[nr].data.length != 0) {
+                  this._update(nr);
+                }
 
-                _context5.next = 31;
+                _context5.next = 30;
                 break;
 
-              case 25:
-                _context5.prev = 25;
+              case 24:
+                _context5.prev = 24;
                 _context5.t0 = _context5["catch"](7);
                 console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context5.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
                 this.queue[nr].data.shift();
@@ -35827,15 +35829,15 @@ function () {
 
                 this._update(nr);
 
-              case 31:
+              case 30:
                 if (this.debug) console.log('<- _update(nr)');
 
-              case 32:
+              case 31:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[7, 25]]);
+        }, _callee5, this, [[7, 24]]);
       }));
 
       return function _update(_x9) {
@@ -35854,10 +35856,10 @@ function () {
     key: "_firstUpdate",
     value: function _firstUpdate(data, nr) {
       var now = new Date();
-      this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
-      if (this.debug) console.log('-: _firstUpdate() - data:', data);
-      if (this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
-      if (this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
+      this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')'; // if(this.debug) console.log('-: _firstUpdate() - data:', data);
+      // if(this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
+      // if(this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
+
       return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT, {
         nr: nr,
         id: this.id,
@@ -35873,7 +35875,7 @@ function () {
         }, data.meta),
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
-        duration: Math.round((+now - data.startTime) / 1000),
+        //duration: Math.round(((+now) - data.startTime)/1000),
         elapsed: +now - data.startTime
       }), true);
     }
@@ -35893,10 +35895,9 @@ function () {
         data.source = oldData.source.concat(data.source);
       }
 
-      data.nr = nr;
-      if (this.debug) console.log('-: _secondUpdate() - data:', data);
-      if (this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
-      if (this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
+      data.nr = nr; // if(this.debug) console.log('-: _secondUpdate() - data:', data);
+      // if(this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
+      // if(this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
 
       if (this.elapsed_timer != -1) {
         var now = +new Date();
@@ -36271,8 +36272,8 @@ function () {
                   id = _step2.value;
 
                   if (this.tabs[id].elapsed_timer != -1) {
-                    if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
-                    if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
+                    //if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
+                    //if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
                     this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
                     this.tabs[id].elapsed_timer = -1;
                   }
@@ -36414,14 +36415,11 @@ function () {
                 tabIds = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : null;
 
                 try {
-                  this.registerTime();
-
-                  if (this.onFocusTabInterval != null) {
-                    clearInterval(this.onFocusTabInterval);
-                    this.onFocusTabInterval = null;
-                  }
-
-                  this.onFocusTabInterval = setInterval(this._updateDuration, this.UPDATE_INTERVAL_DURATION);
+                  this.registerTime(); // if(this.onFocusTabInterval!=null){
+                  //   clearInterval(this.onFocusTabInterval);
+                  //   this.onFocusTabInterval = null;
+                  // }
+                  // this.onFocusTabInterval = setInterval(this._updateDuration, this.UPDATE_INTERVAL_DURATION);
                 } catch (e) {
                   this.event.emit('error', e, true);
                   console.warn(e);

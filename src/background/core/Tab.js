@@ -14,7 +14,7 @@ const DEFAULT_TAB_CONTANT = {
   hashes: [],
   source: [],
   links: [],
-  duration: 0,
+  //duration: 0,
   close: false,
   sendTime: null,
   send: false,
@@ -89,7 +89,7 @@ export default class Tab {
             let page = this.tabCache.getOnly(nr)
                        
             page.close = new Date()          
-            page.duration = Math.round(page.duration/1000)
+            //page.duration = Math.round(page.duration/1000)
             callback(this.tabCache.getOnly(nr))
           }
           if(this.is(nr)){
@@ -114,7 +114,7 @@ export default class Tab {
     if(this.is(nr) && this.hasContent(nr)) {
       page = this.get(nr);
       page.close = new Date()
-      page.duration = Math.round(page.duration/1000)
+      //page.duration = Math.round(page.duration/1000)
     }
     this.clean(nr, ()=>{
       callback(page);
@@ -261,9 +261,11 @@ export default class Tab {
         }
         this.queue[nr].data.shift();
         this.queue[nr].active = false;
-        if(this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
-          'count', data.count, 'queue.length', this.queue[nr].data.length);
-        this._update(nr);
+        // if(this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
+        //   'count', data.count, 'queue.length', this.queue[nr].data.length);
+        if (this.queue[nr].data.length != 0) {
+          this._update(nr);
+        }
 
       } catch (e) {
         console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', e, 
@@ -272,8 +274,8 @@ export default class Tab {
         this.queue[nr].active = false;
         this._update(nr);
       }
+      if(this.debug) console.log('<- _update(nr)');
     }
-    if(this.debug) console.log('<- _update(nr)');
   }//_update()
 
   /**
@@ -285,12 +287,10 @@ export default class Tab {
   _firstUpdate(data, nr){
     let now = new Date();
     this.id = now.toJSON() + ' (' + nr + '-' + this.tabId + ')';
-
-    
-    if(this.debug) console.log('-: _firstUpdate() - data:', data);
-    if(this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
-    if(this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
-
+   
+    // if(this.debug) console.log('-: _firstUpdate() - data:', data);
+    // if(this.debug) console.log('-: _firstUpdate() - elapsed:', +now - data.startTime);
+    // if(this.debug) console.log('-: _firstUpdate() - this.elapsed_timer:', this.elapsed_timer);
 
     return this.tabCache.add(Object.assign(DEFAULT_TAB_CONTANT,
       {
@@ -308,7 +308,7 @@ export default class Tab {
         }, data.meta),
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
-        duration: Math.round(((+now) - data.startTime)/1000),
+        //duration: Math.round(((+now) - data.startTime)/1000),
         elapsed: +now - data.startTime
       }
     ), true);
@@ -327,11 +327,9 @@ export default class Tab {
     }
     data.nr = nr;
 
-
-    if(this.debug) console.log('-: _secondUpdate() - data:', data);
-    if(this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
-    if(this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
-
+    // if(this.debug) console.log('-: _secondUpdate() - data:', data);
+    // if(this.debug) console.log('-: _secondUpdate() - oldData:', oldData);
+    // if(this.debug) console.log('-: _secondUpdate() - this.elapsed_timer:', this.elapsed_timer);
 
     if (this.elapsed_timer != -1){
       let now = +new Date();

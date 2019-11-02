@@ -115,17 +115,19 @@ export default class CacheHandler {
 
       try {
         this.content[id] = Object.assign({}, this.content[id], props);
-        //do Bigupdate all 5 seconds
+        // do big update if 5 seconds have passed
+        // ii might be unnecessary
         let bigUpdate = Math.round(+ new Date() / 1000)%5==0;
         // console.log(Object.keys(props).length == 2 , props.hasOwnProperty('duration') , this.timeouts.hasOwnProperty(id) , this.timeouts[id], bigUpdate);
-        if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
-          console.log('update duration');
-          this.storage.set(props, true, false);
-        }else if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
-          console.log('update elapsed');
+        // if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('duration') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
+        //   console.log('update duration');
+        //   this.storage.set(props, true, false);
+        // }else 
+        if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
+          if (this.debug) console.log('-: CacheHandler.update() - Update elapsed');
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
-           if(this.debug) console.log('-: CacheHandler.update() - props: ', props)
+          if(this.debug) console.log('-: CacheHandler.update() - props: ', props);
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();
