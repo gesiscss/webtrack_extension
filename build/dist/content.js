@@ -11054,7 +11054,7 @@ function (_Tracker) {
     _this.eventElements = {
       allowNotToTracked: ['#leftCol ._3ph1.sp_387n34yO1ZQ', '#fbProfileCover'],
       articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
-      likearticelButton: ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)'],
+      likearticelButton: ['a._6a-y._3l2t._18vj', '.UFILikeLink:not(.UFIReactionLink)'],
       likeComment: [{
         query: '._6coi._6qw9 li:nth-child(1) a',
         parent: ['._4eek[role="articel"]', 'div'],
@@ -11138,7 +11138,7 @@ function (_Tracker) {
     _this.logged_user_id = null;
     _this.logged_username = null;
 
-    _this.setup_credentials();
+    _this.reset_credentials();
 
     return _this;
   }
@@ -11232,8 +11232,8 @@ function (_Tracker) {
      */
 
   }, {
-    key: "setup_credentials",
-    value: function setup_credentials() {
+    key: "reset_credentials",
+    value: function reset_credentials() {
       var location = document.querySelector('._2s25._606w');
       this.logged_username = this.get_username(location);
 

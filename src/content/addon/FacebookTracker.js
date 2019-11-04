@@ -17,7 +17,7 @@ export default class FacebookTracker extends Tracker{
     this.eventElements = {
       allowNotToTracked: ['#leftCol ._3ph1.sp_387n34yO1ZQ', '#fbProfileCover'],
       articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
-      likearticelButton: ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)'],
+      likearticelButton: ['a._6a-y._3l2t._18vj', '.UFILikeLink:not(.UFIReactionLink)'],
       likeComment: [
         {query: '._6coi._6qw9 li:nth-child(1) a', parent: ['._4eek[role="articel"]', 'div'], text: {parent: '._42ef', query: '._72vr > span'}, countComment: {parent: '._42ef', query: '._6cuq > span'}},
         {query: '.UFILikeLink.UFIReactionLink', parent: '.UFIRow.UFIComment',  text: {parent: '.UFICommentContentBlock', query: '.UFICommentBody'}, countComment: {parent: '.UFICommentContentBlock', query: '.UFICommentReactionsBling > span'}}
@@ -59,7 +59,7 @@ export default class FacebookTracker extends Tracker{
     this.logged_user_id = null;
     this.logged_username = null;
 
-    this.setup_credentials();
+    this.reset_credentials();
 
   }
 
@@ -149,7 +149,7 @@ export default class FacebookTracker extends Tracker{
   /**
    * Setup the credentials for the logged user (if any)
    */
-  setup_credentials(){
+  reset_credentials(){
 
     let location = document.querySelector('._2s25._606w');
     this.logged_username = this.get_username(location);
