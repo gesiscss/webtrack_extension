@@ -95,6 +95,7 @@ export default class TwitterTracker extends Tracker{
     this.startswith_blacklist = ['/messages/', '/settings/'];
 
     this.logged_username = null;
+    this.credentials = null;
 
     console.log(+ new Date());
   }
@@ -363,12 +364,74 @@ export default class TwitterTracker extends Tracker{
     this.is_logged_in = this._isLoggedTwitter();
 
     if (this.is_logged_in){
-      this.logged_username = this.get_username();
+      this.credentials = this.get_credentials();
+      if (this.credentials == null) {
+        this.logged_username = this.get_username();
+      } else {
+        debugger;
+        if (this.credentials.hasOwnProperty('user')){
+          this.logged_username = this.credentials.user.screen_name;
+          this.logged_fullname = this.credentials.user.name;
+        }
+        this.logged_guest_id = this.credentials.guestId;
+        this.logged_user_id = this.credentials.user_id;
+
+      }
+      
+
       this.is_content_allowed = this.get_content_allowed();
     }else{
       this.is_content_allowed = true;
     }
 
+  }
+
+
+
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+  getMetadata(){
+    let metadata = super.getMetadata();
+    let anonym = {};
+
+    if (this.logged_user_id) {
+      anonym['user_id'] = this.logged_user_id;
+    }
+
+    if (this.logged_username) {
+      anonym['username'] = this.logged_username;
+    }
+
+    if (this.logged_guest_id) {
+      anonym['guest_id'] = this.logged_guest_id;
+    }
+
+    if (this.logged_fullname) {
+      anonym['email'] = this.logged_fullname;
+    }
+
+    metadata['anonym'] = anonym;
+
+    return metadata;
+
+  }
+
+  /**
+  Load the credentials from the script in twitter
+  returns a dictionary with the credentials
+  **/  
+  get_credentials() {
+    let scripts = document.querySelectorAll('body script[nonce]:not([type])');
+    for (var i = 0; i < scripts.length; i++) {
+      let sc = scripts[i].textContent;
+      if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
+        return JSON.parse(sc.substring(sc.lastIndexOf('"session":') + 10, 
+          sc.lastIndexOf(',"typeaheadUsers"')));
+      }
+    }
+    return null;
   }
 
 

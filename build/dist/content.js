@@ -13751,6 +13751,7 @@ function (_Tracker) {
     _this.sidebar_right = null;
     _this.startswith_blacklist = ['/messages/', '/settings/'];
     _this.logged_username = null;
+    _this.credentials = null;
     console.log(+new Date());
     return _this;
   }
@@ -14155,11 +14156,77 @@ function (_Tracker) {
       this.is_logged_in = this._isLoggedTwitter();
 
       if (this.is_logged_in) {
-        this.logged_username = this.get_username();
+        this.credentials = this.get_credentials();
+
+        if (this.credentials == null) {
+          this.logged_username = this.get_username();
+        } else {
+          debugger;
+
+          if (this.credentials.hasOwnProperty('user')) {
+            this.logged_username = this.credentials.user.screen_name;
+            this.logged_fullname = this.credentials.user.name;
+          }
+
+          this.logged_guest_id = this.credentials.guestId;
+          this.logged_user_id = this.credentials.user_id;
+        }
+
         this.is_content_allowed = this.get_content_allowed();
       } else {
         this.is_content_allowed = true;
       }
+    }
+    /**
+     * get the metadata from the file
+     * @return {object} the metadata of the html
+     */
+
+  }, {
+    key: "getMetadata",
+    value: function getMetadata() {
+      var metadata = TwitterTracker_get(TwitterTracker_getPrototypeOf(TwitterTracker.prototype), "getMetadata", this).call(this);
+
+      var anonym = {};
+
+      if (this.logged_user_id) {
+        anonym['user_id'] = this.logged_user_id;
+      }
+
+      if (this.logged_username) {
+        anonym['username'] = this.logged_username;
+      }
+
+      if (this.logged_guest_id) {
+        anonym['guest_id'] = this.logged_guest_id;
+      }
+
+      if (this.logged_fullname) {
+        anonym['email'] = this.logged_fullname;
+      }
+
+      metadata['anonym'] = anonym;
+      return metadata;
+    }
+    /**
+    Load the credentials from the script in twitter
+    returns a dictionary with the credentials
+    **/
+
+  }, {
+    key: "get_credentials",
+    value: function get_credentials() {
+      var scripts = document.querySelectorAll('body script[nonce]:not([type])');
+
+      for (var i = 0; i < scripts.length; i++) {
+        var sc = scripts[i].textContent;
+
+        if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
+          return JSON.parse(sc.substring(sc.lastIndexOf('"session":') + 10, sc.lastIndexOf(',"typeaheadUsers"')));
+        }
+      }
+
+      return null;
     }
     /**
      * return true if user is logged in twitter
@@ -14844,7 +14911,7 @@ function (_Tracker) {
         anonym['email'] = this.logged_email;
       }
 
-      if (this.logged_username) {
+      if (this.logged_fullname) {
         anonym['fullname'] = this.logged_fullname;
       }
 

@@ -63,7 +63,7 @@ export default class GoogleTracker extends Tracker{
       anonym['email'] = this.logged_email;
     }
 
-    if (this.logged_username) {
+    if (this.logged_fullname) {
       anonym['fullname'] = this.logged_fullname;
     }
 
