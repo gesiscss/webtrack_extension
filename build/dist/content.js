@@ -11625,7 +11625,7 @@ function (_Tracker) {
 
                 _this2._eventcommentFromCommentButton(articel);
 
-                _this2._setLikeCommentEvent(articel, 1500); // this._setCommentEvent(articel);
+                _this2._setLikeCommentEvent(articel, 100); // this._setCommentEvent(articel);
 
               });
             }
@@ -11937,7 +11937,7 @@ function (_Tracker) {
     /**
      * [_setLikeCommentEvent set like Event for comment like Button]
      * @param {Object}  articel
-     * @param  {Number} timeout [default: 500]
+     * @param  {Number} timeout [default: 100]
      */
 
   }, {
@@ -11945,7 +11945,7 @@ function (_Tracker) {
     value: function _setLikeCommentEvent(articel) {
       var _this6 = this;
 
-      var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+      var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
       setTimeout(function () {
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
@@ -11966,20 +11966,37 @@ function (_Tracker) {
 
                 if (countElements.length > 0) count = parseInt(countElements[0].textContent, 10);
 
-                _this6.eventFn.onEvent({
-                  event: 'like',
-                  type: 'postanswer',
-                  values: _this6._getValues(articel).concat([{
-                    name: 'like-value',
-                    value: _this6.getValueOfLikeNumber(1)
-                  }, {
-                    name: 'postanswer-count-likes',
-                    value: count
-                  }, {
-                    name: 'postanswer-text',
-                    value: text
-                  }])
-                });
+                if (buttons[i].classList.contains('_3_16')) {
+                  _this6.eventFn.onEvent({
+                    event: 'undo',
+                    type: 'postanswer',
+                    values: _this6._getValues(articel).concat([{
+                      name: 'reaction-value',
+                      value: 'undo'
+                    }, {
+                      name: 'postanswer-count-likes',
+                      value: count
+                    }, {
+                      name: 'postanswer-text',
+                      value: text
+                    }])
+                  });
+                } else {
+                  _this6.eventFn.onEvent({
+                    event: 'like',
+                    type: 'postanswer',
+                    values: _this6._getValues(articel).concat([{
+                      name: 'like-value',
+                      value: _this6.getValueOfLikeNumber(1)
+                    }, {
+                      name: 'postanswer-count-likes',
+                      value: count
+                    }, {
+                      name: 'postanswer-text',
+                      value: text
+                    }])
+                  });
+                }
 
                 if (_this6.facebook_debug) console.log('like comment 1 text => ', text);
               });
@@ -11998,7 +12015,7 @@ function (_Tracker) {
                     event: 'reaction',
                     type: 'postanswer',
                     values: _this6._getValues(articel).concat([{
-                      name: 'reation-value',
+                      name: 'reaction-value',
                       value: nr['data_reaction'],
                       aria_label: nr['aria_label'],
                       reaction: _this6.getValueOfLikeNumber(nr['data_reaction'])
@@ -12048,42 +12065,78 @@ function (_Tracker) {
       var _this7 = this;
 
       setTimeout(function () {
-        for (var _i2 = 0, _arr = ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)']; _i2 < _arr.length; _i2++) {
-          var query = _arr[_i2];
-          var buttons = articel.querySelectorAll(query);
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
-          for (var i = 0; i < buttons.length; i++) {
-            if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
-            buttons[i].addEventListener('click', function () {
-              _this7.eventFn.onEvent({
-                event: 'like',
-                type: 'articel',
-                values: _this7._getValues(articel).concat([{
-                  name: 'like-value',
-                  value: _this7.getValueOfLikeNumber(1)
-                }])
+        try {
+          var _loop3 = function _loop3() {
+            var query = _step7.value;
+            var buttons = articel.querySelectorAll(query);
+
+            for (i = 0; i < buttons.length; i++) {
+              if (_this7.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
+              buttons[i].addEventListener('click', function () {
+                if (buttons[i].classList.contains('_3_16')) {
+                  _this7.eventFn.onEvent({
+                    event: 'undo',
+                    type: 'articel',
+                    values: _this7._getValues(articel).concat([{
+                      name: 'reaction-value',
+                      value: 'undo'
+                    }])
+                  });
+                } else {
+                  _this7.eventFn.onEvent({
+                    event: 'like',
+                    type: 'articel',
+                    values: _this7._getValues(articel).concat([{
+                      name: 'like-value',
+                      value: _this7.getValueOfLikeNumber(1)
+                    }])
+                  });
+                }
+
+                if (_this7.facebook_debug) console.log('like 1', articel);
               });
-
-              if (_this7.facebook_debug) console.log('like 1', articel);
-            });
-            buttons[i].addEventListener('mouseover', function () {
-              // console.log(this._getValues(articel));
-              _this7._toolbarHandler(function (nr) {
-                _this7.eventFn.onEvent({
-                  event: 'reaction',
-                  type: 'articel',
-                  values: _this7._getValues(articel).concat([{
-                    name: 'reation-value',
-                    value: nr['data_reaction'],
-                    aria_label: nr['aria_label'],
-                    reaction: _this7.getValueOfLikeNumber(nr['data_reaction'])
-                  }])
+              buttons[i].addEventListener('mouseover', function () {
+                // console.log(this._getValues(articel));
+                _this7._toolbarHandler(function (nr) {
+                  _this7.eventFn.onEvent({
+                    event: 'reaction',
+                    type: 'articel',
+                    values: _this7._getValues(articel).concat([{
+                      name: 'reaction-value',
+                      value: nr['data_reaction'],
+                      aria_label: nr['aria_label'],
+                      reaction: _this7.getValueOfLikeNumber(nr['data_reaction'])
+                    }])
+                  });
                 });
               });
-            });
+            }
+          };
+
+          for (var _iterator7 = _this7.eventElements.likearticelButton[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+            var i;
+
+            _loop3();
+          }
+        } catch (err) {
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
+            }
+          } finally {
+            if (_didIteratorError7) {
+              throw _iteratorError7;
+            }
           }
         }
-      }, 300);
+      }, 0);
     }
     /**
      * get the metadata from the file
@@ -12167,7 +12220,7 @@ function (_Tracker) {
       setTimeout(function () {
         var layer = document.querySelectorAll('.uiLayer div[role="toolbar"]');
 
-        var _loop3 = function _loop3(i) {
+        var _loop4 = function _loop4(i) {
           if (_this8.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(function () {
@@ -12208,7 +12261,7 @@ function (_Tracker) {
         };
 
         for (var i = 0; i < layer.length; i++) {
-          _loop3(i);
+          _loop4(i);
         } //for layer
 
       }, 1000);
@@ -12222,13 +12275,13 @@ function (_Tracker) {
     value: function _joinGroup() {
       var _this9 = this;
 
-      var _iteratorNormalCompletion7 = true;
-      var _didIteratorError7 = false;
-      var _iteratorError7 = undefined;
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
 
       try {
-        for (var _iterator7 = this.eventElements.joinGroup[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-          var query = _step7.value;
+        for (var _iterator8 = this.eventElements.joinGroup[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var query = _step8.value;
           var buttons = document.querySelectorAll(query + ':not(.tracked)');
 
           for (var i = 0; i < buttons.length; i++) {
@@ -12299,16 +12352,16 @@ function (_Tracker) {
 
         }
       } catch (err) {
-        _didIteratorError7 = true;
-        _iteratorError7 = err;
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
-            _iterator7["return"]();
+          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+            _iterator8["return"]();
           }
         } finally {
-          if (_didIteratorError7) {
-            throw _iteratorError7;
+          if (_didIteratorError8) {
+            throw _iteratorError8;
           }
         }
       }

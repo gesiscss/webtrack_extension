@@ -473,7 +473,7 @@ export default class FacebookTracker extends Tracker{
               )
             });
             this._eventcommentFromCommentButton(articel);
-            this._setLikeCommentEvent(articel, 1500);
+            this._setLikeCommentEvent(articel, 100);
             // this._setCommentEvent(articel);
           })
         }
@@ -648,9 +648,9 @@ export default class FacebookTracker extends Tracker{
   /**
    * [_setLikeCommentEvent set like Event for comment like Button]
    * @param {Object}  articel
-   * @param  {Number} timeout [default: 500]
+   * @param  {Number} timeout [default: 100]
    */
-  _setLikeCommentEvent(articel, timeout=500){
+  _setLikeCommentEvent(articel, timeout=0){
     setTimeout(() => {
       for (let s of this.eventElements.likeComment) {
         let buttons = articel.querySelectorAll(s.query);
@@ -661,17 +661,30 @@ export default class FacebookTracker extends Tracker{
             let count = 0,
             countElements = this.getParentElement(e.srcElement, s.countComment.parent).querySelectorAll(s.countComment.query);
             if(countElements.length>0) count = parseInt(countElements[0].textContent, 10);
-            this.eventFn.onEvent(
-              {
-                event: 'like',
-                type: 'postanswer',
-                values: this._getValues(articel).concat([
-                  {name: 'like-value', value: this.getValueOfLikeNumber(1)},
-                  {name: 'postanswer-count-likes', value: count},
-                  {name: 'postanswer-text', value: text}
-                ])
-              }
-            )
+            
+
+            if (buttons[i].classList.contains('_3_16')){
+              this.eventFn.onEvent({
+                  event: 'undo',
+                  type: 'postanswer',
+                  values: this._getValues(articel).concat([
+                    {name: 'reaction-value', value: 'undo'},
+                    {name: 'postanswer-count-likes', value: count},
+                    {name: 'postanswer-text', value: text}
+                  ])
+              });
+            } else {
+              this.eventFn.onEvent({
+                  event: 'like',
+                  type: 'postanswer',
+                  values: this._getValues(articel).concat([
+                    {name: 'like-value', value: this.getValueOfLikeNumber(1)},
+                    {name: 'postanswer-count-likes', value: count},
+                    {name: 'postanswer-text', value: text}
+                  ])
+              });
+            }
+
             if(this.facebook_debug) console.log('like comment 1 text => ', text);
           })
           buttons[i].addEventListener('mouseover', e => {
@@ -687,7 +700,7 @@ export default class FacebookTracker extends Tracker{
                   event: 'reaction',
                   type: 'postanswer',
                   values: this._getValues(articel).concat([{
-                     name: 'reation-value', 
+                     name: 'reaction-value', 
                      value: nr['data_reaction'],
                      aria_label: nr['aria_label'],
                      reaction: this.getValueOfLikeNumber(nr['data_reaction'])
@@ -716,22 +729,32 @@ export default class FacebookTracker extends Tracker{
    */
   _setLikeEvent(articel){
     setTimeout(() => {
-      for (let query of ['a._6a-y', '.UFILikeLink:not(.UFIReactionLink)']) {
+      for (let query of this.eventElements.likearticelButton) {
         let buttons = articel.querySelectorAll(query);
         for (var i = 0; i < buttons.length; i++) {
           if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
           buttons[i].addEventListener('click', ()=>{
-            this.eventFn.onEvent(
-              {
+            if (buttons[i].classList.contains('_3_16')){
+              this.eventFn.onEvent({
+                event: 'undo',
+                type: 'articel',
+                values: this._getValues(articel).concat([
+                  {name: 'reaction-value', value: 'undo'}
+                ])
+              });
+            } else {
+              this.eventFn.onEvent({
                 event: 'like',
                 type: 'articel',
                 values: this._getValues(articel).concat([
                   {name: 'like-value', value: this.getValueOfLikeNumber(1)}
                 ])
-              }
-            )
+              })
+            }
+
             if(this.facebook_debug) console.log('like 1', articel);
           })
+
           buttons[i].addEventListener('mouseover', ()=> {
             // console.log(this._getValues(articel));
             this._toolbarHandler(nr => {
@@ -740,7 +763,7 @@ export default class FacebookTracker extends Tracker{
                   event: 'reaction',
                   type: 'articel',
                   values: this._getValues(articel).concat([
-                    {name: 'reation-value', 
+                    {name: 'reaction-value', 
                      value: nr['data_reaction'],
                      aria_label: nr['aria_label'],
                      reaction: this.getValueOfLikeNumber(nr['data_reaction'])
@@ -752,7 +775,7 @@ export default class FacebookTracker extends Tracker{
           })
         }
       }
-    }, 300)
+    }, 0)
   }
 
 
