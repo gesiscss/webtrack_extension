@@ -233,7 +233,6 @@ export default class ContentHandler {
       this.data = {}
       this.last = 0;
       this.createTracker();
-        
     })
     this.tracker.eventEmitter.on('onData', data => {
        //if(data.hasOwnProperty('html') && data.html != false){
@@ -256,12 +255,26 @@ export default class ContentHandler {
            this.tracker.fetchMetaData();
          }
        } catch (err) {
-         console.log(err);
+          console.log(err);
        } finally {
-         this.domDetector.onChange(() => {
-           console.log('Dom Change');
-           this.tracker.fetchHTML()
-         }, delay);
+          this.domDetector.onChange(() => {
+            console.log('Dom Change');
+            this.tracker.fetchHTML()
+          }, delay);
+
+
+          // 
+          this.browser.runtime.onMessage.addListener(
+            (message, sender, sendResponse) => {
+             if (message.action == 'private_time_is_over'){
+              console.log('TODO: display popup')
+              sendResponse('will request more time');
+              return true;
+             }
+             
+             //return Promise.resolve("Dummy response to keep the console quiet");
+
+           });
        }
     });
     this.tracker.start();
@@ -285,3 +298,4 @@ export default class ContentHandler {
   }
 
 }//class
+

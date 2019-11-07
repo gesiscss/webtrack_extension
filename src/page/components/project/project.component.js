@@ -167,8 +167,8 @@ export default class Project extends DefaultComponent {
    * [handleChancePrivateMode set the state of pageHandler for private mode]
    * @param  {Boolean} boolean
    */
-  handleChancePrivateMode(boolean){
-    this.pageHandler.setPrivateMode(boolean);
+  handleChancePrivateMode(boolean, component){
+    this.pageHandler.setPrivateMode(boolean, component);
   }
 
   /**

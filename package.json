@@ -13,9 +13,13 @@
     "start:content": "webpack -d --env.NODE_ENV=content --config webpack.default.config.js",
     "start:page": "webpack -d --config webpack.page.config.js",
     "build": "npm run build:background && npm run build:content && npm run build:page",
+    "build": "npm run build:background:dev && npm run build:content:dev && npm run build:page:dev",
     "build:background": "webpack --mode=production --env.NODE_ENV=background --config webpack.default.config.js",
+    "build:background:dev": "webpack --mode=development --env.NODE_ENV=background --config webpack.default.config.js",
     "build:content": "webpack --mode=production --env.NODE_ENV=content --config webpack.default.config.js",
-    "build:page": "webpack --mode=production --config webpack.page.config.js"
+    "build:content:dev": "webpack --mode=development --env.NODE_ENV=content --config webpack.default.config.js",
+    "build:page": "webpack --mode=production --config webpack.page.config.js",
+    "build:page:dev": "webpack --mode=development --config webpack.page.config.js"
   },
   "keywords": [],
   "author": "",
@@ -41,7 +45,8 @@
     "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^1.1.2",
     "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7"
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
     "@babel/plugin-transform-exponentiation-operator": "^7.2.0",
@@ -54,6 +59,7 @@
     "framework7-react": "^4.5.0",
     "html-react-parser": "^0.6.4",
     "moment": "^2.24.0",
+    "nodemon": "^1.19.4",
     "react": "^16.9.0",
     "react-collapse": "^4.0.3",
     "react-dom": "^16.9.0",

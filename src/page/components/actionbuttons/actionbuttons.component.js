@@ -63,9 +63,43 @@ export default class Actionbuttons extends Component {
    */
   handleTooglePrivateMode(boolean){
     this.setState({
+      activePrivateMode: !boolean
+    });
+
+    console.log(!boolean);
+    this.props.chancePrivateMode(!boolean, this);
+
+
+    // console.log('enter handleTooglePrivateMode');
+
+    // this.resetPublicMode();
+
+
+    // setTimeout(function(){
+    //   console.log('boom');
+    //   this.setState({
+    //      activePrivateMode: true
+    //   });
+    // }.bind(this), 2000);
+
+
+  }
+
+  // async resetPublicMode(){
+  //   await this.timeout(2000);
+  //   this.setState({
+  //      activePrivateMode: true
+  //   });
+  // }
+
+  // timeout(ms) {
+  //   return new Promise(resolve => setTimeout(resolve, ms));
+  // }
+
+  setTooglePrivateMode(boolean){
+    this.setState({
       activePrivateMode: boolean
     });
-    this.props.chancePrivateMode(boolean);
   }
 
   /**
@@ -99,7 +133,7 @@ export default class Actionbuttons extends Component {
   _getPrivateMode(){
     return this.state.allowPrivateMode? <ListItem title={lang.project.private_mode.title}>
                                             <p data-tip={this.state.activePrivateMode? lang.project.private_mode.onhelp: lang.project.private_mode.offhelp}>
-                                              <Toggle slot="after" defaultChecked={this.state.activePrivateMode} onToggleChange={this.handleTooglePrivateMode}  ></Toggle>
+                                              <Toggle checked={this.state.activePrivateMode} slot="after" onToggleChange={this.handleTooglePrivateMode}  ></Toggle>
                                             </p>
                                         </ListItem>: null
   }

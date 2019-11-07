@@ -55,7 +55,7 @@ export default class Extension {
 
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
 
-    this.DEBUG = true;
+    this.debug = true;
   }
 
   /**
@@ -90,7 +90,23 @@ export default class Extension {
    */
   setPrivateMode(b){
     this.privateMode = b;
-    this.setImage();
+    this.setImage(!this.privateMode);
+  }
+
+/**
+   * [sendPrivateTimeIsOverMsg send a message indicating that the private time is over]
+   * @param {Boolean} 
+   */
+  sendPrivateTimeIsOverMsg(b){
+    // send a messate
+    xbrowser.tabs.query({active: true, currentWindow: true}, function(tabs){
+      xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
+        function(response) {
+          console.log(response);
+          //component.setTooglePrivateMode(false);
+          this.setPrivateMode(false);
+        }.bind(this));
+    }.bind(this));
   }
 
   /**
@@ -98,7 +114,7 @@ export default class Extension {
    * @param {Boolean} b [default: false]
    */
   setImage(b=false){
-    if(this.privateMode) b = !this.privateMode;
+    if(this.privateMode) b = false;
     else if(!this.privateMode && !this.changeIcon) b = true;
     xbrowser.browserAction.setIcon({path: b? 'images/on.png':  'images/off.png'});
   }
@@ -173,13 +189,13 @@ export default class Extension {
    * ]
    */
   _onTabUpdate(tabId, info, tab){
-    //if (this.DEBUG) console.log('-> Extension._onTabUpdate');
+    //if (this.debug) console.log('-> Extension._onTabUpdate');
     if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') 
       && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
-      if (this.DEBUG) console.log('==== Emit Event: onTabUpdate ====');
+      if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
       this.event.emit(EVENT_NAMES.tabUpdate, {tabId: tabId, openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: null, tab: tab}, false);
     }//if
-    //if (this.DEBUG) console.log('<- Extension._onTabUpdate');
+    //if (this.debug) console.log('<- Extension._onTabUpdate');
   }
 
   /**
@@ -202,12 +218,12 @@ export default class Extension {
    *  ]
    */
   _onTabContent(msg, sender, sendResponse){
-      if (this.DEBUG) console.log('-> _onTabContent');
+      if (this.debug) console.log('-> _onTabContent');
       if(this.tabs.hasOwnProperty(sender.tab.id)) {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
       }
       if(msg==='ontracking'){
-        if (this.DEBUG) console.log('# ontracking');
+        if (this.debug) console.log('# ontracking');
         sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
       }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
@@ -246,7 +262,7 @@ export default class Extension {
             title: sender.tab.title
           })
           msg.tabId = sender.tab.id;
-          if (this.DEBUG) console.log('==== Emit Event: onTabContent ====');
+          if (this.debug) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
 
@@ -256,7 +272,7 @@ export default class Extension {
       }else{
         sendResponse(false);
       }
-      if (this.DEBUG) console.log('<- _onTabContent');
+      if (this.debug) console.log('<- _onTabContent');
   }
 
   /**
@@ -377,6 +393,38 @@ export default class Extension {
       },
       onClose
     )
+  }
+
+
+  /**
+   * [create browser notification (it does not smoothly in firefox)]
+   * @param  {String} [title='title']
+   * @param  {String} [message='mycontent']
+   * @param  {function} [onClose=()=>{}]
+   */
+  notifyUser(){
+    chrome.notifications.create(
+      'name-for-notification',
+      {
+        type: 'basic',
+        iconUrl: 'images/on.png',
+        title:   "Webtrack reminder",
+        message: "15 minutes have passed!"
+        // ,
+        // contextMessage: "It's about time...",
+        // eventTime: Date.now() + 10000,
+        // buttons: [{
+        //     title: "Yes, get me there",
+        //     iconUrl: "images/on.png"
+        // }, {
+        //     title: "Get out of my way",
+        //     iconUrl: "images/off.png"
+        // }
+        // ]
+      }, function(id) {
+        let myNotificationID = id;
+        console.log(myNotificationID);
+    });
   }
 
 }//()

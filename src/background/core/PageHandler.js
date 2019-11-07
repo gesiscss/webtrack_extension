@@ -12,7 +12,7 @@ export default class PageHandler {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = false;
+    this.debug = true;
     this.event = new EventEmitter();
   }
 
@@ -208,9 +208,33 @@ export default class PageHandler {
    * [public function to set the private mode for running trackingHandler]
    * @param {Boolean} [b=false] [description]
    */
-  setPrivateMode(b=false){
-    if(this.debug) console.log('setPrivateMode', b)
+  setPrivateMode(b=false, component=null){
     this._setCurrentTrackerPrivateMode(b);
+
+    if (component != null && b){
+      this.resetPublicMode(component);
+    }
+  }
+
+  /**
+   * it will ask the user to continue in private mode in x milliseconds
+   * @param  {[type]} component [description]
+   * @return {[type]}           [description]
+   */
+  async resetPublicMode(component){
+    await this.timeout(2000);
+
+    //this._getCurrentTracker().extension.notifyUser();
+    this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg();
+  }
+
+  /**
+   * A promise of ms millisecnos
+   * @param  {[type]} ms [description]
+   * @return {[type]}    [description]
+   */
+  timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
