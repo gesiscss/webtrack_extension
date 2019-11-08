@@ -97,25 +97,49 @@ export default class Extension {
    * [sendPrivateTimeIsOverMsg send a message indicating that the private time is over]
    * @param {Boolean} 
    */
-  sendPrivateTimeIsOverMsg(b){
+  sendPrivateTimeIsOverMsg(page_handler){
     // send a messate
     xbrowser.tabs.query({active: true, currentWindow: true}, function(tabs){
       xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
         function(response) {
-          console.log(response);
+          //console.log(response);
+          //page_handler.setPrivateMode(false);
+          this.privateMode = false;
+          page_handler.config.setPrivateMode(false)
+          //this.resetImage(tabs[0].id);
+          this.setImage(this.tabs[tabs[0].id].getState('allow') 
+            && !this.tabs[tabs[0].id].getState('disabled')
+            && !this.tabs[tabs[0].id].getState('content_blocked'));
+          //this.setPrivateMode(false);
           //component.setTooglePrivateMode(false);
-          this.setPrivateMode(false);
         }.bind(this));
     }.bind(this));
   }
+
+
+  // resetImage(tabid){
+  //   console.log('resetImage', tabid);
+
+  //   console.log(this.tabs[tabid].getState('allow') )
+  //   console.log(this.tabs[tabid].getState('disabled'))
+  //   console.log(this.tabs[tabid].getState('content_blocked'))
+
+  //   this.setImage(this.tabs[tabid].getState('allow') 
+  //     && !this.tabs[tabid].getState('disabled')
+  //     && !this.tabs[tabid].getState('content_blocked'));
+
+  // }
 
   /**
    * [setImage set black or full color image]
    * @param {Boolean} b [default: false]
    */
   setImage(b=false){
+    // console.log('before', b);
+    // console.log(this.privateMode);
     if(this.privateMode) b = false;
     else if(!this.privateMode && !this.changeIcon) b = true;
+    // console.log('after', b);
     xbrowser.browserAction.setIcon({path: b? 'images/on.png':  'images/off.png'});
   }
 
@@ -227,6 +251,7 @@ export default class Extension {
         sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
       }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
+        sendResponse(false);
 
       // background controls
       }else if((!this.privateMode 
@@ -270,9 +295,12 @@ export default class Extension {
         
         // return true;
       }else{
+        if (this.debug) console.log('Private mode: ', this.privateMode);
         sendResponse(false);
       }
+      
       if (this.debug) console.log('<- _onTabContent');
+      return true;
   }
 
   /**

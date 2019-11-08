@@ -65,36 +65,8 @@ export default class Actionbuttons extends Component {
     this.setState({
       activePrivateMode: !boolean
     });
-
-    console.log(!boolean);
     this.props.chancePrivateMode(!boolean, this);
-
-
-    // console.log('enter handleTooglePrivateMode');
-
-    // this.resetPublicMode();
-
-
-    // setTimeout(function(){
-    //   console.log('boom');
-    //   this.setState({
-    //      activePrivateMode: true
-    //   });
-    // }.bind(this), 2000);
-
-
   }
-
-  // async resetPublicMode(){
-  //   await this.timeout(2000);
-  //   this.setState({
-  //      activePrivateMode: true
-  //   });
-  // }
-
-  // timeout(ms) {
-  //   return new Promise(resolve => setTimeout(resolve, ms));
-  // }
 
   setTooglePrivateMode(boolean){
     this.setState({

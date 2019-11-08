@@ -180,7 +180,7 @@ export default class PageHandler {
    * @return {Array<object>}
    */
   getPages(){
-    if(this.debug) console.log('getProjects')
+    if(this.debug) console.log('getPages')
     return this._getCurrentTracker().getPages()
   }
 
@@ -224,8 +224,13 @@ export default class PageHandler {
   async resetPublicMode(component){
     await this.timeout(2000);
 
+    //component.setTooglePrivateMode(false);
+    //this.setPrivateMode(false);
+
+
     //this._getCurrentTracker().extension.notifyUser();
-    this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg();
+    //this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(component);
+    this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(this);
   }
 
   /**

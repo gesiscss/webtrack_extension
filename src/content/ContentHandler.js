@@ -263,12 +263,14 @@ export default class ContentHandler {
           }, delay);
 
 
-          // 
+          // listen for request to cancel private mode
           this.browser.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
              if (message.action == 'private_time_is_over'){
               console.log('TODO: display popup')
               sendResponse('will request more time');
+              //this.popup_time_request();
+              this.showNotificationBar("This is a test message");
               return true;
              }
              
@@ -279,6 +281,47 @@ export default class ContentHandler {
     });
     this.tracker.start();
   }
+
+  popup_time_request(){
+    var div = document.createElement("div");
+    div.innerText = 'hellowws'
+    div.setAttribute("style", "border:2px solid blue !important; position:fixed;bottom:10px; right:10px; z-index: 100000; background-color: yellow");
+    var body = document.querySelector("body");
+    body.prepend(div)
+  }
+
+  //http://jsfiddle.net/BdG2U/1/
+  showNotificationBar(message) {
+   
+
+      var height = 300;
+
+      /*create the notification bar div if it doesn't exist*/
+      if (document.querySelectorAll('#notification-bar').length == 0) {
+        var innerdiv = document.createElement("div");
+        innerdiv.innerText = message;
+        innerdiv.setAttribute("style", "text-align:center; line-height: " + height + "px;");
+
+        var outerdiv = document.createElement("div");
+        outerdiv.setAttribute("style", "width:200px; height: " +  height + "px;" 
+          + "background-color: #F4E0E1; color: #A42732;"
+          + "position: fixed; top:50px; right:50px; z-index: 100000;"
+          + "border: 1px solid #A42732;");
+        outerdiv.id = 'notification-bar';
+        outerdiv.prepend(innerdiv);
+
+        var body = document.querySelector('body');
+        body.prepend(outerdiv);
+      }
+      // /*animate the bar*/
+      // $('#notification-bar').slideDown(function() {
+      //     setTimeout(function() {
+      //         $('#notification-bar').slideUp(function() {});
+      //     }, duration);
+      // });
+  }
+
+
 
   /**
    * [initalizate the contenthandler]
