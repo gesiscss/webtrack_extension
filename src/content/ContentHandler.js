@@ -294,24 +294,39 @@ export default class ContentHandler {
   showNotificationBar(message) {
    
 
-      var height = 300;
+      let height = 300;
+
+      let notifications = document.querySelectorAll('#webtrack-notification');
 
       /*create the notification bar div if it doesn't exist*/
-      if (document.querySelectorAll('#notification-bar').length == 0) {
-        var innerdiv = document.createElement("div");
-        innerdiv.innerText = message;
-        innerdiv.setAttribute("style", "text-align:center; line-height: " + height + "px;");
+      if (notifications.length == 0) {
+        // let innerdiv = document.createElement("div");
+        // innerdiv.innerText = message;
+        // innerdiv.setAttribute("style", "text-align:center; line-height: " + height + "px;");
 
-        var outerdiv = document.createElement("div");
-        outerdiv.setAttribute("style", "width:200px; height: " +  height + "px;" 
-          + "background-color: #F4E0E1; color: #A42732;"
-          + "position: fixed; top:50px; right:50px; z-index: 100000;"
-          + "border: 1px solid #A42732;");
-        outerdiv.id = 'notification-bar';
-        outerdiv.prepend(innerdiv);
+        // let outerdiv = document.createElement("div");
+        // outerdiv.setAttribute("style", "width:200px; height: " +  height + "px;" 
+        //   + "background-color: #F4E0E1; color: #A42732;"
+        //   + "position: fixed; top:50px; right:50px; z-index: 100000;"
+        //   + "border: 1px solid #A42732;");
+        // outerdiv.id = 'notification-bar';
+        // outerdiv.prepend(innerdiv);
+        // 
+        //let notification_window = ContentHandler.notification_window.cloneNode(true)
 
-        var body = document.querySelector('body');
-        body.prepend(outerdiv);
+        let body = document.querySelector('body');
+
+        let notification_window = this.get_notification_window();
+        notification_window.querySelector('#fifteen').addEventListener("click", function(){
+          alert('OK');
+        }.bind(this));
+
+        notification_window.querySelector('#turnoff').addEventListener("click", function(){
+          body.removeChild(notification_window);
+        }.bind(this));
+
+        
+        body.prepend(notification_window);
       }
       // /*animate the bar*/
       // $('#notification-bar').slideDown(function() {
@@ -319,6 +334,57 @@ export default class ContentHandler {
       //         $('#notification-bar').slideUp(function() {});
       //     }, duration);
       // });
+  }
+
+  get_notification_window(){
+    //#337ab7
+    var notification_window =  document.createElement('div');
+    notification_window.innerHTML = `
+    <div id="webtrack-notification" style="all: initial;width:100%; height: 100%;
+     color: #000000; position: fixed; top:0; 
+    right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);">
+      <div style="left: 50%; top: 40%; transform: translate(-50%, -50%); 
+        width:400px; height:300px; border: 8px solid #0085bc; background-color: #FFFFFF; 
+        position: fixed; z-index: 100001; font: normal 12px sans-serif;">
+        <div>
+          <div style="float: left; margin-right: 10px">
+            <img style="width: 120px;" src="` + this.browser.extension.getURL('images/on.png') + `">
+          </div>
+          <div style="margin-left: 15px">
+            <div style="display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px">
+              Webtrack
+            </div>
+            <div style="display: block; font-size: 20px; color: #0085bc; font-weight: bold;">
+              Private mode deactivated
+            </div>
+          </div>
+
+          <div style="clear: both;"> </div>
+
+          <div style="margin:15px; font-size: 14px;">
+            <div>15 minutes have passed since you activated the Webtrack private mode.</div>
+            <br />
+            <div style="font-weight:bold;">Do you want to continue browsing in private mode?</div>
+          </div>
+
+          <div style="text-align: center; position: absolute; bottom: 10px; width: 100%;">
+            <div id="fifteen" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
+                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 text-align: center; margin-bottom: 5px; width: 200px; cursor: pointer;">
+                 Yes, I need 15 minutes more
+            </div>
+            <div id="turnoff" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
+                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 text-align: center; width: 200px; cursor: pointer;">
+                 No, turn off the private mode
+            </div>
+          <div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+    return notification_window;
   }
 
 
@@ -341,4 +407,8 @@ export default class ContentHandler {
   }
 
 }//class
+
+
+
+
 
