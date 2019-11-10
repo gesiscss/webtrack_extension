@@ -28,6 +28,7 @@ export default class Configuration {
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.isLoad = false;
+    this.debug = true;
   }
 
 
@@ -201,8 +202,10 @@ export default class Configuration {
    * @return {Object}
    */
   getRunProjectTmpSettings(){
-    if(this._getProjectsTmpSettings().hasOwnProperty(this.getSelect())){
-      return this._getProjectsTmpSettings()[this.getSelect()];
+    if (this.debug) console.log('Configuration.getRunProjectTmpSettings()')
+    let selected = this.getSelect();
+    if(this._getProjectsTmpSettings().hasOwnProperty(selected)){
+      return this._getProjectsTmpSettings()[selected];
     }
     return false;   
   }
@@ -253,13 +256,13 @@ export default class Configuration {
    * @return {Integer}
    */
   getSelect(){
+    if (this.debug) console.log('Configuration.getSelect()')
     let select = this.select.get();
     if (select == null) {
       for (let index in this.projects) {
         if (this.projects[index].NAME == 'Default') {
           select = this.projects[index].ID;
-          console.log(select);
-
+          break;
         }
       }
     }
@@ -270,6 +273,7 @@ export default class Configuration {
    * [load // fetch all required settings from server]
    */
   load(){
+    if (this.debug) console.log('Configuration.load()')
     return new Promise(async (resolve, reject)=>{
       try {
         // throw new Error('test');
@@ -284,8 +288,9 @@ export default class Configuration {
         }
         this.projects = e;
         
-        if(!this.isLoad && !this.mobile && this.getSelect() != null && this.isProjectAvailable(this.getSelect())){
-          let p = this.projects[this.projectIdtoIndex[this.getSelect()]];
+        let selected = this.getSelect();
+        if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
+          let p = this.projects[this.projectIdtoIndex[selected]];
           if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
             this.setProjectsTmpSettings({clientId: null});
           }

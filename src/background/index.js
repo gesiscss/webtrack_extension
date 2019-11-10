@@ -40,17 +40,19 @@ window.addEventListener("unhandledrejection", event => {
 
     let private_mode = config.defaultId.get()==null;
 
-    await config.load();
-    console.log('<Config load>');
+    console.log('Load Configuration');
+    await config.load();    
 
+    console.log('Create PageHandler');
     window.pageHandler = new PageHandler(config, transfer, window.tracker);
     // window.pageHandler.event.on('error', error => errorCache.add(error));
 
-    if(config.getSelect()!=null && config.getRunProjectTmpSettings() && (config.getRunProjectTmpSettings().clientId != null || !config.getProject(config.getSelect()).SETTINGS.ENTERID)){
-      window.pageHandler.selectProject(config.getSelect(), private_mode);
+    let selected = config.getSelect();
+    let tmp_settings = config.getRunProjectTmpSettings();
+    if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
+        || !config.getProject(selected).SETTINGS.ENTERID)){
+      window.pageHandler.selectProject(selected, private_mode);
     }
-
-
 
   } catch (e) {
     errorCache.add(e)

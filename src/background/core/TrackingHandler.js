@@ -44,7 +44,7 @@ export default class TrackingHandler {
     try {
 
       this.projectId = this.config.getSelect();
-      let settings = this.config.getProject(this.config.getSelect());
+      let settings = this.config.getProject(this.projectId);
       this.settings = settings.SETTINGS;
 
       this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;

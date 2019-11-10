@@ -21,7 +21,7 @@ export default class PageHandler {
    * @return {object}
    */
   getProjectsTmpSettings(){
-    if(this.debug) console.log('getProjectsTmpSettings');
+    if (this.debug) console.log('getProjectsTmpSettings()');
     return this.config._getProjectsTmpSettings();
   }
 
@@ -31,6 +31,7 @@ export default class PageHandler {
    * @return {Object}
    */
   getProject(id){
+    if (this.debug) console.log('PageHandler.getProject()');
     return this.config.getProject(id);
   }
 
@@ -39,7 +40,7 @@ export default class PageHandler {
    * @return {Array}
    */
   getProjects(){
-    if(this.debug) console.log('getProjects');
+    if (this.debug) console.log('PageHandler.getProjects()');
     return this.config.getProjects();
   }
 
@@ -48,7 +49,7 @@ export default class PageHandler {
    * @return {number}
    */
   getSelect(){
-    if(this.debug) console.log('getSelect')
+    if (this.debug) console.log('PageHandler.getSelect()');
     return this.config.getSelect();
   }
 
@@ -59,6 +60,8 @@ export default class PageHandler {
    * @return {[type]} [description]
    */
   _createTracker(){
+    if (this.debug) console.log('PageHandler._createTracker()');
+
     let selectId = this.config.getSelect();
     if(this.tracker!=null){
       this.tracker.close();
@@ -104,13 +107,13 @@ export default class PageHandler {
    * @return {Promise}
    */
   selectProject(id=null, private_mode=true){
+    if (this.debug) console.log('PageHandler.selectProject()');
     return new Promise(async (resolve, reject) => {
       try {
         // console.log(parseInt(id, 10) , this.config.getSelect());
         if(id!=null && parseInt(id, 10) == this.config.getSelect() && this.tracker!=null){
           resolve();
         }else{
-          if(this.debug) console.log('selectProject')
           if(id==null && this.tracker!=null){
             this.tracker.close();
             delete this.tracker;
@@ -147,7 +150,7 @@ export default class PageHandler {
    * @return {Promise} boolean
    */
   setClientId(clientId){
-    if(this.debug) console.log('setClientId', clientId)
+    if(this.debug) console.log('PageHandler.setClientId()', clientId)
     return this.config.setClientId(clientId, this.config.getSelect());
   }
 
@@ -157,7 +160,7 @@ export default class PageHandler {
    * @return {Integer}
    */
   getNextPeriode(){
-    if(this.debug) console.log('getNextPeriode')
+    if(this.debug) console.log('PageHandler.getNextPeriode()')
     return this._getCurrentTracker().getNextPeriode();
   }
 
@@ -166,7 +169,7 @@ export default class PageHandler {
    * @return {Boolean}
    */
   isSending(){
-    if(this.debug) console.log('isSending')
+    if(this.debug) console.log('PageHandler.isSending()')
     let settings = this.config._getProjectsTmpSettings()[this.config.getSelect()];
     if(settings == undefined || !settings.hasOwnProperty('sending')){
       return false;

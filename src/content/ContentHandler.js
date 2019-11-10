@@ -267,27 +267,15 @@ export default class ContentHandler {
           this.browser.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
              if (message.action == 'private_time_is_over'){
-              console.log('TODO: display popup')
-              sendResponse('will request more time');
-              //this.popup_time_request();
+              sendResponse(true);
               this.showNotificationBar("This is a test message");
-              return true;
+              //return true;
+              return Promise.resolve("Dummy response to keep the console quiet");
              }
-             
-             //return Promise.resolve("Dummy response to keep the console quiet");
-
            });
        }
     });
     this.tracker.start();
-  }
-
-  popup_time_request(){
-    var div = document.createElement("div");
-    div.innerText = 'hellowws'
-    div.setAttribute("style", "border:2px solid blue !important; position:fixed;bottom:10px; right:10px; z-index: 100000; background-color: yellow");
-    var body = document.querySelector("body");
-    body.prepend(div)
   }
 
   //http://jsfiddle.net/BdG2U/1/

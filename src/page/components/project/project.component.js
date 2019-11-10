@@ -46,6 +46,7 @@ export default class Project extends DefaultComponent {
    * [initalization the cross view with pageHandler]
    */
   async componentDidMount(){
+    if (this.debug) console.log('Project.componentDidMount() - project.component.js');
     try {
       this.pageHandler = this.props.getPageHandler();
       
@@ -69,13 +70,14 @@ export default class Project extends DefaultComponent {
         if(this.settings.sending){
           this.handleSend(true)
         }
+        let pages = this.pageHandler.getPages();
         this.setState({
           available: true,
           activePrivateTab: await this.pageHandler.isTabPrivate(),
           activePrivateMode: this.settings.privateMode,
           projectName: this.project.NAME,
-          pages: this.pageHandler.getPages(),
-          sendDataCount: this.pageHandler.getPages().filter(e=>e.send===false).length
+          pages: pages,
+          sendDataCount: pages.filter(e=>e.send===false).length
         });
       }
 
@@ -87,11 +89,13 @@ export default class Project extends DefaultComponent {
   }
 
   async update(){
+    if (this.debug) console.log('Project.update() - project.component.js');
+    let pages = this.pageHandler.getPages();
     this.setState({
       activePrivateTab: await this.pageHandler.isTabPrivate(),
       activePrivateMode: this.settings.privateMode,
-      pages: this.pageHandler.getPages(),
-      sendDataCount: this.pageHandler.getPages().filter(e=>e.send===false).length
+      pages: pages,
+      sendDataCount: pages.filter(e=>e.send===false).length
     });
   }
 
