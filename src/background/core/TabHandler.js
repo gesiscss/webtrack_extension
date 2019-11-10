@@ -326,6 +326,7 @@ export default class TabHandler {
         }
         // On close the tab
         this.extension.event.on('onTabRemove', tabId => {
+          if (this.debug) console.log('TabHandler.onTabRemove');
           if(!this.isClose){
             console.log('onTabRemove', tabId);
             this._onFocus();
@@ -334,6 +335,7 @@ export default class TabHandler {
         });
         //create ne Tab Object
         this.extension.event.on('onTab', tabId => {
+          if (this.debug) console.log('TabHandler.onTab');
           if(!this.isClose){
             console.log('onTab', tabId);
             let tab = new Tab(this.projectId, tabId);
@@ -352,10 +354,10 @@ export default class TabHandler {
         });
         //on focus other tab
         this.extension.event.on('onFocusTab', () => {
+          if (this.debug) console.log('TabHandler.onFocusTab');
           if(!this.isClose){
             this._onFocus()
           }
-          // console.log('onFocusTab');
         });
         //on tab update
         this.extension.event.on('onTabUpdate', e => {
@@ -393,15 +395,16 @@ export default class TabHandler {
         });
         //on tab data send
         this.extension.event.on('onTabContent', data => {
+          if (this.debug) console.log('onTabContent');
           if(!this.isClose){
             this._pushData(data);
           }
         });
-        this.extension.event.on('onFocusTab', () => {
-          if(!this.isClose){
-            this._onFocus()
-          }
-        });
+        // this.extension.event.on('onFocusTab', () => {
+        //   if(!this.isClose){
+        //     this._onFocus()
+        //   }
+        // });
 
         resolve();
       } catch (e) {

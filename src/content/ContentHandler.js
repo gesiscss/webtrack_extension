@@ -268,7 +268,7 @@ export default class ContentHandler {
             (message, sender, sendResponse) => {
              if (message.action == 'private_time_is_over'){
               sendResponse(true);
-              this.showNotificationBar("This is a test message");
+              this.showNotificationBar();
               //return true;
               return Promise.resolve("Dummy response to keep the console quiet");
              }
@@ -279,9 +279,8 @@ export default class ContentHandler {
   }
 
   //http://jsfiddle.net/BdG2U/1/
-  showNotificationBar(message) {
+  showNotificationBar() {
    
-
       let height = 300;
 
       let notifications = document.querySelectorAll('#webtrack-notification');
@@ -293,10 +292,12 @@ export default class ContentHandler {
 
         let notification_window = this.get_notification_window();
         notification_window.querySelector('#fifteen').addEventListener("click", function(){
-          alert('OK');
+          this.request_more_private_time(2*1000);
+          body.removeChild(notification_window);
         }.bind(this));
 
         notification_window.querySelector('#turnoff').addEventListener("click", function(){
+          this.request_more_private_time(-1);
           body.removeChild(notification_window);
         }.bind(this));
 
@@ -304,6 +305,15 @@ export default class ContentHandler {
         body.prepend(notification_window);
       }
 
+  }
+
+  request_more_private_time(private_time){
+    return new Promise((resolve, reject)=>{
+      if (this.debug) console.log('sendMessage("ontracking")');
+      this.browser.runtime.sendMessage({'private_time': private_time}, (response) => {
+        resolve(response);
+      });
+    });
   }
 
   get_notification_window(){

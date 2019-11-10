@@ -2,7 +2,8 @@ import EventEmitter from 'eventemitter3';
 const EVENT_NAMES = {
   'event': 'onEvent',
   'focusTabCallback': 'onFocusTabCallback',
-  'onFocusTab': 'onFocusTab',
+  'focusTab': 'onFocusTab',
+  'extendPrivateMode': 'onExtendPrivateMode',
   'tabContent': 'onTabContent',
   'tabRemove': 'onTabRemove',
   'tab': 'onTab',
@@ -46,7 +47,7 @@ export default class Extension {
     this.activWindowId = 0;
     this.event = new EventEmitter();
 
-    this._onTabContent = this._onTabContent.bind(this);
+    this._onContentMessage = this._onContentMessage.bind(this);
     this._onTabUpdate = this._onTabUpdate.bind(this);
     this._onTabRemove = this._onTabRemove.bind(this);
     this._onActivWindows = this._onActivWindows.bind(this);
@@ -93,26 +94,28 @@ export default class Extension {
     this.setImage(!this.privateMode);
   }
 
-/**
+
+  /**
    * [sendPrivateTimeIsOverMsg send a message indicating that the private time is over]
    * @param {Boolean} 
    */
   sendPrivateTimeIsOverMsg(page_handler){
     // send a messate
     xbrowser.tabs.query({active: true, currentWindow: true}, function(tabs){
-      xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
-        function(response) {
-          //console.log(response);
-          //page_handler.setPrivateMode(false);
-          this.privateMode = false;
-          page_handler.config.setPrivateMode(false)
-          //this.resetImage(tabs[0].id);
-          this.setImage(this.tabs[tabs[0].id].getState('allow') 
-            && !this.tabs[tabs[0].id].getState('disabled')
-            && !this.tabs[tabs[0].id].getState('content_blocked'));
-          //this.setPrivateMode(false);
-          //component.setTooglePrivateMode(false);
-        }.bind(this));
+      console.log('query');
+      console.log(tabs);
+      if (tabs.length > 0) {
+        try{
+          xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
+            function(response) {
+              if(xbrowser.runtime.lastError) {
+                if (this.debug) console.log('No front end tab is listening.');
+              }
+            }.bind(this));
+        } catch (e){
+          console.log('caught');
+        }
+      }
     }.bind(this));
   }
 
@@ -142,6 +145,26 @@ export default class Extension {
     // console.log('after', b);
     xbrowser.browserAction.setIcon({path: b? 'images/on.png':  'images/off.png'});
   }
+
+
+  /**
+     * [resetPublicMode apropiately reset to public image]
+     * @param {Boolean} b
+     */
+  async resetPublicImage(){   
+    let activeTabIds = await this.getActiveTabIds();
+    if(activeTabIds.length>0){
+      for (let id of activeTabIds) {
+        //this.resetImage(tabs[0].id);
+        this.setImage(this.tabs[id].getState('allow') 
+          && !this.tabs[id].getState('disabled')
+          && !this.tabs[id].getState('content_blocked'));
+        //this.setPrivateMode(false);
+        //component.setTooglePrivateMode(false);
+      }
+    }
+  }
+
 
   /**
    * [getActiveTabIds return list of active tabs]
@@ -223,7 +246,7 @@ export default class Extension {
   }
 
   /**
-   * [_onTabContent
+   * [_onContentMessage
    *
    * run eventlistener EVENT_NAMES.tabContent for new content
    * parameter:
@@ -241,14 +264,20 @@ export default class Extension {
    *   event: Array
    *  ]
    */
-  _onTabContent(msg, sender, sendResponse){
-      if (this.debug) console.log('-> _onTabContent');
+  _onContentMessage(msg, sender, sendResponse){
+      if (this.debug) console.log('-> _onContentMessage');
       if(this.tabs.hasOwnProperty(sender.tab.id)) {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
       }
+
+
+
       if(msg==='ontracking'){
         if (this.debug) console.log('# ontracking');
         sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
+      } else if (msg.hasOwnProperty('private_time')){
+        console.log('The user has requested more private time: ', msg.private_time);
+        this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
       }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
         sendResponse(false);
@@ -299,7 +328,7 @@ export default class Extension {
         sendResponse(false);
       }
       
-      if (this.debug) console.log('<- _onTabContent');
+      if (this.debug) console.log('<- _onContentMessage');
       return true;
   }
 
@@ -349,7 +378,7 @@ export default class Extension {
       xbrowser.windows.onFocusChanged.addListener(this._onActivWindows);
       xbrowser.tabs.onRemoved.addListener(this._onTabRemove);
       xbrowser.tabs.onUpdated.addListener(this._onTabUpdate);
-      xbrowser.runtime.onMessage.addListener(this._onTabContent);
+      xbrowser.runtime.onMessage.addListener(this._onContentMessage);
       xbrowser.tabs.onActivated.addListener(this._onActivatedTab);
 
       // function logURL(requestDetails) {
@@ -374,7 +403,7 @@ export default class Extension {
         // if(window.id>0) console.log('Change activWindowId %s', window.id);
       })
       xbrowser.tabs.onHighlighted.addListener(function(highlightInfo) {
-        this.event.emit(EVENT_NAMES.onFocusTab, null, false);
+        this.event.emit(EVENT_NAMES.focusTab, null, false);
       }.bind(this));
 
       this.getAllTabsIds().then(tabIds => {
@@ -396,7 +425,7 @@ export default class Extension {
     xbrowser.windows.onFocusChanged.removeListener(this._onActivWindows);
     xbrowser.tabs.onRemoved.removeListener(this._onTabRemove);
     xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
-    xbrowser.runtime.onMessage.removeListener(this._onTabContent);
+    xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
     xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
 
     console.log('CLOSE Extension');

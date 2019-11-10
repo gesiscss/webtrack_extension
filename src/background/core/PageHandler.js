@@ -1,6 +1,10 @@
 import TrackingHandler from './TrackingHandler';
 import EventEmitter from 'eventemitter3';
 
+const EVENT_NAMES = {
+  'extendPrivateMode': 'onExtendPrivateMode'
+}
+
 export default class PageHandler {
 
   /**
@@ -214,7 +218,7 @@ export default class PageHandler {
     this._setCurrentTrackerPrivateMode(b);
 
     if (component != null && b){
-      this.resetPublicMode(component);
+      this.confirm_public_mode(component);
     }
   }
 
@@ -223,8 +227,27 @@ export default class PageHandler {
    * @param  {[type]} component [description]
    * @return {[type]}           [description]
    */
-  async resetPublicMode(component){
-    await this.timeout(2000);
+  async confirm_public_mode(component, private_time=2000){
+    //this.private_time_timer = +now Date();
+    await this.timeout(private_time);
+
+    let extension = this._getCurrentTracker().extension;
+
+    //on focus other tab
+    extension.event.once('onExtendPrivateMode', new_private_time => {
+      if (this.debug) console.log('PageHandler.onExtendPrivateMode');
+
+      if (new_private_time > 0){
+        this.confirm_public_mode(component, new_private_time);
+
+      } else {
+        //this.setPrivateMode(false);
+        extension.privateMode = false;
+        this.config.setPrivateMode(false)
+        extension.resetPublicImage(extension);
+      }
+      
+    }, this);
 
     //component.setTooglePrivateMode(false);
     //this.setPrivateMode(false);
@@ -232,8 +255,9 @@ export default class PageHandler {
 
     //this._getCurrentTracker().extension.notifyUser();
     //this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(component);
-    this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(this);
+    extension.sendPrivateTimeIsOverMsg(this);
   }
+
 
   /**
    * A promise of ms millisecnos
