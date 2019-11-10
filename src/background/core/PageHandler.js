@@ -91,6 +91,8 @@ export default class PageHandler {
    * @return {TrackingHandler}
    */
   _getCurrentTracker(){
+    if (this.debug) console.log('PageHandler._getCurrentTracker()');
+
     if(this.config.getSelect()==null){
       console.log('No Select return null');
       return null;
@@ -107,38 +109,35 @@ export default class PageHandler {
    * @return {Promise}
    */
   selectProject(id=null, private_mode=true){
-    if (this.debug) console.log('PageHandler.selectProject()');
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
       try {
         // console.log(parseInt(id, 10) , this.config.getSelect());
         if(id!=null && parseInt(id, 10) == this.config.getSelect() && this.tracker!=null){
-          resolve();
+          /*already selected*/
         }else{
           if(id==null && this.tracker!=null){
             this.tracker.close();
             delete this.tracker;
             this.tracker = null;
-
             console.log('CLOSE TRACKER');
             // this._setCurrentTrackerPrivateMode(true);
           }
           this.config.setSelect(id);
           if(id != null){
             if(this._createTracker()){
-              await this._getCurrentTracker().init(private_mode);
+              let current_tracker = this._getCurrentTracker();
+              current_tracker.init(private_mode);
               // if setting enterid false then will be disabled the private mode
-              console.log('ENTERID', this._getCurrentTracker().settings.ENTERID);
-              // this._setCurrentTrackerPrivateMode(false);
-              // if(this._getCurrentTracker().settings.ENTERID){
-              //
-              // }
-
+              console.log('ENTERID', current_tracker.settings.ENTERID);
             }
           }
-          resolve();
         }
       } catch (e) {
         reject(e)
+      } finally{
+        if (this.debug) console.log('<- PageHandler.selectProject() - Promise');
+        resolve();
       }
     });
 
@@ -183,8 +182,8 @@ export default class PageHandler {
    * @return {Array<object>}
    */
   getPages(){
-    if(this.debug) console.log('getPages')
-    return this._getCurrentTracker().getPages()
+    if(this.debug) console.log('getPages');
+    return this._getCurrentTracker().getPages();
   }
 
   /**
@@ -193,8 +192,8 @@ export default class PageHandler {
    * @return {Promise}
    */
   deletePage(pageId){
-    if(this.debug) console.log('deletePage', pageId)
-    return this._getCurrentTracker().deletePage(pageId)
+    if(this.debug) console.log('deletePage', pageId);
+    return this._getCurrentTracker().deletePage(pageId);
   }
 
   /**
@@ -203,8 +202,8 @@ export default class PageHandler {
    * @return {Promise}
    */
   sendData(pages=null){
-    if(this.debug) console.log('sendData')
-    return this._getCurrentTracker().sendData(pages)
+    if(this.debug) console.log('sendData');
+    return this._getCurrentTracker().sendData(pages);
   }
 
   /**
