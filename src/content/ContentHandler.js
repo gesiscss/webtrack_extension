@@ -300,19 +300,6 @@ export default class ContentHandler {
 
       /*create the notification bar div if it doesn't exist*/
       if (notifications.length == 0) {
-        // let innerdiv = document.createElement("div");
-        // innerdiv.innerText = message;
-        // innerdiv.setAttribute("style", "text-align:center; line-height: " + height + "px;");
-
-        // let outerdiv = document.createElement("div");
-        // outerdiv.setAttribute("style", "width:200px; height: " +  height + "px;" 
-        //   + "background-color: #F4E0E1; color: #A42732;"
-        //   + "position: fixed; top:50px; right:50px; z-index: 100000;"
-        //   + "border: 1px solid #A42732;");
-        // outerdiv.id = 'notification-bar';
-        // outerdiv.prepend(innerdiv);
-        // 
-        //let notification_window = ContentHandler.notification_window.cloneNode(true)
 
         let body = document.querySelector('body');
 
@@ -328,12 +315,7 @@ export default class ContentHandler {
         
         body.prepend(notification_window);
       }
-      // /*animate the bar*/
-      // $('#notification-bar').slideDown(function() {
-      //     setTimeout(function() {
-      //         $('#notification-bar').slideUp(function() {});
-      //     }, duration);
-      // });
+
   }
 
   get_notification_window(){
