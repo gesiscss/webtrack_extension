@@ -55,6 +55,7 @@ export default class Extension {
     this._onTab = this._onTab.bind(this);
 
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
+    this.pending_private_time_answer = false;
 
     this.debug = true;
   }
@@ -63,7 +64,7 @@ export default class Extension {
    * [_onActivWindows listenen the active windowId for check the active tab]
    */
   _onActivWindows(windowId){
-    this.event.emit(EVENT_NAMES.onFocusTab, null, false);
+    this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
   }
 
@@ -99,11 +100,10 @@ export default class Extension {
    * [sendPrivateTimeIsOverMsg send a message indicating that the private time is over]
    * @param {Boolean} 
    */
-  sendPrivateTimeIsOverMsg(page_handler){
+  sendPrivateTimeIsOverMsg(){
+    this.pending_private_time_answer = true;
     // send a messate
     xbrowser.tabs.query({active: true, currentWindow: true}, function(tabs){
-      console.log('query');
-      console.log(tabs);
       if (tabs.length > 0) {
         try{
           xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
@@ -119,19 +119,6 @@ export default class Extension {
     }.bind(this));
   }
 
-
-  // resetImage(tabid){
-  //   console.log('resetImage', tabid);
-
-  //   console.log(this.tabs[tabid].getState('allow') )
-  //   console.log(this.tabs[tabid].getState('disabled'))
-  //   console.log(this.tabs[tabid].getState('content_blocked'))
-
-  //   this.setImage(this.tabs[tabid].getState('allow') 
-  //     && !this.tabs[tabid].getState('disabled')
-  //     && !this.tabs[tabid].getState('content_blocked'));
-
-  // }
 
   /**
    * [setImage set black or full color image]
@@ -192,15 +179,23 @@ export default class Extension {
   _onActivatedTab(activeInfo){
     //on switch the active tabs between one window
 
-        this.event.emit(EVENT_NAMES.focusTabCallback, activeInfo.tabId, false);
-        if(!this.tabs.hasOwnProperty(activeInfo.tabId)){
-          this.event.emit(EVENT_NAMES.focusTabCallback, null, false);
-          this.setImage(false);
-        }else{
-          this.setImage(this.tabs[activeInfo.tabId].getState('allow') 
-            && !this.tabs[activeInfo.tabId].getState('disabled')
-            && !this.tabs[activeInfo.tabId].getState('content_blocked'));
-        }
+
+    if (this.debug) console.log('_onActivatedTab');
+    
+    if (this.pending_private_time_answer){
+      this.sendPrivateTimeIsOverMsg();
+    }
+    
+    this.event.emit(EVENT_NAMES.focusTabCallback, activeInfo.tabId, false);
+    if(!this.tabs.hasOwnProperty(activeInfo.tabId)){
+      this.event.emit(EVENT_NAMES.focusTabCallback, null, false);
+      this.setImage(false);
+    }else{
+      this.resetPublicImage();
+      // this.setImage(this.tabs[activeInfo.tabId].getState('allow') 
+      //   && !this.tabs[activeInfo.tabId].getState('disabled')
+      //   && !this.tabs[activeInfo.tabId].getState('content_blocked'));
+    }
   }
 
   /**
@@ -270,15 +265,18 @@ export default class Extension {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
       }
 
-
-
       if(msg==='ontracking'){
         if (this.debug) console.log('# ontracking');
-        sendResponse({allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), extensionfilter: this.extensionfilter});
+        sendResponse({
+          allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
+          extensionfilter: this.extensionfilter, 
+          pending_private_time_answer: this.pending_private_time_answer
+        });
       } else if (msg.hasOwnProperty('private_time')){
         console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
-      }else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
+        this.pending_private_time_answer = false;
+      } else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
         sendResponse(false);
 

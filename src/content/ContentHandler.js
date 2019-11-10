@@ -30,6 +30,8 @@ export default class ContentHandler {
     this.startTime = +new Date();
     this.data = {}
     this.last = 0;
+
+    this.display_notification = false;
   }
 
   /**
@@ -73,8 +75,17 @@ export default class ContentHandler {
     return new Promise((resolve, reject)=>{
       if (this.debug) console.log('sendMessage("ontracking")');
       this.browser.runtime.sendMessage('ontracking', (response) => {
+        if(this.browser.runtime.lastError) {
+          /*ignore when the background is not listening*/;
+        } else {
+          if (response.pending_private_time_answer){
+            this.display_notification = true;
+            this.showNotification();
+          }
+        }
         resolve(response);
       });
+
     });
   }
 
@@ -170,9 +181,12 @@ export default class ContentHandler {
               try {
                 if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
                 this.browser.runtime.sendMessage(this.data, (response)=>{
+                  if(this.browser.runtime.lastError) {
+                    /*ignore when the background is not listening*/;
+                  }
                   if(response==undefined){
                     this.close();
-                  }                
+                  }
                 });
               } catch(err){
                 if (err.message == "Extension context invalidated."){
@@ -190,6 +204,9 @@ export default class ContentHandler {
           try{
             if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
             this.browser.runtime.sendMessage(this.data, (response)=>{
+              if(this.browser.runtime.lastError) {
+                /*ignore when the background is not listening*/;
+              }
               if(response==undefined){
                 this.close();
                 console.log('Close');                  
@@ -241,6 +258,11 @@ export default class ContentHandler {
        //}
        if (this.debug) console.log('onData: this.sendMessage');
        this.sendMessage(data);
+
+       // refresh the notification when content is sent
+       if (this.display_notification){
+        this.showNotification();
+       }
     });
     this.tracker.eventEmitter.on('onStart', async delay => {
       // this.DELAY = delay;
@@ -268,7 +290,8 @@ export default class ContentHandler {
             (message, sender, sendResponse) => {
              if (message.action == 'private_time_is_over'){
               sendResponse(true);
-              this.showNotificationBar();
+              this.showNotification();
+              
               //return true;
               return Promise.resolve("Dummy response to keep the console quiet");
              }
@@ -279,38 +302,44 @@ export default class ContentHandler {
   }
 
   //http://jsfiddle.net/BdG2U/1/
-  showNotificationBar() {
+  showNotification() {
    
       let height = 300;
 
-      let notifications = document.querySelectorAll('#webtrack-notification');
-
       /*create the notification bar div if it doesn't exist*/
-      if (notifications.length == 0) {
+      let body = document.querySelector('body');
 
-        let body = document.querySelector('body');
+      let notification = document.querySelector('body #webtrack-notification-8888');
 
-        let notification_window = this.get_notification_window();
-        notification_window.querySelector('#fifteen').addEventListener("click", function(){
-          this.request_more_private_time(2*1000);
-          body.removeChild(notification_window);
-        }.bind(this));
+      if (body){
+          if (notification == null){
+            let notification_window = this.get_notification_window();
+            notification_window.querySelector('#fifteen').addEventListener("click", function(){
+              this.request_more_private_time(2*1000);
+              body.removeChild(notification_window);
+              this.display_notification = false;
+            }.bind(this));
 
-        notification_window.querySelector('#turnoff').addEventListener("click", function(){
-          this.request_more_private_time(-1);
-          body.removeChild(notification_window);
-        }.bind(this));
+            notification_window.querySelector('#turnoff').addEventListener("click", function(){
+              this.request_more_private_time(-1);
+              body.removeChild(notification_window);
+              this.display_notification = false;
+            }.bind(this));
 
-        
-        body.prepend(notification_window);
+            body.prepend(notification_window);
+            this.display_notification = true;
+          }
       }
 
   }
 
   request_more_private_time(private_time){
     return new Promise((resolve, reject)=>{
-      if (this.debug) console.log('sendMessage("ontracking")');
+      if (this.debug) console.log('sendMessage("private_time")');
       this.browser.runtime.sendMessage({'private_time': private_time}, (response) => {
+        if(this.browser.runtime.lastError) {
+          /*ignore when the background is not listening*/;
+        }
         resolve(response);
       });
     });
@@ -320,7 +349,7 @@ export default class ContentHandler {
     //#337ab7
     var notification_window =  document.createElement('div');
     notification_window.innerHTML = `
-    <div id="webtrack-notification" style="all: initial;width:100%; height: 100%;
+    <div id="webtrack-notification-8888" style="all: initial;width:100%; height: 100%;
      color: #000000; position: fixed; top:0; 
     right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);">
       <div style="left: 50%; top: 40%; transform: translate(-50%, -50%); 
@@ -335,7 +364,7 @@ export default class ContentHandler {
               Webtrack
             </div>
             <div style="display: block; font-size: 20px; color: #0085bc; font-weight: bold;">
-              Private mode deactivated
+              Private mode deactivation.
             </div>
           </div>
 
@@ -380,6 +409,7 @@ export default class ContentHandler {
       }else{
         setTimeout(()=> this.init(), 2000)
         console.log('Not allow to tracked from extension handler');
+
       }
     } catch (e) {
       console.log(e);

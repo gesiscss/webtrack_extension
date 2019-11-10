@@ -368,7 +368,6 @@ export default class TwitterTracker extends Tracker{
       if (this.credentials == null) {
         this.logged_username = this.get_username();
       } else {
-        debugger;
         if (this.credentials.hasOwnProperty('user')){
           this.logged_username = this.credentials.user.screen_name;
           this.logged_fullname = this.credentials.user.name;

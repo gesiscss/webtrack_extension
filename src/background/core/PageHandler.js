@@ -228,7 +228,6 @@ export default class PageHandler {
    * @return {[type]}           [description]
    */
   async confirm_public_mode(component, private_time=2000){
-    //this.private_time_timer = +now Date();
     await this.timeout(private_time);
 
     let extension = this._getCurrentTracker().extension;
@@ -255,7 +254,7 @@ export default class PageHandler {
 
     //this._getCurrentTracker().extension.notifyUser();
     //this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(component);
-    extension.sendPrivateTimeIsOverMsg(this);
+    extension.sendPrivateTimeIsOverMsg();
   }
 
 
