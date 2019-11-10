@@ -260,9 +260,9 @@ export default class ContentHandler {
        this.sendMessage(data);
 
        // refresh the notification when content is sent
-       if (this.display_notification){
-        this.showNotification();
-       }
+       // if (this.display_notification){
+       //  this.showNotification();
+       // }
     });
     this.tracker.eventEmitter.on('onStart', async delay => {
       // this.DELAY = delay;
@@ -288,10 +288,16 @@ export default class ContentHandler {
           // listen for request to cancel private mode
           this.browser.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
-             if (message.action == 'private_time_is_over'){
-              sendResponse(true);
-              this.showNotification();
-              
+             if (message.action == 'popup_private_time'){
+
+              if (message.display){
+                this.showNotification();
+              } else {
+                console.log('hidenotification');
+                this.hideNotification();
+              }
+
+              sendResponse(true);              
               //return true;
               return Promise.resolve("Dummy response to keep the console quiet");
              }
@@ -301,17 +307,28 @@ export default class ContentHandler {
     this.tracker.start();
   }
 
+  hideNotification() {
+    /*create the notification bar div if it doesn't exist*/
+    let body = this.tracker.rootElement.querySelector('body');
+    if (body){
+      let notification_window = body.querySelector('#webtrack-notification-8888');
+      if (notification_window != null){
+        body.removeChild(notification_window.parentElement);
+        this.display_notification = false;
+      }
+    }
+  }
+
   //http://jsfiddle.net/BdG2U/1/
   showNotification() {
    
       let height = 300;
 
       /*create the notification bar div if it doesn't exist*/
-      let body = document.querySelector('body');
-
-      let notification = document.querySelector('body #webtrack-notification-8888');
+      let body = this.tracker.rootElement.querySelector('body');
 
       if (body){
+          let notification = body.querySelector('#webtrack-notification-8888');
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
@@ -364,7 +381,7 @@ export default class ContentHandler {
               Webtrack
             </div>
             <div style="display: block; font-size: 20px; color: #0085bc; font-weight: bold;">
-              Private mode deactivation.
+              Turn off private mode
             </div>
           </div>
 

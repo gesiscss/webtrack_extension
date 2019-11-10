@@ -253,8 +253,8 @@ export default class PageHandler {
 
 
     //this._getCurrentTracker().extension.notifyUser();
-    //this._getCurrentTracker().extension.sendPrivateTimeIsOverMsg(component);
-    extension.sendPrivateTimeIsOverMsg();
+    //this._getCurrentTracker().extension.displayPrivateTimePopup(component);
+    extension.displayPrivateTimePopup();
   }
 
 

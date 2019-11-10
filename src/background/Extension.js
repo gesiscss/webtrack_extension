@@ -97,16 +97,16 @@ export default class Extension {
 
 
   /**
-   * [sendPrivateTimeIsOverMsg send a message indicating that the private time is over]
+   * [displayPrivateTimePopup send a message indicating that the private time is over]
    * @param {Boolean} 
    */
-  sendPrivateTimeIsOverMsg(){
+  async displayPrivateTimePopup(){
     this.pending_private_time_answer = true;
     // send a messate
-    xbrowser.tabs.query({active: true, currentWindow: true}, function(tabs){
+    xbrowser.tabs.query({active: true}, function(tabs){
       if (tabs.length > 0) {
         try{
-          xbrowser.tabs.sendMessage(tabs[0].id, {action: "private_time_is_over"}, 
+          xbrowser.tabs.sendMessage(tabs[0].id, {action: "popup_private_time", display: true}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
                 if (this.debug) console.log('No front end tab is listening.');
@@ -117,6 +117,31 @@ export default class Extension {
         }
       }
     }.bind(this));
+  }
+
+
+  /**
+   * [displayPrivateTimePopup send a message indicating that the private time is over]
+   * @param {Boolean} 
+   */
+  async removePrivateTimePopup(){
+    this.pending_private_time_answer = false;
+    // send a message to all tabs
+    let tabs = await this.getAllTabsIds({}, false);
+    if(tabs.length>0){
+      for (let tab of tabs) {
+        try{
+          xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: false}, 
+            function(response) {
+              if(xbrowser.runtime.lastError) {
+                if (this.debug) console.log('No front end tab is listening.');
+              }
+            }.bind(this));
+        } catch (e){
+          console.log('caught');
+        }
+      }
+    }
   }
 
 
@@ -183,7 +208,7 @@ export default class Extension {
     if (this.debug) console.log('_onActivatedTab');
     
     if (this.pending_private_time_answer){
-      this.sendPrivateTimeIsOverMsg();
+      this.displayPrivateTimePopup();
     }
     
     this.event.emit(EVENT_NAMES.focusTabCallback, activeInfo.tabId, false);
@@ -275,6 +300,7 @@ export default class Extension {
       } else if (msg.hasOwnProperty('private_time')){
         console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
+        this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
       } else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
         this.setImage(false);
