@@ -227,8 +227,12 @@ export default class PageHandler {
   setPrivateMode(b=false, component=null){
     this._setCurrentTrackerPrivateMode(b);
 
-    if (component != null && b){
-      this.confirm_public_mode(component);
+    if (component != null){
+      if (b){
+        this.confirm_public_mode(component);
+      } else {
+        clearTimeout(this.timer);
+      }
     }
   }
 
@@ -237,34 +241,36 @@ export default class PageHandler {
    * @param  {[type]} component [description]
    * @return {[type]}           [description]
    */
-  async confirm_public_mode(component, private_time=2000){
-    await this.timeout(private_time);
+  async confirm_public_mode(component, private_time=5000){
+    await this.set_timeout(private_time);
+
 
     let extension = this._getCurrentTracker().extension;
+    if (extension.privateMode) {
 
-    //on focus other tab
-    extension.event.once(EVENT_NAMES.extendPrivateMode, new_private_time => {
-      if (this.debug) console.log('PageHandler.onExtendPrivateMode');
+      //on focus other tab
+      extension.event.once(EVENT_NAMES.extendPrivateMode, new_private_time => {
+        if (this.debug) console.log('PageHandler.onExtendPrivateMode');
 
-      if (new_private_time > 0){
-        this.confirm_public_mode(component, new_private_time);
+        if (new_private_time > 0){
+          this.confirm_public_mode(component, new_private_time);
 
-      } else {
-        //this.setPrivateMode(false);
-        extension.privateMode = false;
-        this.config.setPrivateMode(false)
-        extension.resetPublicImage(extension);
-      }
-      
-    }, this);
+        } else {
+          //this.setPrivateMode(false);
+          extension.privateMode = false;
+          this.config.setPrivateMode(false)
+          extension.resetPublicImage(extension);
+        }
+        
+      }, this);
 
-    //component.setTooglePrivateMode(false);
-    //this.setPrivateMode(false);
+      //component.setTooglePrivateMode(false);
+      //this.setPrivateMode(false);
 
-
-    //this._getCurrentTracker().extension.notifyUser();
-    //this._getCurrentTracker().extension.displayPrivateTimePopup(component);
-    extension.displayPrivateTimePopup();
+      //this._getCurrentTracker().extension.notifyUser();
+      //this._getCurrentTracker().extension.displayPrivateTimePopup(component);
+      extension.displayPrivateTimePopup();
+    }
   }
 
 
@@ -273,9 +279,13 @@ export default class PageHandler {
    * @param  {[type]} ms [description]
    * @return {[type]}    [description]
    */
-  timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  set_timeout(ms) {
+    return new Promise(resolve => {
+      this.timer = setTimeout(resolve, ms);
+    });
   }
+
+
 
   /**
    * [deliver state of trackingHandler progress]
