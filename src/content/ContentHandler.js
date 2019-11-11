@@ -2,9 +2,12 @@ import FacebookTracker from './addon/FacebookTracker';
 import YouTubeTracker from './addon/YouTubeTracker';
 import TwitterTracker from './addon/TwitterTracker';
 import InstagramTracker from './addon/InstagramTracker';
+import SocialMediaTracker from './addon/SocialMediaTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
+
+const SMM_SET = new Set(['linkedin', 'tumblr', 'ello']);
 
 export default class ContentHandler {
 
@@ -60,8 +63,12 @@ export default class ContentHandler {
       }else if(str.endsWith('google')){
         console.log('GoogleTracker');
         return GoogleTracker;
+      } else {
+        if (SMM_SET.has(str)){
+          console.log('SocialMediaTracker');
+          return SocialMediaTracker;
+        }
       }
-
     }
     console.log('Tracker');
     return Tracker
@@ -143,7 +150,7 @@ export default class ContentHandler {
         startTime: this.startTime,
         createData: new Date(),
         landing_url: window.location.href,
-        hostname: window.location.hostname,
+        hostname: location.protocol + '//' + location.hostname,
         content: [],
         source: [],
         events: [],

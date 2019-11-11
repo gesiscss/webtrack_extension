@@ -83,10 +83,11 @@ const schemaPages = {
         },
         hostname: {
           type: 'string',
+          exec: stringUrl
         },
         landing_url: {
           type: 'string',
-          exec: stringUrl,
+          exec: stringUrl
         },
         links: {
           type: 'array',

@@ -32,9 +32,7 @@ export default class TrackingHandler {
     // fields that should be anonymized
     this.to_anonym = [
         'departing_url',
-        'id',
         'landing_url',
-        'precursor_id',
         'title',
         'unhashed_url',
         'url',
@@ -204,6 +202,19 @@ export default class TrackingHandler {
   }
 
   anonymize(page){
+    if (page.meta.hasOwnProperty('full_anonym')){ 
+      if (page.meta.full_anonym) {
+        for (var i = 0; i < this.to_anonym.length; i++) {
+          try {
+            page[this.to_anonym[i]] = page['hostname'];
+          } catch (e){}
+        }
+      }
+      if (page.hasOwnProperty('hashes')){ 
+        page['hashes'] = []; 
+      }
+    }
+
     if (page.meta.hasOwnProperty('anonym')){ 
       let anonym = page.meta.anonym;
 

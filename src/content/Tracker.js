@@ -206,6 +206,9 @@ export default class Tracker extends MultiFetch {
     this.metadata['anonym'] = this.metadata['anonym'];
     result['anonym'] = data['anonym'];
 
+    this.metadata['full_anonym'] = this.metadata['full_anonym'];
+    result['full_anonym'] = data['full_anonym'];
+
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
     this.eventEmitter.emit(EVENT_NAMES.data, {meta: result}, false);
   }
