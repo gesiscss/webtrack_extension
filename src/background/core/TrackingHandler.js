@@ -10,7 +10,8 @@ import moment from 'moment';
 
 const EVENT_NAMES = {
   'page': 'onPage',
-  'schedule': 'onSchedule'
+  'schedule': 'onSchedule',
+  'disconnectedPopup': 'onDisconnectedPopup'
 }
 
 export default class TrackingHandler {
@@ -198,27 +199,6 @@ export default class TrackingHandler {
   }
 
 
-  /**
-   * [check dead references in the eventemitter3 object]
-   * @param  {String} [eventName='']
-   */
-  cleanDeadReferenceInEvent(eventName=''){
-    let listeners = this.event.listeners(eventName);
-    if(!Array.isArray(listeners)){
-      listeners = [listeners];
-    }
-    listeners = listeners.filter(listener => {
-      try {
-        listener.constructor
-        return listener;
-      } catch (e) {}
-    });
-    this.event.removeAllListeners(eventName);
-    for (let listener of listeners) {
-      this.event.addListener(eventName, listener)
-    }
-  }
-
   escapeRegExp(string) {
     return string.replace(this.regex_escapers, '\\$&'); // $& means the whole matched string
   }
@@ -255,6 +235,20 @@ export default class TrackingHandler {
   }
 
   /**
+   *  Adds a listener associated to the onSend event
+   */
+  addOnSendListener(onSendCallBack){
+
+    //when the extension popup is closed, then stop listenning
+    this.extension.event.on(EVENT_NAMES.disconnectedPopup, 
+      () => {
+        this.event.removeListener('onSend');
+      }, this);
+
+    this.event.on('onSend', onSendCallBack);
+  }
+
+  /**
    * [sendData upload all pages to the target]
    * @param  {Array} [pages=null]         [description]
    * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
@@ -264,7 +258,7 @@ export default class TrackingHandler {
       return new Promise(async (resolve, reject) => {
         try {
           if(this.debug) console.log('-> sendData');
-          this.cleanDeadReferenceInEvent('onSend');
+          //this.cleanDeadReferenceInEvent('onSend');
           //this.event.emit('onSend', true);
           this.setSending(true);
 

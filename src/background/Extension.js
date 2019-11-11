@@ -8,6 +8,7 @@ const EVENT_NAMES = {
   'tabRemove': 'onTabRemove',
   'tab': 'onTab',
   'tabUpdate': 'onTabUpdate',
+  'disconnectedPopup': 'onDisconnectedPopup'
 }
 
 class Tab {
@@ -54,6 +55,7 @@ export default class Extension {
     this._onActivatedTab = this._onActivatedTab.bind(this);
     this._onTab = this._onTab.bind(this);
     this._onHighlightedWindows = this._onHighlightedWindows.bind(this);
+    this._onDisconnectedPopup = this._onDisconnectedPopup.bind(this);
 
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
@@ -68,6 +70,14 @@ export default class Extension {
     this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
   }
+
+  /**
+   * [_onDisconnectedPopup listens the active windowId for check the active tab]
+   */
+  _onDisconnectedPopup(windowId){
+    this.event.emit(EVENT_NAMES.disconnectedPopup);
+  }
+
 
   /**
    * _onHighlightedWindows listen when a tab is highlighed
@@ -414,6 +424,10 @@ export default class Extension {
       xbrowser.tabs.onUpdated.addListener(this._onTabUpdate);
       xbrowser.runtime.onMessage.addListener(this._onContentMessage);
       xbrowser.tabs.onActivated.addListener(this._onActivatedTab);
+
+      xbrowser.runtime.onConnect.addListener(function (externalPort) {
+        externalPort.onDisconnect.addListener(this._onDisconnectedPopup)
+      }.bind(this))
 
       // function logURL(requestDetails) {
       //   console.log("Loading: " + requestDetails.url);

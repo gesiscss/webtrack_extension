@@ -101,7 +101,6 @@ export default class PageHandler {
     if(this.config.getSelect()==null){
       console.log('No Select return null');
     }else if(this.tracker!=null) {
-      if (this.debug) console.log('tracker found!');
       tracker = this.tracker;
     }else{
       console.error('Return no tracker', this.config.getSelect());
@@ -244,7 +243,7 @@ export default class PageHandler {
     let extension = this._getCurrentTracker().extension;
 
     //on focus other tab
-    extension.event.once('onExtendPrivateMode', new_private_time => {
+    extension.event.once(EVENT_NAMES.extendPrivateMode, new_private_time => {
       if (this.debug) console.log('PageHandler.onExtendPrivateMode');
 
       if (new_private_time > 0){

@@ -84,7 +84,8 @@ export default class Project extends DefaultComponent {
 
         // TODO: I am using once as I have now way to detect when the dialog is being
         // closed, e.g. componentWillUnmount does not work
-        this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
+        //this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
+        this.pageHandler._getCurrentTracker().addOnSendListener(this.handleSend);
       }
       if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
     } catch (err) {
@@ -95,11 +96,7 @@ export default class Project extends DefaultComponent {
     if (this.debug) console.log('<- Project.componentDidMount() - project.component.js');
   }
 
-  componentWillUnmount(){
-    if (this.debug) this.pageHandler.log('-> componentWillUnmount()');
-    this.pageHandler._getCurrentTracker().event.removeListener('onSend', this.handleSend);
-  }
-
+  
   async update(){
     if (this.debug) this.pageHandler.log('-> Project.update() - project.component.js');
     let pages = this.pageHandler.getPages();
@@ -162,7 +159,6 @@ export default class Project extends DefaultComponent {
    */
   handleSend(boolean){
     if (this.debug) this.pageHandler.log('-> handleSend');
-    this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
     if(this.dialog!=null){
       this.update();
     }
