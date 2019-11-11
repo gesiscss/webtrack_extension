@@ -231,7 +231,7 @@ export default class PageHandler {
       if (b){
         this.confirm_public_mode(component);
       } else {
-        clearTimeout(this.timer);
+        this.cancel_confirm_public_mode();
       }
     }
   }
@@ -264,13 +264,19 @@ export default class PageHandler {
         
       }, this);
 
-      //component.setTooglePrivateMode(false);
-      //this.setPrivateMode(false);
-
-      //this._getCurrentTracker().extension.notifyUser();
-      //this._getCurrentTracker().extension.displayPrivateTimePopup(component);
       extension.displayPrivateTimePopup();
     }
+  }
+
+  /**
+   * this will cancel the public mode display. It will remove the popups if it is too late
+   * @param  {[type]} component [description]
+   * @return {[type]}           [description]
+   */
+  async cancel_confirm_public_mode(){
+    clearTimeout(this.timer);
+    let extension = this._getCurrentTracker().extension;
+    extension.removePrivateTimePopup();
   }
 
 
