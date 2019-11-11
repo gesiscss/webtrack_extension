@@ -256,7 +256,7 @@ export default class Configuration {
    * @return {Integer}
    */
   getSelect(){
-    if (this.debug) console.log('Configuration.getSelect()')
+    if (this.debug) console.log('-> Configuration.getSelect()')
     let select = this.select.get();
     if (select == null) {
       for (let index in this.projects) {
@@ -266,6 +266,7 @@ export default class Configuration {
         }
       }
     }
+    if (this.debug) console.log('<- Configuration.getSelect()')
     return select;
   }
 

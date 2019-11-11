@@ -95,16 +95,20 @@ export default class PageHandler {
    * @return {TrackingHandler}
    */
   _getCurrentTracker(){
-    if (this.debug) console.log('PageHandler._getCurrentTracker()');
+    if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
 
+    let tracker = null;
     if(this.config.getSelect()==null){
       console.log('No Select return null');
-      return null;
     }else if(this.tracker!=null) {
-      return this.tracker;
+      if (this.debug) console.log('tracker found!');
+      tracker = this.tracker;
     }else{
       console.error('Return no tracker', this.config.getSelect());
     }
+
+    if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
+    return tracker;
   }
 
   /**
@@ -153,7 +157,7 @@ export default class PageHandler {
    * @return {Promise} boolean
    */
   setClientId(clientId){
-    if(this.debug) console.log('PageHandler.setClientId()', clientId)
+    if (this.debug) console.log('PageHandler.setClientId()', clientId)
     return this.config.setClientId(clientId, this.config.getSelect());
   }
 
@@ -163,7 +167,7 @@ export default class PageHandler {
    * @return {Integer}
    */
   getNextPeriode(){
-    if(this.debug) console.log('PageHandler.getNextPeriode()')
+    if (this.debug) console.log('PageHandler.getNextPeriode()')
     return this._getCurrentTracker().getNextPeriode();
   }
 
@@ -172,7 +176,7 @@ export default class PageHandler {
    * @return {Boolean}
    */
   isSending(){
-    if(this.debug) console.log('PageHandler.isSending()')
+    if (this.debug) console.log('PageHandler.isSending()')
     let settings = this.config._getProjectsTmpSettings()[this.config.getSelect()];
     if(settings == undefined || !settings.hasOwnProperty('sending')){
       return false;
@@ -186,8 +190,15 @@ export default class PageHandler {
    * @return {Array<object>}
    */
   getPages(){
-    if(this.debug) console.log('getPages');
-    return this._getCurrentTracker().getPages();
+    if (this.debug) console.log('-> PageHandler.getPages()');
+    let tracker = this._getCurrentTracker()
+    let pages = tracker.getPages();
+    if (this.debug) console.log('<- PageHandler.getPages()');
+    return pages;
+  }
+
+  log(msg){
+    console.log(msg);
   }
 
   /**
@@ -196,7 +207,7 @@ export default class PageHandler {
    * @return {Promise}
    */
   deletePage(pageId){
-    if(this.debug) console.log('deletePage', pageId);
+    if (this.debug) console.log('deletePage', pageId);
     return this._getCurrentTracker().deletePage(pageId);
   }
 
@@ -206,7 +217,7 @@ export default class PageHandler {
    * @return {Promise}
    */
   sendData(pages=null){
-    if(this.debug) console.log('sendData');
+    if (this.debug) console.log('sendData');
     return this._getCurrentTracker().sendData(pages);
   }
 

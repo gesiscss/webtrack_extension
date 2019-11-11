@@ -22,6 +22,9 @@ export default class Project extends DefaultComponent {
 
   constructor(props){
     super(props)
+    this.debug = true;
+    if (this.debug) console.log('Project.constructor() - project.component.js');
+    if (this.debug) console.log(props);
     this.handleLogout = this.handleLogout.bind(this);
     this.handleDeletePage = this.handleDeletePage.bind(this);
     this.handleSendPage = this.handleSendPage.bind(this);
@@ -46,9 +49,10 @@ export default class Project extends DefaultComponent {
    * [initalization the cross view with pageHandler]
    */
   async componentDidMount(){
-    if (this.debug) console.log('Project.componentDidMount() - project.component.js');
+    if (this.debug) console.log('-> Project.componentDidMount() - project.component.js');
     try {
       this.pageHandler = this.props.getPageHandler();
+      if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
       
       if(!this.pageHandler.isProjectAvailable(this.props.id)){
         this.setState({
@@ -66,30 +70,38 @@ export default class Project extends DefaultComponent {
       if(this.project.SETTINGS.ENTERID && this.settings.clientId == null){
         setTimeout(()=> this.$f7.views.main.router.navigate('/login/'+this.props.id), 1000);
       }else{
-        this.pageHandler._getCurrentTracker().event.on('onSend', this.handleSend);
-        if(this.settings.sending){
-          this.handleSend(true)
-        }
+
         let pages = this.pageHandler.getPages();
+        let privateTab = await this.pageHandler.isTabPrivate();
         this.setState({
           available: true,
-          activePrivateTab: await this.pageHandler.isTabPrivate(),
+          activePrivateTab: privateTab,
           activePrivateMode: this.settings.privateMode,
           projectName: this.project.NAME,
           pages: pages,
           sendDataCount: pages.filter(e=>e.send===false).length
         });
-      }
 
-      
+        // TODO: I am using once as I have now way to detect when the dialog is being
+        // closed, e.g. componentWillUnmount does not work
+        this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
+      }
+      if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
     } catch (err) {
       console.warn(err);
       this.alert({error: true, text: err.stack})
     }
+
+    if (this.debug) console.log('<- Project.componentDidMount() - project.component.js');
+  }
+
+  componentWillUnmount(){
+    if (this.debug) this.pageHandler.log('-> componentWillUnmount()');
+    this.pageHandler._getCurrentTracker().event.removeListener('onSend', this.handleSend);
   }
 
   async update(){
-    if (this.debug) console.log('Project.update() - project.component.js');
+    if (this.debug) this.pageHandler.log('-> Project.update() - project.component.js');
     let pages = this.pageHandler.getPages();
     this.setState({
       activePrivateTab: await this.pageHandler.isTabPrivate(),
@@ -97,6 +109,7 @@ export default class Project extends DefaultComponent {
       pages: pages,
       sendDataCount: pages.filter(e=>e.send===false).length
     });
+    if (this.debug) this.pageHandler.log('<- Project.update() - project.component.js');
   }
 
   /**
@@ -148,15 +161,12 @@ export default class Project extends DefaultComponent {
    * @param  {Boolean} boolean
    */
   handleSend(boolean){
-    if(boolean){
-      if(this.dialog!=null) this.dialog.close();
-      this.dialog = this.getPreloader(lang.project.send_data.title);
-
-    }else if(this.dialog!=null){
-      this.dialog.close();
-      this.dialog = null;
+    if (this.debug) this.pageHandler.log('-> handleSend');
+    this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
+    if(this.dialog!=null){
       this.update();
     }
+    if (this.debug) this.pageHandler.log('<- handleSend');
   }
 
   /**

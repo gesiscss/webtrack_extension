@@ -265,7 +265,7 @@ export default class TrackingHandler {
         try {
           if(this.debug) console.log('-> sendData');
           this.cleanDeadReferenceInEvent('onSend');
-          this.event.emit('onSend', true);
+          //this.event.emit('onSend', true);
           this.setSending(true);
 
           let pageIds = Object.values(this.pageCache.get()).filter(v=> v.send===false || nonClosed==true && v.send===true && v.sendTime===null).map(e=>e.id);
@@ -346,7 +346,8 @@ export default class TrackingHandler {
           this.event.emit('error', err, true);
           reject(err);
         } finally {
-          this.event.emit('onSend', false, false);
+          if (this.debug) console.log('======Emit Event: onSend (false) =======');
+          this.event.emit('onSend', false);
         }
       });
   }
@@ -356,7 +357,10 @@ export default class TrackingHandler {
    * @return {Array}
    */
   getPages(){
-    return Object.values(this.pageCache.get());
+    if (this.debug) console.log('-> TrackingHandler.getPages()');
+    let pages = Object.values(this.pageCache.get());
+    if (this.debug) console.log('<- TrackingHandler.getPages()');
+    return pages;
   }
 
   /**
