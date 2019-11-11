@@ -53,6 +53,7 @@ export default class Extension {
     this._onActivWindows = this._onActivWindows.bind(this);
     this._onActivatedTab = this._onActivatedTab.bind(this);
     this._onTab = this._onTab.bind(this);
+    this._onHighlightedWindows = this._onHighlightedWindows.bind(this);
 
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
@@ -66,6 +67,15 @@ export default class Extension {
   _onActivWindows(windowId){
     this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
+  }
+
+  /**
+   * _onHighlightedWindows listen when a tab is highlighed
+   * @param  {[type]} highlightInfo [description]
+   * @return {[type]}               [description]
+   */
+  _onHighlightedWindows(highlightInfo){
+    this.event.emit(EVENT_NAMES.focusTab, null, false);
   }
 
   /**
@@ -97,16 +107,16 @@ export default class Extension {
 
 
   /**
-   * [displayPrivateTimePopup send a message indicating that the private time is over]
+   * displayPrivateTimePopup send a message indicating that a popup should appear
    * @param {Boolean} 
    */
   async displayPrivateTimePopup(){
     this.pending_private_time_answer = true;
     // send a messate
     xbrowser.tabs.query({active: true}, function(tabs){
-      if (tabs.length > 0) {
+      for (let tab of tabs) {
         try{
-          xbrowser.tabs.sendMessage(tabs[0].id, {action: "popup_private_time", display: true}, 
+          xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: true}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
                 if (this.debug) console.log('No front end tab is listening.');
@@ -121,7 +131,7 @@ export default class Extension {
 
 
   /**
-   * [displayPrivateTimePopup send a message indicating that the private time is over]
+   * removePrivateTimePopup send a message indicating that the popup should be hidden
    * @param {Boolean} 
    */
   async removePrivateTimePopup(){
@@ -426,9 +436,7 @@ export default class Extension {
         if(window.id>0) this._onActivWindows(window.id)
         // if(window.id>0) console.log('Change activWindowId %s', window.id);
       })
-      xbrowser.tabs.onHighlighted.addListener(function(highlightInfo) {
-        this.event.emit(EVENT_NAMES.focusTab, null, false);
-      }.bind(this));
+      xbrowser.tabs.onHighlighted.addListener(this._onHighlightedWindows);
 
       this.getAllTabsIds().then(tabIds => {
         for (let id of tabIds){

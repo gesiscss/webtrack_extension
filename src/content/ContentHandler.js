@@ -309,9 +309,9 @@ export default class ContentHandler {
 
   hideNotification() {
     /*create the notification bar div if it doesn't exist*/
-    let body = this.tracker.rootElement.querySelector('body');
+    let body = document.querySelector('body');
     if (body){
-      let notification_window = body.querySelector('#webtrack-notification-8888');
+      let notification_window = body.querySelector('body div #webtrack-notification-8888');
       if (notification_window != null){
         body.removeChild(notification_window.parentElement);
         this.display_notification = false;
@@ -325,10 +325,10 @@ export default class ContentHandler {
       let height = 300;
 
       /*create the notification bar div if it doesn't exist*/
-      let body = this.tracker.rootElement.querySelector('body');
+      let body = document.querySelector('body');
 
       if (body){
-          let notification = body.querySelector('#webtrack-notification-8888');
+          let notification = body.querySelector('body div #webtrack-notification-8888');
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
