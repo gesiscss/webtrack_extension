@@ -470,6 +470,14 @@ export default class YouTubeTracker extends Tracker{
     }//for
   }
 
+  /**
+   * [return element without embedd js, css, etc]
+   * @return {Promise}
+   */
+  _clean_embedded_scripts(target, selectors='script:not([src]),svg,style'){
+    return super._clean_embedded_scripts(target, selectors + ',dom-module');
+  }
+
 
   /**
    * [getDom return html content from public articel]
@@ -495,7 +503,7 @@ export default class YouTubeTracker extends Tracker{
           });
           this._eventClickHashtag();
         }, 500);
-        resolve(document.documentElement.outerHTML)
+        resolve(this._getDom());
       }else{
         if(this.debug) console.log('Not allow');
         resolve(false)
