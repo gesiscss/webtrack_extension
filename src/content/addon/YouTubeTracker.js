@@ -18,6 +18,8 @@ export default class YouTubeTracker extends Tracker{
     this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
+
+      svg_protected: '#container .style-scope.ytd-badge-supported-renderer svg g path[d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"]',
       categorie: {
         contents: ['#content', '#collapsible'],
         button: {
@@ -72,7 +74,6 @@ export default class YouTubeTracker extends Tracker{
     this.values = [];
 
     this.startswith_blacklist = ['/account/'];
-    
   }
 
   /**
@@ -171,6 +172,46 @@ export default class YouTubeTracker extends Tracker{
       resolve(this.allow)
     });
   }
+
+
+
+  /**
+   * Setup the credentials for the logged user (if any)
+   */
+  reset_credentials(){
+
+    this.is_logged_in = true; // this._isLoggedTwitter();
+
+    if (this.is_logged_in){
+      // this.credentials = this.get_credentials();
+      // if (this.credentials == null) {
+      //   this.logged_username = this.get_username();
+      // } else {
+      //   if (this.credentials.hasOwnProperty('user')){
+      //     this.logged_username = this.credentials.user.screen_name;
+      //     this.logged_fullname = this.credentials.user.name;
+      //   }
+      //   this.logged_guest_id = this.credentials.guestId;
+      //   this.logged_user_id = this.credentials.user_id;
+
+      // }
+      
+
+      this.is_content_allowed = this.get_content_allowed();
+    }else{
+      this.is_content_allowed = true;
+    }
+
+  }
+
+
+  get_content_allowed() {
+    if (document.querySelector(this.eventElements.svg_protected)){
+      return false;
+    }
+    return true;
+  }
+  
 
 
   /**
@@ -485,29 +526,26 @@ export default class YouTubeTracker extends Tracker{
    */
   getDom(){
     return new Promise((resolve, reject) => {
-      if(this._isAllow()){
-        this._setCategorie2Meta();
-        this._eventSetLike();
-        this._eventSetDislike();
-        this._eventSubscribe();
-        this._eventNewComment();
-        setTimeout(()=>{
-          this._eventComment(undefined, e => {
-            this.eventFn.onEvent(
-              {
-                event: e.event,
-                type: e.type,
-                values: this._getValues().concat(e.values)
-              }
-            )
-          });
-          this._eventClickHashtag();
-        }, 500);
-        resolve(this._getDom());
-      }else{
-        if(this.debug) console.log('Not allow');
-        resolve(false)
-      }
+      
+      this._setCategorie2Meta();
+      this._eventSetLike();
+      this._eventSetDislike();
+      this._eventSubscribe();
+      this._eventNewComment();
+      setTimeout(()=>{
+        this._eventComment(undefined, e => {
+          this.eventFn.onEvent(
+            {
+              event: e.event,
+              type: e.type,
+              values: this._getValues().concat(e.values)
+            }
+          )
+        });
+        this._eventClickHashtag();
+      }, 500);
+      resolve(this._getDom());
+    
     });
   }
 
