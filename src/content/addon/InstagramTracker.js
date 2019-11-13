@@ -12,6 +12,12 @@ export default class InstagramTracker extends Tracker{
 
     this.svg_account = 'nav a svg g path[d="M24 27c-7.1 0-12.9-5.8-12.9-12.9s5.8-13 12.9-13c7.1 0 12.9 5.8 12.9 12.9S31.1 27 24 27zm0-22.9c-5.5 0-9.9 4.5-9.9 9.9s4.4 10 9.9 10 9.9-4.5 9.9-9.9-4.4-10-9.9-10zM44 46.9c-.8 0-1.5-.7-1.5-1.5V42c0-5-4-9-9-9h-19c-5 0-9 4-9 9v3.4c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5V42c0-6.6 5.4-12 12-12h19c6.6 0 12 5.4 12 12v3.4c0 .8-.7 1.5-1.5 1.5z"]';
     this.div_fullname = '.f5Yes.oL_O8';
+    this.span_heart = 'section span.fr66n';
+    this.span_comment = 'section span._15y0l';
+    this.span_share = 'section span._5e4p';
+    this.span_save = 'section span.wmtNn';
+    this.anchor_article = 'div.eo2As a.c-Yi7';
+
 
     this.logged_user_id = null;
     this.logged_username = null;
@@ -24,6 +30,7 @@ export default class InstagramTracker extends Tracker{
     this.is_explore = false;
     this.is_profile = false;
     this.is_my_profile = false;
+    this.is_post = false;
 
     this.startswith_blacklist = ['/accounts/', '/settings/', '/emails/settings/', '/session/login_activity/', '/emails/emails_sent/'];
 
@@ -58,6 +65,8 @@ export default class InstagramTracker extends Tracker{
         this.is_timeline = true;
       } else if (pathname.startsWith('/explore/')) {
         this.is_explore = true;
+      } else if (pathname.startsWith('/p/')) {
+        this.is_post = true;
       } else {
         parts = pathname.split('/');
         if (parts.length == 3) {
@@ -154,6 +163,56 @@ export default class InstagramTracker extends Tracker{
       return true;
     }
     return false;
+  }
+
+
+  /**
+   * [_isPublic checks if element is for the public oder private]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isPublic(target){
+
+    // if the user is not logged in, the content is public for sure
+    if (!this.is_logged_in){
+      return true;
+    }
+
+    if (this.is_explore){
+      return true;
+    }
+
+    if (this.is_profile){
+      return true;
+    }
+
+    // if the protected svg appear in the tweet, the content is private
+    if (target.querySelector(this.selectors.span_share)) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
+
+  /**
+   * [_getId looks for an href that contains the id of the element]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
+   */
+  _getId(article){
+    let _id =null;
+    try {
+      var anchor = article.querySelector(this.anchor_article);
+      _id = anchor.pathname.split('/')[2];
+    }
+    catch(error) {
+      console.log(error);
+      console.log('Unexpected error getting Twitter ID in TwitterTracker');
+    }
+    
+    return _id;
   }
 
 
