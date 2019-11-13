@@ -15,7 +15,7 @@ export default class PageCache extends CacheHandler {
     super();
     this.debug = true;
     // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
-    // if(this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
+    //if (this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
     // this.delay = 50;
     // this.fileAttr = ['content', 'source', 'links', 'events'];
     this.typeofId = 'string';
@@ -36,7 +36,7 @@ export default class PageCache extends CacheHandler {
         if(content.hasOwnProperty('source')){
           if (content.source.length > 0){
             let urls = content.source.map(e => e.url);
-            if(this.debug) console.log("Sources to clean:" + urls);
+            if (this.debug) console.log("Sources to clean:" + urls);
             await super.cleanSource(urls);
           }
           

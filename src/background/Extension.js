@@ -51,7 +51,7 @@ export default class Extension {
     this._onContentMessage = this._onContentMessage.bind(this);
     this._onTabUpdate = this._onTabUpdate.bind(this);
     this._onTabRemove = this._onTabRemove.bind(this);
-    this._onActivWindows = this._onActivWindows.bind(this);
+    this._onActiveWindows = this._onActiveWindows.bind(this);
     this._onActivatedTab = this._onActivatedTab.bind(this);
     this._onTab = this._onTab.bind(this);
     this._onHighlightedWindows = this._onHighlightedWindows.bind(this);
@@ -64,9 +64,10 @@ export default class Extension {
   }
 
   /**
-   * [_onActivWindows listenen the active windowId for check the active tab]
+   * [_onActiveWindows listenen the active windowId for check the active tab]
    */
-  _onActivWindows(windowId){
+  _onActiveWindows(windowId){
+    if (this.debug) console.log('_onActiveWindows');
     this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
   }
@@ -85,6 +86,7 @@ export default class Extension {
    * @return {[type]}               [description]
    */
   _onHighlightedWindows(highlightInfo){
+    if (this.debug) console.log('_onHighlightedWindows');
     this.event.emit(EVENT_NAMES.focusTab, null, false);
   }
 
@@ -223,8 +225,6 @@ export default class Extension {
     */
   _onActivatedTab(activeInfo){
     //on switch the active tabs between one window
-
-
     if (this.debug) console.log('_onActivatedTab');
     
     if (this.pending_private_time_answer){
@@ -419,7 +419,7 @@ export default class Extension {
   start(){
     return new Promise((resolve, reject) => {
       xbrowser.tabs.onCreated.addListener(this._onTab);
-      xbrowser.windows.onFocusChanged.addListener(this._onActivWindows);
+      xbrowser.windows.onFocusChanged.addListener(this._onActiveWindows);
       xbrowser.tabs.onRemoved.addListener(this._onTabRemove);
       xbrowser.tabs.onUpdated.addListener(this._onTabUpdate);
       xbrowser.runtime.onMessage.addListener(this._onContentMessage);
@@ -447,7 +447,7 @@ export default class Extension {
       // );
 
       xbrowser.windows.getLastFocused({}, window => {
-        if(window.id>0) this._onActivWindows(window.id)
+        if(window.id>0) this._onActiveWindows(window.id)
         // if(window.id>0) console.log('Change activWindowId %s', window.id);
       })
       xbrowser.tabs.onHighlighted.addListener(this._onHighlightedWindows);
@@ -468,7 +468,7 @@ export default class Extension {
   stop(){
     this.tabs = {};
     xbrowser.tabs.onCreated.removeListener(this._onTab);
-    xbrowser.windows.onFocusChanged.removeListener(this._onActivWindows);
+    xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
     xbrowser.tabs.onRemoved.removeListener(this._onTabRemove);
     xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
     xbrowser.runtime.onMessage.removeListener(this._onContentMessage);

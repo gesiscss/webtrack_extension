@@ -374,7 +374,7 @@ export default class YouTubeTracker extends Tracker{
 
     let wrappers = this._getElements(type.query, target, {color: 'blue'});
     for (let wrapper of wrappers) {
-      if(this.debug){
+      if (this.debug){
         if(type.name=='postanswer'){
           this._setBorder(wrapper, 'blue');
         }else{
@@ -549,7 +549,7 @@ export default class YouTubeTracker extends Tracker{
         resolve(document.documentElement.outerHTML);
 
       } else {
-        if(this.debug) console.log('Not allow');
+        if (this.debug) console.log('Not allow');
         resolve(false)
       }
 
@@ -564,7 +564,7 @@ export default class YouTubeTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if(this.debug) console.log('START!!!!');
+      if (this.debug) console.log('START!!!!');
       fn(2000);
     }, 1000);
   }

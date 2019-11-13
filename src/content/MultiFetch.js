@@ -4,7 +4,7 @@ export default class MultiFetch {
     this.worker = worker;
     this.DEBUG = false;
 
-    if(this.DEBUG) console.log('this.worker', this.worker);
+    if (this.debug) console.log('this.worker', this.worker);
     this.urls2data = {};
     this.toGet = [];
     this.workerCount = 0;
@@ -43,14 +43,14 @@ export default class MultiFetch {
       return new Promise((resolve, reject)=>{
 
         if(this.urls2data.hasOwnProperty(url)){
-          if(this.DEBUG) console.log('URL=>', url);
+          if (this.debug) console.log('URL=>', url);
           resolve(this.urls2data[url])
         }else if(url===undefined) {
           resolve(url);
         }else{
 
           var timeout = setTimeout(()=>{
-             if(this.DEBUG) console.log('TIMEOUT', url);
+             if (this.debug) console.log('TIMEOUT', url);
              resolve(url);
           }, 2000);
 
@@ -96,7 +96,7 @@ export default class MultiFetch {
    */
   _worker(){
     if(this.urls.length==0 && this.workerCount==0 && !this.finish){
-      if(this.DEBUG) console.log('~~~~~FINISH~~~~~');
+      if (this.debug) console.log('~~~~~FINISH~~~~~');
       this.finish = true;
       this.success(this.data);
     }else if(this.urls.length>0){

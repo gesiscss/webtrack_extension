@@ -7,7 +7,9 @@ import GoogleTracker from './addon/GoogleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
 
-const SMM_SET = new Set(['linkedin', 'tumblr', 'ello']);
+const SMM_SET = new Set(['instagram', 'skype', 'xing', 
+  'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 
+  'wechat', 'viber', 'vk', 'whatsapp', 'telegram' ]);
 
 export default class ContentHandler {
 

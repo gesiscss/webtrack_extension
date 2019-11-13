@@ -511,7 +511,7 @@ export default class Tracker extends MultiFetch {
    */
   fetchHTML(){
     return new Promise(async (resolve, reject)=>{
-      if(this.debug) console.log('fetchHTML: ' + new Date());
+      if (this.debug) console.log('fetchHTML: ' + new Date());
 
       // if the tracker notices that the content is private, it will return
       // false instead, this is used to control what to send on the bottom

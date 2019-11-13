@@ -50,7 +50,7 @@ export default class LocalstoreDB {
         reject(event)
       }
       request.onupgradeneeded = event => {
-        if(this.DEBUG) console.log('onupgradeneeded');
+        if (this.debug) console.log('onupgradeneeded');
         clearTimeout(timeout)
         let db = event.target.result;
         db.onversionchange = e => {
@@ -88,7 +88,7 @@ export default class LocalstoreDB {
         if(this.getObjectStorelist(db).includes(objectStoreName)){
           db = await this.getVersionConnect(db);
           db.deleteObjectStore(objectStoreName);
-          if(this.DEBUG) console.log('Delete objectStore', objectStoreName);
+          if (this.debug) console.log('Delete objectStore', objectStoreName);
         }else{
           throw new Error('objectStorename %s not found', objectStoreName)
         }
@@ -128,7 +128,7 @@ export default class LocalstoreDB {
       try {
         if(!this.getObjectStorelist(db).includes(this.options.objectStoreName)){
           db = await this.getVersionConnect(db);
-          if(this.DEBUG) console.log('Create objectStore', this.options.objectStoreName);
+          if (this.debug) console.log('Create objectStore', this.options.objectStoreName);
           let objectStore = db.createObjectStore(this.options.objectStoreName, { keyPath: this.options.id });
           objectStore.createIndex("timestamp", "timestamp", { unique: false });
           db.close();
@@ -155,7 +155,7 @@ export default class LocalstoreDB {
         }else{
           let transaction = db.transaction([this.options.objectStoreName], "readwrite");
           transaction.oncomplete = () => {
-            if(this.DEBUG) console.log('onComplete transaction', this.options.objectStoreName);
+            if (this.debug) console.log('onComplete transaction', this.options.objectStoreName);
             db.close();
             transaction.resolve();
           }
@@ -199,7 +199,7 @@ export default class LocalstoreDB {
   createEntry(content=this.options.defaultContent){
     return new Promise(async (resolve, reject) => {
       try {
-        if(this.DEBUG) console.log('createEntry', this.options.objectStoreName, content);
+        if (this.debug) console.log('createEntry', this.options.objectStoreName, content);
         let objectStore = await this.getObjectStore();
         content = Object.assign(content, {timestamp: 0});
         let request = objectStore.add(content)
@@ -328,7 +328,7 @@ export default class LocalstoreDB {
           let cursor = await this.getCursor(id);
           let request = cursor.delete();
           request.onsuccess = () => {
-            if(this.DEBUG) console.log('Delete', this.options.objectStoreName, id);
+            if (this.debug) console.log('Delete', this.options.objectStoreName, id);
             cursor.source.transaction.resolve = () => resolve();
           };
         }else{

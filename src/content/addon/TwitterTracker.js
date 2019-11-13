@@ -747,7 +747,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if(this.debug) console.log('No public tweets/replies found');
+      if (this.debug) console.log('No public tweets/replies found');
     }
 
     var who_strings = '';
@@ -759,7 +759,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if(this.debug) console.log('No WhoToFollows found');
+      if (this.debug) console.log('No WhoToFollows found');
     }
 
     var trend_strings = '';
@@ -771,7 +771,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if(this.debug) console.log('No Trends found');
+      if (this.debug) console.log('No Trends found');
     }
 
 
@@ -782,7 +782,7 @@ export default class TwitterTracker extends Tracker{
       sidebar = '';
     }
 
-    if(this.debug) console.log('Sending ' + counter + ' tweets');
+    if (this.debug) console.log('Sending ' + counter + ' tweets');
     return '<html>' + this._getHead() + 
        '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
       '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + 
@@ -807,7 +807,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if(this.debug) console.log('No public tweets/replies found');
+      if (this.debug) console.log('No public tweets/replies found');
     }
 
     if (this.header == null) {
@@ -826,7 +826,7 @@ export default class TwitterTracker extends Tracker{
     }
 
 
-    if(this.debug) console.log('Sending ' + counter + ' tweets');
+    if (this.debug) console.log('Sending ' + counter + ' tweets');
     return '<html>' + this._getHead() + '<body>' + 
       '<h1>Header</h1><div class="sidebar">' + this.header +  '</div>'+ 
       '<h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div>' +
@@ -900,7 +900,7 @@ export default class TwitterTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if(this.debug) console.log('START!!!!');
+      if (this.debug) console.log('START!!!!');
       fn(1000);
     }, 500);
   }

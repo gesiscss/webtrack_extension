@@ -268,7 +268,7 @@ export default class TrackingHandler {
   sendData(pages=null, nonClosed=false){
       return new Promise(async (resolve, reject) => {
         try {
-          if(this.debug) console.log('-> sendData');
+          if (this.debug) console.log('-> sendData');
           //this.cleanDeadReferenceInEvent('onSend');
           //this.event.emit('onSend', true);
           this.setSending(true);
@@ -291,7 +291,7 @@ export default class TrackingHandler {
 
                 page = await this.pageCache.getOnly(id);
 
-                if(this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                 let send = await this.transfer.sendingData(JSON.stringify({
                   id: this.getClientId(),
                   projectId: this.projectId,
@@ -321,7 +321,7 @@ export default class TrackingHandler {
                     hashes: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
                 this.pageCache.cleanSource(page.id);//.catch(console.warn);
 
-                if(this.debug) console.log('<- sendData');
+                if (this.debug) console.log('<- sendData');
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);

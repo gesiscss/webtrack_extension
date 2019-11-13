@@ -164,22 +164,25 @@ export default class TabHandler {
           if (this.tabs[id].elapsed_timer != -1) {
             //if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
             //if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
+            
             this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
             this.tabs[id].elapsed_timer = -1;
           }
         }
       }
 
-      // let activeTabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
-      // if(activeTabIds.length>0){
-      //   for (let id of activeTabIds) {
-      //     this.tabs[id].elapsed_timer = now;
-      //     this.extension.setImage(this.extension.tabs[id].getState('allow') 
-      //       && !this.extension.tabs[id].getState('disabled')
-      //       && !this.extension.tabs[id].getState('content_blocked'));
-      //   }
-      // }
-      this.extension.resetPublicImage();
+      let activeTabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
+      if(activeTabIds.length>0){
+        for (let id of activeTabIds) {
+          this.tabs[id].elapsed_timer = now;
+
+          // set the right image on the tracking icon
+          this.extension.setImage(this.extension.tabs[id].getState('allow') 
+            && !this.extension.tabs[id].getState('disabled')
+            && !this.extension.tabs[id].getState('content_blocked'));
+        }
+      }
+
     } catch (err) {
       console.log(err);
       this.registerTime();
@@ -195,11 +198,6 @@ export default class TabHandler {
   async _onFocus(tabIds=null){
     try {
       this.registerTime();
-      // if(this.onFocusTabInterval!=null){
-      //   clearInterval(this.onFocusTabInterval);
-      //   this.onFocusTabInterval = null;
-      // }
-      // this.onFocusTabInterval = setInterval(this._updateDuration, this.UPDATE_INTERVAL_DURATION);
     } catch (e) {
       this.event.emit('error', e, true);
       console.warn(e);

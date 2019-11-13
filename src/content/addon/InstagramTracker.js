@@ -28,7 +28,7 @@ export default class InstagramTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if(this.debug) console.log('START!!!!');
+      if (this.debug) console.log('START!!!!');
       fn(1000);
     }, 500);
   }
