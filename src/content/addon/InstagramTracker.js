@@ -18,6 +18,7 @@ export default class InstagramTracker extends Tracker{
     this.span_save = 'section span.wmtNn';
     this.anchor_article = 'div.eo2As a.c-Yi7';
 
+    this.tweetId2Element = {};
 
     this.logged_user_id = null;
     this.logged_username = null;
@@ -120,7 +121,7 @@ export default class InstagramTracker extends Tracker{
 
 
   /**
-  Load the credentials from the script in twitter
+  Load the credentials from the script in Instagram
   returns a dictionary with the credentials
   **/  
   get_credentials() {
@@ -155,7 +156,7 @@ export default class InstagramTracker extends Tracker{
   }
 
   /**
-   * return true if user is logged in twitter
+   * return true if user is logged in Instagram
    * @return {boolean} true if user is logged
    */
   _isLogged(svg_account) {
@@ -209,13 +210,93 @@ export default class InstagramTracker extends Tracker{
     }
     catch(error) {
       console.log(error);
-      console.log('Unexpected error getting Twitter ID in TwitterTracker');
+      console.log('Unexpected error getting Instagram ID in InstagramTracker');
     }
     
     return _id;
   }
 
+    /**
+   * [_getMosaikId looks for an href that contains the id of the element]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
+   */
+  _getMosaikId(mosaik){
+    let _id =null;
+    try {
+      var anchor = mosaik.querySelector('a');
+      _id = anchor.pathname.split('/')[2];
+    } catch(error) {
+      console.log(error);
+      console.log('Unexpected error getting Instagram ID in InstagramTracker');
+    }
+    
+    return _id;
+  }
 
+  /**
+   * [_getPublicArticels start tracking an article]
+   */
+  trackArticle(id, article){
+    this.postId2Element[id] = article.cloneNode(true);
+  }
+
+
+  /**
+   * [_getPublicArticels return elements of public articels]
+   * @return {Array} true if at least one article was found
+   */
+  addPublicArticles(){
+    let articles = document.querySelectorAll('article');
+    let counter = 0;
+
+    for (var i = 0; i < articles.length; i++) {
+      let id = this._getId(articles[i]);
+      if (id == null) {
+          // This does not seem to be a post (delete it)
+          delete articles[i];
+      } else {
+        if(this._isPublic(articles[i])){
+          this.trackArticle(id, articles[i]);
+          counter += 1;
+        }
+      }
+    }
+
+    if (this.debug) console.log('Articles Found: ' + articles.length);
+    if (this.debug) console.log('Public Articles: ' + counter);
+
+    // return True if at least one article was found (regardless it being public/private)
+    return articles.length > 0;
+  }
+
+  /**
+   * [_getPublicArticels return elements of public articels]
+   * @return {Array} true if at least one article was found
+   */
+  addArticleMosaik(){
+    
+
+    let mosaiks = document.querySelectorAll('div.v1Nh3.kIKUG._bz0w');
+    let counter = 0;
+
+    for (var i = 0; i < mosaiks.length; i++) {
+      let id = this._getMosaikId(mosaiks[i]);
+      if (id == null) {
+          // This does not seem to be a mosaik (delete it)
+          delete mosaiks[i];
+      } else {
+        this.trackArticle(id, mosaiks[i]);
+        counter += 1;
+      }
+    }
+
+    if (this.debug) console.log('Mosaiks Found: ' + mosaiks.length);
+    if (this.debug) console.log('Public Mosaiks: ' + counter);
+
+    // return True if at least one article was found (regardless it being public/private)
+    return mosaiks.length > 0;
+  }
 
   /**
    * [return dom as string]
