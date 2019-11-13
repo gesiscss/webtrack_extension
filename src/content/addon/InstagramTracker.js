@@ -17,8 +17,11 @@ export default class InstagramTracker extends Tracker{
     this.span_share = 'section span._5e4p';
     this.span_save = 'section span.wmtNn';
     this.anchor_article = 'div.eo2As a.c-Yi7';
+    this.article = 'article.M9sTE.L_LMM.ePUX4';
+    this.mosaik = 'div.v1Nh3.kIKUG._bz0w';
 
-    this.tweetId2Element = {};
+    this.articleId2Element = {};
+    this.mosaikId2Element = {};
 
     this.logged_user_id = null;
     this.logged_username = null;
@@ -238,16 +241,24 @@ export default class InstagramTracker extends Tracker{
    * [_getPublicArticels start tracking an article]
    */
   trackArticle(id, article){
-    this.postId2Element[id] = article.cloneNode(true);
+    this.articleId2Element[id] = article.cloneNode(true);
   }
 
+
+  /**
+   * [_getPublicArticels start tracking an article]
+   */
+  trackMosaik(id, article){
+    this.mosaikId2Element[id] = article.cloneNode(true);
+  }
 
   /**
    * [_getPublicArticels return elements of public articels]
    * @return {Array} true if at least one article was found
    */
   addPublicArticles(){
-    let articles = document.querySelectorAll('article');
+    
+    let articles = document.querySelectorAll(this.article);
     let counter = 0;
 
     for (var i = 0; i < articles.length; i++) {
@@ -276,8 +287,7 @@ export default class InstagramTracker extends Tracker{
    */
   addArticleMosaik(){
     
-
-    let mosaiks = document.querySelectorAll('div.v1Nh3.kIKUG._bz0w');
+    let mosaiks = document.querySelectorAll(this.mosaik);
     let counter = 0;
 
     for (var i = 0; i < mosaiks.length; i++) {
@@ -286,7 +296,7 @@ export default class InstagramTracker extends Tracker{
           // This does not seem to be a mosaik (delete it)
           delete mosaiks[i];
       } else {
-        this.trackArticle(id, mosaiks[i]);
+        this.trackMosaik(id, mosaiks[i]);
         counter += 1;
       }
     }
@@ -299,11 +309,86 @@ export default class InstagramTracker extends Tracker{
   }
 
   /**
+   * [assembleDom with the existent html]
+   * @return {String}
+   */
+  reAssembleDom(){
+
+    let dom = this._getDom();
+
+    this.timeline_body = 'div.cGcGK > div > div';
+    this.explore_body = 'article.v1pSD > div > div';
+    this.profile_body = 'article.ySN3v > div > div';
+
+
+    if(this.is_timeline){
+      let timeline_body = dom.querySelector(this.timeline_body);
+      if (timeline_body){
+        timeline_body.innerHTML = "";
+        for (var key in this.articleId2Element) {
+          if (this.articleId2Element.hasOwnProperty(key)){
+            this.articleId2Element[key].setAttribute('webtrack-post-id', key);
+            timeline_body.append(this.articleId2Element[key]);
+          }
+        }
+      }
+    }
+
+    if(this.is_explore || this.is_profile){
+      let mosaik_body = null;
+      if (this.is_explore) {
+        mosaik_body = dom.querySelector(this.explore_body);
+      } else {
+        mosaik_body = dom.querySelector(this.profile_body);
+      }
+      if (mosaik_body){
+        mosaik_body.innerHTML = "";
+        for (var key in this.mosaikId2Element) {
+          if (this.mosaikId2Element.hasOwnProperty(key)){
+            this.mosaikId2Element[key].setAttribute('webtrack-post-id', key);
+            mosaik_body.append(this.mosaikId2Element[key]);
+          }
+        }
+     }
+    }
+
+    if(this.is_post){
+      let articles = dom.querySelectorAll(this.article);
+      if (articles.length == 1){
+        let article = articles[0];
+        if (this._isPublic(article)){
+          let _id = this._getId(article);
+          if (_id) {
+            article.setAttribute('webtrack-post-id', );
+          }
+        } else {
+          article.parentNode.removeChild(article);
+        }
+      }
+    }
+
+    return dom;
+  }
+
+  /**
    * [return dom as string]
    * @return {Promise}
    */
   getDom(){
-  	return super.getDom();
+    //if (this._isNotLoggedTwitter()){
+    //    return super.getDom();
+    //} else {
+      return new Promise((resolve, reject) => {
+        if(this.is_timeline){
+          this.addPublicArticles();
+        } else if (this.is_explore || this.is_profile) {
+          this.addArticleMosaik();
+        }
+
+        resolve(this.reAssembleDom());
+        
+      });
+    //}
   }
 
   /**
