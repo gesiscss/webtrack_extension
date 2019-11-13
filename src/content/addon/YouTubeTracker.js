@@ -6,15 +6,14 @@ export default class YouTubeTracker extends Tracker{
     super(worker);
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
-    this.rootElement = document;
+    this.rootElement = null;
     this.fetchCategorie = {
       is: false,
       count: 0,
       MAX_COUNT: 4
     };
     this.allow = true;
-    this.debug = false;
-    this.debugEvents = false;
+    this.debug = true;
     this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
@@ -176,37 +175,16 @@ export default class YouTubeTracker extends Tracker{
 
 
   /**
-   * Setup the credentials for the logged user (if any)
+   * Setup the credentials for the logged user (if any). Not posible in youtube
    */
   reset_credentials(){
-
-    this.is_logged_in = true; // this._isLoggedTwitter();
-
-    if (this.is_logged_in){
-      // this.credentials = this.get_credentials();
-      // if (this.credentials == null) {
-      //   this.logged_username = this.get_username();
-      // } else {
-      //   if (this.credentials.hasOwnProperty('user')){
-      //     this.logged_username = this.credentials.user.screen_name;
-      //     this.logged_fullname = this.credentials.user.name;
-      //   }
-      //   this.logged_guest_id = this.credentials.guestId;
-      //   this.logged_user_id = this.credentials.user_id;
-
-      // }
-      
-
-      this.is_content_allowed = this.get_content_allowed();
-    }else{
-      this.is_content_allowed = true;
-    }
-
+    this.rootElement = this._getRootElement();
+    this.is_content_allowed = this.get_content_allowed();
   }
 
 
   get_content_allowed() {
-    if (document.querySelector(this.eventElements.svg_protected)){
+    if (this.rootElement.querySelector(this.eventElements.svg_protected)){
       return false;
     }
     return true;
@@ -371,12 +349,28 @@ export default class YouTubeTracker extends Tracker{
   }
 
   /**
-   * [_eventComment set events of like oder dislike comment or write new comment for comment]
+   * [_getRootElement return the rootElement from document]
+   * @return {Object}
+   */
+  _getRootElement(){
+    if(this.rootElement == null){
+      let target = this._getElements(this.eventElements.root, document);
+      if(target.length>0) { 
+        return  target[0];
+      } else {
+        return document;
+      }
+    }
+    return this.rootElement;
+  }
+
+  /**
+   * [_eventCommentLike set events of like oder dislike comment or write new comment for comment]
    * @param  {Object} target [DomElement default: this.getRootElement(]
    * @param  {Function} event [default: ()=>{}]
    * @param  {Object} type [default: this.eventElements.commentWrapper[0]]
    */
-  _eventComment(target=this._getRootElement(), event = () => {}, type=this.eventElements.commentWrapper[0]){
+  _eventCommentLike(target=this._getRootElement(), event = () => {}, type=this.eventElements.commentWrapper[0]){
 
     let wrappers = this._getElements(type.query, target, {color: 'blue'});
     for (let wrapper of wrappers) {
@@ -459,27 +453,30 @@ export default class YouTubeTracker extends Tracker{
           wrapper.classList.add('find-replies');
           let content = this._getElements(b.content, node)[0];
           let timeout = null
-          content.addEventListener('DOMSubtreeModified', () => {
-            if(typeof timeout == 'number') clearTimeout(timeout);
-            timeout = setTimeout(() => this._eventComment(content, e => {
-              let returnEvent = {
-                event: 'like',
-                type: e.type,
-                values: [
-                  {name: 'postanswer-time', value: values.time},
-                  {name: 'postanswer-count-middle', value: values.countMiddle},
-                  {name: 'postanswer-text', value: values.content},
-                ]
-              }
-              for (let v of e.values) {
-                returnEvent.values.push({
-                  name: e.type+'_'+v.name,
-                  value: v.value
-                })
-              }
-              event(returnEvent);
-            }, this.eventElements.commentWrapper[1]), 500);
-          });
+
+          if (content){
+            content.addEventListener('DOMSubtreeModified', () => {
+              if(typeof timeout == 'number') clearTimeout(timeout);
+              timeout = setTimeout(() => this._eventCommentLike(content, e => {
+                let returnEvent = {
+                  event: 'like',
+                  type: e.type,
+                  values: [
+                    {name: 'postanswer-time', value: values.time},
+                    {name: 'postanswer-count-middle', value: values.countMiddle},
+                    {name: 'postanswer-text', value: values.content},
+                  ]
+                }
+                for (let v of e.values) {
+                  returnEvent.values.push({
+                    name: e.type+'_'+v.name,
+                    value: v.value
+                  })
+                }
+                event(returnEvent);
+              }, this.eventElements.commentWrapper[1]), 500);
+            });
+          }
 
         }//for parentNodes
       }//for moreCommentFromComments
@@ -526,25 +523,37 @@ export default class YouTubeTracker extends Tracker{
    */
   getDom(){
     return new Promise((resolve, reject) => {
+      if(this._isAllow()){
       
-      this._setCategorie2Meta();
-      this._eventSetLike();
-      this._eventSetDislike();
-      this._eventSubscribe();
-      this._eventNewComment();
-      setTimeout(()=>{
-        this._eventComment(undefined, e => {
-          this.eventFn.onEvent(
-            {
-              event: e.event,
-              type: e.type,
-              values: this._getValues().concat(e.values)
-            }
-          )
-        });
-        this._eventClickHashtag();
-      }, 500);
-      resolve(this._getDom());
+        this._setCategorie2Meta();
+        this._eventSetLike();
+        this._eventSetDislike();
+        this._eventSubscribe();
+
+        this._eventNewComment();
+        setTimeout(()=>{
+          this._eventCommentLike(undefined, e => {
+            this.eventFn.onEvent(
+              {
+                event: e.event,
+                type: e.type,
+                values: this._getValues().concat(e.values)
+              }
+            )
+          });
+          this._eventClickHashtag();
+        }, 500);
+
+        // cloning the dom does not work as expected :/
+        // resolve(this._getDom());
+        resolve(document.documentElement.outerHTML);
+
+      } else {
+        if(this.debug) console.log('Not allow');
+        resolve(false)
+      }
+
+
     
     });
   }

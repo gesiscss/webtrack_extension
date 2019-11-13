@@ -16,9 +16,7 @@ export default class Tracker extends MultiFetch {
     this.eventEmitter = new EventEmitter();
 
     this.rootElement = document;
-    this.eventElements = {
-      root: ['#primary']
-    }
+
     this.eventFn = {
       onEvent: data => {
         this.eventEmitter.emit(EVENT_NAMES.data, Object.assign(data, {timestamp: + new Date()}), false)
@@ -34,7 +32,7 @@ export default class Tracker extends MultiFetch {
     this.lastURL = '';
     this.original_url = '';
 
-    this.events_debug = false;
+    this.events_debug = true;
     this.debug = true;
 
     this.startswith_blacklist = [];
@@ -247,18 +245,6 @@ export default class Tracker extends MultiFetch {
       }//for i
     }//for query
     return bucket;
-  }
-
-  /**
-   * [_getRootElement return the rootElement from document]
-   * @return {Object}
-   */
-  _getRootElement(){
-    if(this.rootElement == document){
-      let target = this._getElements(this.eventElements.root, document);
-      if(target.length>0) this.rootElement = target[0];
-    }
-    return this.rootElement
   }
 
   /**
