@@ -45,14 +45,17 @@ export default class FacebookTracker extends Tracker{
     }
 
     this.startswith_blacklist = [
-      '/events/', '/stories/', '/friends/', '/messages/', '/photo/', 
-      '/marketplace/', '/fundraisers/', '/saved/', '/recommendations/', 
-      '/crisisresponse/', '/settings/'];
+     '/ads/activity/', '/bookmarks/', '/crisisresponse/', '/events/', '/friends/', 
+     '/fundraisers/', '/gaming/', '/jobs/', '/marketplace/', '/memories/', 
+     '/messages/', '/notifications/', '/offers/', '/photo/', '/recommendations/', 
+     '/saved/',  '/settings/', '/stories/', '/watch/'];
 
     this.startswith_whitelist = ['/pg/']
 
-    this.pos_2nd_blacklist = ['about', 'friends_mutual', 
-      'followers', 'following', 'friends', 'photos']
+    this.pos_2nd_blacklist = ['about', 'archive', 'books', 'did_you_know', 'events', 'films', 'followers', 
+      'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 
+      'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'grid', 'groups', 'likes', 'map', 'music', 
+      'notes', 'photos', 'reviews', 'sports', 'timeline', 'tv', 'videos']
 
     this.entries_found = 0;
     this.logged_uid = null;

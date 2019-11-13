@@ -94,6 +94,9 @@ export default class TwitterTracker extends Tracker{
 
     this.startswith_blacklist = ['/messages/', '/settings/'];
 
+    this.pos_2nd_blacklist = ['bookmarks', 'signup'];
+
+
     this.logged_username = null;
     this.credentials = null;
 

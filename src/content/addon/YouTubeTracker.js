@@ -13,7 +13,7 @@ export default class YouTubeTracker extends Tracker{
       MAX_COUNT: 4
     };
     this.allow = true;
-    this.debug = true;
+    this.debug = false;
     this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
@@ -72,7 +72,9 @@ export default class YouTubeTracker extends Tracker{
     this.lastUrlPath = '';
     this.values = [];
 
-    this.startswith_blacklist = ['/account/'];
+    this.startswith_blacklist = ['/account/', '/reporthistory/', '/upload/', '/account_notifications/', 
+      '/account_playback/', '/account_privacy/', '/account_sharing/', '/pair/', 
+      '/account_billing/', '/account_advanced/'];
   }
 
   /**
@@ -179,8 +181,21 @@ export default class YouTubeTracker extends Tracker{
    */
   reset_credentials(){
     this.rootElement = this._getRootElement();
+
+    this.is_logged_in = this._isLogged();
+
+    document.querySelector('#avatar-btn');
     this.is_content_allowed = this.get_content_allowed();
   }
+
+
+  _isLogged() {
+    if (this.rootElement.querySelector('#avatar-btn')){
+      return true;
+    }
+    return false;
+  }
+
 
 
   get_content_allowed() {
@@ -189,6 +204,23 @@ export default class YouTubeTracker extends Tracker{
     }
     return true;
   }
+
+  /**
+   * [_getRootElement return the rootElement from document]
+   * @return {Object}
+   */
+  _getRootElement(){
+    if(this.rootElement == null){
+      let target = this._getElements(this.eventElements.root, document);
+      if(target.length>0) { 
+        return  target[0];
+      } else {
+        return document;
+      }
+    }
+    return this.rootElement;
+  }
+
   
 
 
@@ -200,28 +232,25 @@ export default class YouTubeTracker extends Tracker{
     this.fetchCategorie.count += 1;
     // console.log('this.fetchCategorie.count', this.fetchCategorie.count);
 
-    setTimeout(()=> {
-        var contents = this._getElements(this.eventElements.categorie.contents, this._getRootElement(), {setTracked: false});
-        for (let content of contents) content.style.display = 'none';
+    var contents = this._getElements(this.eventElements.categorie.contents, this._getRootElement(), {setTracked: false, color: 'purple'});
+    for (let content of contents) content.style.display = 'none';
 
-        let more = this._getElements(this.eventElements.categorie.button.more, this._getRootElement(), {setTracked: false});
-        // console.log('more', more.length, more);
-        for (let button of more) button.click();
+    let more = this._getElements(this.eventElements.categorie.button.more, this._getRootElement(), {setTracked: false, color: 'purple'});
+    // console.log('more', more.length, more);
+    for (let button of more) button.click();
 
-        let categories = this._getElements(this.eventElements.categorie.categories, this._getRootElement(), {setTracked: false});
-        // console.log(categories);
-        if(categories.length>0) this.fetchCategorie.is = true;
-        for (let categorie of categories){
-          this.updateMetaData({keywords: categorie.textContent});
-        }
+    let categories = this._getElements(this.eventElements.categorie.categories, this._getRootElement(), {setTracked: false, color: 'purple'});
+    // console.log(categories);
+    if(categories.length>0) this.fetchCategorie.is = true;
+    for (let categorie of categories){
+      this.updateMetaData({keywords: categorie.textContent});
+    }
 
-        setTimeout(()=>{
-          let less = this._getElements(this.eventElements.categorie.button.less, this._getRootElement(), {setTracked: false});
-          // console.log('less', less.length, less);
-          for (let button of less) button.click();
-          for (let content of contents) content.style.display = '';
-        }, 2000)
-    }, 500);
+    let less = this._getElements(this.eventElements.categorie.button.less, this._getRootElement(), {setTracked: false, color: 'purple'});
+    // console.log('less', less.length, less);
+    for (let button of less) button.click();
+    for (let content of contents) content.style.display = '';
+
   }
 
   /**
@@ -346,22 +375,6 @@ export default class YouTubeTracker extends Tracker{
     let countMiddle = this._getElements(this.eventElements.comment.countMiddle, target, {ignoreTracked: false});
     for (let cm = 0; cm < countMiddle.length; cm++) countMiddleInt = parseInt(countMiddle[cm].textContent.replace(/\D+/g, ""), 10);
     return {time: timeString, content: contentString, countMiddle: countMiddleInt};
-  }
-
-  /**
-   * [_getRootElement return the rootElement from document]
-   * @return {Object}
-   */
-  _getRootElement(){
-    if(this.rootElement == null){
-      let target = this._getElements(this.eventElements.root, document);
-      if(target.length>0) { 
-        return  target[0];
-      } else {
-        return document;
-      }
-    }
-    return this.rootElement;
   }
 
   /**
@@ -523,7 +536,7 @@ export default class YouTubeTracker extends Tracker{
    */
   getDom(){
     return new Promise((resolve, reject) => {
-      if(this._isAllow()){
+      // if(this._isAllow()){
       
         this._setCategorie2Meta();
         this._eventSetLike();
@@ -548,10 +561,10 @@ export default class YouTubeTracker extends Tracker{
         // resolve(this._getDom());
         resolve(document.documentElement.outerHTML);
 
-      } else {
-        if (this.debug) console.log('Not allow');
-        resolve(false)
-      }
+      // } else {
+      //   if (this.debug) console.log('YouTube Not allow');
+      //   resolve(false)
+      // }
 
 
     
