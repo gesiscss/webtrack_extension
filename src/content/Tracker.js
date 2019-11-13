@@ -528,7 +528,6 @@ export default class Tracker extends MultiFetch {
         this.reset_credentials();
         // check if the URL has changed
         if (this.is_url_change()){
-          console.log(this.is_path_allow(location.pathname));
           this.eventEmitter.emit(EVENT_NAMES.newURL, {
             html: false,
             }, false);

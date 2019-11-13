@@ -13,8 +13,21 @@ export default class InstagramTracker extends Tracker{
     this.svg_account = 'nav a svg g path[d="M24 27c-7.1 0-12.9-5.8-12.9-12.9s5.8-13 12.9-13c7.1 0 12.9 5.8 12.9 12.9S31.1 27 24 27zm0-22.9c-5.5 0-9.9 4.5-9.9 9.9s4.4 10 9.9 10 9.9-4.5 9.9-9.9-4.4-10-9.9-10zM44 46.9c-.8 0-1.5-.7-1.5-1.5V42c0-5-4-9-9-9h-19c-5 0-9 4-9 9v3.4c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5V42c0-6.6 5.4-12 12-12h19c6.6 0 12 5.4 12 12v3.4c0 .8-.7 1.5-1.5 1.5z"]';
     this.div_fullname = '.f5Yes.oL_O8';
 
+    this.logged_user_id = null;
+    this.logged_username = null;
+    this.logged_fullname = null;
+    this.profile_pic_url = null;
+    this.profile_pic_url_hd = null;
+    this.credentials = null;
+    this.is_logged_in = null;
+    this.is_timeline = false;
+    this.is_explore = false;
+    this.is_profile = false;
+    this.is_my_profile = false;
+
     this.startswith_blacklist = ['/accounts/', '/settings/', '/emails/settings/', '/session/login_activity/', '/emails/emails_sent/'];
 
+    this.pos_2nd_blacklist = [ 'followers', 'following', 'saved', 'tagged'];
   }
 
 
@@ -37,12 +50,26 @@ export default class InstagramTracker extends Tracker{
         this.logged_fullname = this.credentials.full_name;
         this.profile_pic_url = this.credentials.profile_pic_url;
         this.profile_pic_url_hd = this.credentials.profile_pic_url_hd;
-
         this.is_private = this.credentials.is_private;
       }
 
+      let pathname = location.pathname;
+      if (pathname == '/'){
+        this.is_timeline = true;
+      } else if (pathname.startsWith('/explore/')) {
+        this.is_explore = true;
+      } else {
+        parts = pathname.split('/');
+        if (parts.length == 3) {
+          this.is_profile = true;
+        }
+        if (parts[1] == this.logged_username){
+          this.is_my_profile = true;
+        }
+      }
     }
     this.is_content_allowed = true;
+
   }
 
 
