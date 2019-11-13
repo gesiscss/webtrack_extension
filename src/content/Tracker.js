@@ -32,8 +32,8 @@ export default class Tracker extends MultiFetch {
     this.lastURL = '';
     this.original_url = '';
 
-    this.events_debug = true;
-    this.debug = false;
+    this.events_debug = false;
+    this.debug = true;
 
     this.startswith_blacklist = [];
     this.startswith_whitelist = [];
@@ -419,17 +419,23 @@ export default class Tracker extends MultiFetch {
   }
 
 
-  /**
-   * _getDom dom as string
-   * @return {string}
-   */
-  _getDom(){
+  __getDom(){
     var tclone = document.documentElement.cloneNode(true);
     // clean unnecessary scripts
     tclone = this._clean_embedded_scripts(tclone);
     // clean sensitive information
     tclone = this._clean_sensitive_content_elements(tclone);
-    return tclone.outerHTML;
+    return tclone;
+
+  }
+
+
+  /**
+   * _getDom dom as string
+   * @return {string}
+   */
+  _getDom(){
+    return this.__getDom().outerHTML;
   }
 
 

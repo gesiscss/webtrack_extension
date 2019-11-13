@@ -72,7 +72,7 @@ export default class InstagramTracker extends Tracker{
       } else if (pathname.startsWith('/p/')) {
         this.is_post = true;
       } else {
-        parts = pathname.split('/');
+        let parts = pathname.split('/');
         if (parts.length == 3) {
           this.is_profile = true;
         }
@@ -191,7 +191,7 @@ export default class InstagramTracker extends Tracker{
     }
 
     // if the protected svg appear in the tweet, the content is private
-    if (target.querySelector(this.selectors.span_share)) {
+    if (target.querySelector(this.span_share)) {
       return true;
     } else {
       return false;
@@ -314,15 +314,15 @@ export default class InstagramTracker extends Tracker{
    */
   reAssembleDom(){
 
-    let dom = this._getDom();
+    let dom = this.__getDom();
 
-    this.timeline_body = 'div.cGcGK > div > div';
-    this.explore_body = 'article.v1pSD > div > div';
-    this.profile_body = 'article.ySN3v > div > div';
-
+    //this.timeline_body = 'div.cGcGK > div > div';
+    //this.explore_body = 'article.v1pSD > div > div';
+    //this.profile_body = 'article.ySN3v > div > div';
 
     if(this.is_timeline){
-      let timeline_body = dom.querySelector(this.timeline_body);
+      let timeline_body = dom.querySelector(this.article).parentNode;
+      console.log(timeline_body);
       if (timeline_body){
         timeline_body.innerHTML = "";
         for (var key in this.articleId2Element) {
@@ -335,21 +335,26 @@ export default class InstagramTracker extends Tracker{
     }
 
     if(this.is_explore || this.is_profile){
-      let mosaik_body = null;
-      if (this.is_explore) {
-        mosaik_body = dom.querySelector(this.explore_body);
-      } else {
-        mosaik_body = dom.querySelector(this.profile_body);
-      }
-      if (mosaik_body){
-        mosaik_body.innerHTML = "";
-        for (var key in this.mosaikId2Element) {
-          if (this.mosaikId2Element.hasOwnProperty(key)){
-            this.mosaikId2Element[key].setAttribute('webtrack-post-id', key);
-            mosaik_body.append(this.mosaikId2Element[key]);
+      // let mosaik_body = null;
+      // if (this.is_explore) {
+      //   mosaik_body = dom.querySelector(this.explore_body);
+      // } else {
+      //   mosaik_body = dom.querySelector(this.profile_body);
+      // }
+
+      let one_mosaik = dom.querySelector(this.mosaik);
+      if (one_mosaik){
+        let mosaik_body = one_mosaik.parentNode.parentNode;
+        if (mosaik_body){
+          mosaik_body.innerHTML = "";
+          for (var key in this.mosaikId2Element) {
+            if (this.mosaikId2Element.hasOwnProperty(key)){
+              this.mosaikId2Element[key].setAttribute('webtrack-post-id', key);
+              mosaik_body.append(this.mosaikId2Element[key]);
+            }
           }
         }
-     }
+      }
     }
 
     if(this.is_post){
@@ -367,7 +372,7 @@ export default class InstagramTracker extends Tracker{
       }
     }
 
-    return dom;
+    return dom.outerHTML;
   }
 
   /**
@@ -379,9 +384,12 @@ export default class InstagramTracker extends Tracker{
     //    return super.getDom();
     //} else {
       return new Promise((resolve, reject) => {
+        console.log('promise');
         if(this.is_timeline){
+          console.log('is_timeline');
           this.addPublicArticles();
         } else if (this.is_explore || this.is_profile) {
+          console.log('is_explore or is_profile');
           this.addArticleMosaik();
         }
 
