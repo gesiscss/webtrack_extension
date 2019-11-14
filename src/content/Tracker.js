@@ -515,7 +515,7 @@ export default class Tracker extends MultiFetch {
    * [fetch the html content and run the event listener]
    * @return {Promise}
    */
-  fetchHTML(){
+  fetchHTML(timeout=750){
     return new Promise(async (resolve, reject)=>{
       if (this.debug) console.log('fetchHTML: ' + new Date());
 
@@ -570,7 +570,7 @@ export default class Tracker extends MultiFetch {
           }
         }
 
-      }.bind(this), 750);
+      }.bind(this), timeout);
     });
   }
 

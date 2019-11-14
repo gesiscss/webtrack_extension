@@ -304,7 +304,7 @@ export default class ContentHandler {
        } finally {
           this.domDetector.onChange(() => {
             console.log('Dom Change');
-            this.tracker.fetchHTML()
+            this.tracker.fetchHTML(1);
           }, delay);
 
 
