@@ -538,7 +538,7 @@ export default class YouTubeTracker extends Tracker{
     return new Promise((resolve, reject) => {
       // if(this._isAllow()){
       
-        this._setCategorie2Meta();
+        //this._setCategorie2Meta();
         this._eventSetLike();
         this._eventSetDislike();
         this._eventSubscribe();
