@@ -519,21 +519,22 @@ export default class Tracker extends MultiFetch {
     return new Promise(async (resolve, reject)=>{
       if (this.debug) console.log('fetchHTML: ' + new Date());
 
-      // if the tracker notices that the content is private, it will return
-      // false instead, this is used to control what to send on the bottom
-      var html = await this.getDom();
-
       // sometimes the content is updated before the url, the timeout here
       // makes the code wait for the updates in the url. This is not ideal,
       // but I don't see other way. Even if one could capture popstate and
       // pushstate eventss (which is not working in the extension), the 
       // problem would persist: the content was modified first and then the
       // url!
-      setTimeout( function() {
+      setTimeout( async function() {
+        if (this.debug) console.log('timeout: FetchHTML');
 
+        // reset the credentials before anything else, this will turn on/off
+        // different flags for the creation of the DOM
         this.reset_credentials();
+
         // check if the URL has changed
         if (this.is_url_change()){
+          if (this.debug) console.log('======Emit Event: newURL =======');
           this.eventEmitter.emit(EVENT_NAMES.newURL, {
             html: false,
             }, false);
@@ -541,6 +542,11 @@ export default class Tracker extends MultiFetch {
 
         // if the URL has not changed
         } else {
+
+          // if the tracker notices that the content is private, it will return
+          // false instead, this is used to control what to send on the bottom
+          var html = await this.getDom();
+
           // if is it ok to track the current address, and some html was
           // recovered, then send the data
           if (html && this.is_path_allow(location.pathname) && this.is_content_allowed){
@@ -564,7 +570,7 @@ export default class Tracker extends MultiFetch {
           }
         }
 
-      }.bind(this), 500);
+      }.bind(this), 750);
     });
   }
 

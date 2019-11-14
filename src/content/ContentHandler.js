@@ -202,6 +202,7 @@ export default class ContentHandler {
               // console.log('sendMessage %s', this.count, object);
               try {
                 if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
+
                 this.browser.runtime.sendMessage(this.data, (response)=>{
                   if(this.browser.runtime.lastError) {
                     /*ignore when the background is not listening*/;
