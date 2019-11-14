@@ -1,7 +1,7 @@
 
 import Tracker from '../Tracker';
 
-export default class SocialMediaTracker extends Tracker{
+export default class DomainTracker extends Tracker{
 
   constructor(worker, extensionfilter=[]){
     super(worker);

@@ -2,7 +2,7 @@ import FacebookTracker from './addon/FacebookTracker';
 import YouTubeTracker from './addon/YouTubeTracker';
 import TwitterTracker from './addon/TwitterTracker';
 import InstagramTracker from './addon/InstagramTracker';
-import SocialMediaTracker from './addon/SocialMediaTracker';
+import DomainTracker from './addon/DomainTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
@@ -10,6 +10,10 @@ import DomDetector from './DomDetector';
 const SMM_SET = new Set(['instagram', 'skype', 'xing', 
   'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 
   'wechat', 'viber', 'vk', 'whatsapp', 'telegram' ]);
+
+const YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
+
+const TWITTER_SET = new Set(['ads', 'analytics', 'help']);
 
 export default class ContentHandler {
 
@@ -51,28 +55,37 @@ export default class ContentHandler {
       let str = hostname_parts[hostname_parts.length - 2];
 
       if(str.endsWith('facebook')){
-        console.log('FacebookTracker');
+        if (this.debug) console.log('FacebookTracker');
         return FacebookTracker;
       }else if(str.endsWith('youtube')){
-        console.log('YouTubeTracker');
-        return YouTubeTracker;
+        if (hostname_parts.length > 2 && YOUTUBE_SET.has(hostname_parts[hostname_parts.length - 3])) {
+            return DomainTracker;
+        } else {
+          if (this.debug) console.log('YouTubeTracker');
+          return YouTubeTracker;
+        }
       }else if(str.endsWith('twitter')){
-        console.log('TwitterTracker');
-        return TwitterTracker;
+        if (hostname_parts.length > 2 && TWITTER_SET.has(hostname_parts[hostname_parts.length - 3])) {
+          if (this.debug) console.log('DomainTracker');
+          return DomainTracker;
+        } else {
+          if (this.debug) console.log('TwitterTracker');
+          return TwitterTracker;
+        }
       }else if(str.endsWith('instagram')){
-        console.log('InstagramTracker');
+        if (this.debug) console.log('InstagramTracker');
         return InstagramTracker;
       }else if(str.endsWith('google')){
-        console.log('GoogleTracker');
+        if (this.debug) console.log('GoogleTracker');
         return GoogleTracker;
       } else {
         if (SMM_SET.has(str)){
-          console.log('SocialMediaTracker');
-          return SocialMediaTracker;
+          if (this.debug) console.log('DomainTracker');
+          return DomainTracker;
         }
       }
     }
-    console.log('Tracker');
+    if (this.debug) console.log('Tracker');
     return Tracker
   }
 
