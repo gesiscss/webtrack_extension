@@ -234,9 +234,9 @@ export default class TrackingHandler {
 
         if (piperegex.length > 0){
           let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-          page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_______');
-          page.meta.description = page.meta.description.replace(pipe_regex,'_______');
-          page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_______');
+          page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_*_*_*_');
+          page.meta.description = page.meta.description.replace(pipe_regex,'_*_*_*_');
+          page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_*_*_*_');
         }
       }
 

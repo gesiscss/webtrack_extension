@@ -129,8 +129,6 @@ export default class Tracker extends MultiFetch {
     * [is_url_change check if the url has changed]
     */
   is_url_change(){
-    console.log(this.original_url);
-    console.log(this.get_unhashed_href());
     return this.original_url != this.get_unhashed_href();
   }
 
@@ -138,7 +136,6 @@ export default class Tracker extends MultiFetch {
    * [checkURL check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
   checkURL(){
-    console.log(this.lastURL!==location.pathname, this.lastURL, location.pathname);
     if(this.lastURL!==location.pathname){
       this.lastURL = location.pathname
       this.eventEmitter.emit(EVENT_NAMES.newURL, true, false)

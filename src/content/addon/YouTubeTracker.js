@@ -18,6 +18,12 @@ export default class YouTubeTracker extends Tracker{
       root: ['#primary'],
       allow: ['#primary'],
 
+      logged_email: 'yt-formatted-string#email',
+      logged_fullname: 'yt-formatted-string#account-name',
+      profile_pic_url_comment: 'yt-img-shadow#author-thumbnail img#img',
+      profile_pic_url_avatar: '#avatar-btn img#img',
+      watch_later: '.ytp-watch-later-button.ytp-button',
+
       svg_protected: '#container .style-scope.ytd-badge-supported-renderer svg g path[d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"]',
       categorie: {
         contents: ['#content', '#collapsible'],
@@ -69,6 +75,16 @@ export default class YouTubeTracker extends Tracker{
         submit: ['#submit-button']
       }
     };
+
+    
+    this.logged_email = null;
+    this.is_correct_logged_fullname = false;
+    this.logged_fullname = null;
+    this.is_correct_profile_pic_url = false;
+    this.profile_pic_url = null;
+    this.updateMetada = false;
+
+
     this.lastUrlPath = '';
     this.values = [];
 
@@ -184,18 +200,116 @@ export default class YouTubeTracker extends Tracker{
 
     this.is_logged_in = this._isLogged();
 
-    document.querySelector('#avatar-btn');
+    if (this.is_logged_in){
+      this.updateMetada = false;
+      this.logged_email = this._get_logged_email();
+      this.logged_fullname = this._get_logged_fullname();
+      this.profile_pic_url = this._get_profile_pic_url();
+
+      if (this.updateMetada){
+        this.fetchMetaData();
+      }
+    } 
+
+    //document.querySelector('#avatar-btn');
     this.is_content_allowed = this.get_content_allowed();
   }
 
+    /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+  getMetadata(){
+    let metadata = super.getMetadata();
+    let anonym = {};
+
+    if (this.logged_email) {
+      anonym['email'] = this.logged_email;
+    }
+
+    if (this.logged_fullname) {
+      anonym['fullname'] = this.logged_fullname;
+    }
+
+    if (this.profile_pic_url) {
+      anonym['guest_id'] = this.profile_pic_url;
+    }
+
+    metadata['anonym'] = anonym;
+
+    return metadata;
+  }
+
+
+  _get_logged_email(){
+    if (this.logged_email){
+      return this.logged_email;
+    }
+
+    let el = document.querySelector(this.eventElements.logged_email);
+    if (el){
+      this.update_metadata = true;
+      return el.textContent;
+    }
+    return null;
+  }
+
+  _get_logged_fullname(){
+    if (this.is_correct_logged_fullname){
+      return this.logged_fullname;
+    }
+
+    let el = document.querySelector(this.eventElements.logged_fullname);
+    if (el){
+      this.is_correct_logged_fullname = true;
+      this.updateMetada = true;
+      return el.textContent;
+    } else {
+      el = document.querySelector(this.eventElements.profile_pic_url_comment);
+      if (el){
+        this.updateMetada = true;
+        this.is_correct_logged_fullname = true;
+        return el.alt;
+      } else {
+        el = document.querySelector(this.eventElements.watch_later);
+        if (el) {
+          return el.title;
+        }
+      }
+    }
+    return null;
+  }
+
+  _get_profile_pic_url(){
+    if (this.is_correct_profile_pic_url){
+      return this.profile_pic_url;
+    }
+
+    let src = null;
+    let el = document.querySelector(this.eventElements.profile_pic_url_comment);
+    if (el){
+      this.updateMetada = true;
+      this.is_correct_profile_pic_url = true;
+      src = el.src;
+    } else {
+      el = document.querySelector(this.eventElements.profile_pic_url_avatar);
+      if (el){
+        src = el.src;
+      }
+    }
+    if (src) {
+      let parts = src.split('/');
+      return parts[parts.length - 1];
+    }
+    return null;
+  }
 
   _isLogged() {
-    if (this.rootElement.querySelector('#avatar-btn')){
+    if (document.querySelector('#avatar-btn')){
       return true;
     }
     return false;
   }
-
 
 
   get_content_allowed() {
