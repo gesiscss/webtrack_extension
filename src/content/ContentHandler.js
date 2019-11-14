@@ -304,7 +304,9 @@ export default class ContentHandler {
        } finally {
           this.domDetector.onChange(() => {
             console.log('Dom Change');
-            this.tracker.fetchHTML(1);
+            // 500 millisecons are necessary as the content changes before 
+            // the url in pages like Facebook
+            this.tracker.fetchHTML(500);
           }, delay);
 
 
