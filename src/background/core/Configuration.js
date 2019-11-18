@@ -12,11 +12,12 @@ export default class Configuration {
    * @param {Object} settings [instance of Settings]
    * @param {Object} transfer [instance of Transfer]
    */
-  constructor(settings, transfer) {
+  constructor(settings, transfer, blacklists) {
     this.settings = settings;
     this.versionType = settings.versionType;
     this.mobile = settings.mobile;
     this.transfer = transfer;
+    this.blacklists = blacklists;
     this.getProject = this.getProject.bind(this);
     this.getProjects = this.getProjects.bind(this);
     this.setSending = this.setSending.bind(this);

@@ -33,7 +33,13 @@ window.addEventListener("unhandledrejection", event => {
     var transfer = new Transfer(settings.server);
     window.pageHandler = null;
 
-    window.config = new Configuration(settings, transfer);
+    var blacklists = null;
+    fetch(window.xbrowser.runtime.getURL('data/blacklists.json')).then(
+      (response) => response.json()).then((json) => {
+      blacklists = json;
+    });
+
+    window.config = new Configuration(settings, transfer, blacklists);
     config.onError = (err) => {
       throw err
     };

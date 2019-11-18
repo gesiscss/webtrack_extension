@@ -31259,13 +31259,14 @@ function () {
    * @param {Object} settings [instance of Settings]
    * @param {Object} transfer [instance of Transfer]
    */
-  function Configuration(settings, transfer) {
+  function Configuration(settings, transfer, blacklists) {
     Configuration_classCallCheck(this, Configuration);
 
     this.settings = settings;
     this.versionType = settings.versionType;
     this.mobile = settings.mobile;
     this.transfer = transfer;
+    this.blacklists = blacklists;
     this.getProject = this.getProject.bind(this);
     this.getProjects = this.getProjects.bind(this);
     this.setSending = this.setSending.bind(this);
@@ -39138,7 +39139,7 @@ window.addEventListener("unhandledrejection", function (event) {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer, private_mode, selected, tmp_settings;
+    var transfer, blacklists, private_mode, selected, tmp_settings;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -39159,7 +39160,13 @@ window.addEventListener("unhandledrejection", function (event) {
             window.companie = lib_settings.companie;
             transfer = new Transfer_Transfer(lib_settings.server);
             window.pageHandler = null;
-            window.config = new Configuration_Configuration(lib_settings, transfer);
+            blacklists = null;
+            fetch(window.xbrowser.runtime.getURL('data/blacklists.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              blacklists = json;
+            });
+            window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
 
             config.onError = function (err) {
               throw err;
@@ -39167,10 +39174,10 @@ window.addEventListener("unhandledrejection", function (event) {
 
             private_mode = config.defaultId.get() == null;
             console.log('Load Configuration');
-            _context.next = 15;
+            _context.next = 17;
             return config.load();
 
-          case 15:
+          case 17:
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker); // window.pageHandler.event.on('error', error => errorCache.add(error));
 
@@ -39181,21 +39188,21 @@ window.addEventListener("unhandledrejection", function (event) {
               window.pageHandler.selectProject(selected, private_mode);
             }
 
-            _context.next = 26;
+            _context.next = 28;
             break;
 
-          case 22:
-            _context.prev = 22;
+          case 24:
+            _context.prev = 24;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 26:
+          case 28:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 22]]);
+    }, _callee, null, [[0, 24]]);
   }));
 
   return function main() {
