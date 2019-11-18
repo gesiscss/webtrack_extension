@@ -30,6 +30,8 @@ export default class Configuration {
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.isLoad = false;
     this.debug = true;
+
+    if (this.debug) console.log(blacklists);
   }
 
 

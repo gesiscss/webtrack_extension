@@ -31279,6 +31279,7 @@ function () {
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.isLoad = false;
     this.debug = true;
+    if (this.debug) console.log(blacklists);
   }
   /**
    * [initialize the default id]
@@ -39139,7 +39140,7 @@ window.addEventListener("unhandledrejection", function (event) {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer, blacklists, private_mode, selected, tmp_settings;
+    var transfer, specials, filters, simple, private_mode, selected, tmp_settings;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -39159,14 +39160,40 @@ window.addEventListener("unhandledrejection", function (event) {
             window.settings = lib_settings;
             window.companie = lib_settings.companie;
             transfer = new Transfer_Transfer(lib_settings.server);
-            window.pageHandler = null;
-            blacklists = null;
-            fetch(window.xbrowser.runtime.getURL('data/blacklists.json')).then(function (response) {
+            window.pageHandler = null; // Loading blacklists
+
+            specials = null;
+            _context.next = 12;
+            return fetch(window.xbrowser.runtime.getURL('data/specials.json')).then(function (response) {
               return response.json();
             }).then(function (json) {
-              blacklists = json;
+              specials = json;
             });
-            window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
+
+          case 12:
+            filters = null;
+            _context.next = 15;
+            return fetch(window.xbrowser.runtime.getURL('data/filters.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              filters = json;
+            });
+
+          case 15:
+            simple = null;
+            _context.next = 18;
+            return fetch(window.xbrowser.runtime.getURL('data/simple.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              simple = json;
+            });
+
+          case 18:
+            window.config = new Configuration_Configuration(lib_settings, transfer, {
+              'specials': specials,
+              'filters': filters,
+              'simple': simple
+            });
 
             config.onError = function (err) {
               throw err;
@@ -39174,10 +39201,10 @@ window.addEventListener("unhandledrejection", function (event) {
 
             private_mode = config.defaultId.get() == null;
             console.log('Load Configuration');
-            _context.next = 17;
+            _context.next = 24;
             return config.load();
 
-          case 17:
+          case 24:
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker); // window.pageHandler.event.on('error', error => errorCache.add(error));
 
@@ -39188,21 +39215,21 @@ window.addEventListener("unhandledrejection", function (event) {
               window.pageHandler.selectProject(selected, private_mode);
             }
 
-            _context.next = 28;
+            _context.next = 35;
             break;
 
-          case 24:
-            _context.prev = 24;
+          case 31:
+            _context.prev = 31;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 28:
+          case 35:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 24]]);
+    }, _callee, null, [[0, 31]]);
   }));
 
   return function main() {

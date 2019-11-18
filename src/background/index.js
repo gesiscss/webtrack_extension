@@ -33,13 +33,27 @@ window.addEventListener("unhandledrejection", event => {
     var transfer = new Transfer(settings.server);
     window.pageHandler = null;
 
-    var blacklists = null;
-    fetch(window.xbrowser.runtime.getURL('data/blacklists.json')).then(
+    // Loading blacklists
+    var specials = null;
+    await fetch(window.xbrowser.runtime.getURL('data/specials.json')).then(
       (response) => response.json()).then((json) => {
-      blacklists = json;
+        specials = json;
     });
 
-    window.config = new Configuration(settings, transfer, blacklists);
+    var filters = null;
+    await fetch(window.xbrowser.runtime.getURL('data/filters.json')).then(
+      (response) => response.json()).then((json) => {
+      filters = json;
+    });
+
+    var simple = null;
+    await fetch(window.xbrowser.runtime.getURL('data/simple.json')).then(
+      (response) => response.json()).then((json) => {
+      simple = json;
+    });
+
+    window.config = new Configuration(settings, transfer, {
+      'specials':specials, 'filters': filters, 'simple': simple});
     config.onError = (err) => {
       throw err
     };
