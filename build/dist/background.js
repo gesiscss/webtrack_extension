@@ -39136,11 +39136,69 @@ window.addEventListener("unhandledrejection", function (event) {
   errorCache.add(event);
   console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
 });
+
+function load_blacklists(_x) {
+  return _load_blacklists.apply(this, arguments);
+}
+
+function _load_blacklists() {
+  _load_blacklists = background_asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(xbrowser) {
+    var specials, filters, simple;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            // Loading blacklists
+            specials = null;
+            _context2.next = 3;
+            return fetch(xbrowser.runtime.getURL('data/specials.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              specials = json;
+            });
+
+          case 3:
+            filters = null;
+            _context2.next = 6;
+            return fetch(xbrowser.runtime.getURL('data/filters.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              filters = json;
+            });
+
+          case 6:
+            simple = null;
+            _context2.next = 9;
+            return fetch(xbrowser.runtime.getURL('data/simple.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              simple = json;
+            });
+
+          case 9:
+            return _context2.abrupt("return", {
+              'specials': specials,
+              'filters': filters,
+              'simple': simple
+            });
+
+          case 10:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+  return _load_blacklists.apply(this, arguments);
+}
+
 (function () {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer, specials, filters, simple, private_mode, selected, tmp_settings;
+    var transfer, blacklists, private_mode, selected, tmp_settings;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -39160,40 +39218,13 @@ window.addEventListener("unhandledrejection", function (event) {
             window.settings = lib_settings;
             window.companie = lib_settings.companie;
             transfer = new Transfer_Transfer(lib_settings.server);
-            window.pageHandler = null; // Loading blacklists
+            window.pageHandler = null;
+            _context.next = 11;
+            return load_blacklists(window.xbrowser);
 
-            specials = null;
-            _context.next = 12;
-            return fetch(window.xbrowser.runtime.getURL('data/specials.json')).then(function (response) {
-              return response.json();
-            }).then(function (json) {
-              specials = json;
-            });
-
-          case 12:
-            filters = null;
-            _context.next = 15;
-            return fetch(window.xbrowser.runtime.getURL('data/filters.json')).then(function (response) {
-              return response.json();
-            }).then(function (json) {
-              filters = json;
-            });
-
-          case 15:
-            simple = null;
-            _context.next = 18;
-            return fetch(window.xbrowser.runtime.getURL('data/simple.json')).then(function (response) {
-              return response.json();
-            }).then(function (json) {
-              simple = json;
-            });
-
-          case 18:
-            window.config = new Configuration_Configuration(lib_settings, transfer, {
-              'specials': specials,
-              'filters': filters,
-              'simple': simple
-            });
+          case 11:
+            blacklists = _context.sent;
+            window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
 
             config.onError = function (err) {
               throw err;
@@ -39201,10 +39232,10 @@ window.addEventListener("unhandledrejection", function (event) {
 
             private_mode = config.defaultId.get() == null;
             console.log('Load Configuration');
-            _context.next = 24;
+            _context.next = 18;
             return config.load();
 
-          case 24:
+          case 18:
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker); // window.pageHandler.event.on('error', error => errorCache.add(error));
 
@@ -39215,21 +39246,21 @@ window.addEventListener("unhandledrejection", function (event) {
               window.pageHandler.selectProject(selected, private_mode);
             }
 
-            _context.next = 35;
+            _context.next = 29;
             break;
 
-          case 31:
-            _context.prev = 31;
+          case 25:
+            _context.prev = 25;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 35:
+          case 29:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 31]]);
+    }, _callee, null, [[0, 25]]);
   }));
 
   return function main() {
