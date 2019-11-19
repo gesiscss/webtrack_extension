@@ -78,12 +78,15 @@ export default class URLFilter {
     // top level domain index
     let tld_idx = domain.lastIndexOf(".");
 
-    console.log('isincluded');
-
     // check if it is ip based on the Top Level Domain. If there is a 
     // number in the last position, it should be an IP as of Nov 2019.
-    if (/^\d+$/.test(domain.slice(tld_idx+1))) {
-      console.log('ip');
+    let tld = domain.slice(tld_idx+1);
+    if (/^\d+$/.test(tld)) {
+      return true;
+    }
+
+    // check if the sub_domain is a exact match against the exact match set
+    if (this.lists.simple.tld.has(tld)) {
       return true;
     }
 
@@ -97,7 +100,6 @@ export default class URLFilter {
       if (sub_idx != -1) {
         // check if the sub_domain exists in the list (actually a Set)
         if (set.has(sub_domain.slice(0, sub_idx))){
-          console.log(key);
           return true;
         }
       }
@@ -109,7 +111,6 @@ export default class URLFilter {
       if ((new RegExp(key)).test(sub_domain)) {
         // if so, check if the sub_domain exists in the list (actually a Set)
         if (set.has(sub_domain)) {
-          console.log(key);
           return true;
         }
       }
@@ -117,14 +118,12 @@ export default class URLFilter {
 
     // check if the sub_domain is a exact match against the exact match set
     if (this.lists.simple.exact.has(sub_domain)) {
-      console.log('exact');
       return true;
     }
 
     // check if the sub_domain endsWith any of the blocked domains
-    for (let i in this.lists.simple.ends_with){
-      if (domain.endsWith(this.lists[i])){
-        console.log('endswith');
+    for (let item of this.lists.simple.ends_with) {
+      if (sub_domain.endsWith(item)){
         return true;
       }
     }
@@ -188,6 +187,15 @@ export default class URLFilter {
    */
   isAllow(url){
     if(this.active){
+
+
+      // console.log('TEST blacklist:');
+      // for (var i = 0; i < this.lists.tests.length; i++) {
+      //   if (!this.isincluded(this.lists.tests[i])) {
+      //     console.log(this.lists.tests[i]);
+      //   }
+      // }
+
       var location = this.get_location(url);
 
       if(!this.cache.hasOwnProperty(location.hostname)){

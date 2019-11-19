@@ -43,10 +43,18 @@ async function load_blacklists(xbrowser) {
         }
     });
 
+
+    // var tests = null;
+    // await fetch(xbrowser.runtime.getURL('data/test.json')).then(
+    //   (response) => response.json()).then((json) => {
+    //     tests = json;
+    // });
+
     return { 
       'specials':specials, 
       'filters': filters, 
-      'simple': simple
+      'simple': simple,
+      // 'tests': tests
     }
 
 }

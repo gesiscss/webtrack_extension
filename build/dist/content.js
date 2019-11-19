@@ -15559,7 +15559,7 @@ function (_Tracker) {
     _this.google_debug = false;
     _this.logged_email = null;
     _this.logged_fullname = null;
-    _this.startswith_blacklist = ['/accounts/', '/settings/'];
+    _this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/'];
 
     _this.setup_credentials();
 

@@ -31806,12 +31806,17 @@ function () {
     key: "isincluded",
     value: function isincluded(domain) {
       // top level domain index
-      var tld_idx = domain.lastIndexOf(".");
-      console.log('isincluded'); // check if it is ip based on the Top Level Domain. If there is a 
+      var tld_idx = domain.lastIndexOf("."); // check if it is ip based on the Top Level Domain. If there is a 
       // number in the last position, it should be an IP as of Nov 2019.
 
-      if (/^\d+$/.test(domain.slice(tld_idx + 1))) {
-        console.log('ip');
+      var tld = domain.slice(tld_idx + 1);
+
+      if (/^\d+$/.test(tld)) {
+        return true;
+      } // check if the sub_domain is a exact match against the exact match set
+
+
+      if (this.lists.simple.tld.has(tld)) {
         return true;
       } // extract the sub domain; ignore the TLD from now on
 
@@ -31829,7 +31834,6 @@ function () {
         if (sub_idx != -1) {
           // check if the sub_domain exists in the list (actually a Set)
           if (set.has(sub_domain.slice(0, sub_idx))) {
-            console.log(key);
             return true;
           }
         }
@@ -31845,7 +31849,6 @@ function () {
         if (new RegExp(key).test(sub_domain)) {
           // if so, check if the sub_domain exists in the list (actually a Set)
           if (set.has(sub_domain)) {
-            console.log(key);
             return true;
           }
         }
@@ -31853,15 +31856,34 @@ function () {
 
 
       if (this.lists.simple.exact.has(sub_domain)) {
-        console.log('exact');
         return true;
       } // check if the sub_domain endsWith any of the blocked domains
 
 
-      for (var i in this.lists.simple.ends_with) {
-        if (domain.endsWith(this.lists[i])) {
-          console.log('endswith');
-          return true;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.lists.simple.ends_with[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var item = _step.value;
+
+          if (sub_domain.endsWith(item)) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
         }
       }
 
@@ -31933,6 +31955,12 @@ function () {
     key: "isAllow",
     value: function isAllow(url) {
       if (this.active) {
+        // console.log('TEST blacklist:');
+        // for (var i = 0; i < this.lists.tests.length; i++) {
+        //   if (!this.isincluded(this.lists.tests[i])) {
+        //     console.log(this.lists.tests[i]);
+        //   }
+        // }
         var location = this.get_location(url);
 
         if (!this.cache.hasOwnProperty(location.hostname)) {
@@ -39249,7 +39277,8 @@ function _load_blacklists() {
             return _context2.abrupt("return", {
               'specials': specials,
               'filters': filters,
-              'simple': simple
+              'simple': simple // 'tests': tests
+
             });
 
           case 10:
