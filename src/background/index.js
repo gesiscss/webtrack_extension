@@ -19,22 +19,28 @@ window.addEventListener("unhandledrejection", event => {
 
 async function load_blacklists(xbrowser) {
     // Loading blacklists
-    var specials = null;
+    var specials = {};
     await fetch(xbrowser.runtime.getURL('data/specials.json')).then(
       (response) => response.json()).then((json) => {
-        specials = json;
+        for (let key in json) {
+          specials[key] = new Set(json[key]);
+        }
     });
 
-    var filters = null;
+    var filters = {};
     await fetch(xbrowser.runtime.getURL('data/filters.json')).then(
       (response) => response.json()).then((json) => {
-      filters = json;
+        for (let key in json) {
+          filters[key] = new Set(json[key]);
+        }
     });
 
-    var simple = null;
+    var simple = {};
     await fetch(xbrowser.runtime.getURL('data/simple.json')).then(
       (response) => response.json()).then((json) => {
-      simple = json;
+        for (let key in json) {
+          simple[key] = new Set(json[key]);
+        }
     });
 
     return { 

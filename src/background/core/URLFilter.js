@@ -1,9 +1,9 @@
 export default class URLFilter {
 
-  constructor(list=[], active=false, white_or_black=true) {
+  constructor(lists=[], active=false, white_or_black=true) {
     this.active = active;
     this.white_or_black = white_or_black;
-    this.list = list;
+    this.lists = lists;
     this.cache = {};
 
     this.smp_blacklist = {
@@ -74,11 +74,61 @@ export default class URLFilter {
    * @return {boolean} if is included     [e.g. true]
    */
   isincluded(domain){
-    for (let i in this.list){
-      if (domain.endsWith(this.list[i])){
+
+    // top level domain index
+    let tld_idx = domain.lastIndexOf(".");
+
+    console.log('isincluded');
+
+    // check if it is ip based on the Top Level Domain. If there is a 
+    // number in the last position, it should be an IP as of Nov 2019.
+    if (/^\d+$/.test(domain.slice(tld_idx+1))) {
+      console.log('ip');
+      return true;
+    }
+
+    // extract the sub domain; ignore the TLD from now on
+    let sub_domain = domain.slice(0,tld_idx);
+
+    // check for exact matches under special domains (e.g. tumblr and blogspot)
+    for (let [key, set] of Object.entries(this.lists.specials)) {
+      // subdomain index
+      let sub_idx = sub_domain.lastIndexOf('.' + key);
+      if (sub_idx != -1) {
+        // check if the sub_domain exists in the list (actually a Set)
+        if (set.has(sub_domain.slice(0, sub_idx))){
+          console.log(key);
+          return true;
+        }
+      }
+    }
+
+    // check for exact matches under special domains (e.g. tumblr and blogspot)
+    for (let [key, set] of Object.entries(this.lists.filters)) {
+      // check if the sub_domain passes the filter
+      if ((new RegExp(key)).test(sub_domain)) {
+        // if so, check if the sub_domain exists in the list (actually a Set)
+        if (set.has(sub_domain)) {
+          console.log(key);
+          return true;
+        }
+      }
+    }
+
+    // check if the sub_domain is a exact match against the exact match set
+    if (this.lists.simple.exact.has(sub_domain)) {
+      console.log('exact');
+      return true;
+    }
+
+    // check if the sub_domain endsWith any of the blocked domains
+    for (let i in this.lists.simple.ends_with){
+      if (domain.endsWith(this.lists[i])){
+        console.log('endswith');
         return true;
       }
     }
+
     return false;
   }
 

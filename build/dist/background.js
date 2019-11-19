@@ -31709,6 +31709,14 @@ function () {
 
 
 // CONCATENATED MODULE: ./src/background/core/URLFilter.js
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function URLFilter_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function URLFilter_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -31719,7 +31727,7 @@ var URLFilter =
 /*#__PURE__*/
 function () {
   function URLFilter() {
-    var list = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var lists = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     var white_or_black = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
@@ -31727,7 +31735,7 @@ function () {
 
     this.active = active;
     this.white_or_black = white_or_black;
-    this.list = list;
+    this.lists = lists;
     this.cache = {};
     this.smp_blacklist = {
       'twitter': ['/messages', '/settings'],
@@ -31797,8 +31805,62 @@ function () {
   }, {
     key: "isincluded",
     value: function isincluded(domain) {
-      for (var i in this.list) {
-        if (domain.endsWith(this.list[i])) {
+      // top level domain index
+      var tld_idx = domain.lastIndexOf(".");
+      console.log('isincluded'); // check if it is ip based on the Top Level Domain. If there is a 
+      // number in the last position, it should be an IP as of Nov 2019.
+
+      if (/^\d+$/.test(domain.slice(tld_idx + 1))) {
+        console.log('ip');
+        return true;
+      } // extract the sub domain; ignore the TLD from now on
+
+
+      var sub_domain = domain.slice(0, tld_idx); // check for exact matches under special domains (e.g. tumblr and blogspot)
+
+      for (var _i = 0, _Object$entries = Object.entries(this.lists.specials); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+            key = _Object$entries$_i[0],
+            set = _Object$entries$_i[1];
+
+        // subdomain index
+        var sub_idx = sub_domain.lastIndexOf('.' + key);
+
+        if (sub_idx != -1) {
+          // check if the sub_domain exists in the list (actually a Set)
+          if (set.has(sub_domain.slice(0, sub_idx))) {
+            console.log(key);
+            return true;
+          }
+        }
+      } // check for exact matches under special domains (e.g. tumblr and blogspot)
+
+
+      for (var _i2 = 0, _Object$entries2 = Object.entries(this.lists.filters); _i2 < _Object$entries2.length; _i2++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+            key = _Object$entries2$_i[0],
+            set = _Object$entries2$_i[1];
+
+        // check if the sub_domain passes the filter
+        if (new RegExp(key).test(sub_domain)) {
+          // if so, check if the sub_domain exists in the list (actually a Set)
+          if (set.has(sub_domain)) {
+            console.log(key);
+            return true;
+          }
+        }
+      } // check if the sub_domain is a exact match against the exact match set
+
+
+      if (this.lists.simple.exact.has(sub_domain)) {
+        console.log('exact');
+        return true;
+      } // check if the sub_domain endsWith any of the blocked domains
+
+
+      for (var i in this.lists.simple.ends_with) {
+        if (domain.endsWith(this.lists[i])) {
+          console.log('endswith');
           return true;
         }
       }
@@ -38010,7 +38072,7 @@ function () {
       this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
       var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
       this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
-      var urlFilter = new URLFilter(settings.URLLIST, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
+      var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
       this.extension = new Extension_Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
       this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
       this.tabHandler.event.on('error', function (error) {
@@ -39151,30 +39213,36 @@ function _load_blacklists() {
         switch (_context2.prev = _context2.next) {
           case 0:
             // Loading blacklists
-            specials = null;
+            specials = {};
             _context2.next = 3;
             return fetch(xbrowser.runtime.getURL('data/specials.json')).then(function (response) {
               return response.json();
             }).then(function (json) {
-              specials = json;
+              for (var key in json) {
+                specials[key] = new Set(json[key]);
+              }
             });
 
           case 3:
-            filters = null;
+            filters = {};
             _context2.next = 6;
             return fetch(xbrowser.runtime.getURL('data/filters.json')).then(function (response) {
               return response.json();
             }).then(function (json) {
-              filters = json;
+              for (var key in json) {
+                filters[key] = new Set(json[key]);
+              }
             });
 
           case 6:
-            simple = null;
+            simple = {};
             _context2.next = 9;
             return fetch(xbrowser.runtime.getURL('data/simple.json')).then(function (response) {
               return response.json();
             }).then(function (json) {
-              simple = json;
+              for (var key in json) {
+                simple[key] = new Set(json[key]);
+              }
             });
 
           case 9:
