@@ -4,6 +4,7 @@ import TwitterTracker from './addon/TwitterTracker';
 import InstagramTracker from './addon/InstagramTracker';
 import DomainTracker from './addon/DomainTracker';
 import GoogleTracker from './addon/GoogleTracker';
+import AppleTracker from './addon/AppleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
 
@@ -78,6 +79,9 @@ export default class ContentHandler {
       }else if(str.endsWith('google')){
         if (this.debug) console.log('GoogleTracker');
         return GoogleTracker;
+      } else if(str.endsWith('apple')){
+        if (this.debug) console.log('AppleTracker');
+        return AppleTracker;
       } else {
         if (SMM_SET.has(str)){
           if (this.debug) console.log('DomainTracker');

@@ -15656,6 +15656,87 @@ function (_Tracker) {
 
 
 
+// CONCATENATED MODULE: ./src/content/addon/AppleTracker.js
+function AppleTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { AppleTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { AppleTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return AppleTracker_typeof(obj); }
+
+function AppleTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function AppleTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function AppleTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) AppleTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) AppleTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function AppleTracker_possibleConstructorReturn(self, call) { if (call && (AppleTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return AppleTracker_assertThisInitialized(self); }
+
+function AppleTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function AppleTracker_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { AppleTracker_get = Reflect.get; } else { AppleTracker_get = function _get(target, property, receiver) { var base = AppleTracker_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return AppleTracker_get(target, property, receiver || target); }
+
+function AppleTracker_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = AppleTracker_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function AppleTracker_getPrototypeOf(o) { AppleTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return AppleTracker_getPrototypeOf(o); }
+
+function AppleTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) AppleTracker_setPrototypeOf(subClass, superClass); }
+
+function AppleTracker_setPrototypeOf(o, p) { AppleTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return AppleTracker_setPrototypeOf(o, p); }
+
+
+
+var AppleTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  AppleTracker_inherits(AppleTracker, _Tracker);
+
+  function AppleTracker(worker) {
+    var _this;
+
+    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    AppleTracker_classCallCheck(this, AppleTracker);
+
+    _this = AppleTracker_possibleConstructorReturn(this, AppleTracker_getPrototypeOf(AppleTracker).call(this, worker));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(AppleTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
+    _this.startswith_blacklist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
+    _this.pos_2nd_blacklist = ['itunes', 'icloud'];
+
+    _this.setup_credentials();
+
+    return _this;
+  }
+  /**
+   * [return dom as string]
+   * @return {Promise}
+   */
+
+
+  AppleTracker_createClass(AppleTracker, [{
+    key: "getDom",
+    value: function getDom() {
+      return AppleTracker_get(AppleTracker_getPrototypeOf(AppleTracker.prototype), "getDom", this).call(this);
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      var _this2 = this;
+
+      setTimeout(function () {
+        if (_this2.debug) console.log('START!!!!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return AppleTracker;
+}(Tracker_Tracker); //class
+
+
+
 // CONCATENATED MODULE: ./src/content/DomDetector.js
 function DomDetector_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -15872,6 +15953,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 
+
 var SMM_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
 var YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 var TWITTER_SET = new Set(['ads', 'analytics', 'help']);
@@ -15941,6 +16023,9 @@ function () {
         } else if (str.endsWith('google')) {
           if (this.debug) console.log('GoogleTracker');
           return GoogleTracker;
+        } else if (str.endsWith('apple')) {
+          if (this.debug) console.log('AppleTracker');
+          return AppleTracker;
         } else {
           if (SMM_SET.has(str)) {
             if (this.debug) console.log('DomainTracker');
