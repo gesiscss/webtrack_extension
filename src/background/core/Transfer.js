@@ -25,16 +25,16 @@ export default class Transfer {
    * @param  {Function} reject
    */
   error(err, reject){
-      let message = '',
-      code='',
-      nr='';
-      try {
-        err = JSON.parse(err) ;
-        message =  err.message.join('<br/>');
-        code = err.code;
-        nr = res.status;
-      } catch (e) {}
-      reject({message: message, code: code, nr: nr});
+    let message = '',
+    code='',
+    nr='';
+    try {
+      err = JSON.parse(err) ;
+      message =  err.message.join('<br/>');
+      code = err.code;
+      nr = res.status;
+    } catch (e) {}
+    reject({message: message, code: code, nr: nr});
   }
 
   /**
@@ -149,19 +149,20 @@ export default class Transfer {
    * @return {Promise}
    */
   fileFetch(url){
-    return new Promise(async (resolve, reject)=>{
-      try {
-        let response = await fetch(url);
+    return new Promise((resolve, reject)=>{
+      fetch(url).then(response  => {
         if (!response.ok) throw response.statusText;
-        let blob = await response.blob();
-        const text = await new Response(blob).text()
-        resolve(text);
-      } catch (e) {
-        console.log(e);
-        reject(e)
-      }
+        let blob = response.blob();
+        resolve(new Response(blob).text());
+      }).catch(err => {
+        if (this.debug) console.log('Failed to Fetch File: ', url);
+        this.error(err, reject);
+      });
     });
   }
+
+
+
 
   /**
    * [jsonFetch create request with options]
@@ -170,9 +171,7 @@ export default class Transfer {
    * @return {Promise} Object
    */
   jsonFetch(url, options=this.DEFAULT_OPTION){
-    return new Promise((resolve, reject)=>{
-      this._fetch(url, options).then(resolve).catch(reject)
-    });
+    return this._fetch(url, options);
   }
 
   /**
@@ -184,21 +183,27 @@ export default class Transfer {
   _fetch(url, options){
     return new Promise((resolve, reject)=>{
       var res = null;
-      fetch(url, options)
-          .then(response => {
-              res = response;
-              if (!response.ok) throw response.statusText;
-              return response.json()
-          })
-          .then(d => {
-              if(d.error != null){
-                reject({message: d.error.message || '', code: d.error.code || '', nr: d.error.nr || ''});
-              }else {
-                let authData = d.result.authData;
-                var data = (typeof d.result==='object' && d.result.hasOwnProperty('data'))? d.result.data: d.result;
-                resolve(data);
-              }
-          }).catch(err => this.error(err, reject))
+      fetch(url, options).then(response => {
+        res = response;
+        if (!response.ok) throw response.statusText;
+        return response.json();
+      })
+      .then(d => {
+        if(d.error != null){
+          reject({ 
+            message: d.error.message || '', 
+            code: d.error.code || '', 
+            nr: d.error.nr || ''
+          });
+        }else {
+          let authData = d.result.authData;
+          var data = (typeof d.result==='object' && d.result.hasOwnProperty('data'))? d.result.data: d.result;
+          resolve(data);
+        }
+      }).catch(err => {
+        console.log('Failed to Fetch JSON: ', url);
+        this.error(err, reject)
+      });
     })
   }
 

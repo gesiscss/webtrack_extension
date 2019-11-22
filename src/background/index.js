@@ -79,25 +79,21 @@ async function load_blacklists(xbrowser) {
     let blacklists = await load_blacklists(window.xbrowser);
 
     window.config = new Configuration(settings, transfer, blacklists);
-    config.onError = (err) => {
-      throw err
-    };
 
     let private_mode = config.defaultId.get()==null;
 
-    console.log('Load Configuration');
-    await config.load();    
-
     console.log('Create PageHandler');
     window.pageHandler = new PageHandler(config, transfer, window.tracker);
-    // window.pageHandler.event.on('error', error => errorCache.add(error));
+    await window.pageHandler.init();
+    window.pageHandler.event.on('error', error => errorCache.add(error));
 
-    let selected = config.getSelect();
+/*    let selected = config.getSelect();
     let tmp_settings = config.getRunProjectTmpSettings();
     if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
         || !config.getProject(selected).SETTINGS.ENTERID)){
       window.pageHandler.selectProject(selected, private_mode);
     }
+*/
 
   } catch (e) {
     errorCache.add(e)

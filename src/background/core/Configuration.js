@@ -53,6 +53,7 @@ export default class Configuration {
    */
   onError(err){
     console.warn('Configuration-Error:', err)
+    //throw err;
   }
 
   /**
@@ -73,17 +74,22 @@ export default class Configuration {
     return new Promise((resolve, reject)=>{
       let cert = this.certstorage.get();
       if(cert===null){
+        if (this.debug) console.log('No certificate, fetching one');
         this.transfer.fileFetch(this.settings.server+'tracking/cert').then(cert => {
           this.certstorage.set(cert)
           resolve(cert);
          })
-        .catch(this.onError)
+        .catch(err => {
+          this.onError(err);
+        })
       }else{
         if(this._isTimeDiffover(this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)){
-           this.certstorage.set(null)
-           this._fetchCert().then(resolve)
+          if (this.debug) console.log('Expired certificate, renewing it');
+          this.certstorage.set(null)
+          this._fetchCert().then(resolve)
         }else{
-            resolve(cert)
+          if (this.debug) console.log('Using restored certificate');
+          resolve(cert)
         }
       }
     });
@@ -110,8 +116,8 @@ export default class Configuration {
           resolve(p);
          })
         .catch(err => {
+          // resolve(this.projectsStorage.get())
           this.onError(err);
-          resolve(this.projectsStorage.get())
         })
 
     });
@@ -235,7 +241,7 @@ export default class Configuration {
               resolve(b)
              })
             .catch(err => {
-              console.log(err);
+              this.onError(err);
             })
         }else{
           this.setProjectsTmpSettings({clientId: client_hash});
@@ -279,36 +285,37 @@ export default class Configuration {
   load(){
     if (this.debug) console.log('Configuration.load()')
     return new Promise(async (resolve, reject)=>{
+      this.initDefaultId();
+
       try {
-        // throw new Error('test');
-        this.initDefaultId();
+        console.log('_fetchCert');
         this.cert = await this._fetchCert();
+        console.log('_fetchProject');
         let e = await this._fetchProject();
-
-        this.projectIds = e.map(v => v.ID);
-        this.projectIdtoIndex = {}
-        for (let index in e) {
-          this.projectIdtoIndex[e[index].ID] = index;
-        }
-        this.projects = e;
-        
-        let selected = this.getSelect();
-        if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
-          let p = this.projects[this.projectIdtoIndex[selected]];
-          if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
-            this.setProjectsTmpSettings({clientId: null});
-          }
-          this.setProjectsTmpSettings({privateMode: false});
-        }
-
-        setTimeout(() => this.load(), UPDATE_INTERVAL);
-        this.isLoad = true;
-        resolve();
-      } catch (e) {
-        console.log(e);
-        reject(e)
+      } catch (err) {
+        console.log(err);
+        debugger;
       }
 
+      this.projectIds = e.map(v => v.ID);
+      this.projectIdtoIndex = {}
+      for (let index in e) {
+        this.projectIdtoIndex[e[index].ID] = index;
+      }
+      this.projects = e;
+      
+      let selected = this.getSelect();
+      if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
+        let p = this.projects[this.projectIdtoIndex[selected]];
+        if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
+          this.setProjectsTmpSettings({clientId: null});
+        }
+        this.setProjectsTmpSettings({privateMode: false});
+      }
+
+      setTimeout(() => this.load(), UPDATE_INTERVAL);
+      this.isLoad = true;
+      resolve();
     });//Promise
   }
 

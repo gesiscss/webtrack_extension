@@ -18,6 +18,18 @@ export default class PageHandler {
     this.transfer = transfer;
     this.debug = true;
     this.event = new EventEmitter();
+    this.is_initialized = false;
+  }
+
+  async init(){
+    try {
+      if (this.debug) console.log('Load Configuration');
+      await this.config.load();
+      this.is_initialized = true;
+    } catch(err){
+      console.log('ERROR IN INIT');
+      console.error(err);
+    }
   }
 
   /**
