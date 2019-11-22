@@ -4,17 +4,13 @@ import Configuration from './core/Configuration';
 import TrackingHandler from './core/TrackingHandler';
 import PageHandler from './core/PageHandler';
 // import LocalstoreDB from './core/LocalstoreDB';
-import ErrorCache from './core/ErrorCache';
+// import ErrorCache from './core/ErrorCache';
 import settings from '../lib/settings';
 
-const errorCache = new ErrorCache();
+//const errorCache = new ErrorCache();
 
 
-window.addEventListener("unhandledrejection", event => {
-  errorCache.add(event);
-  console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
-    '. Have you added the certificates by visiting the server page?');
-});
+
 
 
 async function load_blacklists(xbrowser) {
@@ -63,11 +59,18 @@ async function load_blacklists(xbrowser) {
 (async function main() {
   try {
     console.log('Start', new Date(), settings.server);
+
+    window.addEventListener("unhandledrejection", event => {
+      console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
+        '. Have you added the certificates by visiting the server page?');
+    });
+
     window.requireUpdate = false;
     if(settings.requireVersion.hasOwnProperty(settings.getBrowser().name) && settings.requireVersion[settings.getBrowser().name] > settings.getBrowser().version){
       console.error('PLEASE UPDATE YOUR BROWSER');
       window.requireUpdate = true;
     }
+    
     // await errorCache.createDB();
     // console.log('Created Error DB');
     window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
@@ -85,15 +88,14 @@ async function load_blacklists(xbrowser) {
     console.log('Create PageHandler');
     window.pageHandler = new PageHandler(config, transfer, window.tracker);
     await window.pageHandler.init();
-    window.pageHandler.event.on('error', error => errorCache.add(error));
+    //window.pageHandler.event.on('error', error => errorCache.add(error));
 
-/*    let selected = config.getSelect();
+    let selected = config.getSelect();
     let tmp_settings = config.getRunProjectTmpSettings();
     if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
         || !config.getProject(selected).SETTINGS.ENTERID)){
       window.pageHandler.selectProject(selected, private_mode);
     }
-*/
 
   } catch (e) {
     errorCache.add(e)

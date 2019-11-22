@@ -39207,14 +39207,9 @@ function background_asyncToGenerator(fn) { return function () { var self = this,
 
 
  // import LocalstoreDB from './core/LocalstoreDB';
+// import ErrorCache from './core/ErrorCache';
 
-
-
-var errorCache = new ErrorCache_ErrorCache();
-window.addEventListener("unhandledrejection", function (event) {
-  errorCache.add(event);
-  console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
-});
+ //const errorCache = new ErrorCache();
 
 function load_blacklists(_x) {
   return _load_blacklists.apply(this, arguments);
@@ -39284,13 +39279,16 @@ function _load_blacklists() {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer, blacklists, private_mode;
+    var transfer, blacklists, private_mode, selected, tmp_settings;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
             console.log('Start', new Date(), lib_settings.server);
+            window.addEventListener("unhandledrejection", function (event) {
+              console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
+            });
             window.requireUpdate = false;
 
             if (lib_settings.requireVersion.hasOwnProperty(lib_settings.getBrowser().name) && lib_settings.requireVersion[lib_settings.getBrowser().name] > lib_settings.getBrowser().version) {
@@ -39305,45 +39303,42 @@ function _load_blacklists() {
             window.companie = lib_settings.companie;
             transfer = new Transfer_Transfer(lib_settings.server);
             window.pageHandler = null;
-            _context.next = 11;
+            _context.next = 12;
             return load_blacklists(window.xbrowser);
 
-          case 11:
+          case 12:
             blacklists = _context.sent;
             window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
             private_mode = config.defaultId.get() == null;
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
-            _context.next = 18;
+            _context.next = 19;
             return window.pageHandler.init();
 
-          case 18:
-            window.pageHandler.event.on('error', function (error) {
-              return errorCache.add(error);
-            });
-            /*    let selected = config.getSelect();
-                let tmp_settings = config.getRunProjectTmpSettings();
-                if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
-                    || !config.getProject(selected).SETTINGS.ENTERID)){
-                  window.pageHandler.selectProject(selected, private_mode);
-                }
-            */
+          case 19:
+            //window.pageHandler.event.on('error', error => errorCache.add(error));
+            selected = config.getSelect();
+            tmp_settings = config.getRunProjectTmpSettings();
 
-            _context.next = 25;
+            if (selected != null && tmp_settings && (tmp_settings.clientId != null || !config.getProject(selected).SETTINGS.ENTERID)) {
+              window.pageHandler.selectProject(selected, private_mode);
+            }
+
+            _context.next = 28;
             break;
 
-          case 21:
-            _context.prev = 21;
+          case 24:
+            _context.prev = 24;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 25:
+          case 28:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 21]]);
+    }, _callee, null, [[0, 24]]);
   }));
 
   return function main() {
