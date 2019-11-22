@@ -31320,6 +31320,7 @@ function () {
   }, {
     key: "getProjects",
     value: function getProjects() {
+      if (this.debug) console.log('-> Configuration.getProjects');
       return this.projects;
     }
     /**
@@ -31330,6 +31331,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
+      if (this.debug) console.log('-> Configuration.isLoaded');
       return this.is_load;
     }
     /**
@@ -38764,42 +38766,10 @@ function () {
 
   }, {
     key: "getProjects",
-    value: function () {
-      var _getProjects = PageHandler_asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (this.debug) console.log('-> PageHandler.getProjects()');
-
-                if (!this.isLoaded()) {
-                  _context2.next = 5;
-                  break;
-                }
-
-                return _context2.abrupt("return", this.config.getProjects());
-
-              case 5:
-                _context2.next = 7;
-                return this.init();
-
-              case 7:
-                return _context2.abrupt("return", this.config.getProjects());
-
-              case 8:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      return function getProjects() {
-        return _getProjects.apply(this, arguments);
-      };
-    }()
+    value: function getProjects() {
+      if (this.debug) console.log('-> PageHandler.getProjects()');
+      return this.config.getProjects();
+    }
     /**
      * [is the configuration loaded]
      * @return {Boolean}
@@ -39099,18 +39069,18 @@ function () {
     value: function () {
       var _confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(component) {
+      regeneratorRuntime.mark(function _callee2(component) {
         var _this5 = this;
 
         var private_time,
             extension,
-            _args3 = arguments;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+            _args2 = arguments;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 1000 * 60 * 15;
-                _context3.next = 3;
+                private_time = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : 1000 * 60 * 15;
+                _context2.next = 3;
                 return this.set_timeout(private_time);
 
               case 3:
@@ -39137,10 +39107,10 @@ function () {
 
               case 5:
               case "end":
-                return _context3.stop();
+                return _context2.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee2, this);
       }));
 
       return function confirm_public_mode(_x) {
@@ -39158,11 +39128,11 @@ function () {
     value: function () {
       var _cancel_confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee4() {
+      regeneratorRuntime.mark(function _callee3() {
         var extension;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 clearTimeout(this.timer);
                 extension = this._getCurrentTracker().extension;
@@ -39170,10 +39140,10 @@ function () {
 
               case 3:
               case "end":
-                return _context4.stop();
+                return _context3.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee3, this);
       }));
 
       return function cancel_confirm_public_mode() {

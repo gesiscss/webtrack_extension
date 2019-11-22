@@ -120,6 +120,7 @@ export default class Configuration {
    * @return {Array}
    */
   getProjects(){
+    if (this.debug) console.log('-> Configuration.getProjects');
     return this.projects;
   }
 
@@ -129,6 +130,7 @@ export default class Configuration {
    * @return {Boolean} [true if the configuration was loaded correctly]
    */
   isLoaded(){
+    if (this.debug) console.log('-> Configuration.isLoaded');
     return this.is_load;
   }
 

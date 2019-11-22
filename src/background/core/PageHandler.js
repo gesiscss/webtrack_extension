@@ -71,14 +71,9 @@ export default class PageHandler {
    * [list of configs from projekts]
    * @return {Array}
    */
-  async getProjects(){
+  getProjects(){
     if (this.debug) console.log('-> PageHandler.getProjects()');
-    if (this.isLoaded()){
-      return this.config.getProjects();
-    } else {
-      await this.init();
-      return this.config.getProjects();
-    }
+    return this.config.getProjects();
   }
 
   /**

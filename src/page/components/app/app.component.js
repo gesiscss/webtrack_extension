@@ -58,6 +58,10 @@ export default class extends React.Component {
       }
     }
     this.f7params = Object.assign(this.f7params, {routes: Object.values(this.routes)});
+
+    if (!this.extension.pageHandler.isLoaded()){
+      this.extension.pageHandler.init();
+    }
   }
 
   /**
@@ -65,7 +69,7 @@ export default class extends React.Component {
    * @return {Array<object>}
    */
   getProjects(){
-    return this.extension.pageHandler.getProjects()
+    return this.extension.pageHandler.getProjects();
   }
 
   /**
@@ -81,7 +85,7 @@ export default class extends React.Component {
    * @return {Pagehandler}
    */
   getPageHandler(){
-    return this.extension.pageHandler
+    return this.extension.pageHandler;
   }
 
   /**
