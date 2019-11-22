@@ -31360,6 +31360,10 @@ function () {
   }, {
     key: "_getProjectsTmpSettings",
     value: function _getProjectsTmpSettings() {
+      if (!this.isLoaded()) {
+        return {};
+      }
+
       var newSettings = {};
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -32730,7 +32734,9 @@ function () {
         xbrowser.tabs.onUpdated.addListener(_this4._onTabUpdate);
         xbrowser.runtime.onMessage.addListener(_this4._onContentMessage);
         xbrowser.tabs.onActivated.addListener(_this4._onActivatedTab);
+        console.log('add listener external port');
         xbrowser.runtime.onConnect.addListener(function (externalPort) {
+          console.log('connection established');
           externalPort.onDisconnect.addListener(this._onDisconnectedPopup);
         }.bind(_this4)); // function logURL(requestDetails) {
         //   console.log("Loading: " + requestDetails.url);
@@ -37975,6 +37981,9 @@ function () {
         this.projectId = this.config.getSelect();
         var settings = this.config.getProject(this.projectId);
         this.settings = settings.SETTINGS;
+        console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(settings);
+        console.log(settings.SETTINGS);
         this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
         var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
@@ -38208,31 +38217,32 @@ function () {
               case 0:
                 privateMode = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : this.extension.privateMode;
                 _context3.prev = 1;
+                if (this.debug) console.log('-> TrackingHandler.start()');
                 this.extension.setPrivateMode(privateMode);
-                _context3.next = 5;
+                _context3.next = 6;
                 return this.tabHandler.start();
 
-              case 5:
-                _context3.next = 7;
+              case 6:
+                _context3.next = 8;
                 return this.extension.start();
 
-              case 7:
+              case 8:
                 this.tabHandler.event.on('onPage', this._addPage);
-                _context3.next = 14;
+                _context3.next = 15;
                 break;
 
-              case 10:
-                _context3.prev = 10;
+              case 11:
+                _context3.prev = 11;
                 _context3.t0 = _context3["catch"](1);
                 console.warn(_context3.t0);
                 this.event.emit('error', _context3.t0, true);
 
-              case 14:
+              case 15:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[1, 10]]);
+        }, _callee3, this, [[1, 11]]);
       }));
 
       return function start() {
@@ -38775,7 +38785,7 @@ function () {
       }
 
       if (selectId != null) {
-        this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, autostart = true, mute = false);
+        this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, false);
         this.tracker.event.on('error', function (error) {
           _this.event.emit('error', error, true);
         });
@@ -38795,7 +38805,7 @@ function () {
       var _this2 = this;
 
       if (this.debug) console.log('PageHandler._createMuteTracker()');
-      this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, false, true);
+      this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, true);
       this.tracker.event.on('error', function (error) {
         _this2.event.emit('error', error, true);
       });
@@ -38860,7 +38870,7 @@ function () {
 
               delete _this3.tracker;
               _this3.tracker = null;
-              console.log('CLOSE TRACKER'); // this._setCurrentTrackerPrivateMode(true);
+              if (_this3.debug) console.log('CLOSE TRACKER'); // this._setCurrentTrackerPrivateMode(true);
             }
 
             _this3.config.setSelect(id);
@@ -38869,9 +38879,9 @@ function () {
               if (_this3._createTracker()) {
                 var current_tracker = _this3._getCurrentTracker();
 
-                current_tracker.init(private_mode = private_mode); // if setting enterid false then will be disabled the private mode
+                current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
 
-                console.log('ENTERID', current_tracker.settings.ENTERID);
+                if (_this3.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
               }
             }
           }
@@ -38898,16 +38908,15 @@ function () {
 
             delete _this4.tracker;
             _this4.tracker = null;
-            console.log('CLOSE TRACKER');
           }
 
-          if (_this4._createMuteTracker()) {
-            var current_tracker = _this4._getCurrentTracker();
+          _this4._createMuteTracker();
 
-            current_tracker.init(private_mode = true); // if setting enterid false then will be disabled the private mode
+          var current_tracker = _this4._getCurrentTracker();
 
-            console.log('ENTERID', current_tracker.settings.ENTERID);
-          }
+          current_tracker.init(true); // if setting enterid false then will be disabled the private mode
+
+          if (_this4.debug) console.log('settings', current_tracker.settings);
         } catch (e) {
           reject(e);
         } finally {
@@ -39282,7 +39291,6 @@ function _load_blacklists() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
             console.log('Start', new Date(), lib_settings.server);
             window.addEventListener("unhandledrejection", function (event) {
               console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
@@ -39301,20 +39309,20 @@ function _load_blacklists() {
             window.companie = lib_settings.companie;
             transfer = new Transfer_Transfer(lib_settings.server);
             window.pageHandler = null;
-            _context.next = 12;
+            _context.next = 11;
             return load_blacklists(window.xbrowser);
 
-          case 12:
+          case 11:
             blacklists = _context.sent;
             window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
             private_mode = config.defaultId.get() == null;
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
             console.log('init');
-            _context.next = 20;
+            _context.next = 19;
             return window.pageHandler.init();
 
-          case 20:
+          case 19:
             console.log('after init'); //window.pageHandler.event.on('error', error => errorCache.add(error));
 
             selected = config.getSelect();
@@ -39330,21 +39338,12 @@ function _load_blacklists() {
               }
             }
 
-            _context.next = 32;
-            break;
-
-          case 28:
-            _context.prev = 28;
-            _context.t0 = _context["catch"](0);
-            errorCache.add(_context.t0);
-            console.warn(_context.t0);
-
-          case 32:
+          case 25:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 28]]);
+    }, _callee);
   }));
 
   return function main() {

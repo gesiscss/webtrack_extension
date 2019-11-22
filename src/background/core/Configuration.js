@@ -155,6 +155,9 @@ export default class Configuration {
    * @return {Object}
    */
   _getProjectsTmpSettings(){
+    if (!this.isLoaded()){
+      return {};
+    }
     let newSettings = {};
     for (let p of this.projects) newSettings[p.ID] = {clientId: null, privateMode: false, sending: false};
     let r = Object.assign({}, newSettings, this.projectsTmpSettings.get())

@@ -425,7 +425,9 @@ export default class Extension {
       xbrowser.runtime.onMessage.addListener(this._onContentMessage);
       xbrowser.tabs.onActivated.addListener(this._onActivatedTab);
 
+      console.log('add listener external port');
       xbrowser.runtime.onConnect.addListener(function (externalPort) {
+        console.log('connection established');
         externalPort.onDisconnect.addListener(this._onDisconnectedPopup)
       }.bind(this))
 

@@ -57,59 +57,55 @@ async function load_blacklists(xbrowser) {
 
 
 (async function main() {
-  try {
-    console.log('Start', new Date(), settings.server);
 
-    window.addEventListener("unhandledrejection", event => {
-      console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
-        '. Have you added the certificates by visiting the server page?');
-    });
+  console.log('Start', new Date(), settings.server);
 
-    window.requireUpdate = false;
-    if(settings.requireVersion.hasOwnProperty(settings.getBrowser().name) && settings.requireVersion[settings.getBrowser().name] > settings.getBrowser().version){
-      console.error('PLEASE UPDATE YOUR BROWSER');
-      window.requireUpdate = true;
-    }
-    
-    // await errorCache.createDB();
-    // console.log('Created Error DB');
-    window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
-    window.settings = settings;
-    window.companie = settings.companie;
-    var transfer = new Transfer(settings.server);
-    window.pageHandler = null;
+  window.addEventListener("unhandledrejection", event => {
+    console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
+      '. Have you added the certificates by visiting the server page?');
+  });
 
-    let blacklists = await load_blacklists(window.xbrowser);
-
-    window.config = new Configuration(settings, transfer, blacklists);
-
-    let private_mode = config.defaultId.get()==null;
-
-    console.log('Create PageHandler');
-    window.pageHandler = new PageHandler(config, transfer, window.tracker);
-    console.log('init');
-
-    await window.pageHandler.init();
-    console.log('after init');
-    //window.pageHandler.event.on('error', error => errorCache.add(error));
-
-    let selected = config.getSelect();
-    console.log(selected);
-    let tmp_settings = config.getRunProjectTmpSettings();
-    console.log(tmp_settings);
-
-
-    if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
-        || !config.getProject(selected).SETTINGS.ENTERID)){
-      window.pageHandler.selectProject(selected, private_mode);
-    } else {
-      if (!config.isLoaded()){
-        window.pageHandler.disconnectedMode();
-      }
-    }
-
-  } catch (e) {
-    errorCache.add(e)
-    console.warn(e);
+  window.requireUpdate = false;
+  if(settings.requireVersion.hasOwnProperty(settings.getBrowser().name) && settings.requireVersion[settings.getBrowser().name] > settings.getBrowser().version){
+    console.error('PLEASE UPDATE YOUR BROWSER');
+    window.requireUpdate = true;
   }
+  
+  // await errorCache.createDB();
+  // console.log('Created Error DB');
+  window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
+  window.settings = settings;
+  window.companie = settings.companie;
+  var transfer = new Transfer(settings.server);
+  window.pageHandler = null;
+
+  let blacklists = await load_blacklists(window.xbrowser);
+
+  window.config = new Configuration(settings, transfer, blacklists);
+
+  let private_mode = config.defaultId.get()==null;
+
+  console.log('Create PageHandler');
+  window.pageHandler = new PageHandler(config, transfer, window.tracker);
+  console.log('init');
+
+  await window.pageHandler.init();
+  console.log('after init');
+  //window.pageHandler.event.on('error', error => errorCache.add(error));
+
+  let selected = config.getSelect();
+  console.log(selected);
+  let tmp_settings = config.getRunProjectTmpSettings();
+  console.log(tmp_settings);
+
+
+  if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
+      || !config.getProject(selected).SETTINGS.ENTERID)){
+    window.pageHandler.selectProject(selected, private_mode);
+  } else {
+    if (!config.isLoaded()){
+      window.pageHandler.disconnectedMode();
+    }
+  }
+
 })();

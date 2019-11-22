@@ -48,6 +48,10 @@ export default class TrackingHandler {
         this.projectId = this.config.getSelect();
         let settings = this.config.getProject(this.projectId);
         this.settings = settings.SETTINGS;
+        console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(settings);
+        console.log(settings.SETTINGS)
+
 
         this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;
         let privateMode = (this.schedule==null || this.schedule.getNextPeriode()===0)? this.config.getRunProjectTmpSettings().privateMode : true;
@@ -189,6 +193,7 @@ export default class TrackingHandler {
    */
   async start(privateMode=this.extension.privateMode){
     try {
+      if (this.debug) console.log('-> TrackingHandler.start()');
       this.extension.setPrivateMode(privateMode);
       await this.tabHandler.start();
       await this.extension.start();      

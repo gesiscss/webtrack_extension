@@ -90,7 +90,7 @@ export default class PageHandler {
       this.tracker.close();
     }
     if(selectId!=null){
-      this.tracker = new TrackingHandler(this.config, this.transfer, autostart=true, mute=false);
+      this.tracker = new TrackingHandler(this.config, this.transfer, true, false);
       this.tracker.event.on('error', error => {
         this.event.emit('error', error, true);
       });
@@ -108,7 +108,7 @@ export default class PageHandler {
   _createMuteTracker(){
     if (this.debug) console.log('PageHandler._createMuteTracker()');
 
-    this.tracker = new TrackingHandler(this.config, this.transfer, false, true);
+    this.tracker = new TrackingHandler(this.config, this.transfer, true, true);
     this.tracker.event.on('error', error => {
       this.event.emit('error', error, true);
     });
@@ -161,16 +161,16 @@ export default class PageHandler {
             this.tracker.close();
             delete this.tracker;
             this.tracker = null;
-            console.log('CLOSE TRACKER');
+            if (this.debug) console.log('CLOSE TRACKER');
             // this._setCurrentTrackerPrivateMode(true);
           }
           this.config.setSelect(id);
           if(id != null){
             if(this._createTracker()){
               let current_tracker = this._getCurrentTracker();
-              current_tracker.init(private_mode=private_mode);
+              current_tracker.init(private_mode);
               // if setting enterid false then will be disabled the private mode
-              console.log('ENTERID', current_tracker.settings.ENTERID);
+              if (this.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
             }
           }
         }
@@ -187,20 +187,18 @@ export default class PageHandler {
     return new Promise((resolve, reject) => {
       if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
       try {
-
         // make sure there is no tracker
         if (this.tracker!=null){
           this.tracker.close();
           delete this.tracker;
           this.tracker = null;
-          console.log('CLOSE TRACKER');
         }
-        if(this._createMuteTracker()){
-          let current_tracker = this._getCurrentTracker();
-          current_tracker.init(private_mode=true);
-          // if setting enterid false then will be disabled the private mode
-          console.log('ENTERID', current_tracker.settings.ENTERID);
-        }
+
+        this._createMuteTracker();
+        let current_tracker = this._getCurrentTracker();
+        current_tracker.init(true);
+        // if setting enterid false then will be disabled the private mode
+        if (this.debug) console.log('settings', current_tracker.settings);
 
       } catch (e) {
         reject(e)
