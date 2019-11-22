@@ -87,14 +87,25 @@ async function load_blacklists(xbrowser) {
 
     console.log('Create PageHandler');
     window.pageHandler = new PageHandler(config, transfer, window.tracker);
+    console.log('init');
+
     await window.pageHandler.init();
+    console.log('after init');
     //window.pageHandler.event.on('error', error => errorCache.add(error));
 
     let selected = config.getSelect();
+    console.log(selected);
     let tmp_settings = config.getRunProjectTmpSettings();
+    console.log(tmp_settings);
+
+
     if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
         || !config.getProject(selected).SETTINGS.ENTERID)){
       window.pageHandler.selectProject(selected, private_mode);
+    } else {
+      if (!config.isLoaded()){
+        window.pageHandler.disconnectedMode();
+      }
     }
 
   } catch (e) {

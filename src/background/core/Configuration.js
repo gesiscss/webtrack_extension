@@ -27,7 +27,7 @@ export default class Configuration {
     this.defaultId = new LocalstorageHandler('defaultId', null);
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
-    this.isLoad = false;
+    this.is_load = false;
     this.debug = true;
 
     if (this.debug) console.log(blacklists);
@@ -123,6 +123,15 @@ export default class Configuration {
     return this.projects;
   }
 
+
+  /**
+   * [is the configuraion loaded correctly]
+   * @return {Boolean} [true if the configuration was loaded correctly]
+   */
+  isLoaded(){
+    return this.is_load;
+  }
+
   /**
    * [getProject return project settings]
    * @param  {Integer} id
@@ -208,7 +217,7 @@ export default class Configuration {
     if(this._getProjectsTmpSettings().hasOwnProperty(selected)){
       return this._getProjectsTmpSettings()[selected];
     }
-    return false;   
+    return null;
   }
 
   /**
@@ -284,7 +293,7 @@ export default class Configuration {
     this.projects = projects;
     
     let selected = this.getSelect();
-    if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
+    if(!this.is_load && !this.mobile && selected != null && this.isProjectAvailable(selected)){
       let p = this.projects[this.projectIdtoIndex[selected]];
       if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
         this.setProjectsTmpSettings({clientId: null});
@@ -293,7 +302,7 @@ export default class Configuration {
     }
 
     setTimeout(() => this.load(), UPDATE_INTERVAL);
-    this.isLoad = true;
+    this.is_load = true;
   }
 
   /**
@@ -304,8 +313,8 @@ export default class Configuration {
 
     this.projectIds = null;
     this.projectIdtoIndex = null;
-    this.projects = null;
-    this.isLoad = false;
+    this.projects = [];
+    this.is_load = false;
     setTimeout(() => this.load(), UPDATE_INTERVAL);
 
   }
@@ -323,7 +332,7 @@ export default class Configuration {
       this._fetchCert().then(cert => {
         this._fetchProject().then(projects => {
           this._load(projects);
-          resolve();
+          resolve(true);
         }).catch(err => {
           console.log("Failed fetching the project");
           if (this.debug) console.log(err);
@@ -333,8 +342,9 @@ export default class Configuration {
         if (this.debug) console.log(err);
       })
 
-      if (!this.isLoad){
+      if (!this.is_load){
         this._loadDisconnectedMode();
+        resolve(false);
       }
     });//Promise
   }

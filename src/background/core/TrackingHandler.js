@@ -5,7 +5,7 @@ import PageCache from './PageCache';
 import Schedule from './Schedule';
 import {EventEmitter, clearEvent} from 'eventemitter3';
 import lang from '../../lib/lang';
-import ErrorCache from './ErrorCache';
+// import ErrorCache from './ErrorCache';
 import moment from 'moment';
 
 const EVENT_NAMES = {
@@ -21,10 +21,11 @@ export default class TrackingHandler {
    * @param {Configuration} config
    * @param {Boolean} autostart [default: false]
    */
-  constructor(config, transfer, autostart=false) {
+  constructor(config, transfer, autostart=false, mute=false) {
     this._addPage = this._addPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
     this.AUTOSTART = autostart;
+    this.mute = mute;
     this.config = config;
     this.event = new EventEmitter();
     this.debug = true;
@@ -40,33 +41,45 @@ export default class TrackingHandler {
 
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
 
-    try {
 
-      this.projectId = this.config.getSelect();
-      let settings = this.config.getProject(this.projectId);
-      this.settings = settings.SETTINGS;
+    if (!mute){
+      try {
 
-      this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;
-      let privateMode = (this.schedule==null || this.schedule.getNextPeriode()===0)? this.config.getRunProjectTmpSettings().privateMode : true;
-      this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
+        this.projectId = this.config.getSelect();
+        let settings = this.config.getProject(this.projectId);
+        this.settings = settings.SETTINGS;
 
-      let urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
-      this.extension = new Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
-      this.tabHandler = new TabHandler(this.projectId, this.extension);
+        this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;
+        let privateMode = (this.schedule==null || this.schedule.getNextPeriode()===0)? this.config.getRunProjectTmpSettings().privateMode : true;
+        this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
+
+        let urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
+        this.extension = new Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
+        this.tabHandler = new TabHandler(this.projectId, this.extension);
+        this.tabHandler.event.on('error', error => {
+          this.event.emit('error', error, true);
+        });
+        this.pageCache = new PageCache(this.projectId);
+
+
+        // this.extension.event.on('error', error => new ErrorCache().add(error));
+        this.privateMode = privateMode;
+        this.transfer = transfer;
+        this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
+      } catch (e) {
+        console.log(this.event);
+        this.event.emit('error', e, true);
+        console.log(e);
+      }
+    } else {
+      this.schedule == null;
+      let urlFilter = new URLFilter({});
+      this.extension = new Extension(urlFilter);
+      this.tabHandler = new TabHandler(null, this.extension);
       this.tabHandler.event.on('error', error => {
         this.event.emit('error', error, true);
       });
-      this.pageCache = new PageCache(this.projectId);
-
-
-      this.extension.event.on('error', error => new ErrorCache().add(error));
-      this.privateMode = privateMode;
-      this.transfer = transfer;
-      this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
-    } catch (e) {
-      console.log(this.event);
-      this.event.emit('error', e, true);
-      console.log(e);
+      this.pageCache = new PageCache(null);
     }
   }
 
@@ -93,9 +106,11 @@ export default class TrackingHandler {
           // I am forcing it to start in private mode so it doesnt try to collect
           // data immediately
           if(this.AUTOSTART) this.start(private_mode);
-          if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
-            console.log('Autostart send');
-            this.sendData(null, true);
+          if (!this.mute){
+            if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
+              console.log('Autostart send');
+              this.sendData(null, true);
+            }
           }
           resolve();
         }

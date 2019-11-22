@@ -1,6 +1,6 @@
 export default class URLFilter {
 
-  constructor(lists=[], active=false, white_or_black=true) {
+  constructor(lists={}, active=false, white_or_black=true) {
     this.active = active;
     this.white_or_black = white_or_black;
     this.lists = lists;

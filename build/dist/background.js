@@ -31206,7 +31206,7 @@ function () {
     this.defaultId = new LocalstorageHandler('defaultId', null);
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
-    this.isLoad = false;
+    this.is_load = false;
     this.debug = true;
     if (this.debug) console.log(blacklists);
   }
@@ -31321,6 +31321,16 @@ function () {
     key: "getProjects",
     value: function getProjects() {
       return this.projects;
+    }
+    /**
+     * [is the configuraion loaded correctly]
+     * @return {Boolean} [true if the configuration was loaded correctly]
+     */
+
+  }, {
+    key: "isLoaded",
+    value: function isLoaded() {
+      return this.is_load;
     }
     /**
      * [getProject return project settings]
@@ -31457,7 +31467,7 @@ function () {
         return this._getProjectsTmpSettings()[selected];
       }
 
-      return false;
+      return null;
     }
     /**
      * [setClientId set the clientid of current project]
@@ -31560,7 +31570,7 @@ function () {
       this.projects = projects;
       var selected = this.getSelect();
 
-      if (!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)) {
+      if (!this.is_load && !this.mobile && selected != null && this.isProjectAvailable(selected)) {
         var p = this.projects[this.projectIdtoIndex[selected]];
 
         if (p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID) {
@@ -31577,7 +31587,7 @@ function () {
       setTimeout(function () {
         return _this4.load();
       }, UPDATE_INTERVAL);
-      this.isLoad = true;
+      this.is_load = true;
     }
     /**
      * load dummy variables when the connection to the server is not succesful
@@ -31591,8 +31601,8 @@ function () {
       console.log('Operating in disconnected mode');
       this.projectIds = null;
       this.projectIdtoIndex = null;
-      this.projects = null;
-      this.isLoad = false;
+      this.projects = [];
+      this.is_load = false;
       setTimeout(function () {
         return _this5.load();
       }, UPDATE_INTERVAL);
@@ -31624,7 +31634,7 @@ function () {
                     _this6._fetchProject().then(function (projects) {
                       _this6._load(projects);
 
-                      resolve();
+                      resolve(true);
                     })["catch"](function (err) {
                       console.log("Failed fetching the project");
                       if (_this6.debug) console.log(err);
@@ -31634,8 +31644,10 @@ function () {
                     if (_this6.debug) console.log(err);
                   });
 
-                  if (!_this6.isLoad) {
+                  if (!_this6.is_load) {
                     _this6._loadDisconnectedMode();
+
+                    resolve(false);
                   }
 
                 case 3:
@@ -31677,7 +31689,7 @@ var URLFilter =
 /*#__PURE__*/
 function () {
   function URLFilter() {
-    var lists = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var lists = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     var white_or_black = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
@@ -37692,6 +37704,7 @@ settings_settings.getBrowser = function () {
     title: 'Projects',
     select: 'Select one project',
     nolist: 'Currently no projects are active. Please try it another time. Thank you!',
+    notloaded: 'Webtrack could not connect to the server. Please try again later.',
     startTitle: 'Starten'
   },
   loggin: {
@@ -37772,6 +37785,7 @@ settings_settings.getBrowser = function () {
     title: 'Projekte',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
+    notloaded: 'Webtrack konnte keine Verbindung zum Server herstellen. Bitte versuch es später.',
     startTitle: 'Starten'
   },
   loggin: {
@@ -37898,95 +37912,6 @@ function () {
 
 
 /* harmony default export */ var lib_lang = (new lang_Lang());
-// CONCATENATED MODULE: ./src/background/core/ErrorCache.js
-function ErrorCache_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { ErrorCache_typeof = function _typeof(obj) { return typeof obj; }; } else { ErrorCache_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return ErrorCache_typeof(obj); }
-
-function ErrorCache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function ErrorCache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function ErrorCache_createClass(Constructor, protoProps, staticProps) { if (protoProps) ErrorCache_defineProperties(Constructor.prototype, protoProps); if (staticProps) ErrorCache_defineProperties(Constructor, staticProps); return Constructor; }
-
-function ErrorCache_possibleConstructorReturn(self, call) { if (call && (ErrorCache_typeof(call) === "object" || typeof call === "function")) { return call; } return ErrorCache_assertThisInitialized(self); }
-
-function ErrorCache_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function ErrorCache_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { ErrorCache_get = Reflect.get; } else { ErrorCache_get = function _get(target, property, receiver) { var base = ErrorCache_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return ErrorCache_get(target, property, receiver || target); }
-
-function ErrorCache_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = ErrorCache_getPrototypeOf(object); if (object === null) break; } return object; }
-
-function ErrorCache_getPrototypeOf(o) { ErrorCache_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return ErrorCache_getPrototypeOf(o); }
-
-function ErrorCache_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) ErrorCache_setPrototypeOf(subClass, superClass); }
-
-function ErrorCache_setPrototypeOf(o, p) { ErrorCache_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return ErrorCache_setPrototypeOf(o, p); }
-
-
-
-
-var ErrorCache_ErrorCache =
-/*#__PURE__*/
-function (_CacheHandler) {
-  ErrorCache_inherits(ErrorCache, _CacheHandler);
-
-  /**
-   * [constructor
-   * - create instance of FileHandler
-   * - create instance of LocalstorageHandler
-   * ]
-   * @param {Number}
-   */
-  function ErrorCache() {
-    var _this;
-
-    ErrorCache_classCallCheck(this, ErrorCache);
-
-    _this = ErrorCache_possibleConstructorReturn(this, ErrorCache_getPrototypeOf(ErrorCache).call(this));
-    _this.storage = new LocalstoreDB({
-      databaseName: 'wt_error',
-      objectStoreName: 'data',
-      defaultContent: {}
-    });
-    _this.typeofId = 'number';
-    _this.debug = false;
-    _this.add;
-    return _this;
-  }
-
-  ErrorCache_createClass(ErrorCache, [{
-    key: "add",
-    value: function add(error) {
-      if (error.hasOwnProperty('reason')) {
-        error = error.reason;
-      }
-
-      error = error.hasOwnProperty('stack') ? error.stack.toString() : error;
-      console.log('error', error);
-
-      ErrorCache_get(ErrorCache_getPrototypeOf(ErrorCache.prototype), "add", this).call(this, {
-        id: +new Date(),
-        time: new Date(),
-        reason: error
-      })["catch"](console.error);
-    }
-  }, {
-    key: "createDB",
-    value: function createDB() {
-      var _this2 = this;
-
-      return new Promise(function (resolve, reject) {
-        _this2.storage.getTransaction().then(function (transaction) {
-          transaction.db.close();
-          resolve();
-        })["catch"](reject);
-      });
-    }
-  }]);
-
-  return ErrorCache;
-}(CacheHandler_CacheHandler);
-
-
 // EXTERNAL MODULE: ./node_modules/moment/moment.js
 var moment = __webpack_require__(1);
 
@@ -38009,7 +37934,7 @@ function TrackingHandler_createClass(Constructor, protoProps, staticProps) { if 
 
 
 
-
+ // import ErrorCache from './ErrorCache';
 
 
 var TrackingHandler_EVENT_NAMES = {
@@ -38030,12 +37955,14 @@ function () {
     var _this = this;
 
     var autostart = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var mute = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     TrackingHandler_classCallCheck(this, TrackingHandler);
 
     this._addPage = this._addPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
     this.AUTOSTART = autostart;
+    this.mute = mute;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
     this.debug = true; // fields that should be anonymized
@@ -38043,31 +37970,42 @@ function () {
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
 
-    try {
-      this.projectId = this.config.getSelect();
-      var settings = this.config.getProject(this.projectId);
-      this.settings = settings.SETTINGS;
-      this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
-      var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
-      this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
-      var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
-      this.extension = new Extension_Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
-      this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
+    if (!mute) {
+      try {
+        this.projectId = this.config.getSelect();
+        var settings = this.config.getProject(this.projectId);
+        this.settings = settings.SETTINGS;
+        this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
+        var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
+        this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
+        var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
+        this.extension = new Extension_Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
+        this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
+        this.tabHandler.event.on('error', function (error) {
+          _this.event.emit('error', error, true);
+        });
+        this.pageCache = new PageCache(this.projectId); // this.extension.event.on('error', error => new ErrorCache().add(error));
+
+        this.privateMode = privateMode;
+        this.transfer = transfer;
+
+        this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
+      } catch (e) {
+        console.log(this.event);
+        this.event.emit('error', e, true);
+        console.log(e);
+      }
+    } else {
+      this.schedule == null;
+
+      var _urlFilter = new URLFilter({});
+
+      this.extension = new Extension_Extension(_urlFilter);
+      this.tabHandler = new TabHandler_TabHandler(null, this.extension);
       this.tabHandler.event.on('error', function (error) {
         _this.event.emit('error', error, true);
       });
-      this.pageCache = new PageCache(this.projectId);
-      this.extension.event.on('error', function (error) {
-        return new ErrorCache_ErrorCache().add(error);
-      });
-      this.privateMode = privateMode;
-      this.transfer = transfer;
-
-      this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
-    } catch (e) {
-      console.log(this.event);
-      this.event.emit('error', e, true);
-      console.log(e);
+      this.pageCache = new PageCache(null);
     }
   }
   /**
@@ -38123,10 +38061,12 @@ function () {
 
                   if (_this2.AUTOSTART) _this2.start(private_mode);
 
-                  if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
-                    console.log('Autostart send');
+                  if (!_this2.mute) {
+                    if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
+                      console.log('Autostart send');
 
-                    _this2.sendData(null, true);
+                      _this2.sendData(null, true);
+                    }
                   }
 
                   resolve();
@@ -38796,6 +38736,17 @@ function () {
       return this.config.getProjects();
     }
     /**
+     * [is the configuration loaded]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "isLoaded",
+    value: function isLoaded() {
+      if (this.debug) console.log('PageHandler.isLoaded()');
+      return this.config.isLoaded();
+    }
+    /**
      * [selected project]
      * @return {number}
      */
@@ -38824,7 +38775,7 @@ function () {
       }
 
       if (selectId != null) {
-        this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true);
+        this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, autostart = true, mute = false);
         this.tracker.event.on('error', function (error) {
           _this.event.emit('error', error, true);
         });
@@ -38832,6 +38783,22 @@ function () {
       } else {
         return false;
       }
+    }
+    /**
+     * [_createTracker description]
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "_createMuteTracker",
+    value: function _createMuteTracker() {
+      var _this2 = this;
+
+      if (this.debug) console.log('PageHandler._createMuteTracker()');
+      this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, false, true);
+      this.tracker.event.on('error', function (error) {
+        _this2.event.emit('error', error, true);
+      });
     }
     /**
      * [set the privatemode from running trackingHandler]
@@ -38856,14 +38823,12 @@ function () {
     key: "_getCurrentTracker",
     value: function _getCurrentTracker() {
       if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
-      var tracker = null;
+      var tracker = this.tracker; // if the configuration was loaded correctly, and no project is selected
+      // then return null
 
-      if (this.config.getSelect() == null) {
+      if (this.config.isLoaded() && this.config.getSelect() == null) {
         console.log('No Select return null');
-      } else if (this.tracker != null) {
-        tracker = this.tracker;
-      } else {
-        console.error('Return no tracker', this.config.getSelect());
+        tracker = null;
       }
 
       if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
@@ -38878,33 +38843,33 @@ function () {
   }, {
     key: "selectProject",
     value: function selectProject() {
-      var _this2 = this;
+      var _this3 = this;
 
       var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
       var private_mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       return new Promise(function (resolve, reject) {
-        if (_this2.debug) console.log('-> PageHandler.selectProject() - Promise');
+        if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
 
         try {
           // console.log(parseInt(id, 10) , this.config.getSelect());
-          if (id != null && parseInt(id, 10) == _this2.config.getSelect() && _this2.tracker != null) {
+          if (id != null && parseInt(id, 10) == _this3.config.getSelect() && _this3.tracker != null) {
             /*already selected*/
           } else {
-            if (id == null && _this2.tracker != null) {
-              _this2.tracker.close();
+            if (id == null && _this3.tracker != null) {
+              _this3.tracker.close();
 
-              delete _this2.tracker;
-              _this2.tracker = null;
+              delete _this3.tracker;
+              _this3.tracker = null;
               console.log('CLOSE TRACKER'); // this._setCurrentTrackerPrivateMode(true);
             }
 
-            _this2.config.setSelect(id);
+            _this3.config.setSelect(id);
 
             if (id != null) {
-              if (_this2._createTracker()) {
-                var current_tracker = _this2._getCurrentTracker();
+              if (_this3._createTracker()) {
+                var current_tracker = _this3._getCurrentTracker();
 
-                current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
+                current_tracker.init(private_mode = private_mode); // if setting enterid false then will be disabled the private mode
 
                 console.log('ENTERID', current_tracker.settings.ENTERID);
               }
@@ -38913,7 +38878,40 @@ function () {
         } catch (e) {
           reject(e);
         } finally {
-          if (_this2.debug) console.log('<- PageHandler.selectProject() - Promise');
+          if (_this3.debug) console.log('<- PageHandler.selectProject() - Promise');
+          resolve();
+        }
+      });
+    }
+  }, {
+    key: "disconnectedMode",
+    value: function disconnectedMode() {
+      var _this4 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this4.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
+
+        try {
+          // make sure there is no tracker
+          if (_this4.tracker != null) {
+            _this4.tracker.close();
+
+            delete _this4.tracker;
+            _this4.tracker = null;
+            console.log('CLOSE TRACKER');
+          }
+
+          if (_this4._createMuteTracker()) {
+            var current_tracker = _this4._getCurrentTracker();
+
+            current_tracker.init(private_mode = true); // if setting enterid false then will be disabled the private mode
+
+            console.log('ENTERID', current_tracker.settings.ENTERID);
+          }
+        } catch (e) {
+          reject(e);
+        } finally {
+          if (_this4.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
           resolve();
         }
       });
@@ -39038,7 +39036,7 @@ function () {
       var _confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2(component) {
-        var _this3 = this;
+        var _this5 = this;
 
         var private_time,
             extension,
@@ -39057,15 +39055,15 @@ function () {
                 if (extension.privateMode) {
                   //on focus other tab
                   extension.event.once(PageHandler_EVENT_NAMES.extendPrivateMode, function (new_private_time) {
-                    if (_this3.debug) console.log('PageHandler.onExtendPrivateMode');
+                    if (_this5.debug) console.log('PageHandler.onExtendPrivateMode');
 
                     if (new_private_time > 0) {
-                      _this3.confirm_public_mode(component, new_private_time);
+                      _this5.confirm_public_mode(component, new_private_time);
                     } else {
                       //this.setPrivateMode(false);
                       extension.privateMode = false;
 
-                      _this3.config.setPrivateMode(false);
+                      _this5.config.setPrivateMode(false);
 
                       extension.resetPublicImage(extension);
                     }
@@ -39127,10 +39125,10 @@ function () {
   }, {
     key: "set_timeout",
     value: function set_timeout(ms) {
-      var _this4 = this;
+      var _this6 = this;
 
       return new Promise(function (resolve) {
-        _this4.timer = setTimeout(resolve, ms);
+        _this6.timer = setTimeout(resolve, ms);
       });
     }
     /**
@@ -39312,33 +39310,41 @@ function _load_blacklists() {
             private_mode = config.defaultId.get() == null;
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
-            _context.next = 19;
+            console.log('init');
+            _context.next = 20;
             return window.pageHandler.init();
 
-          case 19:
-            //window.pageHandler.event.on('error', error => errorCache.add(error));
+          case 20:
+            console.log('after init'); //window.pageHandler.event.on('error', error => errorCache.add(error));
+
             selected = config.getSelect();
+            console.log(selected);
             tmp_settings = config.getRunProjectTmpSettings();
+            console.log(tmp_settings);
 
             if (selected != null && tmp_settings && (tmp_settings.clientId != null || !config.getProject(selected).SETTINGS.ENTERID)) {
               window.pageHandler.selectProject(selected, private_mode);
+            } else {
+              if (!config.isLoaded()) {
+                window.pageHandler.disconnectedMode();
+              }
             }
 
-            _context.next = 28;
+            _context.next = 32;
             break;
 
-          case 24:
-            _context.prev = 24;
+          case 28:
+            _context.prev = 28;
             _context.t0 = _context["catch"](0);
             errorCache.add(_context.t0);
             console.warn(_context.t0);
 
-          case 28:
+          case 32:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 24]]);
+    }, _callee, null, [[0, 28]]);
   }));
 
   return function main() {

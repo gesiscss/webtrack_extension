@@ -61,6 +61,15 @@ export default class PageHandler {
   }
 
   /**
+   * [is the configuration loaded]
+   * @return {Boolean}
+   */
+  isLoaded(){
+    if (this.debug) console.log('PageHandler.isLoaded()');
+    return this.config.isLoaded();
+  }
+
+  /**
    * [selected project]
    * @return {number}
    */
@@ -68,8 +77,6 @@ export default class PageHandler {
     if (this.debug) console.log('PageHandler.getSelect()');
     return this.config.getSelect();
   }
-
-  
 
   /**
    * [_createTracker description]
@@ -83,7 +90,7 @@ export default class PageHandler {
       this.tracker.close();
     }
     if(selectId!=null){
-      this.tracker = new TrackingHandler(this.config, this.transfer, true);
+      this.tracker = new TrackingHandler(this.config, this.transfer, autostart=true, mute=false);
       this.tracker.event.on('error', error => {
         this.event.emit('error', error, true);
       });
@@ -91,6 +98,21 @@ export default class PageHandler {
     }else{
       return false
     }
+  }
+
+
+  /**
+   * [_createTracker description]
+   * @return {[type]} [description]
+   */
+  _createMuteTracker(){
+    if (this.debug) console.log('PageHandler._createMuteTracker()');
+
+    this.tracker = new TrackingHandler(this.config, this.transfer, false, true);
+    this.tracker.event.on('error', error => {
+      this.event.emit('error', error, true);
+    });
+    
   }
 
   /**
@@ -109,14 +131,14 @@ export default class PageHandler {
   _getCurrentTracker(){
     if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
 
-    let tracker = null;
-    if(this.config.getSelect()==null){
+    let tracker = this.tracker;
+    
+    // if the configuration was loaded correctly, and no project is selected
+    // then return null
+    if(this.config.isLoaded() && (this.config.getSelect() == null)){
       console.log('No Select return null');
-    }else if(this.tracker!=null) {
-      tracker = this.tracker;
-    }else{
-      console.error('Return no tracker', this.config.getSelect());
-    }
+      tracker = null;
+    } 
 
     if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
     return tracker;
@@ -146,7 +168,7 @@ export default class PageHandler {
           if(id != null){
             if(this._createTracker()){
               let current_tracker = this._getCurrentTracker();
-              current_tracker.init(private_mode);
+              current_tracker.init(private_mode=private_mode);
               // if setting enterid false then will be disabled the private mode
               console.log('ENTERID', current_tracker.settings.ENTERID);
             }
@@ -159,7 +181,34 @@ export default class PageHandler {
         resolve();
       }
     });
+  }
 
+  disconnectedMode(){
+    return new Promise((resolve, reject) => {
+      if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
+      try {
+
+        // make sure there is no tracker
+        if (this.tracker!=null){
+          this.tracker.close();
+          delete this.tracker;
+          this.tracker = null;
+          console.log('CLOSE TRACKER');
+        }
+        if(this._createMuteTracker()){
+          let current_tracker = this._getCurrentTracker();
+          current_tracker.init(private_mode=true);
+          // if setting enterid false then will be disabled the private mode
+          console.log('ENTERID', current_tracker.settings.ENTERID);
+        }
+
+      } catch (e) {
+        reject(e)
+      } finally{
+        if (this.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
+        resolve();
+      }
+    });
   }
 
   /**

@@ -8,13 +8,15 @@ export default class View extends Component {
 
   static defaultProps = {
     getCompanie: () => {},
-    getProjects: () => {}
+    getProjects: () => {},
+    isLoaded: () => {}
   }
 
   constructor(props){
     super(props);
     this.state = {
-      projects:  this.props.getProjects()
+      projects: this.props.getProjects(),
+      is_loaded: this.props.isLoaded()
     }
   }
 
@@ -40,7 +42,10 @@ export default class View extends Component {
 
 
   render() {
-    const content = this.state.projects.length>0?
+    let content = '';
+
+    if (this.state.is_loaded){
+      content = this.state.projects.length>0?
                     <div>
                       <BlockTitle>{lang.projects.select}</BlockTitle>
                       <List accordionList>
@@ -51,16 +56,21 @@ export default class View extends Component {
                     <Block strong>
                       <p>{lang.projects.nolist}</p>
                     </Block>
+    } else {
+      content = <Block strong>
+        <p>{lang.projects.notloaded}</p>
+      </Block>
+    }
+
 
 
     return (
       <Page name={this.constructor.name.toLowerCase()} >
 
         <Headerlogo name={this.props.getCompanie().name} >
-            <NavTitle>{lang.projects.title}</NavTitle>
+            <NavTitle>{lang.projects.title} or title</NavTitle>
         </Headerlogo>
         {content}
-
       </Page>
      )
   }

@@ -8,6 +8,7 @@ export default {
     title: 'Projekte',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
+    notloaded: 'Webtrack konnte keine Verbindung zum Server herstellen. Bitte versuch es später.',
     startTitle: 'Starten',
   },
   loggin: {
