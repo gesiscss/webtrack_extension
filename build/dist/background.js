@@ -31980,7 +31980,8 @@ var EVENT_NAMES = {
   'tabRemove': 'onTabRemove',
   'tab': 'onTab',
   'tabUpdate': 'onTabUpdate',
-  'disconnectedPopup': 'onDisconnectedPopup'
+  'disconnectPopup': 'onDisconnectPopup',
+  'connectedPopup': 'onConnectedPopup'
 };
 
 var Extension_Tab =
@@ -32040,7 +32041,8 @@ function () {
     this._onActivatedTab = this._onActivatedTab.bind(this);
     this._onTab = this._onTab.bind(this);
     this._onHighlightedWindows = this._onHighlightedWindows.bind(this);
-    this._onDisconnectedPopup = this._onDisconnectedPopup.bind(this);
+    this._onDisconnectPopup = this._onDisconnectPopup.bind(this);
+    this._onConnectPopup = this._onConnectPopup.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
     this.debug = true;
@@ -32058,13 +32060,25 @@ function () {
       if (windowId > 0) this.activWindowId = windowId;
     }
     /**
-     * [_onDisconnectedPopup listens the active windowId for check the active tab]
+     * [_onConnectedPopup listen when the extension popup is open]
      */
 
   }, {
-    key: "_onDisconnectedPopup",
-    value: function _onDisconnectedPopup(windowId) {
-      this.event.emit(EVENT_NAMES.disconnectedPopup);
+    key: "_onConnectPopup",
+    value: function _onConnectPopup(externalPort) {
+      if (this.debug) console.log('_onConnectPopup');
+      externalPort.onDisconnect.addListener(this._onDisconnectPopup);
+      this.event.emit(EVENT_NAMES.connectedPopup);
+    }
+    /**
+     * [_onDisconnectPopup listen when the extension popup is closed]
+     */
+
+  }, {
+    key: "_onDisconnectPopup",
+    value: function _onDisconnectPopup(windowId) {
+      if (this.debug) console.log('_onDisconnectPopup');
+      this.event.emit(EVENT_NAMES.disconnectPopup);
     }
     /**
      * _onHighlightedWindows listen when a tab is highlighed
@@ -32734,11 +32748,7 @@ function () {
         xbrowser.tabs.onUpdated.addListener(_this4._onTabUpdate);
         xbrowser.runtime.onMessage.addListener(_this4._onContentMessage);
         xbrowser.tabs.onActivated.addListener(_this4._onActivatedTab);
-        console.log('add listener external port');
-        xbrowser.runtime.onConnect.addListener(function (externalPort) {
-          console.log('connection established');
-          externalPort.onDisconnect.addListener(this._onDisconnectedPopup);
-        }.bind(_this4)); // function logURL(requestDetails) {
+        xbrowser.runtime.onConnect.addListener(_this4._onConnectPopup); // function logURL(requestDetails) {
         //   console.log("Loading: " + requestDetails.url);
         // }
         // console.log('!!!!!!!!!!!!start!!');
@@ -37946,7 +37956,7 @@ function TrackingHandler_createClass(Constructor, protoProps, staticProps) { if 
 var TrackingHandler_EVENT_NAMES = {
   'page': 'onPage',
   'schedule': 'onSchedule',
-  'disconnectedPopup': 'onDisconnectedPopup'
+  'disconnectPopup': 'onDisconnectPopup'
 };
 
 var TrackingHandler_TrackingHandler =
@@ -37983,7 +37993,7 @@ function () {
         this.settings = settings.SETTINGS;
         console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
         console.log(settings);
-        console.log(settings.SETTINGS);
+        console.log(settings.SETT);
         this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
         var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
@@ -38352,7 +38362,7 @@ function () {
       var _this4 = this;
 
       //when the extension popup is closed, then stop listenning
-      this.extension.event.on(TrackingHandler_EVENT_NAMES.disconnectedPopup, function () {
+      this.extension.event.on(TrackingHandler_EVENT_NAMES.disconnectPopup, function () {
         _this4.event.removeListener('onSend');
       }, this);
       this.event.on('onSend', onSendCallBack);

@@ -11,7 +11,7 @@ import moment from 'moment';
 const EVENT_NAMES = {
   'page': 'onPage',
   'schedule': 'onSchedule',
-  'disconnectedPopup': 'onDisconnectedPopup'
+  'disconnectPopup': 'onDisconnectPopup'
 }
 
 export default class TrackingHandler {
@@ -50,7 +50,7 @@ export default class TrackingHandler {
         this.settings = settings.SETTINGS;
         console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
         console.log(settings);
-        console.log(settings.SETTINGS)
+        console.log(settings.SETT)
 
 
         this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;
@@ -271,7 +271,7 @@ export default class TrackingHandler {
   addOnSendListener(onSendCallBack){
 
     //when the extension popup is closed, then stop listenning
-    this.extension.event.on(EVENT_NAMES.disconnectedPopup, 
+    this.extension.event.on(EVENT_NAMES.disconnectPopup, 
       () => {
         this.event.removeListener('onSend');
       }, this);
