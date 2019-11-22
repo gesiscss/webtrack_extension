@@ -15,6 +15,10 @@ export default class Extension{
       this.settings = this.get().settings;
       this.requireUpdate = this.get().requireUpdate;
       this.pageHandler = this.get().pageHandler;
+
+      if (!this.pageHandler.isLoaded()){
+        this.pageHandler.init();
+      }
       
       // hack to force an event in the background when the extension is closed
       var port = this.xbrowser.runtime.connect();

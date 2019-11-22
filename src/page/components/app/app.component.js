@@ -59,9 +59,6 @@ export default class extends React.Component {
     }
     this.f7params = Object.assign(this.f7params, {routes: Object.values(this.routes)});
 
-    if (!this.extension.pageHandler.isLoaded()){
-      this.extension.pageHandler.init();
-    }
   }
 
   /**
@@ -101,7 +98,7 @@ export default class extends React.Component {
   componentDidMount(){
     if(!this.state.requireUpdate){
       let time = + new Date();
-      if(this.extension.pageHandler){
+      if(this.extension.pageHandler && this.extension.pageHandler.isLoaded()){
         this.redirekt()
       }else{
         this._openLoadScreen(true);
