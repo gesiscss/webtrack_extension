@@ -53,7 +53,7 @@ export default class PageHandler {
    * @return {object}
    */
   getProjectsTmpSettings(){
-    if (this.debug) console.log('PageHandler.getProjectsTmpSettings()');
+    if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
     return this.config._getProjectsTmpSettings();
   }
 
@@ -63,7 +63,7 @@ export default class PageHandler {
    * @return {Object}
    */
   getProject(id){
-    if (this.debug) console.log('PageHandler.getProject()');
+    if (this.debug) console.log('-> PageHandler.getProject()');
     return this.config.getProject(id);
   }
 
@@ -71,9 +71,14 @@ export default class PageHandler {
    * [list of configs from projekts]
    * @return {Array}
    */
-  getProjects(){
-    if (this.debug) console.log('PageHandler.getProjects()');
-    return this.config.getProjects();
+  async getProjects(){
+    if (this.debug) console.log('-> PageHandler.getProjects()');
+    if (this.isLoaded()){
+      return this.config.getProjects();
+    } else {
+      await this.init();
+      return this.config.getProjects();
+    }
   }
 
   /**
@@ -81,7 +86,7 @@ export default class PageHandler {
    * @return {Boolean}
    */
   isLoaded(){
-    if (this.debug) console.log('PageHandler.isLoaded()');
+    if (this.debug) console.log('-> PageHandler.isLoaded()');
     return this.config.isLoaded();
   }
 
@@ -90,7 +95,7 @@ export default class PageHandler {
    * @return {number}
    */
   getSelect(){
-    if (this.debug) console.log('PageHandler.getSelect()');
+    if (this.debug) console.log('-> PageHandler.getSelect()');
     return this.config.getSelect();
   }
 
@@ -99,7 +104,7 @@ export default class PageHandler {
    * @return {[type]} [description]
    */
   _createTracker(){
-    if (this.debug) console.log('PageHandler._createTracker()');
+    if (this.debug) console.log('-> PageHandler._createTracker()');
 
     let selectId = this.config.getSelect();
     if(this.tracker!=null){

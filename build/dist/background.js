@@ -38742,7 +38742,7 @@ function () {
   }, {
     key: "getProjectsTmpSettings",
     value: function getProjectsTmpSettings() {
-      if (this.debug) console.log('PageHandler.getProjectsTmpSettings()');
+      if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
       return this.config._getProjectsTmpSettings();
     }
     /**
@@ -38754,7 +38754,7 @@ function () {
   }, {
     key: "getProject",
     value: function getProject(id) {
-      if (this.debug) console.log('PageHandler.getProject()');
+      if (this.debug) console.log('-> PageHandler.getProject()');
       return this.config.getProject(id);
     }
     /**
@@ -38764,10 +38764,42 @@ function () {
 
   }, {
     key: "getProjects",
-    value: function getProjects() {
-      if (this.debug) console.log('PageHandler.getProjects()');
-      return this.config.getProjects();
-    }
+    value: function () {
+      var _getProjects = PageHandler_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (this.debug) console.log('-> PageHandler.getProjects()');
+
+                if (!this.isLoaded()) {
+                  _context2.next = 5;
+                  break;
+                }
+
+                return _context2.abrupt("return", this.config.getProjects());
+
+              case 5:
+                _context2.next = 7;
+                return this.init();
+
+              case 7:
+                return _context2.abrupt("return", this.config.getProjects());
+
+              case 8:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      return function getProjects() {
+        return _getProjects.apply(this, arguments);
+      };
+    }()
     /**
      * [is the configuration loaded]
      * @return {Boolean}
@@ -38776,7 +38808,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
-      if (this.debug) console.log('PageHandler.isLoaded()');
+      if (this.debug) console.log('-> PageHandler.isLoaded()');
       return this.config.isLoaded();
     }
     /**
@@ -38787,7 +38819,7 @@ function () {
   }, {
     key: "getSelect",
     value: function getSelect() {
-      if (this.debug) console.log('PageHandler.getSelect()');
+      if (this.debug) console.log('-> PageHandler.getSelect()');
       return this.config.getSelect();
     }
     /**
@@ -38800,7 +38832,7 @@ function () {
     value: function _createTracker() {
       var _this = this;
 
-      if (this.debug) console.log('PageHandler._createTracker()');
+      if (this.debug) console.log('-> PageHandler._createTracker()');
       var selectId = this.config.getSelect();
 
       if (this.tracker != null) {
@@ -39067,18 +39099,18 @@ function () {
     value: function () {
       var _confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(component) {
+      regeneratorRuntime.mark(function _callee3(component) {
         var _this5 = this;
 
         var private_time,
             extension,
-            _args2 = arguments;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            _args3 = arguments;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : 1000 * 60 * 15;
-                _context2.next = 3;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 1000 * 60 * 15;
+                _context3.next = 3;
                 return this.set_timeout(private_time);
 
               case 3:
@@ -39105,10 +39137,10 @@ function () {
 
               case 5:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       return function confirm_public_mode(_x) {
@@ -39126,11 +39158,11 @@ function () {
     value: function () {
       var _cancel_confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
+      regeneratorRuntime.mark(function _callee4() {
         var extension;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 clearTimeout(this.timer);
                 extension = this._getCurrentTracker().extension;
@@ -39138,10 +39170,10 @@ function () {
 
               case 3:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       return function cancel_confirm_public_mode() {
