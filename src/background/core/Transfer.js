@@ -20,24 +20,6 @@ export default class Transfer {
   }
 
   /**
-   * [format the error to default error object]
-   * @param  {object} err
-   * @param  {Function} reject
-   */
-  error(err, reject){
-    let message = '',
-    code='',
-    nr='';
-    try {
-      err = JSON.parse(err) ;
-      message =  err.message.join('<br/>');
-      code = err.code;
-      nr = res.status;
-    } catch (e) {}
-    reject({message: message, code: code, nr: nr});
-  }
-
-  /**
    * [setCert set certificate]
    * @param {String} cert
    */
@@ -156,13 +138,14 @@ export default class Transfer {
         resolve(new Response(blob).text());
       }).catch(err => {
         if (this.debug) console.log('Failed to Fetch File: ', url);
-        this.error(err, reject);
+        reject({
+          message: 'fileFetch: ' + err.message,
+          code: '500',
+          nr: '-1',
+        })
       });
     });
   }
-
-
-
 
   /**
    * [jsonFetch create request with options]
@@ -201,12 +184,15 @@ export default class Transfer {
           resolve(data);
         }
       }).catch(err => {
-        console.log('Failed to Fetch JSON: ', url);
-        this.error(err, reject)
+        if (this.debug) console.log('Failed to Fetch JSON: ', url);
+        console.log(err);
+        reject({
+          message: '_fetch: ' + err.message,
+          code: '500',
+          nr: '-1',
+        })
       });
     })
   }
-
-
 
 }//class

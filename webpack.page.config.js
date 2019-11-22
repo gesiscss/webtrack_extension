@@ -29,7 +29,7 @@ module.exports = env => {
   
   let options = {
     entry: ['babel-polyfill', './src/page/index.js'],
-    mode: 'production',
+    //mode: 'production',
     module: {
       rules: [
         {

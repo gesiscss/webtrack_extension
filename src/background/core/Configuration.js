@@ -21,7 +21,6 @@ export default class Configuration {
     this.getProject = this.getProject.bind(this);
     this.getProjects = this.getProjects.bind(this);
     this.setSending = this.setSending.bind(this);
-    this.onError = this.onError.bind(this);
     this.load = this.load.bind(this);
     this.projectsStorage = new LocalstorageHandler('projects', null);
     this.select = new LocalstorageHandler('select', null);
@@ -47,14 +46,6 @@ export default class Configuration {
     }
   }
 
-  /**
-   * [log warn the error]
-   * @param  {Object} err
-   */
-  onError(err){
-    console.warn('Configuration-Error:', err)
-    //throw err;
-  }
 
   /**
    * [_isTimeDiffover check is time over required seconds]
@@ -80,7 +71,8 @@ export default class Configuration {
           resolve(cert);
          })
         .catch(err => {
-          this.onError(err);
+          if (this.debug) console.log('_fetchCert: ', err);
+          reject(err);
         })
       }else{
         if(this._isTimeDiffover(this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)){
@@ -116,8 +108,8 @@ export default class Configuration {
           resolve(p);
          })
         .catch(err => {
-          // resolve(this.projectsStorage.get())
-          this.onError(err);
+          if (this.debug) console.log('_fetchProject: ', err);
+          reject(err);
         })
 
     });
@@ -280,42 +272,70 @@ export default class Configuration {
   }
 
   /**
+   * load the projects and variables associated for the main control of the prorgram
+   * @param  projects coming from the server request
+   */
+  _load(projects){
+    this.projectIds = projects.map(v => v.ID);
+    this.projectIdtoIndex = {}
+    for (let index in projects) {
+      this.projectIdtoIndex[projects[index].ID] = index;
+    }
+    this.projects = projects;
+    
+    let selected = this.getSelect();
+    if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
+      let p = this.projects[this.projectIdtoIndex[selected]];
+      if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
+        this.setProjectsTmpSettings({clientId: null});
+      }
+      this.setProjectsTmpSettings({privateMode: false});
+    }
+
+    setTimeout(() => this.load(), UPDATE_INTERVAL);
+    this.isLoad = true;
+  }
+
+  /**
+   * load dummy variables when the connection to the server is not succesful
+   */
+  _loadDisconnectedMode(){
+    console.log('Operating in disconnected mode');
+
+    this.projectIds = null;
+    this.projectIdtoIndex = null;
+    this.projects = null;
+    this.isLoad = false;
+    setTimeout(() => this.load(), UPDATE_INTERVAL);
+
+  }
+
+  /**
    * [load // fetch all required settings from server]
    */
   load(){
     if (this.debug) console.log('Configuration.load()')
     return new Promise(async (resolve, reject)=>{
+
+      //TODO: is this necessary
       this.initDefaultId();
 
-      try {
-        console.log('_fetchCert');
-        this.cert = await this._fetchCert();
-        console.log('_fetchProject');
-        let e = await this._fetchProject();
-      } catch (err) {
-        console.log(err);
-        debugger;
-      }
+      this._fetchCert().then(cert => {
+        this._fetchProject().then(projects => {
+          this._load(projects);
+          resolve();
+        }).catch(err => {
+          console.log("Failed fetching the project");
+          if (this.debug) console.log(err);
+        })
+      }).catch(err => {
+        console.log("Failed fetching the certificate");
+        if (this.debug) console.log(err);
+      })
 
-      this.projectIds = e.map(v => v.ID);
-      this.projectIdtoIndex = {}
-      for (let index in e) {
-        this.projectIdtoIndex[e[index].ID] = index;
+      if (!this.isLoad){
+        this._loadDisconnectedMode();
       }
-      this.projects = e;
-      
-      let selected = this.getSelect();
-      if(!this.isLoad && !this.mobile && selected != null && this.isProjectAvailable(selected)){
-        let p = this.projects[this.projectIdtoIndex[selected]];
-        if(p.SETTINGS.ENTERID && p.SETTINGS.FORGOT_ID){
-          this.setProjectsTmpSettings({clientId: null});
-        }
-        this.setProjectsTmpSettings({privateMode: false});
-      }
-
-      setTimeout(() => this.load(), UPDATE_INTERVAL);
-      this.isLoad = true;
-      resolve();
     });//Promise
   }
 

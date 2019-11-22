@@ -9,7 +9,7 @@ module.exports = env => {
 
   let options = {
     entry: './src/'+FILENAME+'/index.js',
-    mode: 'production',
+    //mode: 'production',
     module: {
       rules: [
         {
