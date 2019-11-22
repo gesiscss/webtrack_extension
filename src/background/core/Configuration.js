@@ -312,7 +312,7 @@ export default class Configuration {
    * load dummy variables when the connection to the server is not succesful
    */
   _loadDisconnectedMode(){
-    console.log('Operating in disconnected mode');
+    if (this.debug) console.log('Operating in disconnected mode');
 
     this.projectIds = null;
     this.projectIdtoIndex = null;

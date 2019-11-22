@@ -18,26 +18,42 @@ export default class PageHandler {
     this.transfer = transfer;
     this.debug = true;
     this.event = new EventEmitter();
-    this.is_initialized = false;
   }
 
   async init(){
+    if (this.debug) console.log('PageHandler.init()');
+
     try {
       if (this.debug) console.log('Load Configuration');
       await this.config.load();
-      this.is_initialized = true;
     } catch(err){
       console.log('ERROR IN INIT');
       console.error(err);
     }
+
+    let private_mode = this.config.defaultId.get()==null;
+    let selected = this.getSelect();
+    let tmp_settings = this.config.getRunProjectTmpSettings();
+
+
+    if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
+        || !this.getProject(selected).SETTINGS.ENTERID)){
+      this.selectProject(selected, private_mode);
+    } else {
+      if (!this.isLoaded()){
+        this.disconnectedMode();
+      }
+    }
   }
+
+
 
   /**
    * [local settings for the project]
    * @return {object}
    */
   getProjectsTmpSettings(){
-    if (this.debug) console.log('getProjectsTmpSettings()');
+    if (this.debug) console.log('PageHandler.getProjectsTmpSettings()');
     return this.config._getProjectsTmpSettings();
   }
 

@@ -31602,7 +31602,7 @@ function () {
     value: function _loadDisconnectedMode() {
       var _this5 = this;
 
-      console.log('Operating in disconnected mode');
+      if (this.debug) console.log('Operating in disconnected mode');
       this.projectIds = null;
       this.projectIdtoIndex = null;
       this.projects = [];
@@ -38670,7 +38670,6 @@ function () {
     this.transfer = transfer;
     this.debug = true;
     this.event = new eventemitter3_default.a();
-    this.is_initialized = false;
   }
 
   PageHandler_createClass(PageHandler, [{
@@ -38679,32 +38678,46 @@ function () {
       var _init = PageHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee() {
+        var private_mode, selected, tmp_settings;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
+                if (this.debug) console.log('PageHandler.init()');
+                _context.prev = 1;
                 if (this.debug) console.log('Load Configuration');
-                _context.next = 4;
+                _context.next = 5;
                 return this.config.load();
 
-              case 4:
-                this.is_initialized = true;
+              case 5:
                 _context.next = 11;
                 break;
 
               case 7:
                 _context.prev = 7;
-                _context.t0 = _context["catch"](0);
+                _context.t0 = _context["catch"](1);
                 console.log('ERROR IN INIT');
                 console.error(_context.t0);
 
               case 11:
+                private_mode = this.config.defaultId.get() == null;
+                selected = this.getSelect();
+                tmp_settings = this.config.getRunProjectTmpSettings();
+
+                if (selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID)) {
+                  this.selectProject(selected, private_mode);
+                } else {
+                  if (!this.isLoaded()) {
+                    this.disconnectedMode();
+                  }
+                }
+
+              case 15:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 7]]);
+        }, _callee, this, [[1, 7]]);
       }));
 
       return function init() {
@@ -38719,7 +38732,7 @@ function () {
   }, {
     key: "getProjectsTmpSettings",
     value: function getProjectsTmpSettings() {
-      if (this.debug) console.log('getProjectsTmpSettings()');
+      if (this.debug) console.log('PageHandler.getProjectsTmpSettings()');
       return this.config._getProjectsTmpSettings();
     }
     /**
@@ -39286,7 +39299,7 @@ function _load_blacklists() {
   var _main = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var transfer, blacklists, private_mode, selected, tmp_settings;
+    var transfer, blacklists;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -39315,30 +39328,12 @@ function _load_blacklists() {
           case 11:
             blacklists = _context.sent;
             window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
-            private_mode = config.defaultId.get() == null;
             console.log('Create PageHandler');
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
-            console.log('init');
-            _context.next = 19;
+            _context.next = 17;
             return window.pageHandler.init();
 
-          case 19:
-            console.log('after init'); //window.pageHandler.event.on('error', error => errorCache.add(error));
-
-            selected = config.getSelect();
-            console.log(selected);
-            tmp_settings = config.getRunProjectTmpSettings();
-            console.log(tmp_settings);
-
-            if (selected != null && tmp_settings && (tmp_settings.clientId != null || !config.getProject(selected).SETTINGS.ENTERID)) {
-              window.pageHandler.selectProject(selected, private_mode);
-            } else {
-              if (!config.isLoaded()) {
-                window.pageHandler.disconnectedMode();
-              }
-            }
-
-          case 25:
+          case 17:
           case "end":
             return _context.stop();
         }
