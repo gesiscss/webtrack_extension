@@ -52,16 +52,13 @@ export default class Login extends Component {
     return new Promise(async (resolve, reject)=>{
       try {
         if (this.debug) console.log('-> signIn');
-
         if(await this.pageHandler.setClientId(clientId)){
-          console.log('accept clientId: ', clientId)
           if(this.pageHandler.tracker==null){
             this.pageHandler._createTracker();
           }
           this.pageHandler._setCurrentTrackerPrivateMode(false);
           resolve();
         }else{
-          console.log('reject clientId: ', clientId)
           this.pageHandler._setCurrentTrackerPrivateMode(true);
           reject(lang.project.id_not_found);
         }
@@ -78,7 +75,6 @@ export default class Login extends Component {
   async handleSignIn(){
     try {
       await this.signIn(this.state.id);
-      console.log('/project/'+this.props.id);
       this.$f7.views.main.router.navigate('/project/'+this.props.id)
     } catch (e) {
       this.setState({
