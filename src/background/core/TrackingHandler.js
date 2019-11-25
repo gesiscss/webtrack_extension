@@ -339,40 +339,49 @@ export default class TrackingHandler {
                 page = await this.pageCache.getOnly(id);
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                let send = await this.transfer.sendingData(JSON.stringify({
-                  id: this.getClientId(),
-                  projectId: this.projectId,
-                  versionType: this.config.versionType,
-                  pages: [this.anonymize(page)]
-                }), status => {
-                  count += 1;
-                  // this.event.emit('onSendData', {
-                  //   max: max,
-                  //   now: count,
-                  //   title: page.title,
-                  //   status: status
-                  // });
-                });
+                //let send = await 
 
-                count += 1;
-                this.event.emit('onSendData', {
-                  max: max,
-                  now: count,
-                  title: page.title,
-                  status: status
-                });
+                this.transfer.sendingData(
+                  JSON.stringify ({
+                    id: this.getClientId(),
+                    projectId: this.projectId,
+                    versionType: this.config.versionType,
+                    pages: [this.anonymize(page)]
+                  }), status => {
+                    //count += 1;
+                    // this.event.emit('onSendData', {
+                    //   max: max,
+                    //   now: count,
+                    //   title: page.title,
+                    //   status: status
+                    // });
+                  }).then(()=>{
+                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                    count += 1;
+                    this.event.emit('onSendData', {
+                      max: max,
+                      now: count,
+                      title: page.title,
+                      status: status
+                    });                    
+                  }).catch(err => {
+                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
+                  }).finally( () => {
+                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
 
-                // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
-                // the storage. 
-                this.pageCache.update({id: page.id, content: [], links: [], 
-                    hashes: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
-                this.pageCache.cleanSource(page.id);//.catch(console.warn);
+                    // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
+                    // the storapageCache. 
+                    this.pageCache.update({id: page.id, content: [], links: [], 
+                        hashes: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
+                    this.pageCache.cleanSource(page.id);//.catch(console.warn);
+                  });
+              
 
                 if (this.debug) console.log('<- sendData');
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);
-                if (this.debug) console.log(page);
+                if (this.debug) console.log('Failure sending data: ', page);
                 console.warn(e);
                 let title = 'unknown';
                 if(page!=null) title = page.title;

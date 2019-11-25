@@ -113,7 +113,7 @@ export default class PageHandler {
     if (this.debug) console.log('-> PageHandler._createTracker()');
 
     let selectId = this.config.getSelect();
-    
+
     // make sure the tracker is close
     this.close_tracker();
 

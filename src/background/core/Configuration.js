@@ -268,7 +268,7 @@ export default class Configuration {
                 resolve(b)
                })
               .catch(err => {
-                this.onError(err);
+                resolve(null);
               })
           }else{
             this.setProjectsTmpSettings({clientId: client_hash});

@@ -55,7 +55,9 @@ export default class Login extends Component {
       try {
         if (this.debug) console.log('-> signIn');
 
-        if(await this.pageHandler.setClientId(clientId)){
+        let is_valid = await this.pageHandler.setClientId(clientId)
+
+        if(is_valid){
           if(this.pageHandler.tracker==null || this.pageHandler.tracker.isDummy()) {
             this.pageHandler.init();
           }
@@ -63,7 +65,11 @@ export default class Login extends Component {
           resolve();
         }else{
           this.pageHandler._setCurrentTrackerPrivateMode(true);
-          reject(lang.project.id_not_found);
+          if (is_valid == null){
+            reject(lang.project.not_connected);
+          } else {            
+            reject(lang.project.id_not_found);
+          }
         }
       } catch (e) {
         console.warn(e);

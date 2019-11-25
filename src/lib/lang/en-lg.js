@@ -20,6 +20,7 @@ export default {
   },
   project: {
     id_not_found: 'Your id was not found.',
+    not_connected: 'Webtrack could not connect to the server. Please try again later',
     unavailable: {
       title: 'Unavailable',
       content: 'Project not available anymore'
