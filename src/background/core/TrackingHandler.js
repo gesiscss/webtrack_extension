@@ -21,11 +21,11 @@ export default class TrackingHandler {
    * @param {Configuration} config
    * @param {Boolean} autostart [default: false]
    */
-  constructor(config, transfer, autostart=false, mute=false) {
+  constructor(config, transfer, autostart=false, is_dummy=false) {
     this._addPage = this._addPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
     this.AUTOSTART = autostart;
-    this.mute = mute;
+    this.is_dummy = is_dummy;
     this.config = config;
     this.event = new EventEmitter();
     this.debug = true;
@@ -42,7 +42,7 @@ export default class TrackingHandler {
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
 
 
-    if (!mute){
+    if (!is_dummy){
       try {
 
         this.projectId = this.config.getSelect();
@@ -110,7 +110,7 @@ export default class TrackingHandler {
           // I am forcing it to start in private mode so it doesnt try to collect
           // data immediately
           if(this.AUTOSTART) this.start(private_mode);
-          if (!this.mute){
+          if (!this.is_dummy){
             if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
               console.log('Autostart send');
               this.sendData(null, true);
@@ -119,6 +119,15 @@ export default class TrackingHandler {
           resolve();
         }
       });
+   }
+
+   /**
+    * indicates if the current tracker is a dummy (used when the server is down, or there
+    * are connectivity problems)
+    * @return {Boolean} true when is a dummy connection
+    */
+   isDummy(){
+    return this.is_dummy;
    }
 
    /**

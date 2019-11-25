@@ -16,6 +16,8 @@ export default class Extension{
       this.requireUpdate = this.get().requireUpdate;
       this.pageHandler = this.get().pageHandler;
 
+      // if the pagehanlder is not loaded (e.g. because the server
+      // is down) try to load it
       if (!this.pageHandler.isLoaded()){
         this.pageHandler.init();
       }

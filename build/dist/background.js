@@ -31320,7 +31320,7 @@ function () {
   }, {
     key: "getProjects",
     value: function getProjects() {
-      if (this.debug) console.log('-> Configuration.getProjects');
+      if (this.debug) console.log('-> Configuration.getProjects()');
       return this.projects;
     }
     /**
@@ -31331,7 +31331,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
-      if (this.debug) console.log('-> Configuration.isLoaded');
+      if (this.debug) console.log('-> Configuration.isLoaded()');
       return this.is_load;
     }
     /**
@@ -31362,6 +31362,8 @@ function () {
   }, {
     key: "_getProjectsTmpSettings",
     value: function _getProjectsTmpSettings() {
+      if (this.debug) console.log('-> Configuration.getProjectSettings()');
+
       if (!this.isLoaded()) {
         return {};
       }
@@ -31395,13 +31397,25 @@ function () {
         }
       }
 
+      console.log('newSettings:');
+      console.log(newSettings);
+      console.log('this.projectsTmpSettings.get():');
+      console.log(this.projectsTmpSettings.get());
       var r = Object.assign({}, newSettings, this.projectsTmpSettings.get());
+      console.log('r');
+      console.log(r);
 
       for (var id in r) {
-        if (!this.projectIds.includes(parseInt(id, 10))) delete r[id];
+        if (!this.projectIds.includes(parseInt(id, 10))) {
+          delete r[id];
+        }
       }
 
+      console.log('rAfter');
+      console.log(r);
       this.projectsTmpSettings.set(r);
+      console.log('this.projectsTmpSettings');
+      console.log(this.projectsTmpSettings);
       return r;
     }
     /**
@@ -31431,7 +31445,9 @@ function () {
   }, {
     key: "setProjectsTmpSettings",
     value: function setProjectsTmpSettings(setting) {
+      if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
       var tmp = this.projectsTmpSettings.get();
+      console.log('project: ', this.select.get());
       var project_settings = Object.assign({}, tmp[this.select.get()], setting);
       tmp[this.select.get()] = project_settings;
       this.projectsTmpSettings.set(tmp);
@@ -31456,6 +31472,7 @@ function () {
   }, {
     key: "getProjectSettings",
     value: function getProjectSettings() {
+      if (this.debug) console.log('-> Configuration.getProjectSettings()');
       return this._getProjectsTmpSettings();
     }
     /**
@@ -31466,7 +31483,7 @@ function () {
   }, {
     key: "getRunProjectTmpSettings",
     value: function getRunProjectTmpSettings() {
-      if (this.debug) console.log('Configuration.getRunProjectTmpSettings()');
+      if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
       var selected = this.getSelect();
 
       if (this._getProjectsTmpSettings().hasOwnProperty(selected)) {
@@ -31486,6 +31503,8 @@ function () {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
+        if (_this3.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
+
         if (_this3.projectIdtoIndex.hasOwnProperty(project_id) && _this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.ENTERID) {
           if (_this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS) {
             var options = {
@@ -31501,9 +31520,14 @@ function () {
             };
 
             _this3.transfer.jsonFetch(_this3.settings.server + 'client/checkid', options).then(function (b) {
+              console.log('client/checkid: jsonFetch succesful:', client_hash);
+              console.log(_this3.getProjectSettings());
+              console.log('b:', b);
               if (b) _this3.setProjectsTmpSettings({
                 clientId: client_hash
               });
+              console.log('after setProjectsTmpSettings');
+              console.log(_this3.getProjectSettings());
               resolve(b);
             })["catch"](function (err) {
               _this3.onError(err);
@@ -37973,14 +37997,14 @@ function () {
     var _this = this;
 
     var autostart = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var mute = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+    var is_dummy = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     TrackingHandler_classCallCheck(this, TrackingHandler);
 
     this._addPage = this._addPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
     this.AUTOSTART = autostart;
-    this.mute = mute;
+    this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
     this.debug = true; // fields that should be anonymized
@@ -37988,7 +38012,7 @@ function () {
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
 
-    if (!mute) {
+    if (!is_dummy) {
       try {
         this.projectId = this.config.getSelect();
         var settings = this.config.getProject(this.projectId);
@@ -38082,7 +38106,7 @@ function () {
 
                   if (_this2.AUTOSTART) _this2.start(private_mode);
 
-                  if (!_this2.mute) {
+                  if (!_this2.is_dummy) {
                     if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
                       console.log('Autostart send');
 
@@ -38105,6 +38129,17 @@ function () {
           return _ref.apply(this, arguments);
         };
       }());
+    }
+    /**
+     * indicates if the current tracker is a dummy (used when the server is down, or there
+     * are connectivity problems)
+     * @return {Boolean} true when is a dummy connection
+     */
+
+  }, {
+    key: "isDummy",
+    value: function isDummy() {
+      return this.is_dummy;
     }
     /**
      * [startTimeoutScheudle start interval after the schedule begin]
@@ -38825,11 +38860,11 @@ function () {
      */
 
   }, {
-    key: "_createMuteTracker",
-    value: function _createMuteTracker() {
+    key: "_createDummyTracker",
+    value: function _createDummyTracker() {
       var _this2 = this;
 
-      if (this.debug) console.log('PageHandler._createMuteTracker()');
+      if (this.debug) console.log('PageHandler._createDummyTracker()');
       this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, true);
       this.tracker.event.on('error', function (error) {
         _this2.event.emit('error', error, true);
@@ -38886,8 +38921,12 @@ function () {
         if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
 
         try {
-          // console.log(parseInt(id, 10) , this.config.getSelect());
-          if (id != null && parseInt(id, 10) == _this3.config.getSelect() && _this3.tracker != null) {
+          console.log(id);
+          console.log(_this3.config.getSelect());
+          console.log(_this3.tracker);
+          console.log(_this3.isLoaded()); // console.log(parseInt(id, 10) , this.config.getSelect());
+
+          if (id != null && parseInt(id, 10) == _this3.config.getSelect() && _this3.tracker != null && !_this3.tracker.isDummy()) {
             /*already selected*/
           } else {
             if (id == null && _this3.tracker != null) {
@@ -38935,7 +38974,7 @@ function () {
             _this4.tracker = null;
           }
 
-          _this4._createMuteTracker();
+          _this4._createDummyTracker();
 
           var current_tracker = _this4._getCurrentTracker();
 
@@ -38959,7 +38998,7 @@ function () {
   }, {
     key: "setClientId",
     value: function setClientId(clientId) {
-      if (this.debug) console.log('PageHandler.setClientId()', clientId);
+      if (this.debug) console.log('-> PageHandler.setClientId(', clientId, ')');
       return this.config.setClientId(clientId, this.config.getSelect());
     }
     /**

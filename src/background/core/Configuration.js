@@ -120,7 +120,7 @@ export default class Configuration {
    * @return {Array}
    */
   getProjects(){
-    if (this.debug) console.log('-> Configuration.getProjects');
+    if (this.debug) console.log('-> Configuration.getProjects()');
     return this.projects;
   }
 
@@ -130,7 +130,7 @@ export default class Configuration {
    * @return {Boolean} [true if the configuration was loaded correctly]
    */
   isLoaded(){
-    if (this.debug) console.log('-> Configuration.isLoaded');
+    if (this.debug) console.log('-> Configuration.isLoaded()');
     return this.is_load;
   }
 
@@ -157,16 +157,31 @@ export default class Configuration {
    * @return {Object}
    */
   _getProjectsTmpSettings(){
+    if (this.debug) console.log('-> Configuration.getProjectSettings()');
     if (!this.isLoaded()){
       return {};
     }
     let newSettings = {};
-    for (let p of this.projects) newSettings[p.ID] = {clientId: null, privateMode: false, sending: false};
-    let r = Object.assign({}, newSettings, this.projectsTmpSettings.get())
-    for (let id in r){
-      if(!this.projectIds.includes(parseInt(id, 10))) delete r[id]
+    for (let p of this.projects) { 
+      newSettings[p.ID] = {clientId: null, privateMode: false, sending: false}
     }
+    console.log('newSettings:');
+    console.log(newSettings);
+    console.log('this.projectsTmpSettings.get():');
+    console.log(this.projectsTmpSettings.get());
+    let r = Object.assign({}, newSettings, this.projectsTmpSettings.get());
+    console.log('r');
+    console.log(r);
+    for (let id in r) {
+      if(!this.projectIds.includes(parseInt(id, 10))) { 
+        delete r[id];
+      }
+    }
+    console.log('rAfter');
+    console.log(r);
     this.projectsTmpSettings.set(r);
+    console.log('this.projectsTmpSettings');
+    console.log(this.projectsTmpSettings);
     return r;
   }
 
@@ -190,7 +205,10 @@ export default class Configuration {
    * @param {Object} setting [e.g. {privateMode: true, clientId: 'xcdy'}]
    */
   setProjectsTmpSettings(setting){
+    if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
+
     let tmp = this.projectsTmpSettings.get();
+    console.log('project: ', this.select.get());
     let project_settings = Object.assign({}, tmp[this.select.get()], setting);
     tmp[this.select.get()]= project_settings;
     this.projectsTmpSettings.set(tmp);
@@ -209,6 +227,7 @@ export default class Configuration {
    * @return {Object}
    */
   getProjectSettings(){
+    if (this.debug) console.log('-> Configuration.getProjectSettings()');
     return this._getProjectsTmpSettings();
   }
 
@@ -217,7 +236,7 @@ export default class Configuration {
    * @return {Object}
    */
   getRunProjectTmpSettings(){
-    if (this.debug) console.log('Configuration.getRunProjectTmpSettings()')
+    if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
     let selected = this.getSelect();
     if(this._getProjectsTmpSettings().hasOwnProperty(selected)){
       return this._getProjectsTmpSettings()[selected];
@@ -231,6 +250,7 @@ export default class Configuration {
    */
   setClientId(client_hash, project_id){
     return new Promise((resolve, reject)=>{
+      if (this.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
       if(this.projectIdtoIndex.hasOwnProperty(project_id) && this.projects[this.projectIdtoIndex[project_id]].SETTINGS.ENTERID){
         if(this.projects[this.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS){
             let options = {
@@ -243,7 +263,12 @@ export default class Configuration {
             };
             this.transfer.jsonFetch(this.settings.server+'client/checkid', options)
             .then(b => {
+              console.log('client/checkid: jsonFetch succesful:', client_hash);
+              console.log(this.getProjectSettings());
+              console.log('b:', b);
               if(b) this.setProjectsTmpSettings({clientId: client_hash});
+              console.log('after setProjectsTmpSettings');
+              console.log(this.getProjectSettings());
               resolve(b)
              })
             .catch(err => {

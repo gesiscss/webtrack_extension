@@ -23,6 +23,7 @@ export default class Login extends Component {
       this.id = parseInt(this.props.id, 10)
       this.pageHandler = this.props.getPageHandler();
       this.project = this.pageHandler.getProject(this.id);
+      this.debug = true;
 
       this.MIN_LENGTH = this.project.SETTINGS.CHECK_CLIENTIDS? 1: 8;
       this.state = {
@@ -50,16 +51,20 @@ export default class Login extends Component {
   signIn(clientId){
     return new Promise(async (resolve, reject)=>{
       try {
-       if(await this.pageHandler.setClientId(clientId)){
-        if(this.pageHandler.tracker==null){
-          this.pageHandler._createTracker();
+        if (this.debug) console.log('-> signIn');
+
+        if(await this.pageHandler.setClientId(clientId)){
+          console.log('accept clientId: ', clientId)
+          if(this.pageHandler.tracker==null){
+            this.pageHandler._createTracker();
+          }
+          this.pageHandler._setCurrentTrackerPrivateMode(false);
+          resolve();
+        }else{
+          console.log('reject clientId: ', clientId)
+          this.pageHandler._setCurrentTrackerPrivateMode(true);
+          reject(lang.project.id_not_found);
         }
-        this.pageHandler._setCurrentTrackerPrivateMode(false);
-        resolve();
-       }else{
-        this.pageHandler._setCurrentTrackerPrivateMode(true);
-        reject(lang.project.id_not_found);
-       }
       } catch (e) {
         console.warn(e);
         reject(e)
@@ -73,6 +78,7 @@ export default class Login extends Component {
   async handleSignIn(){
     try {
       await this.signIn(this.state.id);
+      console.log('/project/'+this.props.id);
       this.$f7.views.main.router.navigate('/project/'+this.props.id)
     } catch (e) {
       this.setState({

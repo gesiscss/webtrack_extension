@@ -121,8 +121,8 @@ export default class PageHandler {
    * [_createTracker description]
    * @return {[type]} [description]
    */
-  _createMuteTracker(){
-    if (this.debug) console.log('PageHandler._createMuteTracker()');
+  _createDummyTracker(){
+    if (this.debug) console.log('PageHandler._createDummyTracker()');
 
     this.tracker = new TrackingHandler(this.config, this.transfer, true, true);
     this.tracker.event.on('error', error => {
@@ -169,8 +169,13 @@ export default class PageHandler {
     return new Promise((resolve, reject) => {
       if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
       try {
+        console.log(id);
+        console.log(this.config.getSelect());
+        console.log(this.tracker);
+        console.log(this.isLoaded());
         // console.log(parseInt(id, 10) , this.config.getSelect());
-        if(id!=null && parseInt(id, 10) == this.config.getSelect() && this.tracker!=null){
+        if(id!=null && parseInt(id, 10) == this.config.getSelect() 
+          && (this.tracker!=null && !this.tracker.isDummy()) ){
           /*already selected*/
         }else{
           if(id==null && this.tracker!=null){
@@ -210,7 +215,7 @@ export default class PageHandler {
           this.tracker = null;
         }
 
-        this._createMuteTracker();
+        this._createDummyTracker();
         let current_tracker = this._getCurrentTracker();
         current_tracker.init(true);
         // if setting enterid false then will be disabled the private mode
@@ -231,7 +236,7 @@ export default class PageHandler {
    * @return {Promise} boolean
    */
   setClientId(clientId){
-    if (this.debug) console.log('PageHandler.setClientId()', clientId)
+    if (this.debug) console.log('-> PageHandler.setClientId(',clientId,')')
     return this.config.setClientId(clientId, this.config.getSelect());
   }
 

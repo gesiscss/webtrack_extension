@@ -52,9 +52,10 @@ export default class Project extends DefaultComponent {
     if (this.debug) console.log('-> Project.componentDidMount() - project.component.js');
     try {
       this.pageHandler = this.props.getPageHandler();
-      if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
+      if (this.debug) this.pageHandler.log('-> Project.componentDidMount() - project.component.js (try{})');
       
       if(!this.pageHandler.isProjectAvailable(this.props.id)){
+        console.log('!this.pageHandler.isProjectAvailable', this.props.id)
         this.setState({
           projectName: lang.project.unavailable.title,
           available: false,
@@ -66,7 +67,12 @@ export default class Project extends DefaultComponent {
       this.project =  this.pageHandler.getProject(this.props.id);
       this.settings =  this.pageHandler.getProjectsTmpSettings()[this.props.id];
       this.schedule = this.pageHandler.getNextPeriode();
+
+      console.log(this.project);
+      console.log(this.settings);
+      console.log(this.schedule);
       
+
       if(this.project.SETTINGS.ENTERID && this.settings.clientId == null){
         setTimeout(()=> this.$f7.views.main.router.navigate('/login/'+this.props.id), 1000);
       }else{
