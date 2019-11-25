@@ -165,23 +165,13 @@ export default class Configuration {
     for (let p of this.projects) { 
       newSettings[p.ID] = {clientId: null, privateMode: false, sending: false}
     }
-    console.log('newSettings:');
-    console.log(newSettings);
-    console.log('this.projectsTmpSettings.get():');
-    console.log(this.projectsTmpSettings.get());
     let r = Object.assign({}, newSettings, this.projectsTmpSettings.get());
-    console.log('r');
-    console.log(r);
     for (let id in r) {
       if(!this.projectIds.includes(parseInt(id, 10))) { 
         delete r[id];
       }
     }
-    console.log('rAfter');
-    console.log(r);
     this.projectsTmpSettings.set(r);
-    console.log('this.projectsTmpSettings');
-    console.log(this.projectsTmpSettings);
     return r;
   }
 
@@ -208,7 +198,6 @@ export default class Configuration {
     if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
 
     let tmp = this.projectsTmpSettings.get();
-    console.log('project: ', this.select.get());
     let project_settings = Object.assign({}, tmp[this.select.get()], setting);
     tmp[this.select.get()]= project_settings;
     this.projectsTmpSettings.set(tmp);
@@ -263,12 +252,7 @@ export default class Configuration {
             };
             this.transfer.jsonFetch(this.settings.server+'client/checkid', options)
             .then(b => {
-              console.log('client/checkid: jsonFetch succesful:', client_hash);
-              console.log(this.getProjectSettings());
-              console.log('b:', b);
               if(b) this.setProjectsTmpSettings({clientId: client_hash});
-              console.log('after setProjectsTmpSettings');
-              console.log(this.getProjectSettings());
               resolve(b)
              })
             .catch(err => {

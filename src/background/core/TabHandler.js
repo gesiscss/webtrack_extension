@@ -325,18 +325,18 @@ export default class TabHandler {
         }
         // On close the tab
         this.extension.event.on('onTabRemove', tabId => {
-          if (this.debug) console.log('TabHandler.onTabRemove');
+          if (this.debug) console.log('-> TabHandler.onTabRemove');
           if(!this.isClose){
-            console.log('onTabRemove', tabId);
+            if (this.debug) console.log('onTabRemove', tabId);
             this._onFocus();
             this.closeTab(tabId, undefined, true, true);
           }
         });
         //create ne Tab Object
         this.extension.event.on('onTab', tabId => {
-          if (this.debug) console.log('TabHandler.onTab');
+          if (this.debug) console.log('-> TabHandler.onTab');
           if(!this.isClose){
-            console.log('onTab', tabId);
+            if (this.debug) console.log('onTab', tabId);
             let tab = new Tab(this.projectId, tabId);
             let timeout = setTimeout(()=>{
               console.warn('Timeout: Failed to create Tab');

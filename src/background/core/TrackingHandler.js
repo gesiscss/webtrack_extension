@@ -48,10 +48,6 @@ export default class TrackingHandler {
         this.projectId = this.config.getSelect();
         let settings = this.config.getProject(this.projectId);
         this.settings = settings.SETTINGS;
-        console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log(settings);
-        console.log(settings.SETT)
-
 
         this.schedule = typeof settings.SCHEDULE==='object' && Object.keys(settings.SCHEDULE).length>0? new Schedule(settings.SCHEDULE) : null;
         let privateMode = (this.schedule==null || this.schedule.getNextPeriode()===0)? this.config.getRunProjectTmpSettings().privateMode : true;
@@ -71,9 +67,8 @@ export default class TrackingHandler {
         this.transfer = transfer;
         this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
       } catch (e) {
-        console.log(this.event);
-        this.event.emit('error', e, true);
         console.log(e);
+        this.event.emit('error', e, true);
       }
     } else {
       this.schedule == null;
@@ -105,14 +100,14 @@ export default class TrackingHandler {
           this.event.emit('error', e, true);
           reject(e);
         } finally{
-          console.log('AUTOSTART', this.AUTOSTART);
+          if (this.debug) console.log(':::AUTOSTART:::', this.AUTOSTART);
           this.startTimeoutScheudle();
           // I am forcing it to start in private mode so it doesnt try to collect
           // data immediately
           if(this.AUTOSTART) this.start(private_mode);
           if (!this.is_dummy){
             if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
-              console.log('Autostart send');
+              if (this.debug) console.log('autostart send');
               this.sendData(null, true);
             }
           }
@@ -182,7 +177,7 @@ export default class TrackingHandler {
       // console.log('DISBALE SAVE PAGE  !!!');
       // return;
       if(!page.hasOwnProperty('content') || page.content.length == 0){
-        console.log('page has no content', page);
+        console.log('Page has no content!!!!', page);
       }else{
         this.pageCache.add(page, +new Date());
         this.event.emit(EVENT_NAMES.page, page, false);
@@ -354,7 +349,7 @@ export default class TrackingHandler {
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);
-                console.log(page);
+                if (this.debug) console.log(page);
                 console.warn(e);
                 let title = 'unknown';
                 if(page!=null) title = page.title;

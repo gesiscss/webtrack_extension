@@ -31397,13 +31397,7 @@ function () {
         }
       }
 
-      console.log('newSettings:');
-      console.log(newSettings);
-      console.log('this.projectsTmpSettings.get():');
-      console.log(this.projectsTmpSettings.get());
       var r = Object.assign({}, newSettings, this.projectsTmpSettings.get());
-      console.log('r');
-      console.log(r);
 
       for (var id in r) {
         if (!this.projectIds.includes(parseInt(id, 10))) {
@@ -31411,11 +31405,7 @@ function () {
         }
       }
 
-      console.log('rAfter');
-      console.log(r);
       this.projectsTmpSettings.set(r);
-      console.log('this.projectsTmpSettings');
-      console.log(this.projectsTmpSettings);
       return r;
     }
     /**
@@ -31447,7 +31437,6 @@ function () {
     value: function setProjectsTmpSettings(setting) {
       if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
       var tmp = this.projectsTmpSettings.get();
-      console.log('project: ', this.select.get());
       var project_settings = Object.assign({}, tmp[this.select.get()], setting);
       tmp[this.select.get()] = project_settings;
       this.projectsTmpSettings.set(tmp);
@@ -31520,14 +31509,9 @@ function () {
             };
 
             _this3.transfer.jsonFetch(_this3.settings.server + 'client/checkid', options).then(function (b) {
-              console.log('client/checkid: jsonFetch succesful:', client_hash);
-              console.log(_this3.getProjectSettings());
-              console.log('b:', b);
               if (b) _this3.setProjectsTmpSettings({
                 clientId: client_hash
               });
-              console.log('after setProjectsTmpSettings');
-              console.log(_this3.getProjectSettings());
               resolve(b);
             })["catch"](function (err) {
               _this3.onError(err);
@@ -37198,10 +37182,10 @@ function () {
                 case 57:
                   // On close the tab
                   _this7.extension.event.on('onTabRemove', function (tabId) {
-                    if (_this7.debug) console.log('TabHandler.onTabRemove');
+                    if (_this7.debug) console.log('-> TabHandler.onTabRemove');
 
                     if (!_this7.isClose) {
-                      console.log('onTabRemove', tabId);
+                      if (_this7.debug) console.log('onTabRemove', tabId);
 
                       _this7._onFocus();
 
@@ -37211,10 +37195,10 @@ function () {
 
 
                   _this7.extension.event.on('onTab', function (tabId) {
-                    if (_this7.debug) console.log('TabHandler.onTab');
+                    if (_this7.debug) console.log('-> TabHandler.onTab');
 
                     if (!_this7.isClose) {
-                      console.log('onTab', tabId);
+                      if (_this7.debug) console.log('onTab', tabId);
                       var tab = new Tab_Tab(_this7.projectId, tabId);
                       var timeout = setTimeout(function () {
                         console.warn('Timeout: Failed to create Tab');
@@ -38017,9 +38001,6 @@ function () {
         this.projectId = this.config.getSelect();
         var settings = this.config.getProject(this.projectId);
         this.settings = settings.SETTINGS;
-        console.log('settings!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log(settings);
-        console.log(settings.SETT);
         this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
         var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
@@ -38036,9 +38017,8 @@ function () {
 
         this._initTraget(settings.SETTINGS.STORAGE_DESTINATION);
       } catch (e) {
-        console.log(this.event);
-        this.event.emit('error', e, true);
         console.log(e);
+        this.event.emit('error', e, true);
       }
     } else {
       this.schedule == null;
@@ -38098,7 +38078,7 @@ function () {
 
                 case 9:
                   _context.prev = 9;
-                  console.log('AUTOSTART', _this2.AUTOSTART);
+                  if (_this2.debug) console.log(':::AUTOSTART:::', _this2.AUTOSTART);
 
                   _this2.startTimeoutScheudle(); // I am forcing it to start in private mode so it doesnt try to collect
                   // data immediately
@@ -38108,7 +38088,7 @@ function () {
 
                   if (!_this2.is_dummy) {
                     if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
-                      console.log('Autostart send');
+                      if (_this2.debug) console.log('autostart send');
 
                       _this2.sendData(null, true);
                     }
@@ -38219,7 +38199,7 @@ function () {
                   // console.log('DISBALE SAVE PAGE  !!!');
                   // return;
                   if (!page.hasOwnProperty('content') || page.content.length == 0) {
-                    console.log('page has no content', page);
+                    console.log('Page has no content!!!!', page);
                   } else {
                     this.pageCache.add(page, +new Date());
                     this.event.emit(TrackingHandler_EVENT_NAMES.page, page, false);
@@ -38536,7 +38516,7 @@ function () {
                   _context5.t0 = _context5["catch"](16);
                   count += 1; // this.event.emit('error', e, true);
 
-                  console.log(page);
+                  if (_this5.debug) console.log(page);
                   console.warn(_context5.t0);
                   title = 'unknown';
                   if (page != null) title = page.title; // this.event.emit('onSendData', {
