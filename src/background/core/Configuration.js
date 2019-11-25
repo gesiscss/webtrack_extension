@@ -190,7 +190,10 @@ export default class Configuration {
     if(id==null){
       this.setProjectsTmpSettings({clientId: null});
       this.select.set(null);
-    }else{
+    } else if (!this.isLoaded()){
+      // Do not remove the client Id
+      this.select.set(null);
+    } else{
       id = parseInt(id, 10);
       if(this.projectIds.includes(id)) this.select.set(id);
     }

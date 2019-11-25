@@ -31433,6 +31433,9 @@ function () {
           clientId: null
         });
         this.select.set(null);
+      } else if (!this.isLoaded()) {
+        // Do not remove the client Id
+        this.select.set(null);
       } else {
         id = parseInt(id, 10);
         if (this.projectIds.includes(id)) this.select.set(id);
@@ -38996,13 +38999,19 @@ function () {
 
 
                       if (id == null) {
+                        console.log('Get Select');
                         id = _this3.getSelect();
+                        console.log('Set Select');
 
                         _this3.config.setSelect(id);
+
+                        console.log('Disconnected Mode');
 
                         _this3.disconnectedMode(); // create a real tracker
 
                       } else {
+                        console.log('Create a Real Tracker');
+
                         _this3.config.setSelect(id);
 
                         if (_this3._createTracker()) {
