@@ -38,8 +38,10 @@ export default class Login extends Component {
   /**
    * [redirect to the root]
    */
-  handleAbortLogin(){
-    this.pageHandler.selectProject(null);
+  async handleAbortLogin(){
+    if (this.debug) console.log('handleAbortLogin');
+    await this.pageHandler.setClientId(null);
+    await this.pageHandler.init();
     this.$f7.views.main.router.navigate('/')
   }
 
@@ -52,9 +54,10 @@ export default class Login extends Component {
     return new Promise(async (resolve, reject)=>{
       try {
         if (this.debug) console.log('-> signIn');
+
         if(await this.pageHandler.setClientId(clientId)){
-          if(this.pageHandler.tracker==null){
-            this.pageHandler._createTracker();
+          if(this.pageHandler.tracker==null || this.pageHandler.tracker.isDummy()) {
+            this.pageHandler.init();
           }
           this.pageHandler._setCurrentTrackerPrivateMode(false);
           resolve();

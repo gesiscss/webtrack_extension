@@ -86,6 +86,7 @@ async function load_blacklists(xbrowser) {
   console.log('Create PageHandler');
   window.pageHandler = new PageHandler(config, transfer, window.tracker);
   await window.pageHandler.init();
+  console.log('PageHandler Initialized');
   //window.pageHandler.event.on('error', error => errorCache.add(error));
 
 

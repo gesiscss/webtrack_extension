@@ -477,6 +477,8 @@ export default class Extension {
    * [remove all listener from eventemitter3 instance]
    */
   stop(){
+    if (this.debug) console.log('-> Extension.stop()');
+
     this.tabs = {};
     xbrowser.tabs.onCreated.removeListener(this._onTab);
     xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
@@ -484,8 +486,7 @@ export default class Extension {
     xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
     xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
     xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
-
-    console.log('CLOSE Extension');
+    
     this.setImage(false);
     delete this
   }

@@ -14,6 +14,28 @@ const EVENT_NAMES = {
   'disconnectPopup': 'onDisconnectPopup'
 }
 
+const DEFAULT_SETTINGS = {
+  ID: null,
+  NAME: null,
+  DESCRIPTION: null,
+  ACTIVE: null,
+  SCHEDULE: null,
+  ENTERID: null,
+  CHECK_CLIENTIDS: null,
+  SENDDATAAUTOMATICALLY: null,
+  PRIVATEBUTTON: null,
+  SHOWHISTORY: null,
+  EDITHISTORY: null,
+  SHOW_DOMAIN_HINT: null,
+  FORGOT_ID: null,
+  PRIVATETAB: null,
+  ACTIVE_URLLIST: null,
+  URLLIST_WHITE_OR_BLACK: null,
+  EXTENSIONSFILTER: null,
+  STORAGE_DESTINATION: null,
+  CREATEDATE: null,
+}
+
 export default class TrackingHandler {
 
   /**
@@ -29,6 +51,7 @@ export default class TrackingHandler {
     this.config = config;
     this.event = new EventEmitter();
     this.debug = true;
+    this.settings = {};
 
     // fields that should be anonymized
     this.to_anonym = [

@@ -51,8 +51,10 @@ export default class Project extends DefaultComponent {
   async componentDidMount(){
     if (this.debug) console.log('-> Project.componentDidMount() - project.component.js');
     try {
+      if (this.debug) console.log('-> Project.componentDidMount() - project.component.js (try{})');
       this.pageHandler = this.props.getPageHandler();
       if (this.debug) this.pageHandler.log('-> Project.componentDidMount() - project.component.js (try{})');
+      
       
       if(!this.pageHandler.isProjectAvailable(this.props.id)){
         this.setState({
@@ -62,7 +64,6 @@ export default class Project extends DefaultComponent {
         return;
       }
 
-      await this.pageHandler.selectProject(this.props.id);
       this.project =  this.pageHandler.getProject(this.props.id);
       this.settings =  this.pageHandler.getProjectsTmpSettings()[this.props.id];
       this.schedule = this.pageHandler.getNextPeriode();
@@ -70,9 +71,9 @@ export default class Project extends DefaultComponent {
       if(this.project.SETTINGS.ENTERID && this.settings.clientId == null){
         setTimeout(()=> this.$f7.views.main.router.navigate('/login/'+this.props.id), 1000);
       }else{
-
         let pages = this.pageHandler.getPages();
         let privateTab = await this.pageHandler.isTabPrivate();
+
         this.setState({
           available: true,
           activePrivateTab: privateTab,
@@ -114,9 +115,12 @@ export default class Project extends DefaultComponent {
    * @return {Promise} [description]
    */
   async handleLogout(){
+    if (this.debug) console.log('-> Project.handleLogout() - project.component.js');
     if(!this.state.available || await this.confirm({title: lang.project.logout_title, text: lang.project.logout.replace(/%s/g, this.project.NAME)})){
-      this.pageHandler.selectProject(null);
-      this.$f7.views.main.router.navigate('/')
+      await this.pageHandler.setClientId(null);
+      await this.pageHandler.init();
+      this.$f7.views.main.router.navigate('/login/'+this.props.id)
+      //'/project/'+this.extension.pageHandler.getSelect()
     }
   }
 

@@ -24,8 +24,9 @@ export default class PageHandler {
     if (this.debug) console.log('PageHandler.init()');
 
     try {
-      if (this.debug) console.log('Load Configuration');
+      if (this.debug) console.log('***Load Configuration***');
       await this.config.load();
+      if (this.debug) console.log('***Configuration Loaded***');
     } catch(err){
       console.log('ERROR IN INIT');
       console.error(err);
@@ -35,15 +36,25 @@ export default class PageHandler {
     let selected = this.getSelect();
     let tmp_settings = this.config.getRunProjectTmpSettings();
 
+    // if project didn't load, proceed to disconnected mode
+    // if (!this.is_load){
+    //   if (this.debug) console.log('this._loadDisconnectedMode(): ');
+    //   this._loadDisconnectedMode();
+    //   resolve(false);
+    // }
 
-    if(selected!=null && tmp_settings && (tmp_settings.clientId != null 
+    if ( selected!=null && tmp_settings && (tmp_settings.clientId != null 
         || !this.getProject(selected).SETTINGS.ENTERID)){
-      this.selectProject(selected, private_mode);
+      // if there is a client id then start tracking
+      await this.selectProject(selected, private_mode);
     } else {
-      if (!this.isLoaded()){
-        this.disconnectedMode();
-      }
+      // if there is no client id force a dummy tracker
+      await this.selectProject(null, private_mode);
     }
+    //   if (!this.isLoaded()){
+    //     this.disconnectedMode();
+    //   }
+    // }
   }
 
 
@@ -102,9 +113,10 @@ export default class PageHandler {
     if (this.debug) console.log('-> PageHandler._createTracker()');
 
     let selectId = this.config.getSelect();
-    if(this.tracker!=null){
-      this.tracker.close();
-    }
+    
+    // make sure the tracker is close
+    this.close_tracker();
+
     if(selectId!=null){
       this.tracker = new TrackingHandler(this.config, this.transfer, true, false);
       this.tracker.event.on('error', error => {
@@ -165,28 +177,31 @@ export default class PageHandler {
    * @param  {number} [id=null]
    * @return {Promise}
    */
-  selectProject(id=null, private_mode=true){
+  async selectProject(id=null, private_mode=true){
+    if (this.debug) console.log('-> PageHandler.selectProject()');
     return new Promise((resolve, reject) => {
       if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
       try {
-        console.log(id);
-        console.log(this.config.getSelect());
-        console.log(this.tracker);
-        console.log(this.isLoaded());
         // console.log(parseInt(id, 10) , this.config.getSelect());
+
+        // do nothing if everything to be in place
         if(id!=null && parseInt(id, 10) == this.config.getSelect() 
           && (this.tracker!=null && !this.tracker.isDummy()) ){
           /*already selected*/
         }else{
           if(id==null && this.tracker!=null){
-            this.tracker.close();
-            delete this.tracker;
-            this.tracker = null;
-            if (this.debug) console.log('CLOSE TRACKER');
-            // this._setCurrentTrackerPrivateMode(true);
+            this.close_tracker();
           }
-          this.config.setSelect(id);
-          if(id != null){
+
+          // if there is no id then start in the disconnected mode
+          if (id == null ){
+            id = this.getSelect();
+            this.config.setSelect(id);
+            this.disconnectedMode();          
+
+          // create a real tracker
+          } else {
+            this.config.setSelect(id);
             if(this._createTracker()){
               let current_tracker = this._getCurrentTracker();
               current_tracker.init(private_mode);
@@ -204,16 +219,22 @@ export default class PageHandler {
     });
   }
 
+  /** Close current tracker */
+  close_tracker(){
+    if (this.debug) console.log('-> close_tracker()');
+    if (this.tracker!=null){
+      this.tracker.close();
+      delete this.tracker;
+      this.tracker = null;
+    }
+  }
+
   disconnectedMode(){
     return new Promise((resolve, reject) => {
       if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
       try {
         // make sure there is no tracker
-        if (this.tracker!=null){
-          this.tracker.close();
-          delete this.tracker;
-          this.tracker = null;
-        }
+        this.close_tracker();
 
         this._createDummyTracker();
         let current_tracker = this._getCurrentTracker();

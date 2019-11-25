@@ -67,21 +67,22 @@ export default class Configuration {
       if(cert===null){
         if (this.debug) console.log('No certificate, fetching one');
         this.transfer.fileFetch(this.settings.server+'tracking/cert').then(cert => {
+          if (this.debug) console.log('Fetch certificate!');
           this.certstorage.set(cert)
-          resolve(cert);
+          resolve(true);
          })
         .catch(err => {
-          if (this.debug) console.log('_fetchCert: ', err);
-          reject(err);
+          if (this.debug) console.log('Faile fetching the certificate: ', err);
+          resolve(false);
         })
       }else{
         if(this._isTimeDiffover(this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)){
           if (this.debug) console.log('Expired certificate, renewing it');
           this.certstorage.set(null)
-          this._fetchCert().then(resolve)
+          this._fetchCert().then(b => resolve(b));
         }else{
           if (this.debug) console.log('Using restored certificate');
-          resolve(cert)
+          resolve(true)
         }
       }
     });
@@ -103,13 +104,16 @@ export default class Configuration {
     return new Promise((resolve, reject)=>{
 
       this.transfer.jsonFetch(this.settings.server+'client/getProjects')
-        .then(p => {
-          this.projectsStorage.set(p);
-          resolve(p);
+        .then(projects => {
+          if (this.debug) console.log('Fetch projects!');
+          this.projectsStorage.set(projects);
+          this._load(projects);
+          resolve(true);
          })
         .catch(err => {
           if (this.debug) console.log('_fetchProject: ', err);
-          reject(err);
+          console.log("Failed fetching the projects");
+          resolve(false);
         })
 
     });
@@ -181,6 +185,8 @@ export default class Configuration {
    * @param {Integer} id
    */
   setSelect(id){
+    if (this.debug) console.log('-> Configuration.setSelect(',id,')');
+
     if(id==null){
       this.setProjectsTmpSettings({clientId: null});
       this.select.set(null);
@@ -240,30 +246,38 @@ export default class Configuration {
   setClientId(client_hash, project_id){
     return new Promise((resolve, reject)=>{
       if (this.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
-      if(this.projectIdtoIndex.hasOwnProperty(project_id) && this.projects[this.projectIdtoIndex[project_id]].SETTINGS.ENTERID){
-        if(this.projects[this.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS){
-            let options = {
-              method: 'POST',
-              headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({'client_hash': client_hash, 'project_id': project_id})
-            };
-            this.transfer.jsonFetch(this.settings.server+'client/checkid', options)
-            .then(b => {
-              if(b) this.setProjectsTmpSettings({clientId: client_hash});
-              resolve(b)
-             })
-            .catch(err => {
-              this.onError(err);
-            })
-        }else{
-          this.setProjectsTmpSettings({clientId: client_hash});
-          resolve(true);
+
+      if (client_hash == null){
+        this.setProjectsTmpSettings({clientId: null});
+        resolve(true);
+      } else {
+        if(this.projectIdtoIndex.hasOwnProperty(project_id) && 
+          this.projects[this.projectIdtoIndex[project_id]].SETTINGS.ENTERID){
+          if(this.projects[this.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS){
+              let options = {
+                method: 'POST',
+                headers:{
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'client_hash': client_hash, 'project_id': project_id})
+              };
+              this.transfer.jsonFetch(this.settings.server+'client/checkid', options)
+              .then(b => {
+                if(b) this.setProjectsTmpSettings({clientId: client_hash});
+                resolve(b)
+               })
+              .catch(err => {
+                this.onError(err);
+              })
+          }else{
+            this.setProjectsTmpSettings({clientId: client_hash});
+            resolve(true);
+          }
+        } else {
+          reject('Set clientId is not necessary because project settings not required this setting')
         }
-      }else
-        reject('Set clientId is not necessary because project settings not required this setting')
+      }
     });
   }
 
@@ -280,7 +294,7 @@ export default class Configuration {
    * @return {Integer}
    */
   getSelect(){
-    if (this.debug) console.log('-> Configuration.getSelect()')
+    if (this.debug) console.log('-> Configuration.getSelect()');
     let select = this.select.get();
     if (select == null) {
       for (let index in this.projects) {
@@ -299,6 +313,7 @@ export default class Configuration {
    * @param  projects coming from the server request
    */
   _load(projects){
+    if (this.debug) console.log('-> Configuration._load()');
     this.projectIds = projects.map(v => v.ID);
     this.projectIdtoIndex = {}
     for (let index in projects) {
@@ -314,9 +329,10 @@ export default class Configuration {
       }
       this.setProjectsTmpSettings({privateMode: false});
     }
+    this.is_load = true;
 
     setTimeout(() => this.load(), UPDATE_INTERVAL);
-    this.is_load = true;
+    
   }
 
   /**
@@ -328,7 +344,6 @@ export default class Configuration {
     this.projectIds = null;
     this.projectIdtoIndex = null;
     this.projects = [];
-    this.is_load = false;
     setTimeout(() => this.load(), UPDATE_INTERVAL);
 
   }
@@ -337,29 +352,24 @@ export default class Configuration {
    * [load // fetch all required settings from server]
    */
   load(){
-    if (this.debug) console.log('Configuration.load()')
+
     return new Promise(async (resolve, reject)=>{
+
+      if (this.debug) console.log('-> Configuration.load() - Promise');
 
       //TODO: is this necessary
       this.initDefaultId();
 
-      this._fetchCert().then(cert => {
-        this._fetchProject().then(projects => {
-          this._load(projects);
-          resolve(true);
-        }).catch(err => {
-          console.log("Failed fetching the project");
-          if (this.debug) console.log(err);
-        })
-      }).catch(err => {
-        console.log("Failed fetching the certificate");
-        if (this.debug) console.log(err);
-      })
+      // Load the certificates
+      if (await this._fetchCert()){
 
-      if (!this.is_load){
-        this._loadDisconnectedMode();
-        resolve(false);
+        // Load the projects
+        await this._fetchProject();
       }
+
+      if (this.debug) console.log('<- Configuration.load() - Promise');
+      resolve(this.is_load);
+
     });//Promise
   }
 

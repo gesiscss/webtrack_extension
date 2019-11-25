@@ -31260,12 +31260,14 @@ function () {
           if (_this.debug) console.log('No certificate, fetching one');
 
           _this.transfer.fileFetch(_this.settings.server + 'tracking/cert').then(function (cert) {
+            if (_this.debug) console.log('Fetch certificate!');
+
             _this.certstorage.set(cert);
 
-            resolve(cert);
+            resolve(true);
           })["catch"](function (err) {
-            if (_this.debug) console.log('_fetchCert: ', err);
-            reject(err);
+            if (_this.debug) console.log('Faile fetching the certificate: ', err);
+            resolve(false);
           });
         } else {
           if (_this._isTimeDiffover(_this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)) {
@@ -31273,10 +31275,12 @@ function () {
 
             _this.certstorage.set(null);
 
-            _this._fetchCert().then(resolve);
+            _this._fetchCert().then(function (b) {
+              return resolve(b);
+            });
           } else {
             if (_this.debug) console.log('Using restored certificate');
-            resolve(cert);
+            resolve(true);
           }
         }
       });
@@ -31302,13 +31306,18 @@ function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.transfer.jsonFetch(_this2.settings.server + 'client/getProjects').then(function (p) {
-          _this2.projectsStorage.set(p);
+        _this2.transfer.jsonFetch(_this2.settings.server + 'client/getProjects').then(function (projects) {
+          if (_this2.debug) console.log('Fetch projects!');
 
-          resolve(p);
+          _this2.projectsStorage.set(projects);
+
+          _this2._load(projects);
+
+          resolve(true);
         })["catch"](function (err) {
           if (_this2.debug) console.log('_fetchProject: ', err);
-          reject(err);
+          console.log("Failed fetching the projects");
+          resolve(false);
         });
       });
     }
@@ -31417,6 +31426,8 @@ function () {
   }, {
     key: "setSelect",
     value: function setSelect(id) {
+      if (this.debug) console.log('-> Configuration.setSelect(', id, ')');
+
       if (id == null) {
         this.setProjectsTmpSettings({
           clientId: null
@@ -31494,36 +31505,46 @@ function () {
       return new Promise(function (resolve, reject) {
         if (_this3.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
 
-        if (_this3.projectIdtoIndex.hasOwnProperty(project_id) && _this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.ENTERID) {
-          if (_this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS) {
-            var options = {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                'client_hash': client_hash,
-                'project_id': project_id
-              })
-            };
+        if (client_hash == null) {
+          _this3.setProjectsTmpSettings({
+            clientId: null
+          });
 
-            _this3.transfer.jsonFetch(_this3.settings.server + 'client/checkid', options).then(function (b) {
-              if (b) _this3.setProjectsTmpSettings({
+          resolve(true);
+        } else {
+          if (_this3.projectIdtoIndex.hasOwnProperty(project_id) && _this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.ENTERID) {
+            if (_this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS) {
+              var options = {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  'client_hash': client_hash,
+                  'project_id': project_id
+                })
+              };
+
+              _this3.transfer.jsonFetch(_this3.settings.server + 'client/checkid', options).then(function (b) {
+                if (b) _this3.setProjectsTmpSettings({
+                  clientId: client_hash
+                });
+                resolve(b);
+              })["catch"](function (err) {
+                _this3.onError(err);
+              });
+            } else {
+              _this3.setProjectsTmpSettings({
                 clientId: client_hash
               });
-              resolve(b);
-            })["catch"](function (err) {
-              _this3.onError(err);
-            });
-          } else {
-            _this3.setProjectsTmpSettings({
-              clientId: client_hash
-            });
 
-            resolve(true);
+              resolve(true);
+            }
+          } else {
+            reject('Set clientId is not necessary because project settings not required this setting');
           }
-        } else reject('Set clientId is not necessary because project settings not required this setting');
+        }
       });
     }
     /**
@@ -31572,6 +31593,7 @@ function () {
     value: function _load(projects) {
       var _this4 = this;
 
+      if (this.debug) console.log('-> Configuration._load()');
       this.projectIds = projects.map(function (v) {
         return v.ID;
       });
@@ -31598,10 +31620,10 @@ function () {
         });
       }
 
+      this.is_load = true;
       setTimeout(function () {
         return _this4.load();
       }, UPDATE_INTERVAL);
-      this.is_load = true;
     }
     /**
      * load dummy variables when the connection to the server is not succesful
@@ -31616,7 +31638,6 @@ function () {
       this.projectIds = null;
       this.projectIdtoIndex = null;
       this.projects = [];
-      this.is_load = false;
       setTimeout(function () {
         return _this5.load();
       }, UPDATE_INTERVAL);
@@ -31630,7 +31651,6 @@ function () {
     value: function load() {
       var _this6 = this;
 
-      if (this.debug) console.log('Configuration.load()');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -31641,30 +31661,28 @@ function () {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  //TODO: is this necessary
-                  _this6.initDefaultId();
+                  if (_this6.debug) console.log('-> Configuration.load() - Promise'); //TODO: is this necessary
 
-                  _this6._fetchCert().then(function (cert) {
-                    _this6._fetchProject().then(function (projects) {
-                      _this6._load(projects);
+                  _this6.initDefaultId(); // Load the certificates
 
-                      resolve(true);
-                    })["catch"](function (err) {
-                      console.log("Failed fetching the project");
-                      if (_this6.debug) console.log(err);
-                    });
-                  })["catch"](function (err) {
-                    console.log("Failed fetching the certificate");
-                    if (_this6.debug) console.log(err);
-                  });
 
-                  if (!_this6.is_load) {
-                    _this6._loadDisconnectedMode();
+                  _context.next = 4;
+                  return _this6._fetchCert();
 
-                    resolve(false);
+                case 4:
+                  if (!_context.sent) {
+                    _context.next = 7;
+                    break;
                   }
 
-                case 3:
+                  _context.next = 7;
+                  return _this6._fetchProject();
+
+                case 7:
+                  if (_this6.debug) console.log('<- Configuration.load() - Promise');
+                  resolve(_this6.is_load);
+
+                case 9:
                 case "end":
                   return _context.stop();
               }
@@ -32815,6 +32833,7 @@ function () {
   }, {
     key: "stop",
     value: function stop() {
+      if (this.debug) console.log('-> Extension.stop()');
       this.tabs = {};
       xbrowser.tabs.onCreated.removeListener(this._onTab);
       xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
@@ -32822,7 +32841,6 @@ function () {
       xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
       xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
       xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
-      console.log('CLOSE Extension');
       this.setImage(false);
       delete this;
     }
@@ -37968,6 +37986,27 @@ var TrackingHandler_EVENT_NAMES = {
   'schedule': 'onSchedule',
   'disconnectPopup': 'onDisconnectPopup'
 };
+var DEFAULT_SETTINGS = {
+  ID: null,
+  NAME: null,
+  DESCRIPTION: null,
+  ACTIVE: null,
+  SCHEDULE: null,
+  ENTERID: null,
+  CHECK_CLIENTIDS: null,
+  SENDDATAAUTOMATICALLY: null,
+  PRIVATEBUTTON: null,
+  SHOWHISTORY: null,
+  EDITHISTORY: null,
+  SHOW_DOMAIN_HINT: null,
+  FORGOT_ID: null,
+  PRIVATETAB: null,
+  ACTIVE_URLLIST: null,
+  URLLIST_WHITE_OR_BLACK: null,
+  EXTENSIONSFILTER: null,
+  STORAGE_DESTINATION: null,
+  CREATEDATE: null
+};
 
 var TrackingHandler_TrackingHandler =
 /*#__PURE__*/
@@ -37991,7 +38030,8 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = true; // fields that should be anonymized
+    this.debug = true;
+    this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
     this.regex_escapers = /[.*+?^${}()|[\]\\]/g;
@@ -38712,39 +38752,53 @@ function () {
               case 0:
                 if (this.debug) console.log('PageHandler.init()');
                 _context.prev = 1;
-                if (this.debug) console.log('Load Configuration');
+                if (this.debug) console.log('***Load Configuration***');
                 _context.next = 5;
                 return this.config.load();
 
               case 5:
-                _context.next = 11;
+                if (this.debug) console.log('***Configuration Loaded***');
+                _context.next = 12;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](1);
                 console.log('ERROR IN INIT');
                 console.error(_context.t0);
 
-              case 11:
+              case 12:
                 private_mode = this.config.defaultId.get() == null;
                 selected = this.getSelect();
-                tmp_settings = this.config.getRunProjectTmpSettings();
+                tmp_settings = this.config.getRunProjectTmpSettings(); // if project didn't load, proceed to disconnected mode
+                // if (!this.is_load){
+                //   if (this.debug) console.log('this._loadDisconnectedMode(): ');
+                //   this._loadDisconnectedMode();
+                //   resolve(false);
+                // }
 
-                if (selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID)) {
-                  this.selectProject(selected, private_mode);
-                } else {
-                  if (!this.isLoaded()) {
-                    this.disconnectedMode();
-                  }
+                if (!(selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID))) {
+                  _context.next = 20;
+                  break;
                 }
 
-              case 15:
+                _context.next = 18;
+                return this.selectProject(selected, private_mode);
+
+              case 18:
+                _context.next = 22;
+                break;
+
+              case 20:
+                _context.next = 22;
+                return this.selectProject(null, private_mode);
+
+              case 22:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[1, 7]]);
+        }, _callee, this, [[1, 8]]);
       }));
 
       return function init() {
@@ -38818,11 +38872,9 @@ function () {
       var _this = this;
 
       if (this.debug) console.log('-> PageHandler._createTracker()');
-      var selectId = this.config.getSelect();
+      var selectId = this.config.getSelect(); // make sure the tracker is close
 
-      if (this.tracker != null) {
-        this.tracker.close();
-      }
+      this.close_tracker();
 
       if (selectId != null) {
         this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, false);
@@ -38892,50 +38944,85 @@ function () {
 
   }, {
     key: "selectProject",
-    value: function selectProject() {
-      var _this3 = this;
+    value: function () {
+      var _selectProject = PageHandler_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        var _this3 = this;
 
-      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var private_mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      return new Promise(function (resolve, reject) {
-        if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
+        var id,
+            private_mode,
+            _args2 = arguments;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                id = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
+                private_mode = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : true;
+                if (this.debug) console.log('-> PageHandler.selectProject()');
+                return _context2.abrupt("return", new Promise(function (resolve, reject) {
+                  if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
 
-        try {
-          console.log(id);
-          console.log(_this3.config.getSelect());
-          console.log(_this3.tracker);
-          console.log(_this3.isLoaded()); // console.log(parseInt(id, 10) , this.config.getSelect());
+                  try {
+                    // console.log(parseInt(id, 10) , this.config.getSelect());
+                    // do nothing if everything to be in place
+                    if (id != null && parseInt(id, 10) == _this3.config.getSelect() && _this3.tracker != null && !_this3.tracker.isDummy()) {} else {
+                      if (id == null && _this3.tracker != null) {
+                        _this3.close_tracker();
+                      } // if there is no id then start in the disconnected mode
 
-          if (id != null && parseInt(id, 10) == _this3.config.getSelect() && _this3.tracker != null && !_this3.tracker.isDummy()) {
-            /*already selected*/
-          } else {
-            if (id == null && _this3.tracker != null) {
-              _this3.tracker.close();
 
-              delete _this3.tracker;
-              _this3.tracker = null;
-              if (_this3.debug) console.log('CLOSE TRACKER'); // this._setCurrentTrackerPrivateMode(true);
-            }
+                      if (id == null) {
+                        id = _this3.getSelect();
 
-            _this3.config.setSelect(id);
+                        _this3.config.setSelect(id);
 
-            if (id != null) {
-              if (_this3._createTracker()) {
-                var current_tracker = _this3._getCurrentTracker();
+                        _this3.disconnectedMode(); // create a real tracker
 
-                current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
+                      } else {
+                        _this3.config.setSelect(id);
 
-                if (_this3.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
-              }
+                        if (_this3._createTracker()) {
+                          var current_tracker = _this3._getCurrentTracker();
+
+                          current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
+
+                          if (_this3.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
+                        }
+                      }
+                    }
+                  } catch (e) {
+                    reject(e);
+                  } finally {
+                    if (_this3.debug) console.log('<- PageHandler.selectProject() - Promise');
+                    resolve();
+                  }
+                }));
+
+              case 4:
+              case "end":
+                return _context2.stop();
             }
           }
-        } catch (e) {
-          reject(e);
-        } finally {
-          if (_this3.debug) console.log('<- PageHandler.selectProject() - Promise');
-          resolve();
-        }
-      });
+        }, _callee2, this);
+      }));
+
+      return function selectProject() {
+        return _selectProject.apply(this, arguments);
+      };
+    }()
+    /** Close current tracker */
+
+  }, {
+    key: "close_tracker",
+    value: function close_tracker() {
+      if (this.debug) console.log('-> close_tracker()');
+
+      if (this.tracker != null) {
+        this.tracker.close();
+        delete this.tracker;
+        this.tracker = null;
+      }
     }
   }, {
     key: "disconnectedMode",
@@ -38947,12 +39034,7 @@ function () {
 
         try {
           // make sure there is no tracker
-          if (_this4.tracker != null) {
-            _this4.tracker.close();
-
-            delete _this4.tracker;
-            _this4.tracker = null;
-          }
+          _this4.close_tracker();
 
           _this4._createDummyTracker();
 
@@ -39088,18 +39170,18 @@ function () {
     value: function () {
       var _confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(component) {
+      regeneratorRuntime.mark(function _callee3(component) {
         var _this5 = this;
 
         var private_time,
             extension,
-            _args2 = arguments;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            _args3 = arguments;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : 1000 * 60 * 15;
-                _context2.next = 3;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 1000 * 60 * 15;
+                _context3.next = 3;
                 return this.set_timeout(private_time);
 
               case 3:
@@ -39126,10 +39208,10 @@ function () {
 
               case 5:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       return function confirm_public_mode(_x) {
@@ -39147,11 +39229,11 @@ function () {
     value: function () {
       var _cancel_confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
+      regeneratorRuntime.mark(function _callee4() {
         var extension;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 clearTimeout(this.timer);
                 extension = this._getCurrentTracker().extension;
@@ -39159,10 +39241,10 @@ function () {
 
               case 3:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       return function cancel_confirm_public_mode() {
@@ -39365,6 +39447,9 @@ function _load_blacklists() {
             return window.pageHandler.init();
 
           case 17:
+            console.log('PageHandler Initialized'); //window.pageHandler.event.on('error', error => errorCache.add(error));
+
+          case 18:
           case "end":
             return _context.stop();
         }
