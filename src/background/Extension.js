@@ -69,7 +69,7 @@ export default class Extension {
    * [_onActiveWindows listenen the active windowId for check the active tab]
    */
   _onActiveWindows(windowId){
-    if (this.debug) console.log('_onActiveWindows');
+    if (this.debug) console.log('-> _onActiveWindows');
     this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
   }

@@ -366,6 +366,13 @@ export default class TrackingHandler {
                     });                    
                   }).catch(err => {
                     if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
+                    count += 1;
+                    this.event.emit('onSendData', {
+                      max: max,
+                      now: count,
+                      title: page.title,
+                      status: 'failed'
+                    });  
                   }).finally( () => {
                     if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
 
@@ -381,17 +388,8 @@ export default class TrackingHandler {
               } catch (e) {
                 count += 1;
                 // this.event.emit('error', e, true);
-                if (this.debug) console.log('Failure sending data: ', page);
+                if (this.debug) console.log('Unknown error sending data: ', page);
                 console.warn(e);
-                let title = 'unknown';
-                if(page!=null) title = page.title;
-                // this.event.emit('onSendData', {
-                //   max: max,
-                //   now: count,
-                //   title: title,
-                //   status: 'failed'
-                // });
-
               }
             }//for
             if(!this.SENDDATAAUTOMATICALLY){

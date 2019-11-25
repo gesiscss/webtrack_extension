@@ -353,7 +353,7 @@ export default class TabHandler {
         });
         //on focus other tab
         this.extension.event.on('onFocusTab', () => {
-          if (this.debug) console.log('TabHandler.onFocusTab');
+          if (this.debug) console.log('-> TabHandler.onFocusTab');
           if(!this.isClose){
             this._onFocus()
           }

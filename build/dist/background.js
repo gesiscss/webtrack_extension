@@ -32083,7 +32083,7 @@ function () {
   Extension_createClass(Extension, [{
     key: "_onActiveWindows",
     value: function _onActiveWindows(windowId) {
-      if (this.debug) console.log('_onActiveWindows');
+      if (this.debug) console.log('-> _onActiveWindows');
       this.event.emit(EVENT_NAMES.focusTab, null, false);
       if (windowId > 0) this.activWindowId = windowId;
     }
@@ -37233,7 +37233,7 @@ function () {
 
 
                   _this7.extension.event.on('onFocusTab', function () {
-                    if (_this7.debug) console.log('TabHandler.onFocusTab');
+                    if (_this7.debug) console.log('-> TabHandler.onFocusTab');
 
                     if (!_this7.isClose) {
                       _this7._onFocus();
@@ -38477,7 +38477,7 @@ function () {
                   return _context6.delegateYield(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee5() {
-                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, title;
+                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime;
 
                     return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
@@ -38493,7 +38493,7 @@ function () {
 
                           case 7:
                             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context5.next = 32;
+                              _context5.next = 30;
                               break;
                             }
 
@@ -38541,6 +38541,14 @@ function () {
                             })["catch"](function (err) {
                               if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
                               console.log();
+                              count += 1;
+
+                              _this5.event.emit('onSendData', {
+                                max: max,
+                                now: count,
+                                title: page.title,
+                                status: 'failed'
+                              });
                             })["finally"](function () {
                               if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
                               console.log(); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
@@ -38562,7 +38570,7 @@ function () {
                             });
 
                             if (_this5.debug) console.log('<- sendData');
-                            _context5.next = 29;
+                            _context5.next = 27;
                             break;
 
                           case 22:
@@ -38570,67 +38578,60 @@ function () {
                             _context5.t0 = _context5["catch"](10);
                             count += 1; // this.event.emit('error', e, true);
 
-                            if (_this5.debug) console.log('Failure sending data: ', page);
+                            if (_this5.debug) console.log('Unknown error sending data: ', page);
                             console.warn(_context5.t0);
-                            title = 'unknown';
-                            if (page != null) title = page.title; // this.event.emit('onSendData', {
-                            //   max: max,
-                            //   now: count,
-                            //   title: title,
-                            //   status: 'failed'
-                            // });
 
-                          case 29:
+                          case 27:
                             _iteratorNormalCompletion = true;
                             _context5.next = 7;
                             break;
 
-                          case 32:
-                            _context5.next = 38;
+                          case 30:
+                            _context5.next = 36;
                             break;
 
-                          case 34:
-                            _context5.prev = 34;
+                          case 32:
+                            _context5.prev = 32;
                             _context5.t1 = _context5["catch"](5);
                             _didIteratorError = true;
                             _iteratorError = _context5.t1;
 
-                          case 38:
-                            _context5.prev = 38;
-                            _context5.prev = 39;
+                          case 36:
+                            _context5.prev = 36;
+                            _context5.prev = 37;
 
                             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                               _iterator["return"]();
                             }
 
-                          case 41:
-                            _context5.prev = 41;
+                          case 39:
+                            _context5.prev = 39;
 
                             if (!_didIteratorError) {
-                              _context5.next = 44;
+                              _context5.next = 42;
                               break;
                             }
 
                             throw _iteratorError;
 
+                          case 42:
+                            return _context5.finish(39);
+
+                          case 43:
+                            return _context5.finish(36);
+
                           case 44:
-                            return _context5.finish(41);
-
-                          case 45:
-                            return _context5.finish(38);
-
-                          case 46:
                             //for
                             if (!_this5.SENDDATAAUTOMATICALLY) {
                               _this5.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                             }
 
-                          case 47:
+                          case 45:
                           case "end":
                             return _context5.stop();
                         }
                       }
-                    }, _callee5, null, [[5, 34, 38, 46], [10, 22], [39,, 41, 45]]);
+                    }, _callee5, null, [[5, 32, 36, 44], [10, 22], [37,, 39, 43]]);
                   })(), "t0", 7);
 
                 case 7:
