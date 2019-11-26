@@ -37788,7 +37788,7 @@ settings_settings.getBrowser = function () {
     title: 'Projekte',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
-    notloaded: 'Webtrack konnte keine Verbindung zum Server herstellen. Bitte versuch es später.',
+    notloaded: 'Webtrack konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     startTitle: 'Starten'
   },
   loggin: {
@@ -37800,7 +37800,7 @@ settings_settings.getBrowser = function () {
   },
   project: {
     id_not_found: 'Ihre ID wurde nicht gefunden.',
-    not_connected: 'Webtrack konnte keine Verbindung zum Server herstellen. Bitte versuch es später.',
+    not_connected: 'Webtrack konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     unavailable: {
       title: 'Nicht mehr Verfügbar',
       content: 'Projekt nicht mehr verfügbar'
