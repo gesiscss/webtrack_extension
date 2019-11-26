@@ -31,7 +31,7 @@ export default class Tab {
    */
   constructor(projectId, tabId) {
     this.debug = true;
-    if (this.debug) console.log('-: Tab.constructor()');
+    //if (this.debug) console.log('-: Tab.constructor()');
 
     this.clean = this.clean.bind(this);
     this.tabCache = new TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT);
@@ -56,7 +56,7 @@ export default class Tab {
   init(){
     return new Promise(async (resolve, reject) => {
 
-    if (this.debug) console.log('-: Tab.init() *Promise');
+    //if (this.debug) console.log('-: Tab.init() *Promise');
       try {
         await this.tabCache.init();
         this.nr = this.tabCache.getIds().length;
@@ -220,7 +220,7 @@ export default class Tab {
    * @param {Object} data
    */
   addUpdate(data){
-    if (this.debug) console.log('-> addUpdate(nr)');
+    //if (this.debug) console.log('-> addUpdate(nr)');
     if(!this.queue.hasOwnProperty(this.nr)){
       this.queue[this.nr] = {
         active: false,
@@ -229,7 +229,7 @@ export default class Tab {
     }
     this.queue[this.nr].data.push(data);
     this._update(this.nr);
-    if (this.debug) console.log('<- addUpdate(nr)');
+    //if (this.debug) console.log('<- addUpdate(nr)');
   }
 
   /**
@@ -241,7 +241,7 @@ export default class Tab {
     if(this.queue[nr].active || this.queue[nr].data.length==0) {
       return;
     } else{
-      if (this.debug) console.log('-> _update(nr)');
+      //if (this.debug) console.log('-> _update(nr)');
       this.queue[nr].active = true;
 
       let data = this.queue[nr].data[0]
@@ -251,13 +251,13 @@ export default class Tab {
       try {
         // if(!this.hasContent() && data.count == 1){
         if(!this.hasContent()){
-          if (this.debug) console.log('-> _firstUpdate(data, nr)');
+          //if (this.debug) console.log('-> _firstUpdate(data, nr)');
           await this._firstUpdate(data, nr)
-          if (this.debug) console.log('<- _firstUpdate(data, nr)');
+          //if (this.debug) console.log('<- _firstUpdate(data, nr)');
         }else{
-          if (this.debug) console.log('-> _secondUpdate(data, nr)');
+          //if (this.debug) console.log('-> _secondUpdate(data, nr)');
           await this._secondUpdate(data, nr);
-          if (this.debug) console.log('<- _secondUpdate(data, nr)');
+          //if (this.debug) console.log('<- _secondUpdate(data, nr)');
         }
         this.queue[nr].data.shift();
         this.queue[nr].active = false;
@@ -274,7 +274,7 @@ export default class Tab {
         this.queue[nr].active = false;
         this._update(nr);
       }
-      if (this.debug) console.log('<- _update(nr)');
+      //if (this.debug) console.log('<- _update(nr)');
     }
   }//_update()
 

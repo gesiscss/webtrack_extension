@@ -14,7 +14,7 @@ export default class CacheHandler {
     this.debug = true;
     this.DEFAULTCONTENT = {};
     this.storage = new LocalstoreDB({objectStoreName: 'cachehandler_'+projectId, defaultContent: {}});
-    if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
+    //if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
     // this.source = new SourceCache(projectId);
     this.content = {};
     this.id = 'id';
@@ -33,7 +33,7 @@ export default class CacheHandler {
     return new Promise(async (resolve, reject) => {
       try {
         this.content = await this.storage.getAll();
-        if (this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', this.content);
+        //if (this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', this.content);
         resolve();
       } catch (e) {
         reject(e)
@@ -68,8 +68,8 @@ export default class CacheHandler {
    */
   add(props={}, now, inspect=false){
     let id = props[this.id];
-    if (this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id);
-    if (this.debug) console.log(' -: CacheHandler.add()', id);
+    //if (this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id);
+    //if (this.debug) console.log(' -: CacheHandler.add()', id);
     if(!this.is(id)){
       // console.log('Set %s default value', id, this.DEFAULTCONTENT);
       this.content[id] = this.DEFAULTCONTENT;
@@ -97,7 +97,7 @@ export default class CacheHandler {
     if(this.is(id)){
       return this.content[id];
     }else{
-      if (this.debug) console.log(this.constructor.name, 'Content from id '+id+' not found');
+      //if (this.debug) console.log(this.constructor.name, 'Content from id '+id+' not found');
       return this.DEFAULTCONTENT
     }
   }
@@ -124,10 +124,10 @@ export default class CacheHandler {
         //   this.storage.set(props, true, false);
         // }else 
         if(!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout==null && !bigUpdate){
-          if (this.debug) console.log('-: CacheHandler.update() - Update elapsed');
+          //if (this.debug) console.log('-: CacheHandler.update() - Update elapsed');
           this.storage.set(props, true, false);
         }else if(Object.keys(props).length > 2 || bigUpdate || force){
-          if (this.debug) console.log('-: CacheHandler.update() - props: ', props);
+          //if (this.debug) console.log('-: CacheHandler.update() - props: ', props);
           if(this.timeouts.hasOwnProperty(id) && this.timeouts[id].timeout!=null){
             clearTimeout(this.timeouts[id].timeout);
             this.timeouts[id].resolve();

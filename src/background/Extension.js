@@ -69,7 +69,7 @@ export default class Extension {
    * [_onActiveWindows listenen the active windowId for check the active tab]
    */
   _onActiveWindows(windowId){
-    if (this.debug) console.log('-> _onActiveWindows');
+    //if (this.debug) console.log('-> _onActiveWindows');
     this.event.emit(EVENT_NAMES.focusTab, null, false);
     if(windowId>0) this.activWindowId = windowId;
   }
@@ -79,7 +79,7 @@ export default class Extension {
    * [_onConnectedPopup listen when the extension popup is open]
    */
   _onConnectPopup(externalPort){
-    if (this.debug) console.log('_onConnectPopup');
+    //if (this.debug) console.log('_onConnectPopup');
     externalPort.onDisconnect.addListener(this._onDisconnectPopup);
     this.event.emit(EVENT_NAMES.connectedPopup);
   }
@@ -88,7 +88,7 @@ export default class Extension {
    * [_onDisconnectPopup listen when the extension popup is closed]
    */
   _onDisconnectPopup(windowId){
-    if (this.debug) console.log('_onDisconnectPopup');
+    //if (this.debug) console.log('_onDisconnectPopup');
     this.event.emit(EVENT_NAMES.disconnectPopup);
   }
 
@@ -99,7 +99,7 @@ export default class Extension {
    * @return {[type]}               [description]
    */
   _onHighlightedWindows(highlightInfo){
-    if (this.debug) console.log('_onHighlightedWindows');
+    //if (this.debug) console.log('_onHighlightedWindows');
     this.event.emit(EVENT_NAMES.focusTab, null, false);
   }
 
@@ -144,7 +144,7 @@ export default class Extension {
           xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: true}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
-                if (this.debug) console.log('No front end tab is listening.');
+                //if (this.debug) console.log('No front end tab is listening.');
               }
             }.bind(this));
         } catch (e){
@@ -169,7 +169,7 @@ export default class Extension {
           xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: false}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
-                if (this.debug) console.log('No front end tab is listening.');
+                //if (this.debug) console.log('No front end tab is listening.');
               }
             }.bind(this));
         } catch (e){
@@ -238,7 +238,7 @@ export default class Extension {
     */
   _onActivatedTab(activeInfo){
     //on switch the active tabs between one window
-    if (this.debug) console.log('_onActivatedTab');
+    //if (this.debug) console.log('_onActivatedTab');
     
     if (this.pending_private_time_answer){
       this.displayPrivateTimePopup();
@@ -289,13 +289,13 @@ export default class Extension {
    * ]
    */
   _onTabUpdate(tabId, info, tab){
-    //if (this.debug) console.log('-> Extension._onTabUpdate');
+    ////if (this.debug) console.log('-> Extension._onTabUpdate');
     if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') 
       && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
-      if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
+      //if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
       this.event.emit(EVENT_NAMES.tabUpdate, {tabId: tabId, openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: null, tab: tab}, false);
     }//if
-    //if (this.debug) console.log('<- Extension._onTabUpdate');
+    ////if (this.debug) console.log('<- Extension._onTabUpdate');
   }
 
   /**
@@ -318,13 +318,13 @@ export default class Extension {
    *  ]
    */
   _onContentMessage(msg, sender, sendResponse){
-      if (this.debug) console.log('-> _onContentMessage');
+      //if (this.debug) console.log('-> _onContentMessage');
       if(this.tabs.hasOwnProperty(sender.tab.id)) {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
       }
 
       if(msg==='ontracking'){
-        if (this.debug) console.log('# ontracking');
+        //if (this.debug) console.log('# ontracking');
         sendResponse({
           allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
           extensionfilter: this.extensionfilter, 
@@ -373,7 +373,7 @@ export default class Extension {
             title: sender.tab.title
           })
           msg.tabId = sender.tab.id;
-          if (this.debug) console.log('==== Emit Event: onTabContent ====');
+          //if (this.debug) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
 
@@ -381,11 +381,11 @@ export default class Extension {
         
         // return true;
       }else{
-        if (this.debug) console.log('Private mode: ', this.privateMode);
+        //if (this.debug) console.log('Private mode: ', this.privateMode);
         sendResponse(false);
       }
       
-      if (this.debug) console.log('<- _onContentMessage');
+      //if (this.debug) console.log('<- _onContentMessage');
       return true;
   }
 
@@ -477,7 +477,7 @@ export default class Extension {
    * [remove all listener from eventemitter3 instance]
    */
   stop(){
-    if (this.debug) console.log('-> Extension.stop()');
+    //if (this.debug) console.log('-> Extension.stop()');
 
     this.tabs = {};
     xbrowser.tabs.onCreated.removeListener(this._onTab);

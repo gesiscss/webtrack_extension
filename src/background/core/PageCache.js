@@ -36,7 +36,7 @@ export default class PageCache extends CacheHandler {
         if(content.hasOwnProperty('source')){
           if (content.source.length > 0){
             let urls = content.source.map(e => e.url);
-            if (this.debug) console.log("Sources to clean:" + urls);
+            //if (this.debug) console.log("Sources to clean:" + urls);
             await super.cleanSource(urls);
           }
           

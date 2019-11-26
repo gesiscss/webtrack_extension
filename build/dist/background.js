@@ -30974,15 +30974,13 @@ function () {
   }, {
     key: "fileFetch",
     value: function fileFetch(url) {
-      var _this5 = this;
-
       return new Promise(function (resolve, reject) {
         fetch(url).then(function (response) {
           if (!response.ok) throw response.statusText;
           var blob = response.blob();
           resolve(new Response(blob).text());
         })["catch"](function (err) {
-          if (_this5.debug) console.log('Failed to Fetch File: ', url);
+          //if (this.debug) console.log('Failed to Fetch File: ', url);
           reject({
             message: 'fileFetch: ' + err.message,
             code: '500',
@@ -31014,8 +31012,6 @@ function () {
   }, {
     key: "_fetch",
     value: function _fetch(url, options) {
-      var _this6 = this;
-
       return new Promise(function (resolve, reject) {
         var res = null;
         fetch(url, options).then(function (response) {
@@ -31035,7 +31031,7 @@ function () {
             resolve(data);
           }
         })["catch"](function (err) {
-          if (_this6.debug) console.log('Failed to Fetch JSON: ', url);
+          //if (this.debug) console.log('Failed to Fetch JSON: ', url);
           console.log(err);
           reject({
             message: '_fetch: ' + err.message,
@@ -31207,8 +31203,7 @@ function () {
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.is_load = false;
-    this.debug = true;
-    if (this.debug) console.log(blacklists);
+    this.debug = true; //if (this.debug) console.log(blacklists);
   }
   /**
    * [initialize the default id]
@@ -31257,29 +31252,26 @@ function () {
         var cert = _this.certstorage.get();
 
         if (cert === null) {
-          if (_this.debug) console.log('No certificate, fetching one');
-
+          //if (this.debug) console.log('No certificate, fetching one');
           _this.transfer.fileFetch(_this.settings.server + 'tracking/cert').then(function (cert) {
-            if (_this.debug) console.log('Fetch certificate!');
-
+            //if (this.debug) console.log('Fetch certificate!');
             _this.certstorage.set(cert);
 
             resolve(true);
           })["catch"](function (err) {
-            if (_this.debug) console.log('Faile fetching the certificate: ', err);
+            //if (this.debug) console.log('Faile fetching the certificate: ', err);
             resolve(false);
           });
         } else {
           if (_this._isTimeDiffover(_this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)) {
-            if (_this.debug) console.log('Expired certificate, renewing it');
-
+            //if (this.debug) console.log('Expired certificate, renewing it');
             _this.certstorage.set(null);
 
             _this._fetchCert().then(function (b) {
               return resolve(b);
             });
           } else {
-            if (_this.debug) console.log('Using restored certificate');
+            //if (this.debug) console.log('Using restored certificate');
             resolve(true);
           }
         }
@@ -31307,15 +31299,14 @@ function () {
 
       return new Promise(function (resolve, reject) {
         _this2.transfer.jsonFetch(_this2.settings.server + 'client/getProjects').then(function (projects) {
-          if (_this2.debug) console.log('Fetch projects!');
-
+          //if (this.debug) console.log('Fetch projects!');
           _this2.projectsStorage.set(projects);
 
           _this2.store_projects(projects);
 
           resolve(true);
         })["catch"](function (err) {
-          if (_this2.debug) console.log('_fetchProject: ', err);
+          //if (this.debug) console.log('_fetchProject: ', err);
           console.log("Failed fetching the projects");
           resolve(false);
         });
@@ -31329,7 +31320,7 @@ function () {
   }, {
     key: "getProjects",
     value: function getProjects() {
-      if (this.debug) console.log('-> Configuration.getProjects()');
+      //if (this.debug) console.log('-> Configuration.getProjects()');
       return this.projects;
     }
     /**
@@ -31340,7 +31331,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
-      if (this.debug) console.log('-> Configuration.isLoaded()');
+      //if (this.debug) console.log('-> Configuration.isLoaded()');
       return this.is_load;
     }
     /**
@@ -31371,8 +31362,7 @@ function () {
   }, {
     key: "_getProjectsTmpSettings",
     value: function _getProjectsTmpSettings() {
-      if (this.debug) console.log('-> Configuration.getProjectSettings()');
-
+      //if (this.debug) console.log('-> Configuration.getProjectSettings()');
       if (!this.isLoaded()) {
         return {};
       }
@@ -31426,8 +31416,7 @@ function () {
   }, {
     key: "setSelect",
     value: function setSelect(id) {
-      if (this.debug) console.log('-> Configuration.setSelect(', id, ')');
-
+      //if (this.debug) console.log('-> Configuration.setSelect(',id,')');
       if (id == null) {
         this.setProjectsTmpSettings({
           clientId: null
@@ -31449,7 +31438,7 @@ function () {
   }, {
     key: "setProjectsTmpSettings",
     value: function setProjectsTmpSettings(setting) {
-      if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
+      //if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
       var tmp = this.projectsTmpSettings.get();
       var project_settings = Object.assign({}, tmp[this.select.get()], setting);
       tmp[this.select.get()] = project_settings;
@@ -31475,7 +31464,7 @@ function () {
   }, {
     key: "getProjectSettings",
     value: function getProjectSettings() {
-      if (this.debug) console.log('-> Configuration.getProjectSettings()');
+      //if (this.debug) console.log('-> Configuration.getProjectSettings()');
       return this._getProjectsTmpSettings();
     }
     /**
@@ -31486,7 +31475,7 @@ function () {
   }, {
     key: "getRunProjectTmpSettings",
     value: function getRunProjectTmpSettings() {
-      if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
+      //if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
       var selected = this.getSelect();
 
       if (this._getProjectsTmpSettings().hasOwnProperty(selected)) {
@@ -31506,8 +31495,7 @@ function () {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this3.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
-
+        //if (this.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
         if (client_hash == null) {
           _this3.setProjectsTmpSettings({
             clientId: null
@@ -31573,7 +31561,7 @@ function () {
   }, {
     key: "getSelect",
     value: function getSelect() {
-      if (this.debug) console.log('-> Configuration.getSelect()');
+      //if (this.debug) console.log('-> Configuration.getSelect()');
       var select = this.select.get();
 
       if (select == null) {
@@ -31583,9 +31571,9 @@ function () {
             break;
           }
         }
-      }
+      } //if (this.debug) console.log('<- Configuration.getSelect()')
 
-      if (this.debug) console.log('<- Configuration.getSelect()');
+
       return select;
     }
     /**
@@ -31598,7 +31586,7 @@ function () {
     value: function store_projects(projects) {
       var _this4 = this;
 
-      if (this.debug) console.log('-> Configuration.store_projects()');
+      //if (this.debug) console.log('-> Configuration.store_projects()');
       this.projectIds = projects.map(function (v) {
         return v.ID;
       });
@@ -31639,7 +31627,7 @@ function () {
     value: function _loadDisconnectedMode() {
       var _this5 = this;
 
-      if (this.debug) console.log('Operating in disconnected mode');
+      //if (this.debug) console.log('Operating in disconnected mode');
       this.projectIds = null;
       this.projectIdtoIndex = null;
       this.projects = [];
@@ -31666,28 +31654,28 @@ function () {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  if (_this6.debug) console.log('-> Configuration.load() - Promise'); //TODO: is this necessary
-
+                  //if (this.debug) console.log('-> Configuration.load() - Promise');
+                  //TODO: is this necessary
                   _this6.initDefaultId(); // Load the certificates
 
 
-                  _context.next = 4;
+                  _context.next = 3;
                   return _this6._fetchCert();
 
-                case 4:
+                case 3:
                   if (!_context.sent) {
-                    _context.next = 7;
+                    _context.next = 6;
                     break;
                   }
 
-                  _context.next = 7;
+                  _context.next = 6;
                   return _this6._fetchProject();
 
-                case 7:
-                  if (_this6.debug) console.log('<- Configuration.load() - Promise');
+                case 6:
+                  //if (this.debug) console.log('<- Configuration.load() - Promise');
                   resolve(_this6.is_load);
 
-                case 9:
+                case 7:
                 case "end":
                   return _context.stop();
               }
@@ -32088,7 +32076,7 @@ function () {
   Extension_createClass(Extension, [{
     key: "_onActiveWindows",
     value: function _onActiveWindows(windowId) {
-      if (this.debug) console.log('-> _onActiveWindows');
+      //if (this.debug) console.log('-> _onActiveWindows');
       this.event.emit(EVENT_NAMES.focusTab, null, false);
       if (windowId > 0) this.activWindowId = windowId;
     }
@@ -32099,7 +32087,7 @@ function () {
   }, {
     key: "_onConnectPopup",
     value: function _onConnectPopup(externalPort) {
-      if (this.debug) console.log('_onConnectPopup');
+      //if (this.debug) console.log('_onConnectPopup');
       externalPort.onDisconnect.addListener(this._onDisconnectPopup);
       this.event.emit(EVENT_NAMES.connectedPopup);
     }
@@ -32110,7 +32098,7 @@ function () {
   }, {
     key: "_onDisconnectPopup",
     value: function _onDisconnectPopup(windowId) {
-      if (this.debug) console.log('_onDisconnectPopup');
+      //if (this.debug) console.log('_onDisconnectPopup');
       this.event.emit(EVENT_NAMES.disconnectPopup);
     }
     /**
@@ -32122,7 +32110,7 @@ function () {
   }, {
     key: "_onHighlightedWindows",
     value: function _onHighlightedWindows(highlightInfo) {
-      if (this.debug) console.log('_onHighlightedWindows');
+      //if (this.debug) console.log('_onHighlightedWindows');
       this.event.emit(EVENT_NAMES.focusTab, null, false);
     }
     /**
@@ -32193,8 +32181,7 @@ function () {
                           action: "popup_private_time",
                           display: true
                         }, function (response) {
-                          if (xbrowser.runtime.lastError) {
-                            if (this.debug) console.log('No front end tab is listening.');
+                          if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
                           }
                         }.bind(this));
                       } catch (e) {
@@ -32272,8 +32259,7 @@ function () {
                       action: "popup_private_time",
                       display: false
                     }, function (response) {
-                      if (xbrowser.runtime.lastError) {
-                        if (this.debug) console.log('No front end tab is listening.');
+                      if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
                       }
                     }.bind(this));
                   } catch (e) {
@@ -32494,8 +32480,7 @@ function () {
     key: "_onActivatedTab",
     value: function _onActivatedTab(activeInfo) {
       //on switch the active tabs between one window
-      if (this.debug) console.log('_onActivatedTab');
-
+      //if (this.debug) console.log('_onActivatedTab');
       if (this.pending_private_time_answer) {
         this.displayPrivateTimePopup();
       }
@@ -32550,16 +32535,16 @@ function () {
   }, {
     key: "_onTabUpdate",
     value: function _onTabUpdate(tabId, info, tab) {
-      //if (this.debug) console.log('-> Extension._onTabUpdate');
+      ////if (this.debug) console.log('-> Extension._onTabUpdate');
       if (!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')) {
-        if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
+        //if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
         this.event.emit(EVENT_NAMES.tabUpdate, {
           tabId: tabId,
           openerTabId: tab.hasOwnProperty('openerTabId') ? tab.openerTabId : null,
           tab: tab
         }, false);
       } //if
-      //if (this.debug) console.log('<- Extension._onTabUpdate');
+      ////if (this.debug) console.log('<- Extension._onTabUpdate');
 
     }
     /**
@@ -32585,14 +32570,13 @@ function () {
   }, {
     key: "_onContentMessage",
     value: function _onContentMessage(msg, sender, sendResponse) {
-      if (this.debug) console.log('-> _onContentMessage');
-
+      //if (this.debug) console.log('-> _onContentMessage');
       if (this.tabs.hasOwnProperty(sender.tab.id)) {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url));
       }
 
       if (msg === 'ontracking') {
-        if (this.debug) console.log('# ontracking');
+        //if (this.debug) console.log('# ontracking');
         sendResponse({
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
@@ -32632,18 +32616,18 @@ function () {
             unhashed_url: msg.unhashed_url,
             title: sender.tab.title
           });
-          msg.tabId = sender.tab.id;
-          if (this.debug) console.log('==== Emit Event: onTabContent ====');
+          msg.tabId = sender.tab.id; //if (this.debug) console.log('==== Emit Event: onTabContent ====');
+
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
         } // return true;
 
       } else {
-        if (this.debug) console.log('Private mode: ', this.privateMode);
+        //if (this.debug) console.log('Private mode: ', this.privateMode);
         sendResponse(false);
-      }
+      } //if (this.debug) console.log('<- _onContentMessage');
 
-      if (this.debug) console.log('<- _onContentMessage');
+
       return true;
     }
     /**
@@ -32838,7 +32822,7 @@ function () {
   }, {
     key: "stop",
     value: function stop() {
-      if (this.debug) console.log('-> Extension.stop()');
+      //if (this.debug) console.log('-> Extension.stop()');
       this.tabs = {};
       xbrowser.tabs.onCreated.removeListener(this._onTab);
       xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
@@ -32996,7 +32980,7 @@ function () {
         };
 
         request.onupgradeneeded = function (event) {
-          if (_this2.debug) console.log('onupgradeneeded');
+          //if (this.debug) console.log('onupgradeneeded');
           clearTimeout(timeout);
           var db = event.target.result;
 
@@ -33056,7 +33040,7 @@ function () {
                   db = _context.sent;
 
                   if (!_this3.getObjectStorelist(db).includes(objectStoreName)) {
-                    _context.next = 12;
+                    _context.next = 11;
                     break;
                   }
 
@@ -33065,31 +33049,31 @@ function () {
 
                 case 7:
                   db = _context.sent;
-                  db.deleteObjectStore(objectStoreName);
-                  if (_this3.debug) console.log('Delete objectStore', objectStoreName);
-                  _context.next = 13;
+                  db.deleteObjectStore(objectStoreName); //if (this.debug) console.log('Delete objectStore', objectStoreName);
+
+                  _context.next = 12;
                   break;
 
-                case 12:
+                case 11:
                   throw new Error('objectStorename %s not found', objectStoreName);
 
-                case 13:
+                case 12:
                   db.close();
                   resolve();
-                  _context.next = 20;
+                  _context.next = 19;
                   break;
 
-                case 17:
-                  _context.prev = 17;
+                case 16:
+                  _context.prev = 16;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 20:
+                case 19:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 17]]);
+          }, _callee, null, [[0, 16]]);
         }));
 
         return function (_x, _x2) {
@@ -33143,7 +33127,7 @@ function () {
                   _context2.prev = 0;
 
                   if (_this4.getObjectStorelist(db).includes(_this4.options.objectStoreName)) {
-                    _context2.next = 9;
+                    _context2.next = 8;
                     break;
                   }
 
@@ -33152,7 +33136,7 @@ function () {
 
                 case 4:
                   db = _context2.sent;
-                  if (_this4.debug) console.log('Create objectStore', _this4.options.objectStoreName);
+                  //if (this.debug) console.log('Create objectStore', this.options.objectStoreName);
                   objectStore = db.createObjectStore(_this4.options.objectStoreName, {
                     keyPath: _this4.options.id
                   });
@@ -33161,22 +33145,22 @@ function () {
                   });
                   db.close();
 
-                case 9:
+                case 8:
                   resolve();
-                  _context2.next = 15;
+                  _context2.next = 14;
                   break;
 
-                case 12:
-                  _context2.prev = 12;
+                case 11:
+                  _context2.prev = 11;
                   _context2.t0 = _context2["catch"](0);
                   reject(_context2.t0);
 
-                case 15:
+                case 14:
                 case "end":
                   return _context2.stop();
               }
             }
-          }, _callee2, null, [[0, 12]]);
+          }, _callee2, null, [[0, 11]]);
         }));
 
         return function (_x3, _x4) {
@@ -33230,7 +33214,7 @@ function () {
                   transaction = db.transaction([_this5.options.objectStoreName], "readwrite");
 
                   transaction.oncomplete = function () {
-                    if (_this5.debug) console.log('onComplete transaction', _this5.options.objectStoreName);
+                    //if (this.debug) console.log('onComplete transaction', this.options.objectStoreName);
                     db.close();
                     transaction.resolve();
                   };
@@ -33340,11 +33324,10 @@ function () {
               switch (_context5.prev = _context5.next) {
                 case 0:
                   _context5.prev = 0;
-                  if (_this7.debug) console.log('createEntry', _this7.options.objectStoreName, content);
-                  _context5.next = 4;
+                  _context5.next = 3;
                   return _this7.getObjectStore();
 
-                case 4:
+                case 3:
                   objectStore = _context5.sent;
                   content = Object.assign(content, {
                     timestamp: 0
@@ -33361,20 +33344,20 @@ function () {
                     reject(event);
                   };
 
-                  _context5.next = 14;
+                  _context5.next = 13;
                   break;
 
-                case 11:
-                  _context5.prev = 11;
+                case 10:
+                  _context5.prev = 10;
                   _context5.t0 = _context5["catch"](0);
                   reject(_context5.t0);
 
-                case 14:
+                case 13:
                 case "end":
                   return _context5.stop();
               }
             }
-          }, _callee5, null, [[0, 11]]);
+          }, _callee5, null, [[0, 10]]);
         }));
 
         return function (_x9, _x10) {
@@ -33708,8 +33691,7 @@ function () {
                   request = cursor["delete"]();
 
                   request.onsuccess = function () {
-                    if (_this12.debug) console.log('Delete', _this12.options.objectStoreName, id);
-
+                    //if (this.debug) console.log('Delete', this.options.objectStoreName, id);
                     cursor.source.transaction.resolve = function () {
                       return resolve();
                     };
@@ -34772,8 +34754,8 @@ function () {
     this.storage = new LocalstoreDB({
       objectStoreName: 'cachehandler_' + projectId,
       defaultContent: {}
-    });
-    if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage); // this.source = new SourceCache(projectId);
+    }); //if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
+    // this.source = new SourceCache(projectId);
 
     this.content = {};
     this.id = 'id';
@@ -34810,22 +34792,22 @@ function () {
 
                 case 3:
                   _this.content = _context.sent;
-                  if (_this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', _this.content);
+                  //if (this.debug) console.log('-: CacheHandler.init() - ', 'this.content:', this.content);
                   resolve();
-                  _context.next = 11;
+                  _context.next = 10;
                   break;
 
-                case 8:
-                  _context.prev = 8;
+                case 7:
+                  _context.prev = 7;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 11:
+                case 10:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 8]]);
+          }, _callee, null, [[0, 7]]);
         }));
 
         return function (_x, _x2) {
@@ -34870,9 +34852,8 @@ function () {
       var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var now = arguments.length > 1 ? arguments[1] : undefined;
       var inspect = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var id = props[this.id];
-      if (this.debug) console.assert(CacheHandler_typeof(id) == this.typeofId, 'id is not ' + this.typeofId, CacheHandler_typeof(id));
-      if (this.debug) console.log(' -: CacheHandler.add()', id);
+      var id = props[this.id]; //if (this.debug) console.assert(typeof id == this.typeofId, 'id is not '+this.typeofId, typeof id);
+      //if (this.debug) console.log(' -: CacheHandler.add()', id);
 
       if (!this.is(id)) {
         // console.log('Set %s default value', id, this.DEFAULTCONTENT);
@@ -34907,7 +34888,7 @@ function () {
       if (this.is(id)) {
         return this.content[id];
       } else {
-        if (this.debug) console.log(this.constructor.name, 'Content from id ' + id + ' not found');
+        //if (this.debug) console.log(this.constructor.name, 'Content from id '+id+' not found');
         return this.DEFAULTCONTENT;
       }
     }
@@ -34951,12 +34932,10 @@ function () {
                     // }else 
 
                     if (!force && Object.keys(props).length == 2 && props.hasOwnProperty('elapsed') && _this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout == null && !bigUpdate) {
-                      if (_this2.debug) console.log('-: CacheHandler.update() - Update elapsed');
-
+                      //if (this.debug) console.log('-: CacheHandler.update() - Update elapsed');
                       _this2.storage.set(props, true, false);
                     } else if (Object.keys(props).length > 2 || bigUpdate || force) {
-                      if (_this2.debug) console.log('-: CacheHandler.update() - props: ', props);
-
+                      //if (this.debug) console.log('-: CacheHandler.update() - props: ', props);
                       if (_this2.timeouts.hasOwnProperty(id) && _this2.timeouts[id].timeout != null) {
                         clearTimeout(_this2.timeouts[id].timeout);
 
@@ -35326,8 +35305,8 @@ function (_CacheHandler) {
       defaultContent: defaultContent,
       id: "nr"
     };
-    _this.storage = new LocalExtensionStore(_this.config);
-    if (_this.debug) console.log('-: TabCache.constructor() - ', 'this.config: ', _this.config, ' this.storage: ', _this.storage);
+    _this.storage = new LocalExtensionStore(_this.config); //if (this.debug) console.log('-: TabCache.constructor() - ', 'this.config: ', this.config, ' this.storage: ', this.storage);
+
     _this.id = 'nr';
     _this.typeofId = 'number';
     _this.register = _this.register.bind(TabCache_assertThisInitialized(_this));
@@ -35358,7 +35337,7 @@ function (_CacheHandler) {
     value: function init() {
       var _this2 = this;
 
-      if (this.debug) console.log('-: TabCache.init()');
+      //if (this.debug) console.log('-: TabCache.init()');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -35372,36 +35351,34 @@ function (_CacheHandler) {
                   _context.prev = 0;
 
                   if (!(_this2.tabId != 0)) {
-                    _context.next = 6;
+                    _context.next = 5;
                     break;
                   }
-
-                  if (_this2.debug) console.log('-: TabCache.init() - this.tabId', _this2.tabId);
 
                   if (!_this2.databases.get().includes(_this2.getDBName(_this2.tabId))) {
-                    _context.next = 6;
+                    _context.next = 5;
                     break;
                   }
 
-                  _context.next = 6;
+                  _context.next = 5;
                   return _get(TabCache_getPrototypeOf(TabCache.prototype), "init", _this2).call(_this2);
 
-                case 6:
+                case 5:
                   resolve();
-                  _context.next = 12;
+                  _context.next = 11;
                   break;
 
-                case 9:
-                  _context.prev = 9;
+                case 8:
+                  _context.prev = 8;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 12:
+                case 11:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 9]]);
+          }, _callee, null, [[0, 8]]);
         }));
 
         return function (_x, _x2) {
@@ -35778,8 +35755,8 @@ function () {
   function Tab(projectId, tabId) {
     Tab_classCallCheck(this, Tab);
 
-    this.debug = true;
-    if (this.debug) console.log('-: Tab.constructor()');
+    this.debug = true; //if (this.debug) console.log('-: Tab.constructor()');
+
     this.clean = this.clean.bind(this);
     this.tabCache = new TabCache_TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT); // this.tabCache = tabCache;
 
@@ -35814,12 +35791,11 @@ function () {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  if (_this.debug) console.log('-: Tab.init() *Promise');
-                  _context.prev = 1;
-                  _context.next = 4;
+                  _context.prev = 0;
+                  _context.next = 3;
                   return _this.tabCache.init();
 
-                case 4:
+                case 3:
                   _this.nr = _this.tabCache.getIds().length;
                   _this.queue = Tab_defineProperty({}, _this.nr, {
                     active: false,
@@ -35827,20 +35803,20 @@ function () {
                   });
                   _this.isInit = true;
                   resolve();
-                  _context.next = 13;
+                  _context.next = 12;
                   break;
 
-                case 10:
-                  _context.prev = 10;
-                  _context.t0 = _context["catch"](1);
+                case 9:
+                  _context.prev = 9;
+                  _context.t0 = _context["catch"](0);
                   reject(_context.t0);
 
-                case 13:
+                case 12:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[1, 10]]);
+          }, _callee, null, [[0, 9]]);
         }));
 
         return function (_x, _x2) {
@@ -36180,8 +36156,7 @@ function () {
   }, {
     key: "addUpdate",
     value: function addUpdate(data) {
-      if (this.debug) console.log('-> addUpdate(nr)');
-
+      //if (this.debug) console.log('-> addUpdate(nr)');
       if (!this.queue.hasOwnProperty(this.nr)) {
         this.queue[this.nr] = {
           active: false,
@@ -36191,9 +36166,8 @@ function () {
 
       this.queue[this.nr].data.push(data);
 
-      this._update(this.nr);
+      this._update(this.nr); //if (this.debug) console.log('<- addUpdate(nr)');
 
-      if (this.debug) console.log('<- addUpdate(nr)');
     }
     /**
      * [run the queue to update the tab]
@@ -36220,35 +36194,29 @@ function () {
                 return _context5.abrupt("return");
 
               case 4:
-                if (this.debug) console.log('-> _update(nr)');
+                //if (this.debug) console.log('-> _update(nr)');
                 this.queue[nr].active = true;
                 data = this.queue[nr].data[0]; //if (this.debug) console.log(this.tabId, nr, this.queue[nr].data.length, data);
 
-                _context5.prev = 7;
+                _context5.prev = 6;
 
                 if (this.hasContent()) {
-                  _context5.next = 15;
+                  _context5.next = 12;
                   break;
                 }
 
-                if (this.debug) console.log('-> _firstUpdate(data, nr)');
-                _context5.next = 12;
+                _context5.next = 10;
                 return this._firstUpdate(data, nr);
 
-              case 12:
-                if (this.debug) console.log('<- _firstUpdate(data, nr)');
-                _context5.next = 19;
+              case 10:
+                _context5.next = 14;
                 break;
 
-              case 15:
-                if (this.debug) console.log('-> _secondUpdate(data, nr)');
-                _context5.next = 18;
+              case 12:
+                _context5.next = 14;
                 return this._secondUpdate(data, nr);
 
-              case 18:
-                if (this.debug) console.log('<- _secondUpdate(data, nr)');
-
-              case 19:
+              case 14:
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false; //if (this.debug) console.log('#Finish#', 'tabId', this.tabId, 'nr', nr, 
                 //   'count', data.count, 'queue.length', this.queue[nr].data.length);
@@ -36257,27 +36225,24 @@ function () {
                   this._update(nr);
                 }
 
-                _context5.next = 30;
+                _context5.next = 25;
                 break;
 
-              case 24:
-                _context5.prev = 24;
-                _context5.t0 = _context5["catch"](7);
+              case 19:
+                _context5.prev = 19;
+                _context5.t0 = _context5["catch"](6);
                 console.log('#Finish-Error#', 'tabId', this.tabId, 'nr', nr, 'error', _context5.t0, 'count', data.count, 'queue.length', this.queue[nr].data.length, 'data', data);
                 this.queue[nr].data.shift();
                 this.queue[nr].active = false;
 
                 this._update(nr);
 
-              case 30:
-                if (this.debug) console.log('<- _update(nr)');
-
-              case 31:
+              case 25:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[7, 24]]);
+        }, _callee5, this, [[6, 19]]);
       }));
 
       return function _update(_x9) {
@@ -36524,8 +36489,8 @@ function () {
               case 0:
                 close = _args.length > 2 && _args[2] !== undefined ? _args[2] : true;
                 tabRemove = _args.length > 3 && _args[3] !== undefined ? _args[3] : false;
-                if (this.debug) console.log('-> closeTab(...)');
 
+                //if (this.debug) console.log('-> closeTab(...)');
                 if (openerTabId != null) {
                   if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
                   if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
@@ -36540,8 +36505,7 @@ function () {
                   if (close && !tabRemove) {
                     this.tabs[tabId].close(function (page) {
                       if (page != null) {
-                        if (_this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
-
+                        //if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
                         _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                       }
                     });
@@ -36550,11 +36514,10 @@ function () {
                   }
                 } else {
                   console.log('TabId %s not found', tabId);
-                }
+                } //if (this.debug) console.log('<- closeTab(...)');
 
-                if (this.debug) console.log('<- closeTab(...)');
 
-              case 6:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -36881,8 +36844,8 @@ function () {
       var _this4 = this;
 
       var count = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      if (this.debug) console.log('-> _pushData(...)');
 
+      //if (this.debug) console.log('-> _pushData(...)');
       if (TabHandler_typeof(data) != 'object') {
         console.warn('data is no object');
       } else if (this.tabs.hasOwnProperty(data.tabId)) {
@@ -36913,9 +36876,8 @@ function () {
         }, 1000);
       } else {
         console.warn('Timeout over', data);
-      }
+      } //if (this.debug) console.log('<- _pushData(...)');
 
-      if (this.debug) console.log('<- _pushData(...)');
     }
   }, {
     key: "closeLostTabs",
@@ -36936,7 +36898,7 @@ function () {
                 lostIds = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : [];
 
                 if (!(lostIds.length > 0)) {
-                  _context5.next = 27;
+                  _context5.next = 25;
                   break;
                 }
 
@@ -36964,43 +36926,41 @@ function () {
                 _context5.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
-                    if (_this5.debug) console.log('==== Emit Event: onPage (Send Page) ====');
-
+                    //if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
                     _this5.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                   }
                 });
 
               case 14:
-                if (this.debug) console.log('Tried to delete tab', id);
-                _context5.next = 17;
+                _context5.next = 16;
                 return this.tabCache.deleteTab(id);
 
-              case 17:
-                if (this.debug) console.log('Delete the Tab %s', id); // console.log('clean', id)
-
+              case 16:
+                //if (this.debug) console.log('Delete the Tab %s', id);
+                // console.log('clean', id)
                 this.closeLostTabs(lostIds);
-                _context5.next = 25;
+                _context5.next = 23;
                 break;
 
-              case 21:
-                _context5.prev = 21;
+              case 19:
+                _context5.prev = 19;
                 _context5.t0 = _context5["catch"](3);
                 this.closeLostTabs(lostIds);
                 console.log(_context5.t0);
 
-              case 25:
-                _context5.next = 28;
+              case 23:
+                _context5.next = 26;
                 break;
 
-              case 27:
+              case 25:
                 console.log('Close all tabs');
 
-              case 28:
+              case 26:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[3, 21]]);
+        }, _callee5, this, [[3, 19]]);
       }));
 
       return function closeLostTabs() {
@@ -37205,11 +37165,9 @@ function () {
                 case 57:
                   // On close the tab
                   _this7.extension.event.on('onTabRemove', function (tabId) {
-                    if (_this7.debug) console.log('-> TabHandler.onTabRemove');
-
+                    //if (this.debug) console.log('-> TabHandler.onTabRemove');
                     if (!_this7.isClose) {
-                      if (_this7.debug) console.log('onTabRemove', tabId);
-
+                      //if (this.debug) console.log('onTabRemove', tabId);
                       _this7._onFocus();
 
                       _this7.closeTab(tabId, undefined, true, true);
@@ -37218,10 +37176,9 @@ function () {
 
 
                   _this7.extension.event.on('onTab', function (tabId) {
-                    if (_this7.debug) console.log('-> TabHandler.onTab');
-
+                    //if (this.debug) console.log('-> TabHandler.onTab');
                     if (!_this7.isClose) {
-                      if (_this7.debug) console.log('onTab', tabId);
+                      //if (this.debug) console.log('onTab', tabId);
                       var tab = new Tab_Tab(_this7.projectId, tabId);
                       var timeout = setTimeout(function () {
                         console.warn('Timeout: Failed to create Tab');
@@ -37238,8 +37195,7 @@ function () {
 
 
                   _this7.extension.event.on('onFocusTab', function () {
-                    if (_this7.debug) console.log('-> TabHandler.onFocusTab');
-
+                    //if (this.debug) console.log('-> TabHandler.onFocusTab');
                     if (!_this7.isClose) {
                       _this7._onFocus();
                     }
@@ -37247,8 +37203,7 @@ function () {
 
 
                   _this7.extension.event.on('onTabUpdate', function (e) {
-                    if (_this7.debug) console.log('-> TabHandler.onTabUpdate');
-
+                    //if (this.debug) console.log('-> TabHandler.onTabUpdate');
                     if (!_this7.isClose) {
                       _this7._onFocus();
 
@@ -37277,15 +37232,13 @@ function () {
                       }
 
                       _this7.closeTab(e.tabId, e.openerTabId, will_close);
-                    }
+                    } //if (this.debug) console.log('<- TabHandler.onTabUpdate');
 
-                    if (_this7.debug) console.log('<- TabHandler.onTabUpdate');
                   }); //on tab data send
 
 
                   _this7.extension.event.on('onTabContent', function (data) {
-                    if (_this7.debug) console.log('onTabContent');
-
+                    //if (this.debug) console.log('onTabContent');
                     if (!_this7.isClose) {
                       _this7._pushData(data);
                     }
@@ -37452,38 +37405,38 @@ function (_CacheHandler) {
                   content = _context.sent;
 
                   if (!content.hasOwnProperty('source')) {
-                    _context.next = 10;
+                    _context.next = 9;
                     break;
                   }
 
                   if (!(content.source.length > 0)) {
-                    _context.next = 10;
+                    _context.next = 9;
                     break;
                   }
 
                   urls = content.source.map(function (e) {
                     return e.url;
-                  });
-                  if (_this2.debug) console.log("Sources to clean:" + urls);
-                  _context.next = 10;
+                  }); //if (this.debug) console.log("Sources to clean:" + urls);
+
+                  _context.next = 9;
                   return PageCache_get(PageCache_getPrototypeOf(PageCache.prototype), "cleanSource", _this2).call(_this2, urls);
 
-                case 10:
+                case 9:
                   resolve();
-                  _context.next = 16;
+                  _context.next = 15;
                   break;
 
-                case 13:
-                  _context.prev = 13;
+                case 12:
+                  _context.prev = 12;
                   _context.t0 = _context["catch"](0);
                   reject(_context.t0)(_templateObject());
 
-                case 16:
+                case 15:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 13]]);
+          }, _callee, null, [[0, 12]]);
         }));
 
         return function (_x, _x2) {
@@ -38096,7 +38049,7 @@ function () {
       var _this2 = this;
 
       var private_mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      if (this.debug) console.log('-: TrackingHandler.init()');
+      //if (this.debug) console.log('-> TrackingHandler.init()');
       return new Promise(
       /*#__PURE__*/
       function () {
@@ -38135,7 +38088,7 @@ function () {
 
                   if (!_this2.is_dummy) {
                     if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
-                      if (_this2.debug) console.log('autostart send');
+                      if (_this2.debug) console.log(':- Autostart send');
 
                       _this2.sendData(null, true);
                     }
@@ -38690,9 +38643,9 @@ function () {
   }, {
     key: "getPages",
     value: function getPages() {
-      if (this.debug) console.log('-> TrackingHandler.getPages()');
-      var pages = Object.values(this.pageCache.get());
-      if (this.debug) console.log('<- TrackingHandler.getPages()');
+      //if (this.debug) console.log('-> TrackingHandler.getPages()');
+      var pages = Object.values(this.pageCache.get()); ////if (this.debug) console.log('<- TrackingHandler.getPages()');
+
       return pages;
     }
     /**
@@ -38778,55 +38731,52 @@ function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (this.debug) console.log('PageHandler.init()');
-                _context.prev = 1;
-                if (this.debug) console.log('***Load Configuration***');
-                _context.next = 5;
+                _context.prev = 0;
+                _context.next = 3;
                 return this.config.load();
 
-              case 5:
-                if (this.debug) console.log('***Configuration Loaded***');
-                _context.next = 12;
+              case 3:
+                _context.next = 9;
                 break;
 
-              case 8:
-                _context.prev = 8;
-                _context.t0 = _context["catch"](1);
+              case 5:
+                _context.prev = 5;
+                _context.t0 = _context["catch"](0);
                 console.log('ERROR IN INIT');
                 console.error(_context.t0);
 
-              case 12:
+              case 9:
                 private_mode = this.config.defaultId.get() == null;
                 selected = this.getSelect();
                 tmp_settings = this.config.getRunProjectTmpSettings(); // if project didn't load, proceed to disconnected mode
                 // if (!this.is_load){
-                //   if (this.debug) console.log('this._loadDisconnectedMode(): ');
+                //   //if (this.debug) console.log('this._loadDisconnectedMode(): ');
                 //   this._loadDisconnectedMode();
                 //   resolve(false);
                 // }
 
                 if (!(selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID))) {
-                  _context.next = 20;
+                  _context.next = 17;
                   break;
                 }
 
-                _context.next = 18;
+                _context.next = 15;
                 return this.selectProject(selected, private_mode);
 
-              case 18:
-                _context.next = 22;
+              case 15:
+                _context.next = 19;
                 break;
 
-              case 20:
-                _context.next = 22;
+              case 17:
+                _context.next = 19;
                 return this.selectProject(null, private_mode);
 
-              case 22:
+              case 19:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[1, 8]]);
+        }, _callee, this, [[0, 5]]);
       }));
 
       return function init() {
@@ -38841,7 +38791,7 @@ function () {
   }, {
     key: "getProjectsTmpSettings",
     value: function getProjectsTmpSettings() {
-      if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
+      //if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
       return this.config._getProjectsTmpSettings();
     }
     /**
@@ -38853,7 +38803,7 @@ function () {
   }, {
     key: "getProject",
     value: function getProject(id) {
-      if (this.debug) console.log('-> PageHandler.getProject()');
+      //if (this.debug) console.log('-> PageHandler.getProject()');
       return this.config.getProject(id);
     }
     /**
@@ -38864,7 +38814,7 @@ function () {
   }, {
     key: "getProjects",
     value: function getProjects() {
-      if (this.debug) console.log('-> PageHandler.getProjects()');
+      //if (this.debug) console.log('-> PageHandler.getProjects()');
       return this.config.getProjects();
     }
     /**
@@ -38875,7 +38825,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
-      if (this.debug) console.log('-> PageHandler.isLoaded()');
+      //if (this.debug) console.log('-> PageHandler.isLoaded()');
       return this.config.isLoaded();
     }
     /**
@@ -38886,7 +38836,7 @@ function () {
   }, {
     key: "getSelect",
     value: function getSelect() {
-      if (this.debug) console.log('-> PageHandler.getSelect()');
+      //if (this.debug) console.log('-> PageHandler.getSelect()');
       return this.config.getSelect();
     }
     /**
@@ -38899,7 +38849,7 @@ function () {
     value: function _createTracker() {
       var _this = this;
 
-      if (this.debug) console.log('-> PageHandler._createTracker()');
+      //if (this.debug) console.log('-> PageHandler._createTracker()');
       var selectId = this.config.getSelect(); // make sure the tracker is close
 
       this.close_tracker();
@@ -38924,7 +38874,7 @@ function () {
     value: function _createDummyTracker() {
       var _this2 = this;
 
-      if (this.debug) console.log('PageHandler._createDummyTracker()');
+      //if (this.debug) console.log('PageHandler._createDummyTracker()');
       this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, true);
       this.tracker.event.on('error', function (error) {
         _this2.event.emit('error', error, true);
@@ -38952,16 +38902,16 @@ function () {
   }, {
     key: "_getCurrentTracker",
     value: function _getCurrentTracker() {
-      if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
+      //if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
       var tracker = this.tracker; // if the configuration was loaded correctly, and no project is selected
       // then return null
 
       if (this.config.isLoaded() && this.config.getSelect() == null) {
         console.log('No Select return null');
         tracker = null;
-      }
+      } //if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
 
-      if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
+
       return tracker;
     }
     /**
@@ -38987,10 +38937,8 @@ function () {
               case 0:
                 id = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
                 private_mode = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : true;
-                if (this.debug) console.log('-> PageHandler.selectProject()');
                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
-
+                  //if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
                   try {
                     // console.log(parseInt(id, 10) , this.config.getSelect());
                     // do nothing if everything to be in place
@@ -39020,25 +38968,24 @@ function () {
                           var current_tracker = _this3._getCurrentTracker();
 
                           current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
-
-                          if (_this3.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
+                          //if (this.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
                         }
                       }
                     }
                   } catch (e) {
                     reject(e);
                   } finally {
-                    if (_this3.debug) console.log('<- PageHandler.selectProject() - Promise');
+                    //if (this.debug) console.log('<- PageHandler.selectProject() - Promise');
                     resolve();
                   }
                 }));
 
-              case 4:
+              case 3:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee2);
       }));
 
       return function selectProject() {
@@ -39050,8 +38997,7 @@ function () {
   }, {
     key: "close_tracker",
     value: function close_tracker() {
-      if (this.debug) console.log('-> close_tracker()');
-
+      //if (this.debug) console.log('-> close_tracker()');
       if (this.tracker != null) {
         this.tracker.close();
         delete this.tracker;
@@ -39064,8 +39010,7 @@ function () {
       var _this4 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this4.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
-
+        //if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
         try {
           // make sure there is no tracker
           _this4.close_tracker();
@@ -39075,12 +39020,11 @@ function () {
           var current_tracker = _this4._getCurrentTracker();
 
           current_tracker.init(true); // if setting enterid false then will be disabled the private mode
-
-          if (_this4.debug) console.log('settings', current_tracker.settings);
+          //if (this.debug) console.log('settings', current_tracker.settings);
         } catch (e) {
           reject(e);
         } finally {
-          if (_this4.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
+          //if (this.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
           resolve();
         }
       });
@@ -39094,7 +39038,7 @@ function () {
   }, {
     key: "setClientId",
     value: function setClientId(clientId) {
-      if (this.debug) console.log('-> PageHandler.setClientId(', clientId, ')');
+      //if (this.debug) console.log('-> PageHandler.setClientId(',clientId,')')
       return this.config.setClientId(clientId, this.config.getSelect());
     }
     /**
@@ -39105,7 +39049,7 @@ function () {
   }, {
     key: "getNextPeriode",
     value: function getNextPeriode() {
-      if (this.debug) console.log('PageHandler.getNextPeriode()');
+      //if (this.debug) console.log('PageHandler.getNextPeriode()')
       return this._getCurrentTracker().getNextPeriode();
     }
     /**
@@ -39116,8 +39060,7 @@ function () {
   }, {
     key: "isSending",
     value: function isSending() {
-      if (this.debug) console.log('PageHandler.isSending()');
-
+      //if (this.debug) console.log('PageHandler.isSending()')
       var settings = this.config._getProjectsTmpSettings()[this.config.getSelect()];
 
       if (settings == undefined || !settings.hasOwnProperty('sending')) {
@@ -39134,12 +39077,11 @@ function () {
   }, {
     key: "getPages",
     value: function getPages() {
-      if (this.debug) console.log('-> PageHandler.getPages()');
-
+      //if (this.debug) console.log('-> PageHandler.getPages()');
       var tracker = this._getCurrentTracker();
 
-      var pages = tracker.getPages();
-      if (this.debug) console.log('<- PageHandler.getPages()');
+      var pages = tracker.getPages(); //if (this.debug) console.log('<- PageHandler.getPages()');
+
       return pages;
     }
   }, {
@@ -39156,7 +39098,7 @@ function () {
   }, {
     key: "deletePage",
     value: function deletePage(pageId) {
-      if (this.debug) console.log('deletePage', pageId);
+      //if (this.debug) console.log('deletePage', pageId);
       return this._getCurrentTracker().deletePage(pageId);
     }
     /**
@@ -39169,7 +39111,7 @@ function () {
     key: "sendData",
     value: function sendData() {
       var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      if (this.debug) console.log('sendData');
+      //if (this.debug) console.log('sendData');
       return this._getCurrentTracker().sendData(pages);
     }
     /**
@@ -39224,8 +39166,7 @@ function () {
                 if (extension.privateMode) {
                   //on focus other tab
                   extension.event.once(PageHandler_EVENT_NAMES.extendPrivateMode, function (new_private_time) {
-                    if (_this5.debug) console.log('PageHandler.onExtendPrivateMode');
-
+                    //if (this.debug) console.log('PageHandler.onExtendPrivateMode');
                     if (new_private_time > 0) {
                       _this5.confirm_public_mode(component, new_private_time);
                     } else {

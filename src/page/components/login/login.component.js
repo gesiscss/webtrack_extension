@@ -39,7 +39,7 @@ export default class Login extends Component {
    * [redirect to the root]
    */
   async handleAbortLogin(){
-    if (this.debug) console.log('handleAbortLogin');
+    //if (this.debug) console.log('handleAbortLogin');
     await this.pageHandler.setClientId(null);
     await this.pageHandler.init();
     this.$f7.views.main.router.navigate('/')
@@ -53,7 +53,7 @@ export default class Login extends Component {
   signIn(clientId){
     return new Promise(async (resolve, reject)=>{
       try {
-        if (this.debug) console.log('-> signIn');
+        //if (this.debug) console.log('-> signIn');
 
         let is_valid = await this.pageHandler.setClientId(clientId)
 

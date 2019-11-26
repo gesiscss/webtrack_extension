@@ -115,7 +115,7 @@ export default class TrackingHandler {
    *  @return Promise
    */
    init(private_mode=true){
-      if (this.debug) console.log('-: TrackingHandler.init()');
+      //if (this.debug) console.log('-> TrackingHandler.init()');
       return new Promise(async (resolve, reject) =>{
         try {
           await this.pageCache.init();
@@ -130,7 +130,7 @@ export default class TrackingHandler {
           if(this.AUTOSTART) this.start(private_mode);
           if (!this.is_dummy){
             if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
-              if (this.debug) console.log('autostart send');
+              if (this.debug) console.log(':- Autostart send');
               this.sendData(null, true);
             }
           }
@@ -416,9 +416,9 @@ export default class TrackingHandler {
    * @return {Array}
    */
   getPages(){
-    if (this.debug) console.log('-> TrackingHandler.getPages()');
+    //if (this.debug) console.log('-> TrackingHandler.getPages()');
     let pages = Object.values(this.pageCache.get());
-    if (this.debug) console.log('<- TrackingHandler.getPages()');
+    ////if (this.debug) console.log('<- TrackingHandler.getPages()');
     return pages;
   }
 

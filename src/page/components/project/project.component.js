@@ -23,8 +23,7 @@ export default class Project extends DefaultComponent {
   constructor(props){
     super(props)
     this.debug = true;
-    if (this.debug) console.log('Project.constructor() - project.component.js');
-    if (this.debug) console.log(props);
+    //if (this.debug) console.log('Project.constructor() - project.component.js');
     this.handleLogout = this.handleLogout.bind(this);
     this.handleDeletePage = this.handleDeletePage.bind(this);
     this.handleSendPage = this.handleSendPage.bind(this);
@@ -49,11 +48,11 @@ export default class Project extends DefaultComponent {
    * [initalization the cross view with pageHandler]
    */
   async componentDidMount(){
-    if (this.debug) console.log('-> Project.componentDidMount() - project.component.js');
+    //if (this.debug) console.log('-> Project.componentDidMount() - project.component.js');
     try {
-      if (this.debug) console.log('-> Project.componentDidMount() - project.component.js (try{})');
+      //if (this.debug) console.log('-> Project.componentDidMount() - project.component.js (try{})');
       this.pageHandler = this.props.getPageHandler();
-      if (this.debug) this.pageHandler.log('-> Project.componentDidMount() - project.component.js (try{})');
+      //if (this.debug) this.pageHandler.log('-> Project.componentDidMount() - project.component.js (try{})');
       
       
       if(!this.pageHandler.isProjectAvailable(this.props.id)){
@@ -88,18 +87,18 @@ export default class Project extends DefaultComponent {
         //this.pageHandler._getCurrentTracker().event.once('onSend', this.handleSend);
         this.pageHandler._getCurrentTracker().addOnSendListener(this.handleSend);
       }
-      if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
+      //if (this.debug) this.pageHandler.log('<- Project.componentDidMount() - project.component.js (try{})');
     } catch (err) {
       console.warn(err);
       this.alert({error: true, text: err.stack})
     }
 
-    if (this.debug) console.log('<- Project.componentDidMount() - project.component.js');
+    //if (this.debug) console.log('<- Project.componentDidMount() - project.component.js');
   }
 
   
   async update(){
-    if (this.debug) this.pageHandler.log('-> Project.update() - project.component.js');
+    //if (this.debug) this.pageHandler.log('-> Project.update() - project.component.js');
     let pages = this.pageHandler.getPages();
     this.setState({
       activePrivateTab: await this.pageHandler.isTabPrivate(),
@@ -107,7 +106,7 @@ export default class Project extends DefaultComponent {
       pages: pages,
       sendDataCount: pages.filter(e=>e.send===false).length
     });
-    if (this.debug) this.pageHandler.log('<- Project.update() - project.component.js');
+    //if (this.debug) this.pageHandler.log('<- Project.update() - project.component.js');
   }
 
   /**
@@ -115,7 +114,7 @@ export default class Project extends DefaultComponent {
    * @return {Promise} [description]
    */
   async handleLogout(){
-    if (this.debug) console.log('-> Project.handleLogout() - project.component.js');
+    //if (this.debug) console.log('-> Project.handleLogout() - project.component.js');
     if(!this.state.available || await this.confirm({title: lang.project.logout_title, text: lang.project.logout.replace(/%s/g, this.project.NAME)})){
       await this.pageHandler.setClientId(null);
       await this.pageHandler.init();
@@ -162,11 +161,11 @@ export default class Project extends DefaultComponent {
    * @param  {Boolean} boolean
    */
   handleSend(boolean){
-    if (this.debug) this.pageHandler.log('-> handleSend');
+    //if (this.debug) this.pageHandler.log('-> handleSend');
     if(this.dialog!=null){
       this.update();
     }
-    if (this.debug) this.pageHandler.log('<- handleSend');
+    //if (this.debug) this.pageHandler.log('<- handleSend');
   }
 
   /**

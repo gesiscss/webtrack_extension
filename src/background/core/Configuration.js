@@ -30,7 +30,7 @@ export default class Configuration {
     this.is_load = false;
     this.debug = true;
 
-    if (this.debug) console.log(blacklists);
+    //if (this.debug) console.log(blacklists);
   }
 
 
@@ -65,23 +65,23 @@ export default class Configuration {
     return new Promise((resolve, reject)=>{
       let cert = this.certstorage.get();
       if(cert===null){
-        if (this.debug) console.log('No certificate, fetching one');
+        //if (this.debug) console.log('No certificate, fetching one');
         this.transfer.fileFetch(this.settings.server+'tracking/cert').then(cert => {
-          if (this.debug) console.log('Fetch certificate!');
+          //if (this.debug) console.log('Fetch certificate!');
           this.certstorage.set(cert)
           resolve(true);
          })
         .catch(err => {
-          if (this.debug) console.log('Faile fetching the certificate: ', err);
+          //if (this.debug) console.log('Faile fetching the certificate: ', err);
           resolve(false);
         })
       }else{
         if(this._isTimeDiffover(this.certstorage.getTimestamp(), LOAD_CERT_AFTER_SECONDS)){
-          if (this.debug) console.log('Expired certificate, renewing it');
+          //if (this.debug) console.log('Expired certificate, renewing it');
           this.certstorage.set(null)
           this._fetchCert().then(b => resolve(b));
         }else{
-          if (this.debug) console.log('Using restored certificate');
+          //if (this.debug) console.log('Using restored certificate');
           resolve(true)
         }
       }
@@ -105,13 +105,13 @@ export default class Configuration {
 
       this.transfer.jsonFetch(this.settings.server+'client/getProjects')
         .then(projects => {
-          if (this.debug) console.log('Fetch projects!');
+          //if (this.debug) console.log('Fetch projects!');
           this.projectsStorage.set(projects);
           this.store_projects(projects);
           resolve(true);
          })
         .catch(err => {
-          if (this.debug) console.log('_fetchProject: ', err);
+          //if (this.debug) console.log('_fetchProject: ', err);
           console.log("Failed fetching the projects");
           resolve(false);
         })
@@ -124,7 +124,7 @@ export default class Configuration {
    * @return {Array}
    */
   getProjects(){
-    if (this.debug) console.log('-> Configuration.getProjects()');
+    //if (this.debug) console.log('-> Configuration.getProjects()');
     return this.projects;
   }
 
@@ -134,7 +134,7 @@ export default class Configuration {
    * @return {Boolean} [true if the configuration was loaded correctly]
    */
   isLoaded(){
-    if (this.debug) console.log('-> Configuration.isLoaded()');
+    //if (this.debug) console.log('-> Configuration.isLoaded()');
     return this.is_load;
   }
 
@@ -161,7 +161,7 @@ export default class Configuration {
    * @return {Object}
    */
   _getProjectsTmpSettings(){
-    if (this.debug) console.log('-> Configuration.getProjectSettings()');
+    //if (this.debug) console.log('-> Configuration.getProjectSettings()');
     if (!this.isLoaded()){
       return {};
     }
@@ -185,7 +185,7 @@ export default class Configuration {
    * @param {Integer} id
    */
   setSelect(id){
-    if (this.debug) console.log('-> Configuration.setSelect(',id,')');
+    //if (this.debug) console.log('-> Configuration.setSelect(',id,')');
 
     if(id==null){
       this.setProjectsTmpSettings({clientId: null});
@@ -204,7 +204,7 @@ export default class Configuration {
    * @param {Object} setting [e.g. {privateMode: true, clientId: 'xcdy'}]
    */
   setProjectsTmpSettings(setting){
-    if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
+    //if (this.debug) console.log('-> Configuration.setProjectsTmpSettings()');
 
     let tmp = this.projectsTmpSettings.get();
     let project_settings = Object.assign({}, tmp[this.select.get()], setting);
@@ -225,7 +225,7 @@ export default class Configuration {
    * @return {Object}
    */
   getProjectSettings(){
-    if (this.debug) console.log('-> Configuration.getProjectSettings()');
+    //if (this.debug) console.log('-> Configuration.getProjectSettings()');
     return this._getProjectsTmpSettings();
   }
 
@@ -234,7 +234,7 @@ export default class Configuration {
    * @return {Object}
    */
   getRunProjectTmpSettings(){
-    if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
+    //if (this.debug) console.log('-> Configuration.getRunProjectTmpSettings()');
     let selected = this.getSelect();
     if(this._getProjectsTmpSettings().hasOwnProperty(selected)){
       return this._getProjectsTmpSettings()[selected];
@@ -248,7 +248,7 @@ export default class Configuration {
    */
   setClientId(client_hash, project_id){
     return new Promise((resolve, reject)=>{
-      if (this.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
+      //if (this.debug) console.log('-> config.setClientId(', client_hash, ',', project_id, ')');
 
       if (client_hash == null){
         this.setProjectsTmpSettings({clientId: null});
@@ -298,7 +298,7 @@ export default class Configuration {
    * @return {Integer}
    */
   getSelect(){
-    if (this.debug) console.log('-> Configuration.getSelect()');
+    //if (this.debug) console.log('-> Configuration.getSelect()');
     let select = this.select.get();
     if (select == null) {
       for (let index in this.projects) {
@@ -308,7 +308,7 @@ export default class Configuration {
         }
       }
     }
-    if (this.debug) console.log('<- Configuration.getSelect()')
+    //if (this.debug) console.log('<- Configuration.getSelect()')
     return select;
   }
 
@@ -317,7 +317,7 @@ export default class Configuration {
    * @param  projects coming from the server request
    */
   store_projects(projects){
-    if (this.debug) console.log('-> Configuration.store_projects()');
+    //if (this.debug) console.log('-> Configuration.store_projects()');
     this.projectIds = projects.map(v => v.ID);
     this.projectIdtoIndex = {}
     for (let index in projects) {
@@ -343,7 +343,7 @@ export default class Configuration {
    * load dummy variables when the connection to the server is not succesful
    */
   _loadDisconnectedMode(){
-    if (this.debug) console.log('Operating in disconnected mode');
+    //if (this.debug) console.log('Operating in disconnected mode');
 
     this.projectIds = null;
     this.projectIdtoIndex = null;
@@ -359,7 +359,7 @@ export default class Configuration {
 
     return new Promise(async (resolve, reject)=>{
 
-      if (this.debug) console.log('-> Configuration.load() - Promise');
+      //if (this.debug) console.log('-> Configuration.load() - Promise');
 
       //TODO: is this necessary
       this.initDefaultId();
@@ -371,7 +371,7 @@ export default class Configuration {
         await this._fetchProject();
       }
 
-      if (this.debug) console.log('<- Configuration.load() - Promise');
+      //if (this.debug) console.log('<- Configuration.load() - Promise');
       resolve(this.is_load);
 
     });//Promise

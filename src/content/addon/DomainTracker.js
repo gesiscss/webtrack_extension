@@ -39,7 +39,7 @@ export default class DomainTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if (this.debug) console.log('START!!!!');
+      //if (this.debug) console.log('-> onStart!');
       fn(1000);
     }, 500);
   }

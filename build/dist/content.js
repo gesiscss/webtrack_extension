@@ -15501,10 +15501,8 @@ function (_Tracker) {
   }, {
     key: "onStart",
     value: function onStart(fn) {
-      var _this2 = this;
-
       setTimeout(function () {
-        if (_this2.debug) console.log('START!!!!');
+        //if (this.debug) console.log('-> onStart!');
         fn(1000);
       }, 500);
     }
@@ -15723,10 +15721,8 @@ function (_Tracker) {
   }, {
     key: "onStart",
     value: function onStart(fn) {
-      var _this2 = this;
-
       setTimeout(function () {
-        if (_this2.debug) console.log('START!!!!');
+        //if (this.debug) console.log('-> onStart');
         fn(1000);
       }, 500);
     }

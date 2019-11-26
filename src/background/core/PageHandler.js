@@ -21,12 +21,12 @@ export default class PageHandler {
   }
 
   async init(){
-    if (this.debug) console.log('PageHandler.init()');
+    //if (this.debug) console.log('PageHandler.init()');
 
     try {
-      if (this.debug) console.log('***Load Configuration***');
+      //if (this.debug) console.log('***Load Configuration***');
       await this.config.load();
-      if (this.debug) console.log('***Configuration Loaded***');
+      //if (this.debug) console.log('***Configuration Loaded***');
     } catch(err){
       console.log('ERROR IN INIT');
       console.error(err);
@@ -38,7 +38,7 @@ export default class PageHandler {
 
     // if project didn't load, proceed to disconnected mode
     // if (!this.is_load){
-    //   if (this.debug) console.log('this._loadDisconnectedMode(): ');
+    //   //if (this.debug) console.log('this._loadDisconnectedMode(): ');
     //   this._loadDisconnectedMode();
     //   resolve(false);
     // }
@@ -64,7 +64,7 @@ export default class PageHandler {
    * @return {object}
    */
   getProjectsTmpSettings(){
-    if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
+    //if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
     return this.config._getProjectsTmpSettings();
   }
 
@@ -74,7 +74,7 @@ export default class PageHandler {
    * @return {Object}
    */
   getProject(id){
-    if (this.debug) console.log('-> PageHandler.getProject()');
+    //if (this.debug) console.log('-> PageHandler.getProject()');
     return this.config.getProject(id);
   }
 
@@ -83,7 +83,7 @@ export default class PageHandler {
    * @return {Array}
    */
   getProjects(){
-    if (this.debug) console.log('-> PageHandler.getProjects()');
+    //if (this.debug) console.log('-> PageHandler.getProjects()');
     return this.config.getProjects();
   }
 
@@ -92,7 +92,7 @@ export default class PageHandler {
    * @return {Boolean}
    */
   isLoaded(){
-    if (this.debug) console.log('-> PageHandler.isLoaded()');
+    //if (this.debug) console.log('-> PageHandler.isLoaded()');
     return this.config.isLoaded();
   }
 
@@ -101,7 +101,7 @@ export default class PageHandler {
    * @return {number}
    */
   getSelect(){
-    if (this.debug) console.log('-> PageHandler.getSelect()');
+    //if (this.debug) console.log('-> PageHandler.getSelect()');
     return this.config.getSelect();
   }
 
@@ -110,7 +110,7 @@ export default class PageHandler {
    * @return {[type]} [description]
    */
   _createTracker(){
-    if (this.debug) console.log('-> PageHandler._createTracker()');
+    //if (this.debug) console.log('-> PageHandler._createTracker()');
 
     let selectId = this.config.getSelect();
 
@@ -134,7 +134,7 @@ export default class PageHandler {
    * @return {[type]} [description]
    */
   _createDummyTracker(){
-    if (this.debug) console.log('PageHandler._createDummyTracker()');
+    //if (this.debug) console.log('PageHandler._createDummyTracker()');
 
     this.tracker = new TrackingHandler(this.config, this.transfer, true, true);
     this.tracker.event.on('error', error => {
@@ -157,7 +157,7 @@ export default class PageHandler {
    * @return {TrackingHandler}
    */
   _getCurrentTracker(){
-    if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
+    //if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
 
     let tracker = this.tracker;
     
@@ -168,7 +168,7 @@ export default class PageHandler {
       tracker = null;
     } 
 
-    if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
+    //if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
     return tracker;
   }
 
@@ -178,9 +178,9 @@ export default class PageHandler {
    * @return {Promise}
    */
   async selectProject(id=null, private_mode=true){
-    if (this.debug) console.log('-> PageHandler.selectProject()');
+    //if (this.debug) console.log('-> PageHandler.selectProject()');
     return new Promise((resolve, reject) => {
-      if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
+      //if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
       try {
         // console.log(parseInt(id, 10) , this.config.getSelect());
 
@@ -210,14 +210,14 @@ export default class PageHandler {
               let current_tracker = this._getCurrentTracker();
               current_tracker.init(private_mode);
               // if setting enterid false then will be disabled the private mode
-              if (this.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
+              //if (this.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
             }
           }
         }
       } catch (e) {
         reject(e)
       } finally{
-        if (this.debug) console.log('<- PageHandler.selectProject() - Promise');
+        //if (this.debug) console.log('<- PageHandler.selectProject() - Promise');
         resolve();
       }
     });
@@ -225,7 +225,7 @@ export default class PageHandler {
 
   /** Close current tracker */
   close_tracker(){
-    if (this.debug) console.log('-> close_tracker()');
+    //if (this.debug) console.log('-> close_tracker()');
     if (this.tracker!=null){
       this.tracker.close();
       delete this.tracker;
@@ -235,7 +235,7 @@ export default class PageHandler {
 
   disconnectedMode(){
     return new Promise((resolve, reject) => {
-      if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
+      //if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
       try {
         // make sure there is no tracker
         this.close_tracker();
@@ -244,12 +244,12 @@ export default class PageHandler {
         let current_tracker = this._getCurrentTracker();
         current_tracker.init(true);
         // if setting enterid false then will be disabled the private mode
-        if (this.debug) console.log('settings', current_tracker.settings);
+        //if (this.debug) console.log('settings', current_tracker.settings);
 
       } catch (e) {
         reject(e)
       } finally{
-        if (this.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
+        //if (this.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
         resolve();
       }
     });
@@ -261,7 +261,7 @@ export default class PageHandler {
    * @return {Promise} boolean
    */
   setClientId(clientId){
-    if (this.debug) console.log('-> PageHandler.setClientId(',clientId,')')
+    //if (this.debug) console.log('-> PageHandler.setClientId(',clientId,')')
     return this.config.setClientId(clientId, this.config.getSelect());
   }
 
@@ -271,7 +271,7 @@ export default class PageHandler {
    * @return {Integer}
    */
   getNextPeriode(){
-    if (this.debug) console.log('PageHandler.getNextPeriode()')
+    //if (this.debug) console.log('PageHandler.getNextPeriode()')
     return this._getCurrentTracker().getNextPeriode();
   }
 
@@ -280,7 +280,7 @@ export default class PageHandler {
    * @return {Boolean}
    */
   isSending(){
-    if (this.debug) console.log('PageHandler.isSending()')
+    //if (this.debug) console.log('PageHandler.isSending()')
     let settings = this.config._getProjectsTmpSettings()[this.config.getSelect()];
     if(settings == undefined || !settings.hasOwnProperty('sending')){
       return false;
@@ -294,10 +294,10 @@ export default class PageHandler {
    * @return {Array<object>}
    */
   getPages(){
-    if (this.debug) console.log('-> PageHandler.getPages()');
+    //if (this.debug) console.log('-> PageHandler.getPages()');
     let tracker = this._getCurrentTracker()
     let pages = tracker.getPages();
-    if (this.debug) console.log('<- PageHandler.getPages()');
+    //if (this.debug) console.log('<- PageHandler.getPages()');
     return pages;
   }
 
@@ -311,7 +311,7 @@ export default class PageHandler {
    * @return {Promise}
    */
   deletePage(pageId){
-    if (this.debug) console.log('deletePage', pageId);
+    //if (this.debug) console.log('deletePage', pageId);
     return this._getCurrentTracker().deletePage(pageId);
   }
 
@@ -321,7 +321,7 @@ export default class PageHandler {
    * @return {Promise}
    */
   sendData(pages=null){
-    if (this.debug) console.log('sendData');
+    //if (this.debug) console.log('sendData');
     return this._getCurrentTracker().sendData(pages);
   }
 
@@ -355,7 +355,7 @@ export default class PageHandler {
 
       //on focus other tab
       extension.event.once(EVENT_NAMES.extendPrivateMode, new_private_time => {
-        if (this.debug) console.log('PageHandler.onExtendPrivateMode');
+        //if (this.debug) console.log('PageHandler.onExtendPrivateMode');
 
         if (new_private_time > 0){
           this.confirm_public_mode(component, new_private_time);

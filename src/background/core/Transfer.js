@@ -137,7 +137,7 @@ export default class Transfer {
         let blob = response.blob();
         resolve(new Response(blob).text());
       }).catch(err => {
-        if (this.debug) console.log('Failed to Fetch File: ', url);
+        //if (this.debug) console.log('Failed to Fetch File: ', url);
         reject({
           message: 'fileFetch: ' + err.message,
           code: '500',
@@ -184,7 +184,7 @@ export default class Transfer {
           resolve(data);
         }
       }).catch(err => {
-        if (this.debug) console.log('Failed to Fetch JSON: ', url);
+        //if (this.debug) console.log('Failed to Fetch JSON: ', url);
         console.log(err);
         reject({
           message: '_fetch: ' + err.message,
