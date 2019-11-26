@@ -254,6 +254,7 @@ export default class Configuration {
         this.setProjectsTmpSettings({clientId: null});
         resolve(true);
       } else {
+        client_hash = client_hash.trim();
         if(this.projectIdtoIndex.hasOwnProperty(project_id) && 
           this.projects[this.projectIdtoIndex[project_id]].SETTINGS.ENTERID){
           if(this.projects[this.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS){

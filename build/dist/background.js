@@ -31515,6 +31515,8 @@ function () {
 
           resolve(true);
         } else {
+          client_hash = client_hash.trim();
+
           if (_this3.projectIdtoIndex.hasOwnProperty(project_id) && _this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.ENTERID) {
             if (_this3.projects[_this3.projectIdtoIndex[project_id]].SETTINGS.CHECK_CLIENTIDS) {
               var options = {
