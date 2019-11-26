@@ -9,6 +9,8 @@ export default class DomainTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
 
+    this.domain_debug = false;
+
   }
 
 
@@ -39,7 +41,7 @@ export default class DomainTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      //if (this.debug) console.log('-> onStart!');
+      //if (this.domain_debug) console.log('-> onStart!');
       fn(1000);
     }, 500);
   }

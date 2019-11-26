@@ -31,7 +31,7 @@ export default class ContentHandler {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = true;
+    this.debug = false;
     
     // needs to be initialized, if restarting
     this.tracker = null;

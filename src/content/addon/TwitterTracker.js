@@ -9,8 +9,8 @@ export default class TwitterTracker extends Tracker{
     this.is_allowed = null;
     
     this.allow = false;
-    this.debug = true;
-    this.debugEvents = false;
+    this.twitter_debug = false;
+    this.twitter_debugEvents = false;
     this.selectors = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
@@ -589,7 +589,7 @@ export default class TwitterTracker extends Tracker{
         // Heeader Tweet
         if ((i == 0) && this._isHeaderTweet(articles[i])){
           let id = this._getHeaderId();
-          //if (this.debug) console.log('HEADER ID detected: ' + id);
+          //if (this.twitter_debug) console.log('HEADER ID detected: ' + id);
           this.trackArticle(id, articles[i]);
           counter += 1;
         } else {
@@ -600,18 +600,18 @@ export default class TwitterTracker extends Tracker{
         if(this._isPublic(articles[i])){
           //this._setBorder(articles[i]);
           //let id = this._getId(articles[i]);
-          //if (this.debug) console.log('ID detected: ' + id);
+          //if (this.twitter_debug) console.log('ID detected: ' + id);
           this.trackArticle(id, articles[i]);
 
           counter += 1;
         }else{
-          //if (this.debug) console.log('Not public: ', articles[i]);
+          //if (this.twitter_debug) console.log('Not public: ', articles[i]);
         }
       }
     }
 
-    if (this.debug) console.log('Articles Found: ' + articles.length);
-    if (this.debug) console.log('Public Articles: ' + counter);
+    if (this.twitter_debug) console.log('Articles Found: ' + articles.length);
+    if (this.twitter_debug) console.log('Public Articles: ' + counter);
 
     // return True if at lest one article was found (regardless it being public/private)
     return articles.length > 0;
@@ -670,14 +670,14 @@ export default class TwitterTracker extends Tracker{
       //let id = who[i].getAttribute('data-tweet-id');
       let id = this._getWhoId(who[i]);
       if (id != null) {
-        //if (this.debug) console.log('ID detected: ' + id);
+        //if (this.twitter_debug) console.log('ID detected: ' + id);
         this.whoId2Element[id] = who[i].cloneNode(true);
         counter += 1;
       }
     }
 
-    if (this.debug) console.log('WhoToFollow: ' + who.length);
-    if (this.debug) console.log('WhoToFollow correct: ' + counter);
+    if (this.twitter_debug) console.log('WhoToFollow: ' + who.length);
+    if (this.twitter_debug) console.log('WhoToFollow correct: ' + counter);
 
     // return True if at lest one article was found (regardless it being public/private)
     return who.length > 0;
@@ -720,14 +720,14 @@ export default class TwitterTracker extends Tracker{
       //let id = trend[i].getAttribute('data-tweet-id');
       let id = this._getTrendId(trend[i]);
       if (id != null) {
-        //if (this.debug) console.log('ID detected: ' + id);
+        //if (this.twitter_debug) console.log('ID detected: ' + id);
         this.trendId2Element[id] = trend[i].cloneNode(true);
         counter += 1;
       }
     }
 
-    if (this.debug) console.log('Trend: ' + trend.length);
-    if (this.debug) console.log('Trend correct: ' + counter);
+    if (this.twitter_debug) console.log('Trend: ' + trend.length);
+    if (this.twitter_debug) console.log('Trend correct: ' + counter);
 
     // return True if at lest one article was found (regardless it being public/private)
     return trend.length > 0;
@@ -749,7 +749,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if (this.debug) console.log('No public tweets/replies found');
+      if (this.twitter_debug) console.log('No public tweets/replies found');
     }
 
     var who_strings = '';
@@ -761,7 +761,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if (this.debug) console.log('No WhoToFollows found');
+      if (this.twitter_debug) console.log('No WhoToFollows found');
     }
 
     var trend_strings = '';
@@ -773,7 +773,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if (this.debug) console.log('No Trends found');
+      if (this.twitter_debug) console.log('No Trends found');
     }
 
 
@@ -784,7 +784,7 @@ export default class TwitterTracker extends Tracker{
       sidebar = '';
     }
 
-    if (this.debug) console.log('Sending ' + counter + ' tweets');
+    if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
     return '<html>' + this._getHead() + 
        '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
       '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + 
@@ -809,7 +809,7 @@ export default class TwitterTracker extends Tracker{
       }
     }
     if(counter == 0){
-      if (this.debug) console.log('No public tweets/replies found');
+      if (this.twitter_debug) console.log('No public tweets/replies found');
     }
 
     if (this.header == null) {
@@ -828,7 +828,7 @@ export default class TwitterTracker extends Tracker{
     }
 
 
-    if (this.debug) console.log('Sending ' + counter + ' tweets');
+    if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
     return '<html>' + this._getHead() + '<body>' + 
       '<h1>Header</h1><div class="sidebar">' + this.header +  '</div>'+ 
       '<h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div>' +
@@ -870,10 +870,10 @@ export default class TwitterTracker extends Tracker{
 
           if (this.tweets_exist){
               //SEND
-            if (this.debug) console.log('assembling dom');
+            if (this.twitter_debug) console.log('assembling dom');
             resolve(this.assembleDom());
           } else if (this.tweets_exist == false) {
-            if (this.debug) console.log('No tweets were found');
+            if (this.twitter_debug) console.log('No tweets were found');
             // just send the entire html
             resolve(this._getDom());
           }
@@ -884,10 +884,10 @@ export default class TwitterTracker extends Tracker{
 
           if (this.tweets_exist){
               //SEND
-            if (this.debug) console.log('assembling dom');
+            if (this.twitter_debug) console.log('assembling dom');
             resolve(this.assemblePublicDom());
           } else if (this.tweets_exist == false) {
-            if (this.debug) console.log('No tweets were found');
+            if (this.twitter_debug) console.log('No tweets were found');
             // just send the entire html
             resolve(this._getDom());
           }
@@ -902,7 +902,7 @@ export default class TwitterTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if (this.debug) console.log('START!!!!');
+      if (this.twitter_debug) console.log('START!!!!');
       fn(1000);
     }, 500);
   }

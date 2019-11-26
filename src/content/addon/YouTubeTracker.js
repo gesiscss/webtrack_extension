@@ -13,7 +13,7 @@ export default class YouTubeTracker extends Tracker{
       MAX_COUNT: 4
     };
     this.allow = true;
-    this.debug = false;
+    this.youtube_debug = false;
     this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
@@ -501,7 +501,7 @@ export default class YouTubeTracker extends Tracker{
 
     let wrappers = this._getElements(type.query, target, {color: 'blue'});
     for (let wrapper of wrappers) {
-      if (this.debug){
+      if (this.youtube_debug){
         if(type.name=='postanswer'){
           this._setBorder(wrapper, 'blue');
         }else{
@@ -676,7 +676,7 @@ export default class YouTubeTracker extends Tracker{
         resolve(document.documentElement.outerHTML);
 
       // } else {
-      //   if (this.debug) console.log('YouTube Not allow');
+      //   if (this.youtube_debug) console.log('YouTube Not allow');
       //   resolve(false)
       // }
 
@@ -691,7 +691,7 @@ export default class YouTubeTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if (this.debug) console.log('START!!!!');
+      if (this.youtube_debug) console.log('START!!!!');
       fn(2000);
     }, 1000);
   }

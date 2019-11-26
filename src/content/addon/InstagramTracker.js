@@ -66,22 +66,22 @@ export default class InstagramTracker extends Tracker{
 
       let pathname = location.pathname;
       if (pathname == '/'){
-        if (this.debug) console.log('credentials: is_timeline');
+        if (this.instagram_debug) console.log('credentials: is_timeline');
         this.is_timeline = true;
       } else if (pathname.startsWith('/explore/')) {
-        if (this.debug) console.log('credentials: is_explore');
+        if (this.instagram_debug) console.log('credentials: is_explore');
         this.is_explore = true;
       } else if (pathname.startsWith('/p/')) {
-        if (this.debug) console.log('credentials: is_post');
+        if (this.instagram_debug) console.log('credentials: is_post');
         this.is_post = true;
       } else {
         let parts = pathname.split('/');
         if (parts.length == 3) {
-          if (this.debug) console.log('credentials: is_profile');
+          if (this.instagram_debug) console.log('credentials: is_profile');
           this.is_profile = true;
         }
         if (parts[1] == this.logged_username){
-          if (this.debug) console.log('credentials: is_my_profile');
+          if (this.instagram_debug) console.log('credentials: is_my_profile');
           this.is_my_profile = true;
         }
       }
@@ -279,8 +279,8 @@ export default class InstagramTracker extends Tracker{
       }
     }
 
-    if (this.debug) console.log('Articles Found: ' + articles.length);
-    if (this.debug) console.log('Public Articles: ' + counter);
+    if (this.instagram_debug) console.log('Articles Found: ' + articles.length);
+    if (this.instagram_debug) console.log('Public Articles: ' + counter);
 
     // return True if at least one article was found (regardless it being public/private)
     return articles.length > 0;
@@ -306,8 +306,8 @@ export default class InstagramTracker extends Tracker{
       }
     }
 
-    if (this.debug) console.log('Mosaiks Found: ' + mosaiks.length);
-    if (this.debug) console.log('Public Mosaiks: ' + counter);
+    if (this.instagram_debug) console.log('Mosaiks Found: ' + mosaiks.length);
+    if (this.instagram_debug) console.log('Public Mosaiks: ' + counter);
 
     // return True if at least one article was found (regardless it being public/private)
     return mosaiks.length > 0;
@@ -326,7 +326,7 @@ export default class InstagramTracker extends Tracker{
     //this.profile_body = 'article.ySN3v > div > div';
 
     if(this.is_timeline){
-      if (this.debug) console.log('is_timeline');
+      if (this.instagram_debug) console.log('is_timeline');
       let timeline_body = dom.querySelector(this.article).parentNode;
       if (timeline_body){
         timeline_body.innerHTML = "";
@@ -346,7 +346,7 @@ export default class InstagramTracker extends Tracker{
       // } else {
       //   mosaik_body = dom.querySelector(this.profile_body);
       // }
-      if (this.debug) console.log('is_explore or is_profile');
+      if (this.instagram_debug) console.log('is_explore or is_profile');
       let one_mosaik = dom.querySelector(this.mosaik);
       if (one_mosaik){
         let mosaik_body = one_mosaik.parentNode.parentNode;
@@ -363,18 +363,18 @@ export default class InstagramTracker extends Tracker{
     }
 
     if(this.is_post){
-      if (this.debug) console.log('is_post');
+      if (this.instagram_debug) console.log('is_post');
       let articles = dom.querySelectorAll(this.article);
       if (articles.length == 1){
         let article = articles[0];
         if (this._isPublic(article)){
-          if (this.debug) console.log('is_public_post');
+          if (this.instagram_debug) console.log('is_public_post');
           let _id = this._getId(article);
           if (_id) {
             article.setAttribute('webtrack-post-id', _id);
           }
         } else {
-          if (this.debug) console.log('is_private_post');
+          if (this.instagram_debug) console.log('is_private_post');
           article.parentNode.removeChild(article);
         }
       } else {
@@ -396,14 +396,14 @@ export default class InstagramTracker extends Tracker{
       return new Promise((resolve, reject) => {
         console.log('promise');
         if(this.is_timeline){
-          if (this.debug) console.log('is_timeline');
+          if (this.instagram_debug) console.log('is_timeline');
           this.addPublicArticles();
         } else if (this.is_explore || this.is_profile) {
-          if (this.debug) console.log('is_explore or is_profile');
+          if (this.instagram_debug) console.log('is_explore or is_profile');
           this.addArticleMosaik();
         }
 
-        if (this.debug) console.log('Reassemble Dom');
+        if (this.instagram_debug) console.log('Reassemble Dom');
 
         resolve(this.reAssembleDom());
         
@@ -417,7 +417,7 @@ export default class InstagramTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if (this.debug) console.log('START!!!!');
+      if (this.instagram_debug) console.log('START!!!!');
       fn(1000);
     }, 500);
   }

@@ -12,6 +12,8 @@ export default class AppleTracker extends Tracker{
     this.startswith_blacklist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
     this.pos_2nd_blacklist = ['itunes', 'icloud'];
 
+    this.apple_debug = false;
+
     this.setup_credentials();
 
   }
@@ -30,7 +32,7 @@ export default class AppleTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      //if (this.debug) console.log('-> onStart');
+      //if (this.apple_debug) console.log('-> onStart');
       fn(1000);
     }, 500);
   }

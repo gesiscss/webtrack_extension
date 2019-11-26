@@ -2,7 +2,7 @@ export default class MultiFetch {
 
   constructor(worker=2) {
     this.worker = worker;
-    this.DEBUG = false;
+    this.debug = false;
 
     if (this.debug) console.log('this.worker', this.worker);
     this.urls2data = {};

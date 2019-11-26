@@ -9837,7 +9837,7 @@ function () {
     _classCallCheck(this, MultiFetch);
 
     this.worker = worker;
-    this.DEBUG = false;
+    this.debug = false;
     if (this.debug) console.log('this.worker', this.worker);
     this.urls2data = {};
     this.toGet = [];
@@ -12520,7 +12520,7 @@ function (_Tracker) {
       MAX_COUNT: 4
     };
     _this.allow = true;
-    _this.debug = false;
+    _this.youtube_debug = false;
     _this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
@@ -13308,7 +13308,7 @@ function (_Tracker) {
         var _loop2 = function _loop2() {
           var wrapper = _step9.value;
 
-          if (_this8.debug) {
+          if (_this8.youtube_debug) {
             if (type.name == 'postanswer') {
               _this8._setBorder(wrapper, 'blue');
             } else {
@@ -13805,7 +13805,7 @@ function (_Tracker) {
         // resolve(this._getDom());
 
         resolve(document.documentElement.outerHTML); // } else {
-        //   if (this.debug) console.log('YouTube Not allow');
+        //   if (this.youtube_debug) console.log('YouTube Not allow');
         //   resolve(false)
         // }
       });
@@ -13821,7 +13821,7 @@ function (_Tracker) {
       var _this11 = this;
 
       setTimeout(function () {
-        if (_this11.debug) console.log('START!!!!');
+        if (_this11.youtube_debug) console.log('START!!!!');
         fn(2000);
       }, 1000);
     }
@@ -13874,8 +13874,8 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(TwitterTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
     _this.allow = false;
-    _this.debug = true;
-    _this.debugEvents = false;
+    _this.twitter_debug = false;
+    _this.twitter_debugEvents = false;
     _this.selectors = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
@@ -14592,7 +14592,7 @@ function (_Tracker) {
         if (id == null) {
           // Heeader Tweet
           if (i == 0 && this._isHeaderTweet(articles[i])) {
-            var _id = this._getHeaderId(); //if (this.debug) console.log('HEADER ID detected: ' + id);
+            var _id = this._getHeaderId(); //if (this.twitter_debug) console.log('HEADER ID detected: ' + id);
 
 
             this.trackArticle(_id, articles[i]);
@@ -14605,16 +14605,16 @@ function (_Tracker) {
           if (this._isPublic(articles[i])) {
             //this._setBorder(articles[i]);
             //let id = this._getId(articles[i]);
-            //if (this.debug) console.log('ID detected: ' + id);
+            //if (this.twitter_debug) console.log('ID detected: ' + id);
             this.trackArticle(id, articles[i]);
             counter += 1;
-          } else {//if (this.debug) console.log('Not public: ', articles[i]);
+          } else {//if (this.twitter_debug) console.log('Not public: ', articles[i]);
           }
         }
       }
 
-      if (this.debug) console.log('Articles Found: ' + articles.length);
-      if (this.debug) console.log('Public Articles: ' + counter); // return True if at lest one article was found (regardless it being public/private)
+      if (this.twitter_debug) console.log('Articles Found: ' + articles.length);
+      if (this.twitter_debug) console.log('Public Articles: ' + counter); // return True if at lest one article was found (regardless it being public/private)
 
       return articles.length > 0;
     }
@@ -14680,14 +14680,14 @@ function (_Tracker) {
         var id = this._getWhoId(who[i]);
 
         if (id != null) {
-          //if (this.debug) console.log('ID detected: ' + id);
+          //if (this.twitter_debug) console.log('ID detected: ' + id);
           this.whoId2Element[id] = who[i].cloneNode(true);
           counter += 1;
         }
       }
 
-      if (this.debug) console.log('WhoToFollow: ' + who.length);
-      if (this.debug) console.log('WhoToFollow correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
+      if (this.twitter_debug) console.log('WhoToFollow: ' + who.length);
+      if (this.twitter_debug) console.log('WhoToFollow correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
 
       return who.length > 0;
     }
@@ -14731,14 +14731,14 @@ function (_Tracker) {
         var id = this._getTrendId(trend[i]);
 
         if (id != null) {
-          //if (this.debug) console.log('ID detected: ' + id);
+          //if (this.twitter_debug) console.log('ID detected: ' + id);
           this.trendId2Element[id] = trend[i].cloneNode(true);
           counter += 1;
         }
       }
 
-      if (this.debug) console.log('Trend: ' + trend.length);
-      if (this.debug) console.log('Trend correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
+      if (this.twitter_debug) console.log('Trend: ' + trend.length);
+      if (this.twitter_debug) console.log('Trend correct: ' + counter); // return True if at lest one article was found (regardless it being public/private)
 
       return trend.length > 0;
     }
@@ -14762,7 +14762,7 @@ function (_Tracker) {
       }
 
       if (counter == 0) {
-        if (this.debug) console.log('No public tweets/replies found');
+        if (this.twitter_debug) console.log('No public tweets/replies found');
       }
 
       var who_strings = '';
@@ -14776,7 +14776,7 @@ function (_Tracker) {
       }
 
       if (counter == 0) {
-        if (this.debug) console.log('No WhoToFollows found');
+        if (this.twitter_debug) console.log('No WhoToFollows found');
       }
 
       var trend_strings = '';
@@ -14790,7 +14790,7 @@ function (_Tracker) {
       }
 
       if (counter == 0) {
-        if (this.debug) console.log('No Trends found');
+        if (this.twitter_debug) console.log('No Trends found');
       }
 
       var sidebar = document.querySelector('div[data-testid="sidebarColumn"]');
@@ -14801,7 +14801,7 @@ function (_Tracker) {
         sidebar = '';
       }
 
-      if (this.debug) console.log('Sending ' + counter + ' tweets');
+      if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
       return '<html>' + this._getHead() + '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + '</div><h1>Trends</h1><div class="trends">' + trend_strings + '</div><h1>SideBar</h1><div class="sidebar">' + sidebar + '</div></body>' + '</html>';
     }
     /**
@@ -14824,7 +14824,7 @@ function (_Tracker) {
       }
 
       if (counter == 0) {
-        if (this.debug) console.log('No public tweets/replies found');
+        if (this.twitter_debug) console.log('No public tweets/replies found');
       }
 
       if (this.header == null) {
@@ -14842,7 +14842,7 @@ function (_Tracker) {
         this.sidebar_right = this.sidebar_right ? this.sidebar_right.outerHTML : '';
       }
 
-      if (this.debug) console.log('Sending ' + counter + ' tweets');
+      if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
       return '<html>' + this._getHead() + '<body>' + '<h1>Header</h1><div class="sidebar">' + this.header + '</div>' + '<h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div>' + '<h1>SideBar Left</h1><div class="whotofollow">' + this.sidebar_left + '</div>' + '<h1>SideBar Right</h1><div class="trends">' + this.sidebar_right + '</div>' + '</body></html>';
     }
     /**
@@ -14885,10 +14885,10 @@ function (_Tracker) {
 
           if (_this8.tweets_exist) {
             //SEND
-            if (_this8.debug) console.log('assembling dom');
+            if (_this8.twitter_debug) console.log('assembling dom');
             resolve(_this8.assembleDom());
           } else if (_this8.tweets_exist == false) {
-            if (_this8.debug) console.log('No tweets were found'); // just send the entire html
+            if (_this8.twitter_debug) console.log('No tweets were found'); // just send the entire html
 
             resolve(_this8._getDom());
           }
@@ -14899,10 +14899,10 @@ function (_Tracker) {
 
           if (_this8.tweets_exist) {
             //SEND
-            if (_this8.debug) console.log('assembling dom');
+            if (_this8.twitter_debug) console.log('assembling dom');
             resolve(_this8.assemblePublicDom());
           } else if (_this8.tweets_exist == false) {
-            if (_this8.debug) console.log('No tweets were found'); // just send the entire html
+            if (_this8.twitter_debug) console.log('No tweets were found'); // just send the entire html
 
             resolve(_this8._getDom());
           }
@@ -14920,7 +14920,7 @@ function (_Tracker) {
       var _this9 = this;
 
       setTimeout(function () {
-        if (_this9.debug) console.log('START!!!!');
+        if (_this9.twitter_debug) console.log('START!!!!');
         fn(1000);
       }, 500);
     }
@@ -15029,24 +15029,24 @@ function (_Tracker) {
         var pathname = location.pathname;
 
         if (pathname == '/') {
-          if (this.debug) console.log('credentials: is_timeline');
+          if (this.instagram_debug) console.log('credentials: is_timeline');
           this.is_timeline = true;
         } else if (pathname.startsWith('/explore/')) {
-          if (this.debug) console.log('credentials: is_explore');
+          if (this.instagram_debug) console.log('credentials: is_explore');
           this.is_explore = true;
         } else if (pathname.startsWith('/p/')) {
-          if (this.debug) console.log('credentials: is_post');
+          if (this.instagram_debug) console.log('credentials: is_post');
           this.is_post = true;
         } else {
           var parts = pathname.split('/');
 
           if (parts.length == 3) {
-            if (this.debug) console.log('credentials: is_profile');
+            if (this.instagram_debug) console.log('credentials: is_profile');
             this.is_profile = true;
           }
 
           if (parts[1] == this.logged_username) {
-            if (this.debug) console.log('credentials: is_my_profile');
+            if (this.instagram_debug) console.log('credentials: is_my_profile');
             this.is_my_profile = true;
           }
         }
@@ -15262,8 +15262,8 @@ function (_Tracker) {
         }
       }
 
-      if (this.debug) console.log('Articles Found: ' + articles.length);
-      if (this.debug) console.log('Public Articles: ' + counter); // return True if at least one article was found (regardless it being public/private)
+      if (this.instagram_debug) console.log('Articles Found: ' + articles.length);
+      if (this.instagram_debug) console.log('Public Articles: ' + counter); // return True if at least one article was found (regardless it being public/private)
 
       return articles.length > 0;
     }
@@ -15290,8 +15290,8 @@ function (_Tracker) {
         }
       }
 
-      if (this.debug) console.log('Mosaiks Found: ' + mosaiks.length);
-      if (this.debug) console.log('Public Mosaiks: ' + counter); // return True if at least one article was found (regardless it being public/private)
+      if (this.instagram_debug) console.log('Mosaiks Found: ' + mosaiks.length);
+      if (this.instagram_debug) console.log('Public Mosaiks: ' + counter); // return True if at least one article was found (regardless it being public/private)
 
       return mosaiks.length > 0;
     }
@@ -15309,7 +15309,7 @@ function (_Tracker) {
 
 
       if (this.is_timeline) {
-        if (this.debug) console.log('is_timeline');
+        if (this.instagram_debug) console.log('is_timeline');
         var timeline_body = dom.querySelector(this.article).parentNode;
 
         if (timeline_body) {
@@ -15331,7 +15331,7 @@ function (_Tracker) {
         // } else {
         //   mosaik_body = dom.querySelector(this.profile_body);
         // }
-        if (this.debug) console.log('is_explore or is_profile');
+        if (this.instagram_debug) console.log('is_explore or is_profile');
         var one_mosaik = dom.querySelector(this.mosaik);
 
         if (one_mosaik) {
@@ -15351,14 +15351,14 @@ function (_Tracker) {
       }
 
       if (this.is_post) {
-        if (this.debug) console.log('is_post');
+        if (this.instagram_debug) console.log('is_post');
         var articles = dom.querySelectorAll(this.article);
 
         if (articles.length == 1) {
           var article = articles[0];
 
           if (this._isPublic(article)) {
-            if (this.debug) console.log('is_public_post');
+            if (this.instagram_debug) console.log('is_public_post');
 
             var _id = this._getId(article);
 
@@ -15366,7 +15366,7 @@ function (_Tracker) {
               article.setAttribute('webtrack-post-id', _id);
             }
           } else {
-            if (this.debug) console.log('is_private_post');
+            if (this.instagram_debug) console.log('is_private_post');
             article.parentNode.removeChild(article);
           }
         } else {
@@ -15393,16 +15393,16 @@ function (_Tracker) {
         console.log('promise');
 
         if (_this2.is_timeline) {
-          if (_this2.debug) console.log('is_timeline');
+          if (_this2.instagram_debug) console.log('is_timeline');
 
           _this2.addPublicArticles();
         } else if (_this2.is_explore || _this2.is_profile) {
-          if (_this2.debug) console.log('is_explore or is_profile');
+          if (_this2.instagram_debug) console.log('is_explore or is_profile');
 
           _this2.addArticleMosaik();
         }
 
-        if (_this2.debug) console.log('Reassemble Dom');
+        if (_this2.instagram_debug) console.log('Reassemble Dom');
         resolve(_this2.reAssembleDom());
       }); //}
     }
@@ -15417,7 +15417,7 @@ function (_Tracker) {
       var _this3 = this;
 
       setTimeout(function () {
-        if (_this3.debug) console.log('START!!!!');
+        if (_this3.instagram_debug) console.log('START!!!!');
         fn(1000);
       }, 500);
     }
@@ -15465,6 +15465,7 @@ function (_Tracker) {
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(DomainTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
+    _this.domain_debug = false;
     return _this;
   }
   /**
@@ -15502,7 +15503,7 @@ function (_Tracker) {
     key: "onStart",
     value: function onStart(fn) {
       setTimeout(function () {
-        //if (this.debug) console.log('-> onStart!');
+        //if (this.domain_debug) console.log('-> onStart!');
         fn(1000);
       }, 500);
     }
@@ -15643,7 +15644,7 @@ function (_Tracker) {
       var _this2 = this;
 
       setTimeout(function () {
-        if (_this2.debug) console.log('START!!!!');
+        if (_this2.google_debug) console.log('START!!!!');
         fn(1000);
       }, 500);
     }
@@ -15697,6 +15698,7 @@ function (_Tracker) {
     _this.is_allowed = null;
     _this.startswith_blacklist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
     _this.pos_2nd_blacklist = ['itunes', 'icloud'];
+    _this.apple_debug = false;
 
     _this.setup_credentials();
 
@@ -15722,7 +15724,7 @@ function (_Tracker) {
     key: "onStart",
     value: function onStart(fn) {
       setTimeout(function () {
-        //if (this.debug) console.log('-> onStart');
+        //if (this.apple_debug) console.log('-> onStart');
         fn(1000);
       }, 500);
     }
@@ -15971,7 +15973,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = true; // needs to be initialized, if restarting
+    this.debug = false; // needs to be initialized, if restarting
 
     this.tracker = null;
     this.count = 0;
