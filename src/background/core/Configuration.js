@@ -107,7 +107,7 @@ export default class Configuration {
         .then(projects => {
           if (this.debug) console.log('Fetch projects!');
           this.projectsStorage.set(projects);
-          this._load(projects);
+          this.store_projects(projects);
           resolve(true);
          })
         .catch(err => {
@@ -315,8 +315,8 @@ export default class Configuration {
    * load the projects and variables associated for the main control of the prorgram
    * @param  projects coming from the server request
    */
-  _load(projects){
-    if (this.debug) console.log('-> Configuration._load()');
+  store_projects(projects){
+    if (this.debug) console.log('-> Configuration.store_projects()');
     this.projectIds = projects.map(v => v.ID);
     this.projectIdtoIndex = {}
     for (let index in projects) {

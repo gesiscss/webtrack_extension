@@ -31311,7 +31311,7 @@ function () {
 
           _this2.projectsStorage.set(projects);
 
-          _this2._load(projects);
+          _this2.store_projects(projects);
 
           resolve(true);
         })["catch"](function (err) {
@@ -31592,11 +31592,11 @@ function () {
      */
 
   }, {
-    key: "_load",
-    value: function _load(projects) {
+    key: "store_projects",
+    value: function store_projects(projects) {
       var _this4 = this;
 
-      if (this.debug) console.log('-> Configuration._load()');
+      if (this.debug) console.log('-> Configuration.store_projects()');
       this.projectIds = projects.map(function (v) {
         return v.ID;
       });
