@@ -409,29 +409,29 @@ export default class ContentHandler {
             <div style="display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px">
               Webtrack
             </div>
-            <div style="display: block; font-size: 20px; color: #0085bc; font-weight: bold;">
-              Turn off private mode
+            <div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
+              Deaktivieren des Privatmodus
             </div>
           </div>
 
           <div style="clear: both;"> </div>
 
           <div style="margin:15px; font-size: 14px;">
-            <div>15 minutes have passed since you activated the Webtrack private mode.</div>
+            <div>Es sind 15 Minuten vergangen, seit Sie den Webtrack Privatmodus aktiviert haben.</div>
             <br />
-            <div style="font-weight:bold;">Do you want to continue browsing in private mode?</div>
+            <div style="font-weight:bold;">Möchten Sie im privaten Modus weiter surfen?</div>
           </div>
 
           <div style="text-align: center; position: absolute; bottom: 10px; width: 100%;">
             <div id="fifteen" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
                  color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
-                 text-align: center; margin-bottom: 5px; width: 200px; cursor: pointer;">
-                 Yes, I need 15 minutes more
+                 text-align: center; margin-bottom: 5px; width: 225px; cursor: pointer;">
+                 Ja, erinnere mich in 15 Minuten
             </div>
             <div id="turnoff" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
                  color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
-                 text-align: center; width: 200px; cursor: pointer;">
-                 No, turn off the private mode
+                 text-align: center; width: 225px; cursor: pointer;">
+                 Nein, Privatenmodus ausschalten
             </div>
           <div>
           </div>
