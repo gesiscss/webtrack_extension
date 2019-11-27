@@ -15973,7 +15973,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false; // needs to be initialized, if restarting
+    this.debug = true; // needs to be initialized, if restarting
 
     this.tracker = null;
     this.count = 0;
@@ -16226,6 +16226,8 @@ function () {
     value: function createTracker() {
       var _this3 = this;
 
+      if (this.debug) console.log('-> createTracker()');
+
       var Tracker = this._getTracker();
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
@@ -16416,7 +16418,7 @@ function () {
       this.startTime = +new Date();
       this.data = {};
       this.last = 0;
-      this.createTracker();
+      this.init();
     }
     /**
      * [initalizate the contenthandler]
@@ -16447,7 +16449,7 @@ function () {
                   setTimeout(function () {
                     return _this5.init();
                   }, 2000);
-                  console.log('Not allow to tracked from extension handler');
+                  if (this.debug) console.log('Not allow to tracked from extension handler');
                 }
 
                 _context2.next = 10;

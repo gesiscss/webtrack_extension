@@ -31,7 +31,7 @@ export default class ContentHandler {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -266,6 +266,7 @@ export default class ContentHandler {
    * [create the tracker and start the event listeners for fetching the data]
    */
   createTracker(){
+    if (this.debug) console.log('-> createTracker()')
     const Tracker = this._getTracker();
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
@@ -448,7 +449,7 @@ export default class ContentHandler {
     this.startTime = +new Date();
     this.data = {}
     this.last = 0;
-    this.createTracker();
+    this.init();
   }
 
   /**
@@ -461,7 +462,7 @@ export default class ContentHandler {
         this.createTracker();
       }else{
         setTimeout(()=> this.init(), 2000)
-        console.log('Not allow to tracked from extension handler');
+        if (this.debug) console.log('Not allow to tracked from extension handler');
       }
     } catch (e) {
       console.log(e);
