@@ -16308,7 +16308,9 @@ function () {
                   _this3.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                     if (message.action == 'popup_private_time') {
                       if (message.display) {
-                        _this3.showNotification(message.private_time);
+                        console.log(message.private_time);
+
+                        _this3.showNotification();
                       } else {
                         console.log('hidenotification');
 
@@ -16355,7 +16357,7 @@ function () {
 
   }, {
     key: "showNotification",
-    value: function showNotification(private_time) {
+    value: function showNotification() {
       var height = 300;
       /*create the notification bar div if it doesn't exist*/
 
@@ -16367,7 +16369,7 @@ function () {
         if (notification == null) {
           var notification_window = this.get_notification_window();
           notification_window.querySelector('#fifteen').addEventListener("click", function () {
-            this.request_more_private_time(private_time);
+            this.request_more_private_time(5000);
             body.removeChild(notification_window);
             this.display_notification = false;
           }.bind(this));

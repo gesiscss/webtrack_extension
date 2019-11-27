@@ -135,7 +135,7 @@ export default class Extension {
    * displayPrivateTimePopup send a message indicating that a popup should appear
    * @param {Boolean} 
    */
-  async displayPrivateTimePopup(private_time){
+  async displayPrivateTimePopup(){
     this.pending_private_time_answer = true;
     // send a messate
     xbrowser.tabs.query({active: true}, function(tabs){
@@ -143,7 +143,7 @@ export default class Extension {
         try{
           xbrowser.tabs.sendMessage(tab.id, { 
               action: "popup_private_time", 
-              private_time: private_time,
+              private_time: 5000,
               display: true
             }, 
             function(response) {

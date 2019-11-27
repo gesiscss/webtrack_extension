@@ -346,7 +346,7 @@ export default class PageHandler {
    * @param  {[type]} component [description]
    * @return {[type]}           [description]
    */
-  async confirm_public_mode(component, private_time=15*60*1000){
+  async confirm_public_mode(component, private_time=5000){
     await this.set_timeout(private_time);
 
 
@@ -369,7 +369,7 @@ export default class PageHandler {
         
       }, this);
 
-      extension.displayPrivateTimePopup(private_time);
+      extension.displayPrivateTimePopup();
     }
   }
 

@@ -32158,7 +32158,7 @@ function () {
     value: function () {
       var _displayPrivateTimePopup = Extension_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(private_time) {
+      regeneratorRuntime.mark(function _callee() {
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -32179,7 +32179,7 @@ function () {
                       try {
                         xbrowser.tabs.sendMessage(tab.id, {
                           action: "popup_private_time",
-                          private_time: private_time,
+                          private_time: 5000,
                           display: true
                         }, function (response) {
                           if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
@@ -32213,7 +32213,7 @@ function () {
         }, _callee, this);
       }));
 
-      return function displayPrivateTimePopup(_x) {
+      return function displayPrivateTimePopup() {
         return _displayPrivateTimePopup.apply(this, arguments);
       };
     }()
@@ -32464,7 +32464,7 @@ function () {
           }, _callee4, null, [[0, 8]]);
         }));
 
-        return function (_x2, _x3) {
+        return function (_x, _x2) {
           return _ref.apply(this, arguments);
         };
       }());
@@ -32691,7 +32691,7 @@ function () {
           }, _callee5, null, [[0, 10]]);
         }));
 
-        return function (_x4, _x5) {
+        return function (_x3, _x4) {
           return _ref2.apply(this, arguments);
         };
       }());
@@ -32744,7 +32744,7 @@ function () {
           }, _callee6, null, [[0, 8]]);
         }));
 
-        return function (_x6, _x7) {
+        return function (_x5, _x6) {
           return _ref3.apply(this, arguments);
         };
       }());
@@ -36490,8 +36490,8 @@ function () {
               case 0:
                 close = _args.length > 2 && _args[2] !== undefined ? _args[2] : true;
                 tabRemove = _args.length > 3 && _args[3] !== undefined ? _args[3] : false;
+                if (this.debug) console.log('-> closeTab(...)');
 
-                //if (this.debug) console.log('-> closeTab(...)');
                 if (openerTabId != null) {
                   if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
                   if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
@@ -36506,7 +36506,8 @@ function () {
                   if (close && !tabRemove) {
                     this.tabs[tabId].close(function (page) {
                       if (page != null) {
-                        //if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
+                        if (_this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
+
                         _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                       }
                     });
@@ -36515,10 +36516,11 @@ function () {
                   }
                 } else {
                   console.log('TabId %s not found', tabId);
-                } //if (this.debug) console.log('<- closeTab(...)');
+                }
 
+                if (this.debug) console.log('<- closeTab(...)');
 
-              case 4:
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -36676,8 +36678,8 @@ function () {
                   id = _step2.value;
 
                   if (this.tabs[id].elapsed_timer != -1) {
-                    //if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
-                    //if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
+                    if (this.debug) console.log('elapsed_timer: ', this.tabs[id].elapsed_timer);
+                    if (this.debug) console.log('elapsed: ', now - this.tabs[id].elapsed_timer);
                     this.tabs[id].updateElapsed(now - this.tabs[id].elapsed_timer);
                     this.tabs[id].elapsed_timer = -1;
                   }
@@ -36845,8 +36847,8 @@ function () {
       var _this4 = this;
 
       var count = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      if (this.debug) console.log('-> _pushData(...)');
 
-      //if (this.debug) console.log('-> _pushData(...)');
       if (TabHandler_typeof(data) != 'object') {
         console.warn('data is no object');
       } else if (this.tabs.hasOwnProperty(data.tabId)) {
@@ -36877,8 +36879,9 @@ function () {
         }, 1000);
       } else {
         console.warn('Timeout over', data);
-      } //if (this.debug) console.log('<- _pushData(...)');
+      }
 
+      if (this.debug) console.log('<- _pushData(...)');
     }
   }, {
     key: "closeLostTabs",
@@ -36899,7 +36902,7 @@ function () {
                 lostIds = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : [];
 
                 if (!(lostIds.length > 0)) {
-                  _context5.next = 25;
+                  _context5.next = 27;
                   break;
                 }
 
@@ -36927,41 +36930,43 @@ function () {
                 _context5.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
-                    //if (this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
+                    if (_this5.debug) console.log('==== Emit Event: onPage (Send Page) ====');
+
                     _this5.event.emit(TabHandler_EVENT_NAMES.page, page, false);
                   }
                 });
 
               case 14:
-                _context5.next = 16;
+                if (this.debug) console.log('Tried to delete tab', id);
+                _context5.next = 17;
                 return this.tabCache.deleteTab(id);
 
-              case 16:
-                //if (this.debug) console.log('Delete the Tab %s', id);
-                // console.log('clean', id)
+              case 17:
+                if (this.debug) console.log('Delete the Tab %s', id); // console.log('clean', id)
+
                 this.closeLostTabs(lostIds);
-                _context5.next = 23;
+                _context5.next = 25;
                 break;
 
-              case 19:
-                _context5.prev = 19;
+              case 21:
+                _context5.prev = 21;
                 _context5.t0 = _context5["catch"](3);
                 this.closeLostTabs(lostIds);
                 console.log(_context5.t0);
 
-              case 23:
-                _context5.next = 26;
+              case 25:
+                _context5.next = 28;
                 break;
 
-              case 25:
+              case 27:
                 console.log('Close all tabs');
 
-              case 26:
+              case 28:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[3, 19]]);
+        }, _callee5, this, [[3, 21]]);
       }));
 
       return function closeLostTabs() {
@@ -37166,9 +37171,11 @@ function () {
                 case 57:
                   // On close the tab
                   _this7.extension.event.on('onTabRemove', function (tabId) {
-                    //if (this.debug) console.log('-> TabHandler.onTabRemove');
+                    if (_this7.debug) console.log('-> TabHandler.onTabRemove');
+
                     if (!_this7.isClose) {
-                      //if (this.debug) console.log('onTabRemove', tabId);
+                      if (_this7.debug) console.log('onTabRemove', tabId);
+
                       _this7._onFocus();
 
                       _this7.closeTab(tabId, undefined, true, true);
@@ -37177,9 +37184,10 @@ function () {
 
 
                   _this7.extension.event.on('onTab', function (tabId) {
-                    //if (this.debug) console.log('-> TabHandler.onTab');
+                    if (_this7.debug) console.log('-> TabHandler.onTab');
+
                     if (!_this7.isClose) {
-                      //if (this.debug) console.log('onTab', tabId);
+                      if (_this7.debug) console.log('onTab', tabId);
                       var tab = new Tab_Tab(_this7.projectId, tabId);
                       var timeout = setTimeout(function () {
                         console.warn('Timeout: Failed to create Tab');
@@ -37196,7 +37204,8 @@ function () {
 
 
                   _this7.extension.event.on('onFocusTab', function () {
-                    //if (this.debug) console.log('-> TabHandler.onFocusTab');
+                    if (_this7.debug) console.log('-> TabHandler.onFocusTab');
+
                     if (!_this7.isClose) {
                       _this7._onFocus();
                     }
@@ -37204,7 +37213,8 @@ function () {
 
 
                   _this7.extension.event.on('onTabUpdate', function (e) {
-                    //if (this.debug) console.log('-> TabHandler.onTabUpdate');
+                    if (_this7.debug) console.log('-> TabHandler.onTabUpdate');
+
                     if (!_this7.isClose) {
                       _this7._onFocus();
 
@@ -37233,13 +37243,15 @@ function () {
                       }
 
                       _this7.closeTab(e.tabId, e.openerTabId, will_close);
-                    } //if (this.debug) console.log('<- TabHandler.onTabUpdate');
+                    }
 
+                    if (_this7.debug) console.log('<- TabHandler.onTabUpdate');
                   }); //on tab data send
 
 
                   _this7.extension.event.on('onTabContent', function (data) {
-                    //if (this.debug) console.log('onTabContent');
+                    if (_this7.debug) console.log('onTabContent');
+
                     if (!_this7.isClose) {
                       _this7._pushData(data);
                     }
@@ -39157,7 +39169,7 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 5000;
                 _context3.next = 3;
                 return this.set_timeout(private_time);
 
@@ -39179,7 +39191,7 @@ function () {
                       extension.resetPublicImage(extension);
                     }
                   }, this);
-                  extension.displayPrivateTimePopup(private_time);
+                  extension.displayPrivateTimePopup();
                 }
 
               case 5:
