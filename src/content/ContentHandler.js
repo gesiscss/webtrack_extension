@@ -116,6 +116,24 @@ export default class ContentHandler {
   }
 
 
+
+  /**
+   * delete page in the background
+   * @return {Promise<object>}
+   */
+  deletePage(){
+    return new Promise((resolve, reject)=>{
+      if (this.debug) console.log('sendMessage("delete_page")');
+      this.browser.runtime.sendMessage('delete_page', (response) => {
+        if(this.browser.runtime.lastError) {
+          /*ignore when the background is not listening*/;
+        }
+        resolve(response);
+      });
+
+    });
+  }
+
   /**
   * [rebuild and href without hash]
   * @return href without hashes
@@ -258,8 +276,10 @@ export default class ContentHandler {
 
   close(){
     this.domDetector.removeAllEventListener();
-    this.tracker.eventEmitter.removeAllListeners('onData');
-    this.tracker.eventEmitter.removeAllListeners('onStart');
+    if (this.tracker && this.tracker.eventEmitter){
+      this.tracker.eventEmitter.removeAllListeners('onData');
+      this.tracker.eventEmitter.removeAllListeners('onStart');
+    }
   }
 
   /**
@@ -270,7 +290,8 @@ export default class ContentHandler {
     const Tracker = this._getTracker();
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
-      this.reinit()
+      this.clear();
+      this.init();
     })
     this.tracker.eventEmitter.on('onData', data => {
        //if(data.hasOwnProperty('html') && data.html != false){
@@ -309,30 +330,33 @@ export default class ContentHandler {
 
 
           // listen for request to cancel private mode
-          this.browser.runtime.onMessage.addListener(
-            (message, sender, sendResponse) => {
-             if (message.action == 'private_mode'){
+          this.browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (message.action == 'private_mode'){
               console.log(message);
               if (message.private_mode) {
-                this.reinit();
+                this.clear();
+                if(typeof this.param == 'object' && this.param.allow){
+                  sendResponse(true);
+                }
+                this.init();
               }
-             }
-             if (message.action == 'popup_private_time'){
+            }
+            if (message.action == 'popup_private_time'){
 
-              if (message.display){
-                console.log(message.private_time);
-                this.showNotification();
-              } else {
-                console.log('hidenotification');
-                this.hideNotification();
-              }
+            if (message.display){
+              console.log(message.private_time);
+              this.showNotification();
+            } else {
+              console.log('hidenotification');
+              this.hideNotification();
+            }
 
-              sendResponse(true);              
-              //return true;
-              return Promise.resolve("Dummy response to keep the console quiet");
-             }
-           });
-       }
+            sendResponse(true);              
+            //return true;
+            return Promise.resolve("Dummy response to keep the console quiet");
+            }
+          });
+        }
     });
     this.tracker.start();
   }
@@ -445,9 +469,9 @@ export default class ContentHandler {
 
 
   /**
-   * [reinitalizate the contenthandler]
+   * [clear the contenthandler]
    */  
-  reinit(){
+  clear(){
     this.close();
     this.tracker = null;
     this.count = 0;
@@ -455,7 +479,6 @@ export default class ContentHandler {
     this.startTime = +new Date();
     this.data = {}
     this.last = 0;
-    this.init();
   }
 
   /**

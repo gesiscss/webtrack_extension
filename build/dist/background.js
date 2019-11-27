@@ -32360,6 +32360,8 @@ function () {
                     }, function (response) {
                       if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
                       }
+
+                      console.log('delete_page');
                     }.bind(this));
                   } catch (e) {
                     console.log('caught');

@@ -16065,6 +16065,29 @@ function () {
       });
     }
     /**
+     * delete page in the background
+     * @return {Promise<object>}
+     */
+
+  }, {
+    key: "deletePage",
+    value: function deletePage() {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this2.debug) console.log('sendMessage("delete_page")');
+
+        _this2.browser.runtime.sendMessage('delete_page', function (response) {
+          if (_this2.browser.runtime.lastError) {
+            /*ignore when the background is not listening*/
+            ;
+          }
+
+          resolve(response);
+        });
+      });
+    }
+    /**
     * [rebuild and href without hash]
     * @return href without hashes
     */
@@ -16083,7 +16106,7 @@ function () {
   }, {
     key: "sendMessage",
     value: function sendMessage() {
-      var _this2 = this;
+      var _this3 = this;
 
       var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       this.count += 1;
@@ -16158,13 +16181,13 @@ function () {
             try {
               if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
               this.browser.runtime.sendMessage(this.data, function (response) {
-                if (_this2.browser.runtime.lastError) {
+                if (_this3.browser.runtime.lastError) {
                   /*ignore when the background is not listening*/
                   ;
                 }
 
                 if (response == undefined) {
-                  _this2.close();
+                  _this3.close();
                 }
               });
             } catch (err) {
@@ -16185,13 +16208,13 @@ function () {
             try {
               if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
               this.browser.runtime.sendMessage(this.data, function (response) {
-                if (_this2.browser.runtime.lastError) {
+                if (_this3.browser.runtime.lastError) {
                   /*ignore when the background is not listening*/
                   ;
                 }
 
                 if (response == undefined) {
-                  _this2.close();
+                  _this3.close();
 
                   console.log('Close');
                 }
@@ -16214,8 +16237,11 @@ function () {
     key: "close",
     value: function close() {
       this.domDetector.removeAllEventListener();
-      this.tracker.eventEmitter.removeAllListeners('onData');
-      this.tracker.eventEmitter.removeAllListeners('onStart');
+
+      if (this.tracker && this.tracker.eventEmitter) {
+        this.tracker.eventEmitter.removeAllListeners('onData');
+        this.tracker.eventEmitter.removeAllListeners('onStart');
+      }
     }
     /**
      * [create the tracker and start the event listeners for fetching the data]
@@ -16224,7 +16250,7 @@ function () {
   }, {
     key: "createTracker",
     value: function createTracker() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.debug) console.log('-> createTracker()');
 
@@ -16232,16 +16258,18 @@ function () {
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
-        _this3.reinit();
+        _this4.clear();
+
+        _this4.init();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
         //if(data.hasOwnProperty('html') && data.html != false){
         //this.tracker.fetchLinks();
         //this.tracker.fetchSource(data.html);
         //}
-        if (_this3.debug) console.log('onData: this.sendMessage');
+        if (_this4.debug) console.log('onData: this.sendMessage');
 
-        _this3.sendMessage(data); // refresh the notification when content is sent
+        _this4.sendMessage(data); // refresh the notification when content is sent
         // if (this.display_notification){
         //  this.showNotification();
         // }
@@ -16258,16 +16286,16 @@ function () {
               switch (_context.prev = _context.next) {
                 case 0:
                   // this.DELAY = delay;
-                  if (_this3.debug) console.log('onStart this.sendMessage');
+                  if (_this4.debug) console.log('onStart this.sendMessage');
                   _context.prev = 1;
 
-                  _this3.sendMessage({
-                    startTime: _this3.startTime,
+                  _this4.sendMessage({
+                    startTime: _this4.startTime,
                     createData: new Date()
                   });
 
                   _context.next = 5;
-                  return _this3.tracker.fetchHTML();
+                  return _this4.tracker.fetchHTML();
 
                 case 5:
                   if (!_context.sent) {
@@ -16276,7 +16304,7 @@ function () {
                   }
 
                   //this.tracker.fetchFavicon();
-                  _this3.tracker.fetchMetaData();
+                  _this4.tracker.fetchMetaData();
 
                 case 7:
                   _context.next = 12;
@@ -16290,20 +16318,26 @@ function () {
                 case 12:
                   _context.prev = 12;
 
-                  _this3.domDetector.onChange(function () {
+                  _this4.domDetector.onChange(function () {
                     console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
                     // the url in pages like Facebook
 
-                    _this3.tracker.fetchHTML(500);
+                    _this4.tracker.fetchHTML(500);
                   }, delay); // listen for request to cancel private mode
 
 
-                  _this3.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+                  _this4.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                     if (message.action == 'private_mode') {
                       console.log(message);
 
                       if (message.private_mode) {
-                        _this3.reinit();
+                        _this4.clear();
+
+                        if (ContentHandler_typeof(_this4.param) == 'object' && _this4.param.allow) {
+                          sendResponse(true);
+                        }
+
+                        _this4.init();
                       }
                     }
 
@@ -16311,11 +16345,11 @@ function () {
                       if (message.display) {
                         console.log(message.private_time);
 
-                        _this3.showNotification();
+                        _this4.showNotification();
                       } else {
                         console.log('hidenotification');
 
-                        _this3.hideNotification();
+                        _this4.hideNotification();
                       }
 
                       sendResponse(true); //return true;
@@ -16387,15 +16421,15 @@ function () {
   }, {
     key: "request_more_private_time",
     value: function request_more_private_time(private_time) {
-      var _this4 = this;
+      var _this5 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this4.debug) console.log('sendMessage("private_time")');
+        if (_this5.debug) console.log('sendMessage("private_time")');
 
-        _this4.browser.runtime.sendMessage({
+        _this5.browser.runtime.sendMessage({
           'private_time': private_time
         }, function (response) {
-          if (_this4.browser.runtime.lastError) {
+          if (_this5.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
             ;
           }
@@ -16413,12 +16447,12 @@ function () {
       return notification_window;
     }
     /**
-     * [reinitalizate the contenthandler]
+     * [clear the contenthandler]
      */
 
   }, {
-    key: "reinit",
-    value: function reinit() {
+    key: "clear",
+    value: function clear() {
       this.close();
       this.tracker = null;
       this.count = 0;
@@ -16426,7 +16460,6 @@ function () {
       this.startTime = +new Date();
       this.data = {};
       this.last = 0;
-      this.init();
     }
     /**
      * [initalizate the contenthandler]
@@ -16438,7 +16471,7 @@ function () {
       var _init = ContentHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2() {
-        var _this5 = this;
+        var _this6 = this;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -16455,7 +16488,7 @@ function () {
                   this.createTracker();
                 } else {
                   setTimeout(function () {
-                    return _this5.init();
+                    return _this6.init();
                   }, 2000);
                   if (this.debug) console.log('Not allow to tracked from extension handler');
                 }
