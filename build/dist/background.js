@@ -32158,7 +32158,7 @@ function () {
     value: function () {
       var _displayPrivateTimePopup = Extension_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      regeneratorRuntime.mark(function _callee(private_time) {
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -32179,6 +32179,7 @@ function () {
                       try {
                         xbrowser.tabs.sendMessage(tab.id, {
                           action: "popup_private_time",
+                          private_time: private_time,
                           display: true
                         }, function (response) {
                           if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
@@ -32212,7 +32213,7 @@ function () {
         }, _callee, this);
       }));
 
-      return function displayPrivateTimePopup() {
+      return function displayPrivateTimePopup(_x) {
         return _displayPrivateTimePopup.apply(this, arguments);
       };
     }()
@@ -32463,7 +32464,7 @@ function () {
           }, _callee4, null, [[0, 8]]);
         }));
 
-        return function (_x, _x2) {
+        return function (_x2, _x3) {
           return _ref.apply(this, arguments);
         };
       }());
@@ -32583,7 +32584,7 @@ function () {
           pending_private_time_answer: this.pending_private_time_answer
         });
       } else if (msg.hasOwnProperty('private_time')) {
-        console.log('The user has requested more private time: ', msg.private_time);
+        if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
@@ -32690,7 +32691,7 @@ function () {
           }, _callee5, null, [[0, 10]]);
         }));
 
-        return function (_x3, _x4) {
+        return function (_x4, _x5) {
           return _ref2.apply(this, arguments);
         };
       }());
@@ -32743,7 +32744,7 @@ function () {
           }, _callee6, null, [[0, 8]]);
         }));
 
-        return function (_x5, _x6) {
+        return function (_x6, _x7) {
           return _ref3.apply(this, arguments);
         };
       }());
@@ -39156,7 +39157,7 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 1000 * 60 * 15;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
                 _context3.next = 3;
                 return this.set_timeout(private_time);
 
@@ -39178,7 +39179,7 @@ function () {
                       extension.resetPublicImage(extension);
                     }
                   }, this);
-                  extension.displayPrivateTimePopup();
+                  extension.displayPrivateTimePopup(private_time);
                 }
 
               case 5:

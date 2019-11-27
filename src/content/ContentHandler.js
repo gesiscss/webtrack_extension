@@ -320,7 +320,7 @@ export default class ContentHandler {
              if (message.action == 'popup_private_time'){
 
               if (message.display){
-                this.showNotification();
+                this.showNotification(message.private_time);
               } else {
                 console.log('hidenotification');
                 this.hideNotification();
@@ -349,7 +349,7 @@ export default class ContentHandler {
   }
 
   //http://jsfiddle.net/BdG2U/1/
-  showNotification() {
+  showNotification(private_time) {
    
       let height = 300;
 
@@ -361,7 +361,7 @@ export default class ContentHandler {
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
-              this.request_more_private_time(15*60*1000);
+              this.request_more_private_time(private_time);
               body.removeChild(notification_window);
               this.display_notification = false;
             }.bind(this));

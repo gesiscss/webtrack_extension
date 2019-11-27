@@ -135,13 +135,17 @@ export default class Extension {
    * displayPrivateTimePopup send a message indicating that a popup should appear
    * @param {Boolean} 
    */
-  async displayPrivateTimePopup(){
+  async displayPrivateTimePopup(private_time){
     this.pending_private_time_answer = true;
     // send a messate
     xbrowser.tabs.query({active: true}, function(tabs){
       for (let tab of tabs) {
         try{
-          xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: true}, 
+          xbrowser.tabs.sendMessage(tab.id, { 
+              action: "popup_private_time", 
+              private_time: private_time,
+              display: true
+            }, 
             function(response) {
               if(xbrowser.runtime.lastError) {
                 //if (this.debug) console.log('No front end tab is listening.');
@@ -331,7 +335,7 @@ export default class Extension {
           pending_private_time_answer: this.pending_private_time_answer
         });
       } else if (msg.hasOwnProperty('private_time')){
-        console.log('The user has requested more private time: ', msg.private_time);
+        if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
