@@ -269,14 +269,7 @@ export default class ContentHandler {
     const Tracker = this._getTracker();
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
-      this.close();
-      this.tracker = null;
-      this.count = 0;
-      this.domDetector = new DomDetector();
-      this.startTime = +new Date();
-      this.data = {}
-      this.last = 0;
-      this.createTracker();
+      this.reinit()
     })
     this.tracker.eventEmitter.on('onData', data => {
        //if(data.hasOwnProperty('html') && data.html != false){
@@ -444,6 +437,19 @@ export default class ContentHandler {
   }
 
 
+  /**
+   * [reinitalizate the contenthandler]
+   */  
+  reinit(){
+    this.close();
+    this.tracker = null;
+    this.count = 0;
+    this.domDetector = new DomDetector();
+    this.startTime = +new Date();
+    this.data = {}
+    this.last = 0;
+    this.createTracker();
+  }
 
   /**
    * [initalizate the contenthandler]
@@ -456,7 +462,6 @@ export default class ContentHandler {
       }else{
         setTimeout(()=> this.init(), 2000)
         console.log('Not allow to tracked from extension handler');
-
       }
     } catch (e) {
       console.log(e);

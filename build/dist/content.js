@@ -16230,16 +16230,7 @@ function () {
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
-        _this3.close();
-
-        _this3.tracker = null;
-        _this3.count = 0;
-        _this3.domDetector = new DomDetector();
-        _this3.startTime = +new Date();
-        _this3.data = {};
-        _this3.last = 0;
-
-        _this3.createTracker();
+        _this3.reinit();
       });
       this.tracker.eventEmitter.on('onData', function (data) {
         //if(data.hasOwnProperty('html') && data.html != false){
@@ -16410,6 +16401,22 @@ function () {
       var notification_window = document.createElement('div');
       notification_window.innerHTML = "\n    <div id=\"webtrack-notification-8888\" style=\"all: initial;width:100%; height: 100%;\n     color: #000000; position: fixed; top:0; \n    right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);\">\n      <div style=\"left: 50%; top: 40%; transform: translate(-50%, -50%); \n        width:400px; height:300px; border: 8px solid #0085bc; background-color: #FFFFFF; \n        position: fixed; z-index: 100001; font: normal 12px sans-serif;\">\n        <div>\n          <div style=\"float: left; margin-right: 10px\">\n            <img style=\"width: 120px;\" src=\"" + this.browser.extension.getURL('images/on.png') + "\">\n          </div>\n          <div style=\"margin-left: 15px\">\n            <div style=\"display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px\">\n              Webtrack\n            </div>\n            <div style=\"display: block; font-size: 16px; color: #0085bc; font-weight: bold;\">\n              Deaktivieren des Privatmodus\n            </div>\n          </div>\n\n          <div style=\"clear: both;\"> </div>\n\n          <div style=\"margin:15px; font-size: 14px;\">\n            <div>Es sind 15 Minuten vergangen, seit Sie den Webtrack Privatmodus aktiviert haben.</div>\n            <br />\n            <div style=\"font-weight:bold;\">M\xF6chten Sie im privaten Modus weiter surfen?</div>\n          </div>\n\n          <div style=\"text-align: center; position: absolute; bottom: 10px; width: 100%;\">\n            <div id=\"fifteen\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; margin-bottom: 5px; width: 225px; cursor: pointer;\">\n                 Ja, erinnere mich in 15 Minuten\n            </div>\n            <div id=\"turnoff\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; width: 225px; cursor: pointer;\">\n                 Nein, Privatenmodus ausschalten\n            </div>\n          <div>\n          </div>\n          </div>\n        </div>\n      </div>\n    </div>";
       return notification_window;
+    }
+    /**
+     * [reinitalizate the contenthandler]
+     */
+
+  }, {
+    key: "reinit",
+    value: function reinit() {
+      this.close();
+      this.tracker = null;
+      this.count = 0;
+      this.domDetector = new DomDetector();
+      this.startTime = +new Date();
+      this.data = {};
+      this.last = 0;
+      this.createTracker();
     }
     /**
      * [initalizate the contenthandler]
