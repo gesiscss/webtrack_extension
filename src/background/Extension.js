@@ -126,6 +126,9 @@ export default class Extension {
    * @param {Boolean} b
    */
   setPrivateMode(b){
+    if (this.privateMode != b) {
+      this.notifyPrivateMode();
+    }
     this.privateMode = b;
     this.setImage(!this.privateMode);
   }
@@ -183,6 +186,29 @@ export default class Extension {
     }
   }
 
+
+  /**
+   * removePrivateTimePopup send a message indicating that the popup should be hidden
+   * @param {Boolean} 
+   */
+  async notifyPrivateMode(){
+    // send a message to all tabs
+    let tabs = await this.getAllTabsIds({}, false);
+    if(tabs.length>0){
+      for (let tab of tabs) {
+        try{
+          xbrowser.tabs.sendMessage(tab.id, {action: "private_mode", private_mode: this.privateMode}, 
+            function(response) {
+              if(xbrowser.runtime.lastError) {
+                //if (this.debug) console.log('No front end tab is listening.');
+              }
+            }.bind(this));
+        } catch (e){
+          console.log('caught');
+        }
+      }
+    }
+  }
 
   /**
    * [setImage set black or full color image]

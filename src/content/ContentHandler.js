@@ -311,6 +311,12 @@ export default class ContentHandler {
           // listen for request to cancel private mode
           this.browser.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
+             if (message.action == 'private_mode'){
+              console.log(message);
+              if (message.private_mode) {
+                this.reinit();
+              }
+             }
              if (message.action == 'popup_private_time'){
 
               if (message.display){

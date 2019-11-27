@@ -32145,6 +32145,10 @@ function () {
   }, {
     key: "setPrivateMode",
     value: function setPrivateMode(b) {
+      if (this.privateMode != b) {
+        this.notifyPrivateMode();
+      }
+
       this.privateMode = b;
       this.setImage(!this.privateMode);
     }
@@ -32314,46 +32318,29 @@ function () {
       };
     }()
     /**
-     * [setImage set black or full color image]
-     * @param {Boolean} b [default: false]
+     * removePrivateTimePopup send a message indicating that the popup should be hidden
+     * @param {Boolean} 
      */
 
   }, {
-    key: "setImage",
-    value: function setImage() {
-      var b = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      // console.log('before', b);
-      // console.log(this.privateMode);
-      if (this.privateMode) b = false;else if (!this.privateMode && !this.changeIcon) b = true; // console.log('after', b);
-
-      xbrowser.browserAction.setIcon({
-        path: b ? 'images/on.png' : 'images/off.png'
-      });
-    }
-    /**
-       * [resetPublicMode apropiately reset to public image]
-       * @param {Boolean} b
-       */
-
-  }, {
-    key: "resetPublicImage",
+    key: "notifyPrivateMode",
     value: function () {
-      var _resetPublicImage = Extension_asyncToGenerator(
+      var _notifyPrivateMode = Extension_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee3() {
-        var activeTabIds, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, id;
+        var tabs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, tab;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return this.getActiveTabIds();
+                return this.getAllTabsIds({}, false);
 
               case 2:
-                activeTabIds = _context3.sent;
+                tabs = _context3.sent;
 
-                if (!(activeTabIds.length > 0)) {
+                if (!(tabs.length > 0)) {
                   _context3.next = 23;
                   break;
                 }
@@ -32363,11 +32350,20 @@ function () {
                 _iteratorError3 = undefined;
                 _context3.prev = 7;
 
-                for (_iterator3 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                  id = _step3.value;
-                  //this.resetImage(tabs[0].id);
-                  this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked')); //this.setPrivateMode(false);
-                  //component.setTooglePrivateMode(false);
+                for (_iterator3 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                  tab = _step3.value;
+
+                  try {
+                    xbrowser.tabs.sendMessage(tab.id, {
+                      action: "private_mode",
+                      private_mode: this.privateMode
+                    }, function (response) {
+                      if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
+                      }
+                    }.bind(this));
+                  } catch (e) {
+                    console.log('caught');
+                  }
                 }
 
                 _context3.next = 15;
@@ -32411,6 +32407,108 @@ function () {
         }, _callee3, this, [[7, 11, 15, 23], [16,, 18, 22]]);
       }));
 
+      return function notifyPrivateMode() {
+        return _notifyPrivateMode.apply(this, arguments);
+      };
+    }()
+    /**
+     * [setImage set black or full color image]
+     * @param {Boolean} b [default: false]
+     */
+
+  }, {
+    key: "setImage",
+    value: function setImage() {
+      var b = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      // console.log('before', b);
+      // console.log(this.privateMode);
+      if (this.privateMode) b = false;else if (!this.privateMode && !this.changeIcon) b = true; // console.log('after', b);
+
+      xbrowser.browserAction.setIcon({
+        path: b ? 'images/on.png' : 'images/off.png'
+      });
+    }
+    /**
+       * [resetPublicMode apropiately reset to public image]
+       * @param {Boolean} b
+       */
+
+  }, {
+    key: "resetPublicImage",
+    value: function () {
+      var _resetPublicImage = Extension_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee4() {
+        var activeTabIds, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, id;
+
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return this.getActiveTabIds();
+
+              case 2:
+                activeTabIds = _context4.sent;
+
+                if (!(activeTabIds.length > 0)) {
+                  _context4.next = 23;
+                  break;
+                }
+
+                _iteratorNormalCompletion4 = true;
+                _didIteratorError4 = false;
+                _iteratorError4 = undefined;
+                _context4.prev = 7;
+
+                for (_iterator4 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  id = _step4.value;
+                  //this.resetImage(tabs[0].id);
+                  this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked')); //this.setPrivateMode(false);
+                  //component.setTooglePrivateMode(false);
+                }
+
+                _context4.next = 15;
+                break;
+
+              case 11:
+                _context4.prev = 11;
+                _context4.t0 = _context4["catch"](7);
+                _didIteratorError4 = true;
+                _iteratorError4 = _context4.t0;
+
+              case 15:
+                _context4.prev = 15;
+                _context4.prev = 16;
+
+                if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                  _iterator4["return"]();
+                }
+
+              case 18:
+                _context4.prev = 18;
+
+                if (!_didIteratorError4) {
+                  _context4.next = 21;
+                  break;
+                }
+
+                throw _iteratorError4;
+
+              case 21:
+                return _context4.finish(18);
+
+              case 22:
+                return _context4.finish(15);
+
+              case 23:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this, [[7, 11, 15, 23], [16,, 18, 22]]);
+      }));
+
       return function resetPublicImage() {
         return _resetPublicImage.apply(this, arguments);
       };
@@ -32430,38 +32528,38 @@ function () {
       function () {
         var _ref = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee4(resolve, reject) {
+        regeneratorRuntime.mark(function _callee5(resolve, reject) {
           var tabs;
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
-              switch (_context4.prev = _context4.next) {
+              switch (_context5.prev = _context5.next) {
                 case 0:
-                  _context4.prev = 0;
-                  _context4.next = 3;
+                  _context5.prev = 0;
+                  _context5.next = 3;
                   return _this.getAllTabsIds({}, false);
 
                 case 3:
-                  tabs = _context4.sent;
+                  tabs = _context5.sent;
                   if (_this.activWindowId >= 1) tabs = tabs.filter(function (e) {
                     return e.windowId == _this.activWindowId && e.highlighted == true;
                   });
                   resolve(tabs.map(function (v) {
                     return v.id;
                   }));
-                  _context4.next = 11;
+                  _context5.next = 11;
                   break;
 
                 case 8:
-                  _context4.prev = 8;
-                  _context4.t0 = _context4["catch"](0);
-                  reject(_context4.t0);
+                  _context5.prev = 8;
+                  _context5.t0 = _context5["catch"](0);
+                  reject(_context5.t0);
 
                 case 11:
                 case "end":
-                  return _context4.stop();
+                  return _context5.stop();
               }
             }
-          }, _callee4, null, [[0, 8]]);
+          }, _callee5, null, [[0, 8]]);
         }));
 
         return function (_x, _x2) {
@@ -32649,22 +32747,22 @@ function () {
       function () {
         var _ref2 = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee5(resolve, reject) {
+        regeneratorRuntime.mark(function _callee6(resolve, reject) {
           var tabId;
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context5.prev = _context5.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
-                  _context5.prev = 0;
-                  _context5.next = 3;
+                  _context6.prev = 0;
+                  _context6.next = 3;
                   return _this2.getAllTabsIds({}, false);
 
                 case 3:
-                  _context5.t0 = function (e) {
+                  _context6.t0 = function (e) {
                     return e.windowId == _this2.activWindowId && e.highlighted == true;
                   };
 
-                  tabId = _context5.sent.filter(_context5.t0)[0].id;
+                  tabId = _context6.sent.filter(_context6.t0)[0].id;
 
                   _this2.tabs[tabId].setState('disabled', _boolean2);
 
@@ -32675,20 +32773,20 @@ function () {
                   }
 
                   resolve();
-                  _context5.next = 13;
+                  _context6.next = 13;
                   break;
 
                 case 10:
-                  _context5.prev = 10;
-                  _context5.t1 = _context5["catch"](0);
-                  reject(_context5.t1);
+                  _context6.prev = 10;
+                  _context6.t1 = _context6["catch"](0);
+                  reject(_context6.t1);
 
                 case 13:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee5, null, [[0, 10]]);
+          }, _callee6, null, [[0, 10]]);
         }));
 
         return function (_x3, _x4) {
@@ -32711,37 +32809,37 @@ function () {
       function () {
         var _ref3 = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee6(resolve, reject) {
+        regeneratorRuntime.mark(function _callee7(resolve, reject) {
           var tabId;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
-                  _context6.prev = 0;
-                  _context6.next = 3;
+                  _context7.prev = 0;
+                  _context7.next = 3;
                   return _this3.getAllTabsIds({}, false);
 
                 case 3:
-                  _context6.t0 = function (e) {
+                  _context7.t0 = function (e) {
                     return e.windowId == _this3.activWindowId && e.highlighted == true;
                   };
 
-                  tabId = _context6.sent.filter(_context6.t0)[0].id;
+                  tabId = _context7.sent.filter(_context7.t0)[0].id;
                   resolve(_this3.tabs[tabId].getState('disabled'));
-                  _context6.next = 11;
+                  _context7.next = 11;
                   break;
 
                 case 8:
-                  _context6.prev = 8;
-                  _context6.t1 = _context6["catch"](0);
-                  reject(_context6.t1);
+                  _context7.prev = 8;
+                  _context7.t1 = _context7["catch"](0);
+                  reject(_context7.t1);
 
                 case 11:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6, null, [[0, 8]]);
+          }, _callee7, null, [[0, 8]]);
         }));
 
         return function (_x5, _x6) {
@@ -32788,26 +32886,26 @@ function () {
         xbrowser.tabs.onHighlighted.addListener(_this4._onHighlightedWindows);
 
         _this4.getAllTabsIds().then(function (tabIds) {
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator4 = tabIds[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var id = _step4.value;
+            for (var _iterator5 = tabIds[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var id = _step5.value;
               _this4.tabs[id] = new Extension_Tab();
             }
           } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                _iterator4["return"]();
+              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                _iterator5["return"]();
               }
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              if (_didIteratorError5) {
+                throw _iteratorError5;
               }
             }
           }

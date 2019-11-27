@@ -16299,6 +16299,14 @@ function () {
 
 
                   _this3.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+                    if (message.action == 'private_mode') {
+                      console.log(message);
+
+                      if (message.private_mode) {
+                        _this3.reinit();
+                      }
+                    }
+
                     if (message.action == 'popup_private_time') {
                       if (message.display) {
                         console.log(message.private_time);
