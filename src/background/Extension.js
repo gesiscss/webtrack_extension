@@ -143,7 +143,7 @@ export default class Extension {
         try{
           xbrowser.tabs.sendMessage(tab.id, { 
               action: "popup_private_time", 
-              private_time: 5000,
+              private_time: 15*60*1000,
               display: true
             }, 
             function(response) {

@@ -32179,7 +32179,7 @@ function () {
                       try {
                         xbrowser.tabs.sendMessage(tab.id, {
                           action: "popup_private_time",
-                          private_time: 5000,
+                          private_time: 15 * 60 * 1000,
                           display: true
                         }, function (response) {
                           if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
@@ -39169,7 +39169,7 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 5000;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
                 _context3.next = 3;
                 return this.set_timeout(private_time);
 
