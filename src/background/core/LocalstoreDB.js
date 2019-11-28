@@ -11,7 +11,7 @@ export default class LocalstoreDB {
     // this.verionsNumber = null;
     // this.MAX_ERROR = 2;
     // this.errorCount = 0;
-    this.DEBUG = false;
+    this.debug = false;
   }//()
 
 

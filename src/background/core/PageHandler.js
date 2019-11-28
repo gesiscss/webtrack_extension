@@ -195,16 +195,12 @@ export default class PageHandler {
 
           // if there is no id then start in the disconnected mode
           if (id == null ){
-            console.log('Get Select');
             id = this.getSelect();
-            console.log('Set Select');
             this.config.setSelect(id);
-            console.log('Disconnected Mode');
             this.disconnectedMode();          
 
           // create a real tracker
           } else {
-            console.log('Create a Real Tracker');
             this.config.setSelect(id);
             if(this._createTracker()){
               let current_tracker = this._getCurrentTracker();

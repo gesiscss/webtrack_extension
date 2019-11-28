@@ -33027,7 +33027,7 @@ function () {
     // this.MAX_ERROR = 2;
     // this.errorCount = 0;
 
-    this.DEBUG = false;
+    this.debug = false;
   } //()
 
   /**
@@ -34047,7 +34047,7 @@ function () {
       id: 'id',
       defaultContent: {}
     }, options);
-    this.DEBUG = false;
+    this.debug = false;
     this.KEYS_LIST_NAME = this.options.databaseName;
   } //()
 
@@ -36484,7 +36484,7 @@ function () {
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
-    this.debug = true;
+    this.debug = false;
   }
   /**
    * [_getHashCode return hashcode from string]
@@ -38587,7 +38587,7 @@ function () {
 
                           case 7:
                             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context5.next = 31;
+                              _context5.next = 30;
                               break;
                             }
 
@@ -38609,7 +38609,6 @@ function () {
                           case 16:
                             page = _context5.sent;
                             if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                            console.log(page); //let send = await 
 
                             _this5.transfer.sendingData(JSON.stringify({
                               id: _this5.getClientId(),
@@ -38664,68 +38663,68 @@ function () {
                             });
 
                             if (_this5.debug) console.log('<- sendData');
-                            _context5.next = 28;
+                            _context5.next = 27;
                             break;
 
-                          case 23:
-                            _context5.prev = 23;
+                          case 22:
+                            _context5.prev = 22;
                             _context5.t0 = _context5["catch"](10);
                             count += 1; // this.event.emit('error', e, true);
 
                             if (_this5.debug) console.log('Unknown error sending data: ', page);
                             console.warn(_context5.t0);
 
-                          case 28:
+                          case 27:
                             _iteratorNormalCompletion = true;
                             _context5.next = 7;
                             break;
 
-                          case 31:
-                            _context5.next = 37;
+                          case 30:
+                            _context5.next = 36;
                             break;
 
-                          case 33:
-                            _context5.prev = 33;
+                          case 32:
+                            _context5.prev = 32;
                             _context5.t1 = _context5["catch"](5);
                             _didIteratorError = true;
                             _iteratorError = _context5.t1;
 
-                          case 37:
+                          case 36:
+                            _context5.prev = 36;
                             _context5.prev = 37;
-                            _context5.prev = 38;
 
                             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                               _iterator["return"]();
                             }
 
-                          case 40:
-                            _context5.prev = 40;
+                          case 39:
+                            _context5.prev = 39;
 
                             if (!_didIteratorError) {
-                              _context5.next = 43;
+                              _context5.next = 42;
                               break;
                             }
 
                             throw _iteratorError;
 
+                          case 42:
+                            return _context5.finish(39);
+
                           case 43:
-                            return _context5.finish(40);
+                            return _context5.finish(36);
 
                           case 44:
-                            return _context5.finish(37);
-
-                          case 45:
                             //for
                             if (!_this5.SENDDATAAUTOMATICALLY) {
                               _this5.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                             }
 
-                          case 46:
+                          case 45:
                           case "end":
                             return _context5.stop();
                         }
                       }
-                    }, _callee5, null, [[5, 33, 37, 45], [10, 23], [38,, 40, 44]]);
+                    }, _callee5, null, [[5, 32, 36, 44], [10, 22], [37,, 39, 43]]);
                   })(), "t0", 7);
 
                 case 7:
@@ -39085,19 +39084,13 @@ function () {
 
 
                       if (id == null) {
-                        console.log('Get Select');
                         id = _this3.getSelect();
-                        console.log('Set Select');
 
                         _this3.config.setSelect(id);
-
-                        console.log('Disconnected Mode');
 
                         _this3.disconnectedMode(); // create a real tracker
 
                       } else {
-                        console.log('Create a Real Tracker');
-
                         _this3.config.setSelect(id);
 
                         if (_this3._createTracker()) {

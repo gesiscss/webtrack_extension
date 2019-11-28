@@ -359,8 +359,6 @@ export default class TrackingHandler {
                 page = await this.pageCache.getOnly(id);
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                console.log(page);
-                //let send = await 
 
                 this.transfer.sendingData(
                   JSON.stringify ({

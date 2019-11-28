@@ -2,7 +2,7 @@ export default class LocalExtensionStore {
 
   constructor(options={}) {
     this.options = Object.assign({databaseName: 'localstoreDB', objectStoreName: 'myObjectStore', id: 'id', defaultContent: {}}, options);
-    this.DEBUG = false;
+    this.debug = false;
     this.KEYS_LIST_NAME = this.options.databaseName;
   }//()
 
