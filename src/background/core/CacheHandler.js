@@ -11,7 +11,7 @@ export default class CacheHandler {
    * @param {Number} projectId
    */
   constructor(projectId=''){
-    this.debug = true;
+    this.debug = false;
     this.DEFAULTCONTENT = {};
     this.storage = new LocalstoreDB({objectStoreName: 'cachehandler_'+projectId, defaultContent: {}});
     //if (this.debug) console.log('-: CacheHandler.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);

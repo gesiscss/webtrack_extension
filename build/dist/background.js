@@ -31203,7 +31203,7 @@ function () {
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.is_load = false;
-    this.debug = true; //if (this.debug) console.log(blacklists);
+    this.debug = false; //if (this.debug) console.log(blacklists);
   }
   /**
    * [initialize the default id]
@@ -32066,7 +32066,7 @@ function () {
     this._onConnectPopup = this._onConnectPopup.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
-    this.debug = true;
+    this.debug = false;
   }
   /**
    * [_onActiveWindows listenen the active windowId for check the active tab]
@@ -34851,7 +34851,7 @@ function () {
 
     CacheHandler_classCallCheck(this, CacheHandler);
 
-    this.debug = true;
+    this.debug = false;
     this.DEFAULTCONTENT = {};
     this.storage = new LocalstoreDB({
       objectStoreName: 'cachehandler_' + projectId,
@@ -35395,7 +35395,7 @@ function (_CacheHandler) {
     TabCache_classCallCheck(this, TabCache);
 
     _this = TabCache_possibleConstructorReturn(this, TabCache_getPrototypeOf(TabCache).call(this));
-    _this.debug = true;
+    _this.debug = false;
     _this.inspector = new Inspector();
     _this.tabId = parseInt(tabId, 10);
     _this.projectId = projectId; // this.config = {databaseName: this.getDBName(), objectStoreName: 'data', defaultContent: defaultContent, id: "nr"};
@@ -35857,7 +35857,7 @@ function () {
   function Tab(projectId, tabId) {
     Tab_classCallCheck(this, Tab);
 
-    this.debug = true; //if (this.debug) console.log('-: Tab.constructor()');
+    this.debug = false; //if (this.debug) console.log('-: Tab.constructor()');
 
     this.clean = this.clean.bind(this);
     this.tabCache = new TabCache_TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT); // this.tabCache = tabCache;
@@ -37478,7 +37478,7 @@ function (_CacheHandler) {
     PageCache_classCallCheck(this, PageCache);
 
     _this = PageCache_possibleConstructorReturn(this, PageCache_getPrototypeOf(PageCache).call(this));
-    _this.debug = true; // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
+    _this.debug = false; // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
     //if (this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
     // this.delay = 50;
     // this.fileAttr = ['content', 'source', 'links', 'events'];
@@ -38104,7 +38104,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = true;
+    this.debug = false;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
@@ -38852,7 +38852,7 @@ function () {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = true;
+    this.debug = false;
     this.event = new eventemitter3_default.a();
   }
 

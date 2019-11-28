@@ -62,7 +62,7 @@ export default class Extension {
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
 
-    this.debug = true;
+    this.debug = false;
   }
 
   /**

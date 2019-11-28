@@ -28,7 +28,7 @@ export default class Configuration {
     this.certstorage = new LocalstorageHandler('cert', null);
     this.projectsTmpSettings = new LocalstorageHandler('projectsTmpSettings', {});
     this.is_load = false;
-    this.debug = true;
+    this.debug = false;
 
     //if (this.debug) console.log(blacklists);
   }

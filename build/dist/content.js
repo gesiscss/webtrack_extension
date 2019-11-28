@@ -10094,7 +10094,7 @@ function (_MultiFetch) {
     _this.lastURL = '';
     _this.original_url = '';
     _this.events_debug = false;
-    _this.debug = true;
+    _this.debug = false;
     _this.startswith_blacklist = [];
     _this.startswith_whitelist = [];
     _this.pos_2nd_blacklist = [];
@@ -15973,7 +15973,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = true;
+    this.debug = false;
     this.onPrivateModeListener = this.onPrivateModeListener.bind(this); // needs to be initialized, if restarting
 
     this.tracker = null;

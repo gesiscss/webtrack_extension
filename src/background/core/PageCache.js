@@ -13,7 +13,7 @@ export default class PageCache extends CacheHandler {
    */
   constructor(projectId=''){
     super();
-    this.debug = true;
+    this.debug = false;
     // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
     //if (this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
     // this.delay = 50;

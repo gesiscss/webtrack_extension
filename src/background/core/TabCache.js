@@ -15,7 +15,7 @@ export default class TabCache extends CacheHandler{
    */
   constructor(projectId, tabId, defaultContent={}) {
     super();
-    this.debug = true;
+    this.debug = false;
     this.inspector = new Inspector()
     this.tabId = parseInt(tabId, 10);
     this.projectId = projectId;

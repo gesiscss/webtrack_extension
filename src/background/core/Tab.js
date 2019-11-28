@@ -30,7 +30,7 @@ export default class Tab {
    * @param {number} tabId
    */
   constructor(projectId, tabId) {
-    this.debug = true;
+    this.debug = false;
     //if (this.debug) console.log('-: Tab.constructor()');
 
     this.clean = this.clean.bind(this);
