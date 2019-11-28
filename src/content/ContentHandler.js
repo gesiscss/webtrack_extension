@@ -406,13 +406,13 @@ export default class ContentHandler {
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
-              this.request_more_private_time(3*1000);
+              this.request_more_private_time(15*60*1000);
               body.removeChild(notification_window);
               this.display_notification = false;
             }.bind(this));
 
             notification_window.querySelector('#hour').addEventListener("click", function(){
-              this.request_more_private_time(10*1000);
+              this.request_more_private_time(60*60*1000);
               body.removeChild(notification_window);
               this.display_notification = false;
             }.bind(this));

@@ -39286,7 +39286,7 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 2 * 1000;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
                 _context3.next = 3;
                 return this.set_timeout(private_time);
 
