@@ -282,6 +282,19 @@ export default class ContentHandler {
     }
   }
 
+  closeOnData(){
+    this.tracker.eventEmitter.removeAllListeners('onData');
+  }
+
+  openOnData(){
+    this.tracker.eventEmitter.on('onData', data => {
+       if (this.debug) console.log('onData: this.sendMessage');
+       this.sendMessage(data);
+    });
+  }
+
+
+
   /**
    * [create the tracker and start the event listeners for fetching the data]
    */
@@ -290,22 +303,11 @@ export default class ContentHandler {
     const Tracker = this._getTracker();
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
+      this.close();
       this.clear();
       this.init();
     })
-    this.tracker.eventEmitter.on('onData', data => {
-       //if(data.hasOwnProperty('html') && data.html != false){
-         //this.tracker.fetchLinks();
-         //this.tracker.fetchSource(data.html);
-       //}
-       if (this.debug) console.log('onData: this.sendMessage');
-       this.sendMessage(data);
-
-       // refresh the notification when content is sent
-       // if (this.display_notification){
-       //  this.showNotification();
-       // }
-    });
+    this.openOnData();
     this.tracker.eventEmitter.on('onStart', async delay => {
       // this.DELAY = delay;
       if (this.debug) console.log('onStart this.sendMessage');
@@ -334,11 +336,19 @@ export default class ContentHandler {
             if (message.action == 'private_mode'){
               console.log(message);
               if (message.private_mode) {
-                this.clear();
+                this.closeOnData();
                 if(typeof this.param == 'object' && this.param.allow){
-                  sendResponse(true);
+                  this.sendMessage({
+                    html: ' ', 
+                    is_private_mode: true,
+                    create: (new Date()).toJSON()
+                  });
                 }
-                this.init();
+              } else {
+                this.openOnData();
+                if(typeof this.param == 'object' && this.param.allow){
+                  this.tracker.fetchHTML();
+                }
               }
             }
             if (message.action == 'popup_private_time'){
@@ -472,7 +482,6 @@ export default class ContentHandler {
    * [clear the contenthandler]
    */  
   clear(){
-    this.close();
     this.tracker = null;
     this.count = 0;
     this.domDetector = new DomDetector();

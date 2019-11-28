@@ -32691,8 +32691,7 @@ function () {
       } else if (!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')) {
         this.setImage(false);
         sendResponse(false); // background controls
-      } else if (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)) {
-        // if(typeof msg.html == 'boolean' && msg.html == false){
+      } else if (!this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)) {
         if (typeof msg.content[0].html == 'boolean' && msg.content[0].html == false) {
           this.setImage(false);
           sendResponse(false);
@@ -32724,9 +32723,10 @@ function () {
         } // return true;
 
       } else {
-        //if (this.debug) console.log('Private mode: ', this.privateMode);
-        sendResponse(false);
-      } //if (this.debug) console.log('<- _onContentMessage');
+          debugger; //if (this.debug) console.log('Private mode: ', this.privateMode);
+
+          sendResponse(false);
+        } //if (this.debug) console.log('<- _onContentMessage');
 
 
       return true;
