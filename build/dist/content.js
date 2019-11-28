@@ -15976,6 +15976,7 @@ function () {
     this.debug = true; // needs to be initialized, if restarting
 
     this.tracker = null;
+    this.init_timer = null;
     this.count = 0;
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
@@ -16387,6 +16388,14 @@ function () {
           return _ref.apply(this, arguments);
         };
       }());
+      this.browser.runtime.connect().onDisconnect.addListener(function () {
+        this.close();
+        this.clear();
+
+        if (this.init_timer) {
+          clearTimeout(this.init_timer);
+        }
+      }.bind(this));
       this.tracker.start();
     }
   }, {
@@ -16469,6 +16478,7 @@ function () {
     key: "clear",
     value: function clear() {
       this.tracker = null;
+      this.init_timer = null;
       this.count = 0;
       this.domDetector = new DomDetector();
       this.startTime = +new Date();
@@ -16501,7 +16511,7 @@ function () {
                 if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
                   this.createTracker();
                 } else {
-                  setTimeout(function () {
+                  this.init_timer = setTimeout(function () {
                     return _this7.init();
                   }, 2000);
                   if (this.debug) console.log('Not allow to tracked from extension handler');
