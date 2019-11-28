@@ -172,6 +172,7 @@ export default class Extension {
     let tabs = await this.getAllTabsIds({}, false);
     if(tabs.length>0){
       for (let tab of tabs) {
+        console.log(tab);
         try{
           xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: false}, 
             function(response) {

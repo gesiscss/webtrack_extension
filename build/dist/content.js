@@ -15931,11 +15931,11 @@ function () {
 
 
 // CONCATENATED MODULE: ./src/content/ContentHandler.js
-function ContentHandler_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { ContentHandler_typeof = function _typeof(obj) { return typeof obj; }; } else { ContentHandler_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return ContentHandler_typeof(obj); }
-
 function ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function ContentHandler_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function ContentHandler_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { ContentHandler_typeof = function _typeof(obj) { return typeof obj; }; } else { ContentHandler_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return ContentHandler_typeof(obj); }
 
 function ContentHandler_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -15973,7 +15973,8 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = true; // needs to be initialized, if restarting
+    this.debug = true;
+    this.onPrivateModeListener = this.onPrivateModeListener.bind(this); // needs to be initialized, if restarting
 
     this.tracker = null;
     this.init_timer = null;
@@ -16238,6 +16239,7 @@ function () {
     key: "close",
     value: function close() {
       this.domDetector.removeAllEventListener();
+      this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
 
       if (this.tracker && this.tracker.eventEmitter) {
         this.tracker.eventEmitter.removeAllListeners('onData');
@@ -16260,6 +16262,51 @@ function () {
         _this4.sendMessage(data);
       });
     }
+  }, {
+    key: "onPrivateModeListener",
+    value: function onPrivateModeListener(message, sender, sendResponse) {
+      var _this5 = this;
+
+      if (this.debug) console.log(message);
+
+      if (message.action == 'private_mode') {
+        if (message.private_mode) {
+          this.closeOnData();
+
+          if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+            this.sendMessage({
+              meta: {
+                is_private_mode: true
+              }
+            });
+          }
+        } else {
+          this.openOnData();
+
+          if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+            this.tracker.fetchHTML(100).then(function () {
+              //this.tracker.fetchFavicon();
+              _this5.tracker.fetchMetaData();
+            });
+          }
+        }
+      }
+
+      if (message.action == 'popup_private_time') {
+        if (this.debug) console.log('popup_private_time');
+        console.log(message);
+
+        if (message.display) {
+          this.showNotification();
+        } else {
+          this.hideNotification();
+        }
+
+        sendResponse(true); //return true;
+
+        return Promise.resolve("Dummy response to keep the console quiet");
+      }
+    }
     /**
      * [create the tracker and start the event listeners for fetching the data]
      */
@@ -16267,7 +16314,7 @@ function () {
   }, {
     key: "createTracker",
     value: function createTracker() {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.debug) console.log('-> createTracker()');
 
@@ -16275,11 +16322,11 @@ function () {
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
-        _this5.close();
+        _this6.close();
 
-        _this5.clear();
+        _this6.clear();
 
-        _this5.init();
+        _this6.init();
       });
       this.openOnData();
       this.tracker.eventEmitter.on('onStart',
@@ -16293,16 +16340,16 @@ function () {
               switch (_context.prev = _context.next) {
                 case 0:
                   // this.DELAY = delay;
-                  if (_this5.debug) console.log('onStart this.sendMessage');
+                  if (_this6.debug) console.log('onStart this.sendMessage');
                   _context.prev = 1;
 
-                  _this5.sendMessage({
-                    startTime: _this5.startTime,
+                  _this6.sendMessage({
+                    startTime: _this6.startTime,
                     createData: new Date()
                   });
 
                   _context.next = 5;
-                  return _this5.tracker.fetchHTML();
+                  return _this6.tracker.fetchHTML();
 
                 case 5:
                   if (!_context.sent) {
@@ -16311,7 +16358,7 @@ function () {
                   }
 
                   //this.tracker.fetchFavicon();
-                  _this5.tracker.fetchMetaData();
+                  _this6.tracker.fetchMetaData();
 
                 case 7:
                   _context.next = 12;
@@ -16325,63 +16372,21 @@ function () {
                 case 12:
                   _context.prev = 12;
 
-                  _this5.domDetector.onChange(function () {
-                    if (_this5.debug) console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
+                  _this6.domDetector.onChange(function () {
+                    if (_this6.debug) console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
                     // the url in pages like Facebook
 
-                    _this5.tracker.fetchHTML(500);
-                  }, delay); // listen for request to cancel private mode
-
-
-                  _this5.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-                    if (_this5.debug) console.log(message);
-
-                    if (message.action == 'private_mode') {
-                      if (message.private_mode) {
-                        _this5.closeOnData();
-
-                        if (ContentHandler_typeof(_this5.param) == 'object' && _this5.param.allow) {
-                          _this5.sendMessage({
-                            meta: {
-                              is_private_mode: true
-                            }
-                          });
-                        }
-                      } else {
-                        _this5.openOnData();
-
-                        if (ContentHandler_typeof(_this5.param) == 'object' && _this5.param.allow) {
-                          _this5.tracker.fetchHTML(100).then(function () {
-                            //this.tracker.fetchFavicon();
-                            _this5.tracker.fetchMetaData();
-                          });
-                        }
-                      }
-                    }
-
-                    if (message.action == 'popup_private_time') {
-                      if (_this5.debug) console.log('popup_private_time');
-
-                      if (message.display) {
-                        _this5.showNotification();
-                      } else {
-                        _this5.hideNotification();
-                      }
-
-                      sendResponse(true); //return true;
-
-                      return Promise.resolve("Dummy response to keep the console quiet");
-                    }
-                  });
+                    _this6.tracker.fetchHTML(500);
+                  }, delay);
 
                   return _context.finish(12);
 
-                case 16:
+                case 15:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[1, 9, 12, 16]]);
+          }, _callee, null, [[1, 9, 12, 15]]);
         }));
 
         return function (_x) {
@@ -16405,7 +16410,7 @@ function () {
       var body = document.querySelector('body');
 
       if (body) {
-        var notification_window = body.querySelector('body div #webtrack-notification-8888');
+        var notification_window = body.querySelector('div #webtrack-notification-8888');
 
         if (notification_window != null) {
           body.removeChild(notification_window.parentElement);
@@ -16423,12 +16428,17 @@ function () {
       var body = document.querySelector('body');
 
       if (body) {
-        var notification = body.querySelector('body div #webtrack-notification-8888');
+        var notification = body.querySelector('div #webtrack-notification-8888');
 
         if (notification == null) {
           var notification_window = this.get_notification_window();
           notification_window.querySelector('#fifteen').addEventListener("click", function () {
-            this.request_more_private_time(15 * 60 * 1000);
+            this.request_more_private_time(3 * 1000);
+            body.removeChild(notification_window);
+            this.display_notification = false;
+          }.bind(this));
+          notification_window.querySelector('#hour').addEventListener("click", function () {
+            this.request_more_private_time(10 * 1000);
             body.removeChild(notification_window);
             this.display_notification = false;
           }.bind(this));
@@ -16445,15 +16455,15 @@ function () {
   }, {
     key: "request_more_private_time",
     value: function request_more_private_time(private_time) {
-      var _this6 = this;
+      var _this7 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this6.debug) console.log('sendMessage("private_time")');
+        if (_this7.debug) console.log('sendMessage("private_time")');
 
-        _this6.browser.runtime.sendMessage({
+        _this7.browser.runtime.sendMessage({
           'private_time': private_time
         }, function (response) {
-          if (_this6.browser.runtime.lastError) {
+          if (_this7.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
             ;
           }
@@ -16467,7 +16477,7 @@ function () {
     value: function get_notification_window() {
       //#337ab7
       var notification_window = document.createElement('div');
-      notification_window.innerHTML = "\n    <div id=\"webtrack-notification-8888\" style=\"all: initial;width:100%; height: 100%;\n     color: #000000; position: fixed; top:0; \n    right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);\">\n      <div style=\"left: 50%; top: 40%; transform: translate(-50%, -50%); \n        width:400px; height:300px; border: 8px solid #0085bc; background-color: #FFFFFF; \n        position: fixed; z-index: 100001; font: normal 12px sans-serif;\">\n        <div>\n          <div style=\"float: left; margin-right: 10px\">\n            <img style=\"width: 120px;\" src=\"" + this.browser.extension.getURL('images/on.png') + "\">\n          </div>\n          <div style=\"margin-left: 15px\">\n            <div style=\"display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px\">\n              Webtrack\n            </div>\n            <div style=\"display: block; font-size: 16px; color: #0085bc; font-weight: bold;\">\n              Deaktivieren des Privatmodus\n            </div>\n          </div>\n\n          <div style=\"clear: both;\"> </div>\n\n          <div style=\"margin:15px; font-size: 14px;\">\n            <div>Es sind 15 Minuten vergangen, seit Sie den Webtrack Privatmodus aktiviert haben.</div>\n            <br />\n            <div style=\"font-weight:bold;\">M\xF6chten Sie im privaten Modus weiter surfen?</div>\n          </div>\n\n          <div style=\"text-align: center; position: absolute; bottom: 10px; width: 100%;\">\n            <div id=\"fifteen\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; margin-bottom: 5px; width: 225px; cursor: pointer;\">\n                 Ja, erinnere mich in 15 Minuten\n            </div>\n            <div id=\"turnoff\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; width: 225px; cursor: pointer;\">\n                 Nein, Privatenmodus ausschalten\n            </div>\n          <div>\n          </div>\n          </div>\n        </div>\n      </div>\n    </div>";
+      notification_window.innerHTML = "\n    <div id=\"webtrack-notification-8888\" style=\"all: initial;width:100%; height: 100%;\n     color: #000000; position: fixed; top:0; \n    right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);\">\n      <div style=\"left: 50%; top: 40%; transform: translate(-50%, -50%); \n        width:410px; height:335px; border: 8px solid #0085bc; background-color: #FFFFFF; \n        position: fixed; z-index: 100001; font: normal 12px sans-serif;\">\n        <div>\n          <div style=\"float: left; margin-right: 10px\">\n            <img style=\"width: 120px;\" src=\"" + this.browser.extension.getURL('images/on.png') + "\">\n          </div>\n          <div style=\"margin-left: 15px\">\n            <div style=\"display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px\">\n              Webtrack\n            </div>\n            <div style=\"display: block; font-size: 16px; color: #0085bc; font-weight: bold;\">\n              Schalten Sie den privaten Modus aus\n            </div>\n          </div>\n\n          <div style=\"clear: both;\"> </div>\n\n          <div style=\"margin:15px; font-size: 14px;\">\n            <div>Es sind 15 Minuten vergangen, seit Sie den privaten Modus aktiviert haben.</div>\n            <br />\n            <div style=\"font-weight:bold;\">M\xF6chten Sie im privaten Modus weiter surfen?</div>\n          </div>\n\n          <div style=\"text-align: center; position: absolute; bottom: 10px; width: 100%;\">\n            <div id=\"turnoff\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;\">\n                 Nein, d.h. privater Modus wird ausgeschaltet. \n            </div>\n            <div id=\"fifteen\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;\">\n                 Ja, ich brauche 15 Minuten mehr im privaten Modus.\n            </div>\n            <div id=\"hour\" style=\"background: #0085bc; border-radius: 5px; padding: 8px 16px; \n                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; \n                 text-align: center; width: 350px; cursor: pointer;\">\n                 Ja, ich brauche 1 Stunde mehr im privaten Modus.\n            </div>\n          <div>\n          </div>\n          </div>\n        </div>\n      </div>\n    </div>";
       return notification_window;
     }
     /**
@@ -16495,42 +16505,49 @@ function () {
       var _init = ContentHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2() {
-        var _this7 = this;
+        var _this8 = this;
 
+        var first_call,
+            _args2 = arguments;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
+                first_call = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : true;
+
+                if (first_call) {
+                  this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
+                }
+
+                _context2.prev = 2;
+                _context2.next = 5;
                 return this._getParam();
 
-              case 3:
+              case 5:
                 this.param = _context2.sent;
 
                 if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
                   this.createTracker();
                 } else {
                   this.init_timer = setTimeout(function () {
-                    return _this7.init();
-                  }, 2000);
-                  if (this.debug) console.log('Not allow to tracked from extension handler');
+                    return _this8.init(false);
+                  }, 2000); //if (this.debug) console.log('Not allow to tracked from extension handler');
                 }
 
-                _context2.next = 10;
+                _context2.next = 12;
                 break;
 
-              case 7:
-                _context2.prev = 7;
-                _context2.t0 = _context2["catch"](0);
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](2);
                 console.log(_context2.t0);
 
-              case 10:
+              case 12:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 7]]);
+        }, _callee2, this, [[2, 9]]);
       }));
 
       return function init() {

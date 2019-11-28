@@ -32258,6 +32258,7 @@ function () {
 
                 for (_iterator2 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                   tab = _step2.value;
+                  console.log(tab);
 
                   try {
                     xbrowser.tabs.sendMessage(tab.id, {
@@ -39285,7 +39286,7 @@ function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
+                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 2 * 1000;
                 _context3.next = 3;
                 return this.set_timeout(private_time);
 

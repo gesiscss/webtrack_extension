@@ -32,6 +32,8 @@ export default class ContentHandler {
     this.param = null;
     this.DELAY = 1000;
     this.debug = true;
+
+    this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -277,6 +279,7 @@ export default class ContentHandler {
 
   close(){
     this.domDetector.removeAllEventListener();
+    this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
     if (this.tracker && this.tracker.eventEmitter){
       this.tracker.eventEmitter.removeAllListeners('onData');
       this.tracker.eventEmitter.removeAllListeners('onStart');
@@ -294,6 +297,42 @@ export default class ContentHandler {
     });
   }
 
+  onPrivateModeListener (message, sender, sendResponse) {
+      if (this.debug) console.log(message);
+      if (message.action == 'private_mode'){
+        if (message.private_mode) {
+          this.closeOnData();
+          if(typeof this.param == 'object' && this.param.allow){
+            this.sendMessage({ 
+              meta: {
+                is_private_mode: true,
+              }
+            });
+          }
+        } else {
+          this.openOnData();
+          if(typeof this.param == 'object' && this.param.allow){
+            this.tracker.fetchHTML(100).then(() => {
+             //this.tracker.fetchFavicon();
+             this.tracker.fetchMetaData();
+           })
+          }
+        }
+      }
+      if (message.action == 'popup_private_time'){
+        if (this.debug) console.log('popup_private_time');
+        console.log(message);
+        if (message.display){
+          this.showNotification();
+        } else {
+          this.hideNotification();
+        }
+
+      sendResponse(true);              
+      //return true;
+      return Promise.resolve("Dummy response to keep the console quiet");
+      }
+    }
 
 
   /**
@@ -330,44 +369,6 @@ export default class ContentHandler {
             // the url in pages like Facebook
             this.tracker.fetchHTML(500);
           }, delay);
-
-
-          // listen for request to cancel private mode
-          this.browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-            if (this.debug) console.log(message);
-            if (message.action == 'private_mode'){
-              if (message.private_mode) {
-                this.closeOnData();
-                if(typeof this.param == 'object' && this.param.allow){
-                  this.sendMessage({ 
-                    meta: {
-                      is_private_mode: true,
-                    }
-                  });
-                }
-              } else {
-                this.openOnData();
-                if(typeof this.param == 'object' && this.param.allow){
-                  this.tracker.fetchHTML(100).then(() => {
-                   //this.tracker.fetchFavicon();
-                   this.tracker.fetchMetaData();
-                 })
-                }
-              }
-            }
-            if (message.action == 'popup_private_time'){
-              if (this.debug) console.log('popup_private_time');
-              if (message.display){
-                this.showNotification();
-              } else {
-                this.hideNotification();
-              }
-
-            sendResponse(true);              
-            //return true;
-            return Promise.resolve("Dummy response to keep the console quiet");
-            }
-          });
         }
     });
     this.browser.runtime.connect().onDisconnect.addListener(function() {
@@ -384,7 +385,7 @@ export default class ContentHandler {
     /*create the notification bar div if it doesn't exist*/
     let body = document.querySelector('body');
     if (body){
-      let notification_window = body.querySelector('body div #webtrack-notification-8888');
+      let notification_window = body.querySelector('div #webtrack-notification-8888');
       if (notification_window != null){
         body.removeChild(notification_window.parentElement);
         this.display_notification = false;
@@ -401,11 +402,17 @@ export default class ContentHandler {
       let body = document.querySelector('body');
 
       if (body){
-          let notification = body.querySelector('body div #webtrack-notification-8888');
+          let notification = body.querySelector('div #webtrack-notification-8888');
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
-              this.request_more_private_time(15*60*1000);
+              this.request_more_private_time(3*1000);
+              body.removeChild(notification_window);
+              this.display_notification = false;
+            }.bind(this));
+
+            notification_window.querySelector('#hour').addEventListener("click", function(){
+              this.request_more_private_time(10*1000);
               body.removeChild(notification_window);
               this.display_notification = false;
             }.bind(this));
@@ -443,7 +450,7 @@ export default class ContentHandler {
      color: #000000; position: fixed; top:0; 
     right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);">
       <div style="left: 50%; top: 40%; transform: translate(-50%, -50%); 
-        width:400px; height:300px; border: 8px solid #0085bc; background-color: #FFFFFF; 
+        width:410px; height:335px; border: 8px solid #0085bc; background-color: #FFFFFF; 
         position: fixed; z-index: 100001; font: normal 12px sans-serif;">
         <div>
           <div style="float: left; margin-right: 10px">
@@ -454,28 +461,33 @@ export default class ContentHandler {
               Webtrack
             </div>
             <div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
-              Deaktivieren des Privatmodus
+              Schalten Sie den privaten Modus aus
             </div>
           </div>
 
           <div style="clear: both;"> </div>
 
           <div style="margin:15px; font-size: 14px;">
-            <div>Es sind 15 Minuten vergangen, seit Sie den Webtrack Privatmodus aktiviert haben.</div>
+            <div>Es sind 15 Minuten vergangen, seit Sie den privaten Modus aktiviert haben.</div>
             <br />
             <div style="font-weight:bold;">Möchten Sie im privaten Modus weiter surfen?</div>
           </div>
 
           <div style="text-align: center; position: absolute; bottom: 10px; width: 100%;">
-            <div id="fifteen" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
-                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
-                 text-align: center; margin-bottom: 5px; width: 225px; cursor: pointer;">
-                 Ja, erinnere mich in 15 Minuten
-            </div>
             <div id="turnoff" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
                  color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
-                 text-align: center; width: 225px; cursor: pointer;">
-                 Nein, Privatenmodus ausschalten
+                 text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;">
+                 Nein, d.h. privater Modus wird ausgeschaltet. 
+            </div>
+            <div id="fifteen" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
+                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;">
+                 Ja, ich brauche 15 Minuten mehr im privaten Modus.
+            </div>
+            <div id="hour" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
+                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 text-align: center; width: 350px; cursor: pointer;">
+                 Ja, ich brauche 1 Stunde mehr im privaten Modus.
             </div>
           <div>
           </div>
@@ -503,14 +515,17 @@ export default class ContentHandler {
   /**
    * [initalizate the contenthandler]
    */
-  async init(){
+  async init(first_call = true){
+    if (first_call){
+      this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
+    }
     try {
       this.param = await this._getParam();
       if(typeof this.param == 'object' && this.param.allow){
         this.createTracker();
       }else{
-        this.init_timer = setTimeout(()=> this.init(), 2000)
-        if (this.debug) console.log('Not allow to tracked from extension handler');
+        this.init_timer = setTimeout(()=> this.init(false), 2000)
+        //if (this.debug) console.log('Not allow to tracked from extension handler');
       }
     } catch (e) {
       console.log(e);
