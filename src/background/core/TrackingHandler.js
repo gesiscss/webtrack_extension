@@ -249,6 +249,26 @@ export default class TrackingHandler {
   }
 
   anonymize(page){
+
+    if (page.meta.hasOwnProperty('is_private_mode')){
+      if (page.meta.is_private_mode) {
+        for (var i = 0; i < this.to_anonym.length; i++) {
+          page['hostname'] = 'http://private.mode/';
+          try {
+            page[this.to_anonym[i]] = page['hostname'];
+          } catch (e){}
+        }
+        if (page.hasOwnProperty('hashes')){ 
+          page['hashes'] = []; 
+        }
+        if (page.hasOwnProperty('events')){ 
+          page['events'] = []; 
+        }
+        page["favicon"] = "";
+        page['content'][0].html = ' ';
+      }
+    }
+
     if (page.meta.hasOwnProperty('full_anonym')){ 
       if (page.meta.full_anonym) {
         for (var i = 0; i < this.to_anonym.length; i++) {
@@ -256,9 +276,9 @@ export default class TrackingHandler {
             page[this.to_anonym[i]] = page['hostname'];
           } catch (e){}
         }
-      }
-      if (page.hasOwnProperty('hashes')){ 
-        page['hashes'] = []; 
+        if (page.hasOwnProperty('hashes')){ 
+          page['hashes'] = []; 
+        }
       }
     }
 
@@ -339,6 +359,7 @@ export default class TrackingHandler {
                 page = await this.pageCache.getOnly(id);
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                console.log(page);
                 //let send = await 
 
                 this.transfer.sendingData(
@@ -365,7 +386,8 @@ export default class TrackingHandler {
                       status: status
                     });                    
                   }).catch(err => {
-                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
+                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                    if (this.debug) console.log(err);
                     count += 1;
                     this.event.emit('onSendData', {
                       max: max,
@@ -374,7 +396,7 @@ export default class TrackingHandler {
                       status: 'failed'
                     });  
                   }).finally( () => {
-                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));console.log();
+                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
 
                     // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
                     // the storapageCache. 

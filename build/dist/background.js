@@ -38437,6 +38437,29 @@ function () {
   }, {
     key: "anonymize",
     value: function anonymize(page) {
+      if (page.meta.hasOwnProperty('is_private_mode')) {
+        if (page.meta.is_private_mode) {
+          for (var i = 0; i < this.to_anonym.length; i++) {
+            page['hostname'] = 'http://private.mode/';
+
+            try {
+              page[this.to_anonym[i]] = page['hostname'];
+            } catch (e) {}
+          }
+
+          if (page.hasOwnProperty('hashes')) {
+            page['hashes'] = [];
+          }
+
+          if (page.hasOwnProperty('events')) {
+            page['events'] = [];
+          }
+
+          page["favicon"] = "";
+          page['content'][0].html = ' ';
+        }
+      }
+
       if (page.meta.hasOwnProperty('full_anonym')) {
         if (page.meta.full_anonym) {
           for (var i = 0; i < this.to_anonym.length; i++) {
@@ -38444,10 +38467,10 @@ function () {
               page[this.to_anonym[i]] = page['hostname'];
             } catch (e) {}
           }
-        }
 
-        if (page.hasOwnProperty('hashes')) {
-          page['hashes'] = [];
+          if (page.hasOwnProperty('hashes')) {
+            page['hashes'] = [];
+          }
         }
       }
 
@@ -38564,7 +38587,7 @@ function () {
 
                           case 7:
                             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context5.next = 30;
+                              _context5.next = 31;
                               break;
                             }
 
@@ -38585,7 +38608,8 @@ function () {
 
                           case 16:
                             page = _context5.sent;
-                            if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50)); //let send = await 
+                            if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                            console.log(page); //let send = await 
 
                             _this5.transfer.sendingData(JSON.stringify({
                               id: _this5.getClientId(),
@@ -38611,7 +38635,7 @@ function () {
                               });
                             })["catch"](function (err) {
                               if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                              console.log();
+                              if (_this5.debug) console.log(err);
                               count += 1;
 
                               _this5.event.emit('onSendData', {
@@ -38621,8 +38645,7 @@ function () {
                                 status: 'failed'
                               });
                             })["finally"](function () {
-                              if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                              console.log(); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
+                              if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50)); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
                               // the storapageCache. 
 
                               _this5.pageCache.update({
@@ -38641,68 +38664,68 @@ function () {
                             });
 
                             if (_this5.debug) console.log('<- sendData');
-                            _context5.next = 27;
+                            _context5.next = 28;
                             break;
 
-                          case 22:
-                            _context5.prev = 22;
+                          case 23:
+                            _context5.prev = 23;
                             _context5.t0 = _context5["catch"](10);
                             count += 1; // this.event.emit('error', e, true);
 
                             if (_this5.debug) console.log('Unknown error sending data: ', page);
                             console.warn(_context5.t0);
 
-                          case 27:
+                          case 28:
                             _iteratorNormalCompletion = true;
                             _context5.next = 7;
                             break;
 
-                          case 30:
-                            _context5.next = 36;
+                          case 31:
+                            _context5.next = 37;
                             break;
 
-                          case 32:
-                            _context5.prev = 32;
+                          case 33:
+                            _context5.prev = 33;
                             _context5.t1 = _context5["catch"](5);
                             _didIteratorError = true;
                             _iteratorError = _context5.t1;
 
-                          case 36:
-                            _context5.prev = 36;
+                          case 37:
                             _context5.prev = 37;
+                            _context5.prev = 38;
 
                             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                               _iterator["return"]();
                             }
 
-                          case 39:
-                            _context5.prev = 39;
+                          case 40:
+                            _context5.prev = 40;
 
                             if (!_didIteratorError) {
-                              _context5.next = 42;
+                              _context5.next = 43;
                               break;
                             }
 
                             throw _iteratorError;
 
-                          case 42:
-                            return _context5.finish(39);
-
                           case 43:
-                            return _context5.finish(36);
+                            return _context5.finish(40);
 
                           case 44:
+                            return _context5.finish(37);
+
+                          case 45:
                             //for
                             if (!_this5.SENDDATAAUTOMATICALLY) {
                               _this5.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                             }
 
-                          case 45:
+                          case 46:
                           case "end":
                             return _context5.stop();
                         }
                       }
-                    }, _callee5, null, [[5, 32, 36, 44], [10, 22], [37,, 39, 43]]);
+                    }, _callee5, null, [[5, 33, 37, 45], [10, 23], [38,, 40, 44]]);
                   })(), "t0", 7);
 
                 case 7:

@@ -16341,16 +16341,19 @@ function () {
 
                         if (ContentHandler_typeof(_this5.param) == 'object' && _this5.param.allow) {
                           _this5.sendMessage({
-                            html: ' ',
-                            is_private_mode: true,
-                            create: new Date().toJSON()
+                            meta: {
+                              is_private_mode: true
+                            }
                           });
                         }
                       } else {
                         _this5.openOnData();
 
                         if (ContentHandler_typeof(_this5.param) == 'object' && _this5.param.allow) {
-                          _this5.tracker.fetchHTML();
+                          _this5.tracker.fetchHTML(100).then(function () {
+                            //this.tracker.fetchFavicon();
+                            _this5.tracker.fetchMetaData();
+                          });
                         }
                       }
                     }

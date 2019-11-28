@@ -338,16 +338,19 @@ export default class ContentHandler {
               if (message.private_mode) {
                 this.closeOnData();
                 if(typeof this.param == 'object' && this.param.allow){
-                  this.sendMessage({
-                    html: ' ', 
-                    is_private_mode: true,
-                    create: (new Date()).toJSON()
+                  this.sendMessage({ 
+                    meta: {
+                      is_private_mode: true,
+                    }
                   });
                 }
               } else {
                 this.openOnData();
                 if(typeof this.param == 'object' && this.param.allow){
-                  this.tracker.fetchHTML();
+                  this.tracker.fetchHTML(100).then(() => {
+                   //this.tracker.fetchFavicon();
+                   this.tracker.fetchMetaData();
+                 })
                 }
               }
             }
