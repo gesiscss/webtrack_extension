@@ -16325,7 +16325,7 @@ function () {
                   _context.prev = 12;
 
                   _this5.domDetector.onChange(function () {
-                    console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
+                    if (_this5.debug) console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
                     // the url in pages like Facebook
 
                     _this5.tracker.fetchHTML(500);
@@ -16333,9 +16333,9 @@ function () {
 
 
                   _this5.browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-                    if (message.action == 'private_mode') {
-                      console.log(message);
+                    if (_this5.debug) console.log(message);
 
+                    if (message.action == 'private_mode') {
                       if (message.private_mode) {
                         _this5.closeOnData();
 
@@ -16356,13 +16356,11 @@ function () {
                     }
 
                     if (message.action == 'popup_private_time') {
-                      if (message.display) {
-                        console.log(message.private_time);
+                      if (_this5.debug) console.log('popup_private_time');
 
+                      if (message.display) {
                         _this5.showNotification();
                       } else {
-                        console.log('hidenotification');
-
                         _this5.hideNotification();
                       }
 

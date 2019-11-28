@@ -324,7 +324,7 @@ export default class ContentHandler {
           console.log(err);
        } finally {
           this.domDetector.onChange(() => {
-            console.log('Dom Change');
+            if (this.debug) console.log('Dom Change');
             // 500 millisecons are necessary as the content changes before 
             // the url in pages like Facebook
             this.tracker.fetchHTML(500);
@@ -333,8 +333,8 @@ export default class ContentHandler {
 
           // listen for request to cancel private mode
           this.browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (this.debug) console.log(message);
             if (message.action == 'private_mode'){
-              console.log(message);
               if (message.private_mode) {
                 this.closeOnData();
                 if(typeof this.param == 'object' && this.param.allow){
@@ -352,14 +352,12 @@ export default class ContentHandler {
               }
             }
             if (message.action == 'popup_private_time'){
-
-            if (message.display){
-              console.log(message.private_time);
-              this.showNotification();
-            } else {
-              console.log('hidenotification');
-              this.hideNotification();
-            }
+              if (this.debug) console.log('popup_private_time');
+              if (message.display){
+                this.showNotification();
+              } else {
+                this.hideNotification();
+              }
 
             sendResponse(true);              
             //return true;
