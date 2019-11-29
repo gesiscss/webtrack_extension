@@ -32258,7 +32258,6 @@ function () {
 
                 for (_iterator2 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                   tab = _step2.value;
-                  console.log(tab);
 
                   try {
                     xbrowser.tabs.sendMessage(tab.id, {
@@ -32361,8 +32360,6 @@ function () {
                     }, function (response) {
                       if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
                       }
-
-                      console.log('delete_page');
                     }.bind(this));
                   } catch (e) {
                     console.log('caught');
@@ -37060,7 +37057,7 @@ function () {
                 break;
 
               case 27:
-                console.log('Close all tabs');
+                if (this.debug) console.log('Close all tabs');
 
               case 28:
               case "end":
@@ -39545,16 +39542,13 @@ function _load_blacklists() {
 
           case 11:
             blacklists = _context.sent;
-            window.config = new Configuration_Configuration(lib_settings, transfer, blacklists);
-            console.log('Create PageHandler');
+            window.config = new Configuration_Configuration(lib_settings, transfer, blacklists); //console.log('Create PageHandler');
+
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
-            _context.next = 17;
+            _context.next = 16;
             return window.pageHandler.init();
 
-          case 17:
-            console.log('PageHandler Initialized'); //window.pageHandler.event.on('error', error => errorCache.add(error));
-
-          case 18:
+          case 16:
           case "end":
             return _context.stop();
         }

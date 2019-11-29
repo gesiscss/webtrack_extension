@@ -267,7 +267,7 @@ export default class TabHandler {
         console.log(err);
       }
     }else{
-      console.log('Close all tabs');
+      if (this.debug) console.log('Close all tabs');
     }
   }
 

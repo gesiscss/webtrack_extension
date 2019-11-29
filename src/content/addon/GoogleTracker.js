@@ -38,16 +38,25 @@ export default class GoogleTracker extends Tracker{
    */
   setup_credentials(){
     
-    let email =  document.querySelector('.gb_hb');
+    let email =  document.querySelector('.gb_nb');
     if (email){
       this.logged_email = email.innerText;
+    } else {
+      email =  document.querySelector('.gb_hb');
+      if (email){
+        this.logged_email = email.innerText;
+      }
     }
 
-    let fullname = document.querySelector('.gb_fb.gb_gb');
+    let fullname = document.querySelector('.gb_ob');
     if (fullname){
       this.logged_fullname = fullname.innerText;
+    } else {
+      fullname = document.querySelector('.gb_fb.gb_gb');
+      if (fullname){
+        this.logged_fullname = fullname.innerText;
+      }
     }
-
   }
 
 

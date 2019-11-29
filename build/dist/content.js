@@ -15588,16 +15588,28 @@ function (_Tracker) {
   }, {
     key: "setup_credentials",
     value: function setup_credentials() {
-      var email = document.querySelector('.gb_hb');
+      var email = document.querySelector('.gb_nb');
 
       if (email) {
         this.logged_email = email.innerText;
+      } else {
+        email = document.querySelector('.gb_hb');
+
+        if (email) {
+          this.logged_email = email.innerText;
+        }
       }
 
-      var fullname = document.querySelector('.gb_fb.gb_gb');
+      var fullname = document.querySelector('.gb_ob');
 
       if (fullname) {
         this.logged_fullname = fullname.innerText;
+      } else {
+        fullname = document.querySelector('.gb_fb.gb_gb');
+
+        if (fullname) {
+          this.logged_fullname = fullname.innerText;
+        }
       }
     }
     /**
@@ -16230,7 +16242,7 @@ function () {
               }
             }
           } else {
-            console.log('wait for content');
+            if (this.debug) console.log('wait for content');
           }
 
       }
@@ -16256,11 +16268,13 @@ function () {
     value: function openOnData() {
       var _this4 = this;
 
-      this.tracker.eventEmitter.on('onData', function (data) {
-        if (_this4.debug) console.log('onData: this.sendMessage');
+      if (this.tracker) {
+        this.tracker.eventEmitter.on('onData', function (data) {
+          if (_this4.debug) console.log('onData: this.sendMessage');
 
-        _this4.sendMessage(data);
-      });
+          _this4.sendMessage(data);
+        });
+      }
     }
   }, {
     key: "onPrivateModeListener",
@@ -16294,7 +16308,7 @@ function () {
 
       if (message.action == 'popup_private_time') {
         if (this.debug) console.log('popup_private_time');
-        console.log(message);
+        if (this.debug) console.log(message);
 
         if (message.display) {
           this.showNotification();

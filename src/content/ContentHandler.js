@@ -270,7 +270,7 @@ export default class ContentHandler {
           }
 
         }else{
-          console.log('wait for content');
+          if (this.debug) console.log('wait for content');
         }
 
     }
@@ -291,10 +291,12 @@ export default class ContentHandler {
   }
 
   openOnData(){
-    this.tracker.eventEmitter.on('onData', data => {
-       if (this.debug) console.log('onData: this.sendMessage');
-       this.sendMessage(data);
-    });
+    if (this.tracker){
+      this.tracker.eventEmitter.on('onData', data => {
+         if (this.debug) console.log('onData: this.sendMessage');
+         this.sendMessage(data);
+      });
+    }
   }
 
   onPrivateModeListener (message, sender, sendResponse) {
@@ -321,7 +323,7 @@ export default class ContentHandler {
       }
       if (message.action == 'popup_private_time'){
         if (this.debug) console.log('popup_private_time');
-        console.log(message);
+        if (this.debug) console.log(message);
         if (message.display){
           this.showNotification();
         } else {
