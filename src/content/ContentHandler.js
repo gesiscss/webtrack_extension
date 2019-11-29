@@ -287,7 +287,9 @@ export default class ContentHandler {
   }
 
   closeOnData(){
-    this.tracker.eventEmitter.removeAllListeners('onData');
+    if (this.tracker){
+      this.tracker.eventEmitter.removeAllListeners('onData');
+    }
   }
 
   openOnData(){

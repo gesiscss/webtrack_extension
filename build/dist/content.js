@@ -16261,7 +16261,9 @@ function () {
   }, {
     key: "closeOnData",
     value: function closeOnData() {
-      this.tracker.eventEmitter.removeAllListeners('onData');
+      if (this.tracker) {
+        this.tracker.eventEmitter.removeAllListeners('onData');
+      }
     }
   }, {
     key: "openOnData",
