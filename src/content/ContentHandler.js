@@ -451,7 +451,7 @@ export default class ContentHandler {
     right:0; z-index: 100000; background: rgba(0, 0, 0, 0.5);">
       <div style="left: 50%; top: 40%; transform: translate(-50%, -50%); 
         width:410px; height:335px; border: 8px solid #0085bc; background-color: #FFFFFF; 
-        position: fixed; z-index: 100001; font: normal 12px sans-serif;">
+        position: fixed; z-index: 100001; font: normal 12px arial;">
         <div>
           <div style="float: left; margin-right: 10px">
             <img style="width: 120px;" src="` + this.browser.extension.getURL('images/on.png') + `">
@@ -475,17 +475,17 @@ export default class ContentHandler {
 
           <div style="text-align: center; position: absolute; bottom: 10px; width: 100%;">
             <div id="turnoff" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
-                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 color: #ffffff; display: inline-block; font: normal bold 13px arial; 
                  text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;">
                  Nein, d.h. privater Modus wird ausgeschaltet. 
             </div>
             <div id="fifteen" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
-                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 color: #ffffff; display: inline-block; font: normal bold 13px arial; 
                  text-align: center; margin-bottom: 5px; width: 350px; cursor: pointer;">
                  Ja, ich brauche 15 Minuten mehr im privaten Modus.
             </div>
             <div id="hour" style="background: #0085bc; border-radius: 5px; padding: 8px 16px; 
-                 color: #ffffff; display: inline-block; font: normal bold 14px sans-serif; 
+                 color: #ffffff; display: inline-block; font: normal bold 13px arial; 
                  text-align: center; width: 350px; cursor: pointer;">
                  Ja, ich brauche 1 Stunde mehr im privaten Modus.
             </div>
