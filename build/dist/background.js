@@ -31803,19 +31803,7 @@ function () {
       } // extract the sub domain; ignore the TLD from now on
 
 
-      var sub_domain = domain.slice(0, tld_idx); // cut www out of the sub_domain, e.g. www.bank -> bank
-
-      if (sub_domain.startsWith('www.')) {
-        sub_domain = sub_domain.slice(4);
-      } // bottom level domain index
-
-
-      var bld_idx = sub_domain.indexOf("."); // if a bottom level domain has only two chars then remove it e.g. de.bank -> bank
-
-      if (bld_idx != -1 && bld_idx <= 2) {
-        sub_domain = sub_domain.slice(bld_idx);
-      } // check for exact matches under special domains (e.g. tumblr and blogspot)
-
+      var sub_domain = domain.slice(0, tld_idx); // check for exact matches under special domains (e.g. tumblr and blogspot)
 
       for (var _i = 0, _Object$entries = Object.entries(this.lists.specials); _i < _Object$entries.length; _i++) {
         var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
@@ -31830,6 +31818,21 @@ function () {
           if (set.has(sub_domain.slice(0, sub_idx))) {
             return true;
           }
+        }
+      } // cut www out of the sub_domain, e.g. www.bank -> bank
+
+
+      if (sub_domain.startsWith('www.')) {
+        sub_domain = sub_domain.slice(4);
+      } // bottom level domain index
+
+
+      var bld_idx = sub_domain.indexOf("."); // if a bottom level domain has only two chars and it corresponds to a country code
+      // then remove it e.g. de.bank -> bank; this does not apply to tumblr/blogspt
+
+      if (bld_idx == 2) {
+        if (this.lists.simple.languages.has(sub_domain.slice(0, bld_idx))) {
+          sub_domain = sub_domain.slice(bld_idx + 1);
         }
       } // check for exact matches under special domains (e.g. tumblr and blogspot)
 
@@ -31925,12 +31928,16 @@ function () {
     key: "isAllow",
     value: function isAllow(url) {
       if (this.active) {
-        // console.log('TEST blacklist:');
-        // for (var i = 0; i < this.lists.tests.length; i++) {
-        //   if (!this.isincluded(this.lists.tests[i])) {
-        //     console.log(this.lists.tests[i]);
-        //   }
-        // }
+        console.log('TEST blacklist:');
+
+        for (var i = 0; i < this.lists.tests.length; i++) {
+          if (!this.isincluded(this.lists.tests[i])) {
+            console.log(this.lists.tests[i]);
+            debugger;
+          }
+        }
+
+        debugger;
         var location = this.get_location(url);
 
         if (!this.cache.hasOwnProperty(location.hostname)) {
@@ -39433,7 +39440,7 @@ function _load_blacklists() {
   _load_blacklists = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(xbrowser) {
-    var specials, filters, simple;
+    var specials, filters, simple, tests;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -39472,14 +39479,23 @@ function _load_blacklists() {
             });
 
           case 9:
+            tests = null;
+            _context2.next = 12;
+            return fetch(xbrowser.runtime.getURL('data/test.json')).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              tests = json;
+            });
+
+          case 12:
             return _context2.abrupt("return", {
               'specials': specials,
               'filters': filters,
-              'simple': simple // 'tests': tests
-
+              'simple': simple,
+              'tests': tests
             });
 
-          case 10:
+          case 13:
           case "end":
             return _context2.stop();
         }

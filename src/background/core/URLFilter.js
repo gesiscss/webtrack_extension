@@ -87,16 +87,7 @@ export default class URLFilter {
 
     // extract the sub domain; ignore the TLD from now on
     let sub_domain = domain.slice(0,tld_idx);
-    // cut www out of the sub_domain, e.g. www.bank -> bank
-    if (sub_domain.startsWith('www.')){
-      sub_domain = sub_domain.slice(4);
-    }
-    // bottom level domain index
-    let bld_idx = sub_domain.indexOf(".");
-    // if a bottom level domain has only two chars then remove it e.g. de.bank -> bank
-    if (bld_idx != -1 && bld_idx <= 2){
-      sub_domain = sub_domain.slice(bld_idx);
-    }
+
 
     // check for exact matches under special domains (e.g. tumblr and blogspot)
     for (let [key, set] of Object.entries(this.lists.specials)) {
@@ -107,6 +98,21 @@ export default class URLFilter {
         if (set.has(sub_domain.slice(0, sub_idx))){
           return true;
         }
+      }
+    }
+
+
+    // cut www out of the sub_domain, e.g. www.bank -> bank
+    if (sub_domain.startsWith('www.')){
+      sub_domain = sub_domain.slice(4);
+    }
+    // bottom level domain index
+    let bld_idx = sub_domain.indexOf(".");
+    // if a bottom level domain has only two chars and it corresponds to a country code
+    // then remove it e.g. de.bank -> bank; this does not apply to tumblr/blogspt
+    if (bld_idx == 2){
+      if (this.lists.simple.languages.has(sub_domain.slice(0, bld_idx))) {
+        sub_domain = sub_domain.slice(bld_idx + 1);
       }
     }
 
@@ -175,12 +181,15 @@ export default class URLFilter {
     if(this.active){
 
 
-      // console.log('TEST blacklist:');
-      // for (var i = 0; i < this.lists.tests.length; i++) {
-      //   if (!this.isincluded(this.lists.tests[i])) {
-      //     console.log(this.lists.tests[i]);
-      //   }
-      // }
+      console.log('TEST blacklist:');
+      for (var i = 0; i < this.lists.tests.length; i++) {
+        if (!this.isincluded(this.lists.tests[i])) {
+          console.log(this.lists.tests[i]);
+          debugger;
+        }
+      }
+
+      debugger;
 
       var location = this.get_location(url);
 
