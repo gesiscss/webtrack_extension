@@ -31928,16 +31928,14 @@ function () {
     key: "isAllow",
     value: function isAllow(url) {
       if (this.active) {
-        console.log('TEST blacklist:');
-
-        for (var i = 0; i < this.lists.tests.length; i++) {
-          if (!this.isincluded(this.lists.tests[i])) {
-            console.log(this.lists.tests[i]);
-            debugger;
-          }
-        }
-
-        debugger;
+        // console.log('TEST blacklist:');
+        // for (var i = 0; i < this.lists.tests.length; i++) {
+        //   if (!this.isincluded(this.lists.tests[i])) {
+        //     console.log(this.lists.tests[i]);
+        //     debugger;
+        //   }
+        // }
+        // debugger;
         var location = this.get_location(url);
 
         if (!this.cache.hasOwnProperty(location.hostname)) {
@@ -39440,7 +39438,7 @@ function _load_blacklists() {
   _load_blacklists = background_asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(xbrowser) {
-    var specials, filters, simple, tests;
+    var specials, filters, simple;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -39479,23 +39477,14 @@ function _load_blacklists() {
             });
 
           case 9:
-            tests = null;
-            _context2.next = 12;
-            return fetch(xbrowser.runtime.getURL('data/test.json')).then(function (response) {
-              return response.json();
-            }).then(function (json) {
-              tests = json;
-            });
-
-          case 12:
             return _context2.abrupt("return", {
               'specials': specials,
               'filters': filters,
-              'simple': simple,
-              'tests': tests
+              'simple': simple //'tests': tests
+
             });
 
-          case 13:
+          case 10:
           case "end":
             return _context2.stop();
         }

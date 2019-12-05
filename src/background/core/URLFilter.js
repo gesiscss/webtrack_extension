@@ -181,15 +181,15 @@ export default class URLFilter {
     if(this.active){
 
 
-      console.log('TEST blacklist:');
-      for (var i = 0; i < this.lists.tests.length; i++) {
-        if (!this.isincluded(this.lists.tests[i])) {
-          console.log(this.lists.tests[i]);
-          debugger;
-        }
-      }
+      // console.log('TEST blacklist:');
+      // for (var i = 0; i < this.lists.tests.length; i++) {
+      //   if (!this.isincluded(this.lists.tests[i])) {
+      //     console.log(this.lists.tests[i]);
+      //     debugger;
+      //   }
+      // }
 
-      debugger;
+      // debugger;
 
       var location = this.get_location(url);
 
