@@ -6,13 +6,6 @@ export default class URLFilter {
     this.lists = lists;
     this.cache = {};
 
-    this.smp_blacklist = {
-      'twitter': ['/messages', '/settings'],
-      'facebook': ['/messages', '/settings'],
-      'youtube': ['/account'],
-      'instagram': ['/accounts', '/settings'],
-      //'google': ['messages', 'settings'],
-    }
   }
 
 
@@ -160,25 +153,6 @@ export default class URLFilter {
   }
 
 
-  /**
-   * [isAllow returns if the path is allowed in social media platforms]
-   * @param  {Location}  [the location element to analyze the url]
-   * @return {Boolean}   [if it is allow according to social media platforms rules]
-   */
-  is_smp_allow(location){
-    let platform = this._getSMP(location.hostname);
-    if (platform != null) {
-      let path = location.pathname;
-      let subpaths = this.smp_blacklist[platform];
-      for (let i in subpaths) {
-        if (path.startsWith(subpaths[i])){
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
 
   /**
    * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
@@ -210,12 +184,6 @@ export default class URLFilter {
       }
       let is_allow = this.cache[location.hostname];
             
-      // if (is_allow){
-      //   is_allow = this.is_smp_allow(location);
-      // }
-      
-      //console.log('Allowed in social media?', is_allow);
-
       return is_allow;
     }else{
       return true;

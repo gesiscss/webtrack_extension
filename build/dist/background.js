@@ -31724,13 +31724,6 @@ function () {
     this.white_or_black = white_or_black;
     this.lists = lists;
     this.cache = {};
-    this.smp_blacklist = {
-      'twitter': ['/messages', '/settings'],
-      'facebook': ['/messages', '/settings'],
-      'youtube': ['/account'],
-      'instagram': ['/accounts', '/settings'] //'google': ['messages', 'settings'],
-
-    };
   }
   /**
    * [extractRootDomain get from url the higher level domain]
@@ -31909,30 +31902,6 @@ function () {
       return location;
     }
     /**
-     * [isAllow returns if the path is allowed in social media platforms]
-     * @param  {Location}  [the location element to analyze the url]
-     * @return {Boolean}   [if it is allow according to social media platforms rules]
-     */
-
-  }, {
-    key: "is_smp_allow",
-    value: function is_smp_allow(location) {
-      var platform = this._getSMP(location.hostname);
-
-      if (platform != null) {
-        var path = location.pathname;
-        var subpaths = this.smp_blacklist[platform];
-
-        for (var i in subpaths) {
-          if (path.startsWith(subpaths[i])) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    }
-    /**
      * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
      * @param  {String}  url [description]
      * @return {Boolean}     [description]
@@ -31960,11 +31929,7 @@ function () {
           this.cache[location.hostname] = _is_allow;
         }
 
-        var is_allow = this.cache[location.hostname]; // if (is_allow){
-        //   is_allow = this.is_smp_allow(location);
-        // }
-        //console.log('Allowed in social media?', is_allow);
-
+        var is_allow = this.cache[location.hostname];
         return is_allow;
       } else {
         return true;
