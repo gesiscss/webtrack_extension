@@ -31788,12 +31788,14 @@ function () {
       // top level domain index
       var tld_idx = domain.lastIndexOf("."); // check if it is ip based on the Top Level Domain. If there is a 
       // number in the last position, it should be an IP as of Nov 2019.
+      // e.g. 20.32.3.4
 
       var tld = domain.slice(tld_idx + 1);
 
       if (/^\d+$/.test(tld)) {
         return true;
-      } // check if the sub_domain is a exact match against the exact match set
+      } // check if the top level domain is a exact match against the exact match set
+      // e.g, example.xxx
 
 
       if (this.lists.simple.tld.has(tld)) {
@@ -31801,7 +31803,19 @@ function () {
       } // extract the sub domain; ignore the TLD from now on
 
 
-      var sub_domain = domain.slice(0, tld_idx); // check for exact matches under special domains (e.g. tumblr and blogspot)
+      var sub_domain = domain.slice(0, tld_idx); // cut www out of the sub_domain, e.g. www.bank -> bank
+
+      if (sub_domain.startsWith('www.')) {
+        sub_domain = sub_domain.slice(4);
+      } // bottom level domain index
+
+
+      var bld_idx = sub_domain.indexOf("."); // if a bottom level domain has only two chars then remove it e.g. de.bank -> bank
+
+      if (bld_idx != -1 && bld_idx <= 2) {
+        sub_domain = sub_domain.slice(bld_idx);
+      } // check for exact matches under special domains (e.g. tumblr and blogspot)
+
 
       for (var _i = 0, _Object$entries = Object.entries(this.lists.specials); _i < _Object$entries.length; _i++) {
         var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
