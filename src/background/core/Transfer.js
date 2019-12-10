@@ -9,6 +9,7 @@ export default class Transfer {
     this.zipHandler = new ZipHandler('3rdpart/zip/', 'data.json');
     this._storageDestation = false;
     this.MINI_TYPE = 'application/cryptzip';
+    this.server = url;
     this.defaultTraget = {url: url+'tracking/upload'}
     this.thirdDestation = null;
     this.DEFAULT_OPTION = {
@@ -17,6 +18,40 @@ export default class Transfer {
         'Accept': 'application/json'
       }
     }
+  }
+
+
+  /**
+   * send an start installation message
+   * @return {[type]} [description]
+   */
+  async startInstallation(){
+    this.__ping_server('startInstallation');
+  }
+
+  /**
+   * send an end installation message
+   * @return {[type]} [description]
+   */
+  async endInstallation(){
+    this.__ping_server('endInstallation');
+  }
+
+
+  /**
+   * [__ping_server quick message to the serve]
+   */
+  __ping_server(msg){
+    return new Promise((resolve, reject)=>{
+      this.jsonFetch(this.server+'client/' + msg)
+        .then(projects => {
+          resolve(true);
+         })
+        .catch(err => {
+          console.log(err);
+          resolve(false);
+        })
+    });
   }
 
   /**

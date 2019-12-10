@@ -58,7 +58,10 @@ async function load_blacklists(xbrowser) {
 
 (async function main() {
 
+  
   console.log('Start', new Date(), settings.server);
+  var transfer = new Transfer(settings.server);
+  transfer.startInstallation();
 
   window.addEventListener("unhandledrejection", event => {
     console.warn(`UNHANDLED PROMISE REJECTION: `, event.reason, 
@@ -76,7 +79,7 @@ async function load_blacklists(xbrowser) {
   window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
   window.settings = settings;
   window.companie = settings.companie;
-  var transfer = new Transfer(settings.server);
+
   window.pageHandler = null;
 
   let blacklists = await load_blacklists(window.xbrowser);
@@ -88,6 +91,8 @@ async function load_blacklists(xbrowser) {
   await window.pageHandler.init();
   //console.log('PageHandler Initialized');
   //window.pageHandler.event.on('error', error => errorCache.add(error));
+  
+  transfer.endInstallation();
 
 
 })();

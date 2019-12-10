@@ -30799,6 +30799,10 @@ function () {
 // CONCATENATED MODULE: ./src/background/core/Transfer.js
 function Transfer_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { Transfer_typeof = function _typeof(obj) { return typeof obj; }; } else { Transfer_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return Transfer_typeof(obj); }
 
+function Transfer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function Transfer_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { Transfer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { Transfer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function Transfer_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function Transfer_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -30818,6 +30822,7 @@ function () {
     this.zipHandler = new ZipHandler('3rdpart/zip/', 'data.json');
     this._storageDestation = false;
     this.MINI_TYPE = 'application/cryptzip';
+    this.server = url;
     this.defaultTraget = {
       url: url + 'tracking/upload'
     };
@@ -30830,12 +30835,88 @@ function () {
     };
   }
   /**
-   * [setCert set certificate]
-   * @param {String} cert
+   * send an start installation message
+   * @return {[type]} [description]
    */
 
 
   Transfer_createClass(Transfer, [{
+    key: "startInstallation",
+    value: function () {
+      var _startInstallation = Transfer_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                this.__ping_server('startInstallation');
+
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      return function startInstallation() {
+        return _startInstallation.apply(this, arguments);
+      };
+    }()
+    /**
+     * send an end installation message
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "endInstallation",
+    value: function () {
+      var _endInstallation = Transfer_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.__ping_server('endInstallation');
+
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      return function endInstallation() {
+        return _endInstallation.apply(this, arguments);
+      };
+    }()
+    /**
+     * [__ping_server quick message to the serve]
+     */
+
+  }, {
+    key: "__ping_server",
+    value: function __ping_server(msg) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        _this.jsonFetch(_this.server + 'client/' + msg).then(function (projects) {
+          resolve(true);
+        })["catch"](function (err) {
+          console.log(err);
+          resolve(false);
+        });
+      });
+    }
+    /**
+     * [setCert set certificate]
+     * @param {String} cert
+     */
+
+  }, {
     key: "setCert",
     value: function setCert(cert) {
       this._cryptHandler = new CryptHandler(cert);
@@ -30884,10 +30965,10 @@ function () {
   }, {
     key: "sendingData",
     value: function sendingData(string, callbackStatus) {
-      var _this = this;
+      var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        if (!_this._storageDestation) _this._direktSending(string, callbackStatus).then(resolve)["catch"](reject);else _this._storageDestationSending(string, callbackStatus).then(resolve)["catch"](reject);
+        if (!_this2._storageDestation) _this2._direktSending(string, callbackStatus).then(resolve)["catch"](reject);else _this2._storageDestationSending(string, callbackStatus).then(resolve)["catch"](reject);
       });
     }
     /**
@@ -30900,10 +30981,10 @@ function () {
   }, {
     key: "_direktSending",
     value: function _direktSending(string, callbackStatus) {
-      var _this2 = this;
+      var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.sendFile(_this2.options.url, 'page', new Blob([string], {
+        _this3.sendFile(_this3.options.url, 'page', new Blob([string], {
           type: "application/json"
         })).then(resolve)["catch"](reject);
       });
@@ -30918,22 +30999,22 @@ function () {
   }, {
     key: "_storageDestationSending",
     value: function _storageDestationSending(string, callbackStatus) {
-      var _this3 = this;
+      var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         var reader = new FileReader();
 
-        _this3.zipHandler.create(string).then(function (zipBlob) {
+        _this4.zipHandler.create(string).then(function (zipBlob) {
           reader.onload = function () {
-            var r = _this3._cryptHandler.encrypt(reader.result); // <-- crypt data
+            var r = _this4._cryptHandler.encrypt(reader.result); // <-- crypt data
 
 
             var blob = new Blob([JSON.stringify(r)], {
-              type: _this3.MINI_TYPE
+              type: _this4.MINI_TYPE
             });
             callbackStatus('compressed');
 
-            _this3.getThirdDestation().upload({
+            _this4.getThirdDestation().upload({
               Body: blob
             }).then(resolve)["catch"](reject);
           };
@@ -30953,13 +31034,13 @@ function () {
   }, {
     key: "sendFile",
     value: function sendFile(url, type, blob) {
-      var _this4 = this;
+      var _this5 = this;
 
       return new Promise(function (resolve, reject) {
         var fd = new FormData();
         fd.append(type, blob);
 
-        _this4._fetch(url, {
+        _this5._fetch(url, {
           method: 'POST',
           body: fd
         }).then(resolve)["catch"](reject);
@@ -39504,6 +39585,8 @@ function _load_blacklists() {
         switch (_context.prev = _context.next) {
           case 0:
             console.log('Start', new Date(), lib_settings.server);
+            transfer = new Transfer_Transfer(lib_settings.server);
+            transfer.startInstallation();
             window.addEventListener("unhandledrejection", function (event) {
               console.warn("UNHANDLED PROMISE REJECTION: ", event.reason, '. Have you added the certificates by visiting the server page?');
             });
@@ -39519,20 +39602,24 @@ function _load_blacklists() {
             window.xbrowser = window.hasOwnProperty('chrome') ? chrome : browser;
             window.settings = lib_settings;
             window.companie = lib_settings.companie;
-            transfer = new Transfer_Transfer(lib_settings.server);
             window.pageHandler = null;
-            _context.next = 11;
+            _context.next = 12;
             return load_blacklists(window.xbrowser);
 
-          case 11:
+          case 12:
             blacklists = _context.sent;
             window.config = new Configuration_Configuration(lib_settings, transfer, blacklists); //console.log('Create PageHandler');
 
             window.pageHandler = new PageHandler_PageHandler(config, transfer, window.tracker);
-            _context.next = 16;
+            _context.next = 17;
             return window.pageHandler.init();
 
-          case 16:
+          case 17:
+            //console.log('PageHandler Initialized');
+            //window.pageHandler.event.on('error', error => errorCache.add(error));
+            transfer.endInstallation();
+
+          case 18:
           case "end":
             return _context.stop();
         }
