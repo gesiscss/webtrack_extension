@@ -18,10 +18,10 @@ export default class YouTubeTracker extends Tracker{
       root: ['#primary'],
       allow: ['#primary'],
 
-      logged_email: 'yt-formatted-string#email',
-      logged_fullname: 'yt-formatted-string#account-name',
+      logged_email: ['yt-formatted-string#email', '.yt-masthead-picker-header'],
+      logged_fullname: ['yt-formatted-string#account-name', '.yt-masthead-picker-name'],
       profile_pic_url_comment: 'yt-img-shadow#author-thumbnail img#img',
-      profile_pic_url_avatar: '#avatar-btn img#img',
+      profile_pic_url_avatar: ['#avatar-btn img#img', '.yt-masthead-user-icon img'],
       watch_later: '.ytp-watch-later-button.ytp-button',
 
       svg_protected: '#container .style-scope.ytd-badge-supported-renderer svg g path[d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"]',
@@ -246,10 +246,12 @@ export default class YouTubeTracker extends Tracker{
       return this.logged_email;
     }
 
-    let el = document.querySelector(this.eventElements.logged_email);
-    if (el){
-      this.update_metadata = true;
-      return el.textContent;
+    for (let selector of this.eventElements.logged_email) {
+      let el = document.querySelector(selector);
+      if (el){
+        this.update_metadata = true;
+        return el.textContent;
+      }
     }
     return null;
   }
@@ -259,24 +261,28 @@ export default class YouTubeTracker extends Tracker{
       return this.logged_fullname;
     }
 
-    let el = document.querySelector(this.eventElements.logged_fullname);
-    if (el){
-      this.is_correct_logged_fullname = true;
-      this.updateMetada = true;
-      return el.textContent;
-    } else {
-      el = document.querySelector(this.eventElements.profile_pic_url_comment);
+    for (let selector of this.eventElements.logged_fullname) {
+      let el = document.querySelector(selector);
       if (el){
-        this.updateMetada = true;
         this.is_correct_logged_fullname = true;
-        return el.alt;
-      } else {
-        el = document.querySelector(this.eventElements.watch_later);
-        if (el) {
-          return el.title;
-        }
+        this.updateMetada = true;
+        return el.textContent;
       }
     }
+
+    let el = document.querySelector(this.eventElements.profile_pic_url_comment);
+    if (el){
+      this.updateMetada = true;
+      this.is_correct_logged_fullname = true;
+      return el.alt;
+    } 
+
+    el = document.querySelector(this.eventElements.watch_later);
+    if (el) {
+      return el.title;
+    }
+  
+    
     return null;
   }
 
@@ -292,9 +298,12 @@ export default class YouTubeTracker extends Tracker{
       this.is_correct_profile_pic_url = true;
       src = el.src;
     } else {
-      el = document.querySelector(this.eventElements.profile_pic_url_avatar);
-      if (el){
-        src = el.src;
+      for (let selector of this.eventElements.profile_pic_url_avatar) {
+        el = document.querySelector(selector);
+        if (el){
+          src = el.src;
+          break;
+        }
       }
     }
     if (src) {
@@ -306,6 +315,9 @@ export default class YouTubeTracker extends Tracker{
 
   _isLogged() {
     if (document.querySelector('#avatar-btn')){
+      return true;
+    // e.g. used in youtube.com/pair/     
+    } else if (document.querySelector('.yt-masthead-user-icon')) {
       return true;
     }
     return false;

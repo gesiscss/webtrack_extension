@@ -33,7 +33,7 @@ export default class Tracker extends MultiFetch {
     this.original_url = '';
 
     this.events_debug = false;
-    this.debug = false;
+    this.debug = true;
 
     this.startswith_blacklist = [];
     this.startswith_whitelist = [];
@@ -198,10 +198,10 @@ export default class Tracker extends MultiFetch {
       result['keywords'] = this.metadata['keywords'].join(',');
     }
 
-    this.metadata['anonym'] = this.metadata['anonym'];
+    result['anonym'] = this.metadata['anonym'];
     result['anonym'] = data['anonym'];
 
-    this.metadata['full_anonym'] = this.metadata['full_anonym'];
+    result['full_anonym'] = this.metadata['full_anonym'];
     result['full_anonym'] = data['full_anonym'];
 
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');

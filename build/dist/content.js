@@ -10094,7 +10094,7 @@ function (_MultiFetch) {
     _this.lastURL = '';
     _this.original_url = '';
     _this.events_debug = false;
-    _this.debug = false;
+    _this.debug = true;
     _this.startswith_blacklist = [];
     _this.startswith_whitelist = [];
     _this.pos_2nd_blacklist = [];
@@ -10297,9 +10297,9 @@ function (_MultiFetch) {
         result['keywords'] = this.metadata['keywords'].join(',');
       }
 
-      this.metadata['anonym'] = this.metadata['anonym'];
+      result['anonym'] = this.metadata['anonym'];
       result['anonym'] = data['anonym'];
-      this.metadata['full_anonym'] = this.metadata['full_anonym'];
+      result['full_anonym'] = this.metadata['full_anonym'];
       result['full_anonym'] = data['full_anonym'];
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       this.eventEmitter.emit(EVENT_NAMES.data, {
@@ -12524,10 +12524,10 @@ function (_Tracker) {
     _this.eventElements = {
       root: ['#primary'],
       allow: ['#primary'],
-      logged_email: 'yt-formatted-string#email',
-      logged_fullname: 'yt-formatted-string#account-name',
+      logged_email: ['yt-formatted-string#email', '.yt-masthead-picker-header'],
+      logged_fullname: ['yt-formatted-string#account-name', '.yt-masthead-picker-name'],
       profile_pic_url_comment: 'yt-img-shadow#author-thumbnail img#img',
-      profile_pic_url_avatar: '#avatar-btn img#img',
+      profile_pic_url_avatar: ['#avatar-btn img#img', '.yt-masthead-user-icon img'],
       watch_later: '.ytp-watch-later-button.ytp-button',
       svg_protected: '#container .style-scope.ytd-badge-supported-renderer svg g path[d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"]',
       categorie: {
@@ -12810,11 +12810,33 @@ function (_Tracker) {
         return this.logged_email;
       }
 
-      var el = document.querySelector(this.eventElements.logged_email);
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-      if (el) {
-        this.update_metadata = true;
-        return el.textContent;
+      try {
+        for (var _iterator3 = this.eventElements.logged_email[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var selector = _step3.value;
+          var el = document.querySelector(selector);
+
+          if (el) {
+            this.update_metadata = true;
+            return el.textContent;
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
       }
 
       return null;
@@ -12826,26 +12848,49 @@ function (_Tracker) {
         return this.logged_fullname;
       }
 
-      var el = document.querySelector(this.eventElements.logged_fullname);
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
-      if (el) {
-        this.is_correct_logged_fullname = true;
-        this.updateMetada = true;
-        return el.textContent;
-      } else {
-        el = document.querySelector(this.eventElements.profile_pic_url_comment);
+      try {
+        for (var _iterator4 = this.eventElements.logged_fullname[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var selector = _step4.value;
 
-        if (el) {
-          this.updateMetada = true;
-          this.is_correct_logged_fullname = true;
-          return el.alt;
-        } else {
-          el = document.querySelector(this.eventElements.watch_later);
+          var _el = document.querySelector(selector);
 
-          if (el) {
-            return el.title;
+          if (_el) {
+            this.is_correct_logged_fullname = true;
+            this.updateMetada = true;
+            return _el.textContent;
           }
         }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+            _iterator4["return"]();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+
+      var el = document.querySelector(this.eventElements.profile_pic_url_comment);
+
+      if (el) {
+        this.updateMetada = true;
+        this.is_correct_logged_fullname = true;
+        return el.alt;
+      }
+
+      el = document.querySelector(this.eventElements.watch_later);
+
+      if (el) {
+        return el.title;
       }
 
       return null;
@@ -12865,10 +12910,33 @@ function (_Tracker) {
         this.is_correct_profile_pic_url = true;
         src = el.src;
       } else {
-        el = document.querySelector(this.eventElements.profile_pic_url_avatar);
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
-        if (el) {
-          src = el.src;
+        try {
+          for (var _iterator5 = this.eventElements.profile_pic_url_avatar[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var selector = _step5.value;
+            el = document.querySelector(selector);
+
+            if (el) {
+              src = el.src;
+              break;
+            }
+          }
+        } catch (err) {
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
+            }
+          } finally {
+            if (_didIteratorError5) {
+              throw _iteratorError5;
+            }
+          }
         }
       }
 
@@ -12883,6 +12951,8 @@ function (_Tracker) {
     key: "_isLogged",
     value: function _isLogged() {
       if (document.querySelector('#avatar-btn')) {
+        return true; // e.g. used in youtube.com/pair/     
+      } else if (document.querySelector('.yt-masthead-user-icon')) {
         return true;
       }
 
@@ -12932,108 +13002,14 @@ function (_Tracker) {
         color: 'purple'
       });
 
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = contents[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var content = _step3.value;
-          content.style.display = 'none';
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
-
-      var more = this._getElements(this.eventElements.categorie.button.more, this._getRootElement(), {
-        setTracked: false,
-        color: 'purple'
-      }); // console.log('more', more.length, more);
-
-
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = more[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var button = _step4.value;
-          button.click();
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-            _iterator4["return"]();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
-
-      var categories = this._getElements(this.eventElements.categorie.categories, this._getRootElement(), {
-        setTracked: false,
-        color: 'purple'
-      }); // console.log(categories);
-
-
-      if (categories.length > 0) this.fetchCategorie.is = true;
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
-
-      try {
-        for (var _iterator5 = categories[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var categorie = _step5.value;
-          this.updateMetaData({
-            keywords: categorie.textContent
-          });
-        }
-      } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-            _iterator5["return"]();
-          }
-        } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
-          }
-        }
-      }
-
-      var less = this._getElements(this.eventElements.categorie.button.less, this._getRootElement(), {
-        setTracked: false,
-        color: 'purple'
-      }); // console.log('less', less.length, less);
-
-
       var _iteratorNormalCompletion6 = true;
       var _didIteratorError6 = false;
       var _iteratorError6 = undefined;
 
       try {
-        for (var _iterator6 = less[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-          var _button = _step6.value;
-
-          _button.click();
+        for (var _iterator6 = contents[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var content = _step6.value;
+          content.style.display = 'none';
         }
       } catch (err) {
         _didIteratorError6 = true;
@@ -13050,14 +13026,20 @@ function (_Tracker) {
         }
       }
 
+      var more = this._getElements(this.eventElements.categorie.button.more, this._getRootElement(), {
+        setTracked: false,
+        color: 'purple'
+      }); // console.log('more', more.length, more);
+
+
       var _iteratorNormalCompletion7 = true;
       var _didIteratorError7 = false;
       var _iteratorError7 = undefined;
 
       try {
-        for (var _iterator7 = contents[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-          var _content = _step7.value;
-          _content.style.display = '';
+        for (var _iterator7 = more[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          var button = _step7.value;
+          button.click();
         }
       } catch (err) {
         _didIteratorError7 = true;
@@ -13070,6 +13052,94 @@ function (_Tracker) {
         } finally {
           if (_didIteratorError7) {
             throw _iteratorError7;
+          }
+        }
+      }
+
+      var categories = this._getElements(this.eventElements.categorie.categories, this._getRootElement(), {
+        setTracked: false,
+        color: 'purple'
+      }); // console.log(categories);
+
+
+      if (categories.length > 0) this.fetchCategorie.is = true;
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
+
+      try {
+        for (var _iterator8 = categories[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var categorie = _step8.value;
+          this.updateMetaData({
+            keywords: categorie.textContent
+          });
+        }
+      } catch (err) {
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+            _iterator8["return"]();
+          }
+        } finally {
+          if (_didIteratorError8) {
+            throw _iteratorError8;
+          }
+        }
+      }
+
+      var less = this._getElements(this.eventElements.categorie.button.less, this._getRootElement(), {
+        setTracked: false,
+        color: 'purple'
+      }); // console.log('less', less.length, less);
+
+
+      var _iteratorNormalCompletion9 = true;
+      var _didIteratorError9 = false;
+      var _iteratorError9 = undefined;
+
+      try {
+        for (var _iterator9 = less[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+          var _button = _step9.value;
+
+          _button.click();
+        }
+      } catch (err) {
+        _didIteratorError9 = true;
+        _iteratorError9 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+            _iterator9["return"]();
+          }
+        } finally {
+          if (_didIteratorError9) {
+            throw _iteratorError9;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion10 = true;
+      var _didIteratorError10 = false;
+      var _iteratorError10 = undefined;
+
+      try {
+        for (var _iterator10 = contents[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+          var _content = _step10.value;
+          _content.style.display = '';
+        }
+      } catch (err) {
+        _didIteratorError10 = true;
+        _iteratorError10 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+            _iterator10["return"]();
+          }
+        } finally {
+          if (_didIteratorError10) {
+            throw _iteratorError10;
           }
         }
       }
@@ -13158,13 +13228,13 @@ function (_Tracker) {
         color: 'blue'
       });
 
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
+      var _iteratorNormalCompletion11 = true;
+      var _didIteratorError11 = false;
+      var _iteratorError11 = undefined;
 
       try {
         var _loop = function _loop() {
-          var input = _step8.value;
+          var input = _step11.value;
           input.addEventListener('click', function (e) {
             return setTimeout(function () {
               _this6._eventCommentDialog(input, function (comment) {
@@ -13181,20 +13251,20 @@ function (_Tracker) {
           });
         };
 
-        for (var _iterator8 = inputs[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+        for (var _iterator11 = inputs[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
           _loop();
         }
       } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
+        _didIteratorError11 = true;
+        _iteratorError11 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
-            _iterator8["return"]();
+          if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+            _iterator11["return"]();
           }
         } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
+          if (_didIteratorError11) {
+            throw _iteratorError11;
           }
         }
       }
@@ -13300,13 +13370,13 @@ function (_Tracker) {
         color: 'blue'
       });
 
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+      var _iteratorNormalCompletion12 = true;
+      var _didIteratorError12 = false;
+      var _iteratorError12 = undefined;
 
       try {
         var _loop2 = function _loop2() {
-          var wrapper = _step9.value;
+          var wrapper = _step12.value;
 
           if (_this8.youtube_debug) {
             if (type.name == 'postanswer') {
@@ -13320,13 +13390,13 @@ function (_Tracker) {
 
           var buttonLikes = _this8._getElements(_this8.eventElements.comment.buttonLike, wrapper);
 
-          var _iteratorNormalCompletion11 = true;
-          var _didIteratorError11 = false;
-          var _iteratorError11 = undefined;
+          var _iteratorNormalCompletion14 = true;
+          var _didIteratorError14 = false;
+          var _iteratorError14 = undefined;
 
           try {
-            for (var _iterator11 = buttonLikes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-              var buttonLike = _step11.value;
+            for (var _iterator14 = buttonLikes[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+              var buttonLike = _step14.value;
               buttonLike.addEventListener('click', function (e) {
                 event({
                   event: 'like',
@@ -13349,29 +13419,29 @@ function (_Tracker) {
             } //for buttonLikes
 
           } catch (err) {
-            _didIteratorError11 = true;
-            _iteratorError11 = err;
+            _didIteratorError14 = true;
+            _iteratorError14 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
-                _iterator11["return"]();
+              if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
+                _iterator14["return"]();
               }
             } finally {
-              if (_didIteratorError11) {
-                throw _iteratorError11;
+              if (_didIteratorError14) {
+                throw _iteratorError14;
               }
             }
           }
 
           var buttonDislikes = _this8._getElements(_this8.eventElements.comment.buttonDislike, wrapper);
 
-          var _iteratorNormalCompletion12 = true;
-          var _didIteratorError12 = false;
-          var _iteratorError12 = undefined;
+          var _iteratorNormalCompletion15 = true;
+          var _didIteratorError15 = false;
+          var _iteratorError15 = undefined;
 
           try {
-            for (var _iterator12 = buttonDislikes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-              var buttonDislike = _step12.value;
+            for (var _iterator15 = buttonDislikes[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+              var buttonDislike = _step15.value;
               buttonDislike.addEventListener('click', function (e) {
                 event({
                   event: 'like',
@@ -13394,37 +13464,37 @@ function (_Tracker) {
             } //for buttonLikes
 
           } catch (err) {
-            _didIteratorError12 = true;
-            _iteratorError12 = err;
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
-                _iterator12["return"]();
+              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
+                _iterator15["return"]();
               }
             } finally {
-              if (_didIteratorError12) {
-                throw _iteratorError12;
+              if (_didIteratorError15) {
+                throw _iteratorError15;
               }
             }
           }
 
-          var _iteratorNormalCompletion13 = true;
-          var _didIteratorError13 = false;
-          var _iteratorError13 = undefined;
+          var _iteratorNormalCompletion16 = true;
+          var _didIteratorError16 = false;
+          var _iteratorError16 = undefined;
 
           try {
             var _loop3 = function _loop3() {
-              var buttonComment = _step13.value;
+              var buttonComment = _step16.value;
 
               var buttonC = _this8._getElements(buttonComment.button, wrapper);
 
-              var _iteratorNormalCompletion14 = true;
-              var _didIteratorError14 = false;
-              var _iteratorError14 = undefined;
+              var _iteratorNormalCompletion17 = true;
+              var _didIteratorError17 = false;
+              var _iteratorError17 = undefined;
 
               try {
-                for (var _iterator14 = buttonC[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-                  var button = _step14.value;
+                for (var _iterator17 = buttonC[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+                  var button = _step17.value;
                   button.addEventListener('click', function (e) {
                     return setTimeout(function () {
                       try {
@@ -13456,56 +13526,56 @@ function (_Tracker) {
                   });
                 }
               } catch (err) {
-                _didIteratorError14 = true;
-                _iteratorError14 = err;
+                _didIteratorError17 = true;
+                _iteratorError17 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
-                    _iterator14["return"]();
+                  if (!_iteratorNormalCompletion17 && _iterator17["return"] != null) {
+                    _iterator17["return"]();
                   }
                 } finally {
-                  if (_didIteratorError14) {
-                    throw _iteratorError14;
+                  if (_didIteratorError17) {
+                    throw _iteratorError17;
                   }
                 }
               }
             };
 
-            for (var _iterator13 = _this8.eventElements.comment.buttonComment[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+            for (var _iterator16 = _this8.eventElements.comment.buttonComment[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
               _loop3();
             } //for buttonComment
 
           } catch (err) {
-            _didIteratorError13 = true;
-            _iteratorError13 = err;
+            _didIteratorError16 = true;
+            _iteratorError16 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
-                _iterator13["return"]();
+              if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
+                _iterator16["return"]();
               }
             } finally {
-              if (_didIteratorError13) {
-                throw _iteratorError13;
+              if (_didIteratorError16) {
+                throw _iteratorError16;
               }
             }
           }
         };
 
-        for (var _iterator9 = wrappers[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+        for (var _iterator12 = wrappers[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
           _loop2();
         } //for wrappers
 
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _didIteratorError12 = true;
+        _iteratorError12 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
-            _iterator9["return"]();
+          if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
+            _iterator12["return"]();
           }
         } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
+          if (_didIteratorError12) {
+            throw _iteratorError12;
           }
         }
       }
@@ -13514,20 +13584,20 @@ function (_Tracker) {
         filter: '.tracked:not(.find-replies)',
         addClass: ''
       });
-      var _iteratorNormalCompletion10 = true;
-      var _didIteratorError10 = false;
-      var _iteratorError10 = undefined;
+      var _iteratorNormalCompletion13 = true;
+      var _didIteratorError13 = false;
+      var _iteratorError13 = undefined;
 
       try {
-        for (var _iterator10 = wrappers[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-          var wrapper = _step10.value;
-          var _iteratorNormalCompletion15 = true;
-          var _didIteratorError15 = false;
-          var _iteratorError15 = undefined;
+        for (var _iterator13 = wrappers[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+          var wrapper = _step13.value;
+          var _iteratorNormalCompletion18 = true;
+          var _didIteratorError18 = false;
+          var _iteratorError18 = undefined;
 
           try {
             var _loop4 = function _loop4() {
-              var b = _step15.value;
+              var b = _step18.value;
 
               var parentNodes = _this8._getElements(b.parentNode, wrapper, {
                 color: 'blue'
@@ -13535,13 +13605,13 @@ function (_Tracker) {
 
               var values = _this8._getValuesFromComment(wrapper);
 
-              var _iteratorNormalCompletion16 = true;
-              var _didIteratorError16 = false;
-              var _iteratorError16 = undefined;
+              var _iteratorNormalCompletion19 = true;
+              var _didIteratorError19 = false;
+              var _iteratorError19 = undefined;
 
               try {
                 var _loop5 = function _loop5() {
-                  var node = _step16.value;
+                  var node = _step19.value;
                   wrapper.classList.add('find-replies');
 
                   var content = _this8._getElements(b.content, node)[0];
@@ -13567,29 +13637,29 @@ function (_Tracker) {
                               value: values.content
                             }]
                           };
-                          var _iteratorNormalCompletion17 = true;
-                          var _didIteratorError17 = false;
-                          var _iteratorError17 = undefined;
+                          var _iteratorNormalCompletion20 = true;
+                          var _didIteratorError20 = false;
+                          var _iteratorError20 = undefined;
 
                           try {
-                            for (var _iterator17 = e.values[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                              var v = _step17.value;
+                            for (var _iterator20 = e.values[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
+                              var v = _step20.value;
                               returnEvent.values.push({
                                 name: e.type + '_' + v.name,
                                 value: v.value
                               });
                             }
                           } catch (err) {
-                            _didIteratorError17 = true;
-                            _iteratorError17 = err;
+                            _didIteratorError20 = true;
+                            _iteratorError20 = err;
                           } finally {
                             try {
-                              if (!_iteratorNormalCompletion17 && _iterator17["return"] != null) {
-                                _iterator17["return"]();
+                              if (!_iteratorNormalCompletion20 && _iterator20["return"] != null) {
+                                _iterator20["return"]();
                               }
                             } finally {
-                              if (_didIteratorError17) {
-                                throw _iteratorError17;
+                              if (_didIteratorError20) {
+                                throw _iteratorError20;
                               }
                             }
                           }
@@ -13601,57 +13671,57 @@ function (_Tracker) {
                   }
                 };
 
-                for (var _iterator16 = parentNodes[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                for (var _iterator19 = parentNodes[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
                   _loop5();
                 } //for parentNodes
 
               } catch (err) {
-                _didIteratorError16 = true;
-                _iteratorError16 = err;
+                _didIteratorError19 = true;
+                _iteratorError19 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
-                    _iterator16["return"]();
+                  if (!_iteratorNormalCompletion19 && _iterator19["return"] != null) {
+                    _iterator19["return"]();
                   }
                 } finally {
-                  if (_didIteratorError16) {
-                    throw _iteratorError16;
+                  if (_didIteratorError19) {
+                    throw _iteratorError19;
                   }
                 }
               }
             };
 
-            for (var _iterator15 = this.eventElements.comment.moreCommentFromComments[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+            for (var _iterator18 = this.eventElements.comment.moreCommentFromComments[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
               _loop4();
             } //for moreCommentFromComments
 
           } catch (err) {
-            _didIteratorError15 = true;
-            _iteratorError15 = err;
+            _didIteratorError18 = true;
+            _iteratorError18 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
-                _iterator15["return"]();
+              if (!_iteratorNormalCompletion18 && _iterator18["return"] != null) {
+                _iterator18["return"]();
               }
             } finally {
-              if (_didIteratorError15) {
-                throw _iteratorError15;
+              if (_didIteratorError18) {
+                throw _iteratorError18;
               }
             }
           }
         } //for
 
       } catch (err) {
-        _didIteratorError10 = true;
-        _iteratorError10 = err;
+        _didIteratorError13 = true;
+        _iteratorError13 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
-            _iterator10["return"]();
+          if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
+            _iterator13["return"]();
           }
         } finally {
-          if (_didIteratorError10) {
-            throw _iteratorError10;
+          if (_didIteratorError13) {
+            throw _iteratorError13;
           }
         }
       }
@@ -13674,87 +13744,87 @@ function (_Tracker) {
         color: 'green'
       });
 
-      var _iteratorNormalCompletion18 = true;
-      var _didIteratorError18 = false;
-      var _iteratorError18 = undefined;
+      var _iteratorNormalCompletion21 = true;
+      var _didIteratorError21 = false;
+      var _iteratorError21 = undefined;
 
       try {
         var _loop6 = function _loop6() {
-          var wrapper = _step18.value;
+          var wrapper = _step21.value;
           var comment = '';
 
           var inputs = _this9._getElements(_this9.eventElements.commentButton.input, wrapper);
 
-          var _iteratorNormalCompletion19 = true;
-          var _didIteratorError19 = false;
-          var _iteratorError19 = undefined;
+          var _iteratorNormalCompletion22 = true;
+          var _didIteratorError22 = false;
+          var _iteratorError22 = undefined;
 
           try {
-            for (var _iterator19 = inputs[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
-              var input = _step19.value;
+            for (var _iterator22 = inputs[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
+              var input = _step22.value;
               input.addEventListener('keyup', function (e) {
                 comment = e.srcElement.textContent;
               });
             }
           } catch (err) {
-            _didIteratorError19 = true;
-            _iteratorError19 = err;
+            _didIteratorError22 = true;
+            _iteratorError22 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion19 && _iterator19["return"] != null) {
-                _iterator19["return"]();
+              if (!_iteratorNormalCompletion22 && _iterator22["return"] != null) {
+                _iterator22["return"]();
               }
             } finally {
-              if (_didIteratorError19) {
-                throw _iteratorError19;
+              if (_didIteratorError22) {
+                throw _iteratorError22;
               }
             }
           }
 
           var submits = _this9._getElements(_this9.eventElements.commentButton.submit, wrapper);
 
-          var _iteratorNormalCompletion20 = true;
-          var _didIteratorError20 = false;
-          var _iteratorError20 = undefined;
+          var _iteratorNormalCompletion23 = true;
+          var _didIteratorError23 = false;
+          var _iteratorError23 = undefined;
 
           try {
-            for (var _iterator20 = submits[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-              var submit = _step20.value;
+            for (var _iterator23 = submits[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
+              var submit = _step23.value;
               submit.addEventListener('click', function (e) {
                 if (comment.length > 0) fn(comment);
               });
             }
           } catch (err) {
-            _didIteratorError20 = true;
-            _iteratorError20 = err;
+            _didIteratorError23 = true;
+            _iteratorError23 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion20 && _iterator20["return"] != null) {
-                _iterator20["return"]();
+              if (!_iteratorNormalCompletion23 && _iterator23["return"] != null) {
+                _iterator23["return"]();
               }
             } finally {
-              if (_didIteratorError20) {
-                throw _iteratorError20;
+              if (_didIteratorError23) {
+                throw _iteratorError23;
               }
             }
           }
         };
 
-        for (var _iterator18 = wrappers[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+        for (var _iterator21 = wrappers[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
           _loop6();
         } //for
 
       } catch (err) {
-        _didIteratorError18 = true;
-        _iteratorError18 = err;
+        _didIteratorError21 = true;
+        _iteratorError21 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion18 && _iterator18["return"] != null) {
-            _iterator18["return"]();
+          if (!_iteratorNormalCompletion21 && _iterator21["return"] != null) {
+            _iterator21["return"]();
           }
         } finally {
-          if (_didIteratorError18) {
-            throw _iteratorError18;
+          if (_didIteratorError21) {
+            throw _iteratorError21;
           }
         }
       }
