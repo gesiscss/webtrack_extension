@@ -302,7 +302,7 @@ export default class Configuration {
     let select = this.select.get();
     if (select == null) {
       for (let index in this.projects) {
-        if (this.projects[index].NAME == 'Default') {
+        if (this.projects[index].NAME == 'Wave1') {
           select = this.projects[index].ID;
           break;
         }
