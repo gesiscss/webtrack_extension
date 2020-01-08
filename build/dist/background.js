@@ -38529,8 +38529,8 @@ function () {
         }
       }
 
-      if (page.meta.hasOwnProperty('full_anonym')) {
-        if (page.meta.full_anonym) {
+      if (page.meta.hasOwnProperty('domain_only')) {
+        if (page.meta.domain_only) {
           for (var i = 0; i < this.to_anonym.length; i++) {
             try {
               page[this.to_anonym[i]] = page['hostname'];
