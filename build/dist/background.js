@@ -32001,13 +32001,13 @@ function () {
     }
     /**
      * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
-     * @param  {String}  url [description]
+     * @param  {String} domain [description]
      * @return {Boolean}     [description]
      */
 
   }, {
     key: "isAllow",
-    value: function isAllow(url) {
+    value: function isAllow(domain) {
       if (this.active) {
         //uncomment to text the list in tests.json
         // console.log('TEST blacklist:');
@@ -32016,29 +32016,65 @@ function () {
         // for (var i = 0; i < this.lists.tests.length; i++) {
         //   let location = this.get_location(this.lists.tests[i]);
         //   //let domain = this.lists.tests[i];
-        //   if (!this.isincluded(location.hostname)) {
+        //   if (!this.isincluded(domain)) {
         //     white.push(this.lists.tests[i]);
         //   } else {
         //     black.push(this.lists.tests[i]);
         //   }
         // }
         // debugger;
-        var location = this.get_location(url);
-
-        if (!this.cache.hasOwnProperty(location.hostname)) {
-          var isinlist = this.isincluded(location.hostname);
+        if (!this.cache.hasOwnProperty(domain)) {
+          var isinlist = this.isincluded(domain);
 
           var _is_allow = // is in whitelist
           isinlist && this.white_or_black || // is not in blacklist
           !isinlist && !this.white_or_black;
 
-          this.cache[location.hostname] = _is_allow;
+          this.cache[domain] = _is_allow;
         }
 
-        var is_allow = this.cache[location.hostname];
+        var is_allow = this.cache[domain];
         return is_allow;
       } else {
         return true;
+      }
+    }
+    /**
+     * [only_domain returns if the only tracking should be done for the domain]
+     * @param  {String} domain [description]
+     * @return {Boolean}     [description]
+     */
+
+  }, {
+    key: "only_domain",
+    value: function only_domain(domain) {
+      if (this.active) {
+        var hostname_parts = domain.split('.');
+
+        if (hostname_parts.length > 1) {
+          return this.lists.simple.only_domain.has(hostname_parts[hostname_parts.length - 2]);
+        }
+
+        return false;
+      }
+    }
+    /**
+     * [only_url returns if the only tracking should be done for the url]
+     * @param  {String} domain [description]
+     * @return {Boolean}     [description]
+     */
+
+  }, {
+    key: "only_url",
+    value: function only_url(domain) {
+      if (this.active) {
+        var hostname_parts = domain.split('.');
+
+        if (hostname_parts.length > 1) {
+          return this.lists.simple.only_url.has(hostname_parts[hostname_parts.length - 2]);
+        }
+
+        return false;
       }
     }
   }]);
@@ -32137,7 +32173,7 @@ function () {
     this._onConnectPopup = this._onConnectPopup.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
-    this.debug = false;
+    this.debug = true;
   }
   /**
    * [_onActiveWindows listenen the active windowId for check the active tab]
@@ -32147,7 +32183,7 @@ function () {
   Extension_createClass(Extension, [{
     key: "_onActiveWindows",
     value: function _onActiveWindows(windowId) {
-      //if (this.debug) console.log('-> _onActiveWindows');
+      if (this.debug) console.log('-> _onActiveWindows');
       this.event.emit(EVENT_NAMES.focusTab, null, false);
       if (windowId > 0) this.activWindowId = windowId;
     }
@@ -32158,7 +32194,7 @@ function () {
   }, {
     key: "_onConnectPopup",
     value: function _onConnectPopup(externalPort) {
-      //if (this.debug) console.log('_onConnectPopup');
+      if (this.debug) console.log('_onConnectPopup');
       externalPort.onDisconnect.addListener(this._onDisconnectPopup);
       this.event.emit(EVENT_NAMES.connectedPopup);
     }
@@ -32169,7 +32205,7 @@ function () {
   }, {
     key: "_onDisconnectPopup",
     value: function _onDisconnectPopup(windowId) {
-      //if (this.debug) console.log('_onDisconnectPopup');
+      if (this.debug) console.log('_onDisconnectPopup');
       this.event.emit(EVENT_NAMES.disconnectPopup);
     }
     /**
@@ -32181,7 +32217,7 @@ function () {
   }, {
     key: "_onHighlightedWindows",
     value: function _onHighlightedWindows(highlightInfo) {
-      //if (this.debug) console.log('_onHighlightedWindows');
+      if (this.debug) console.log('_onHighlightedWindows');
       this.event.emit(EVENT_NAMES.focusTab, null, false);
     }
     /**
@@ -32257,7 +32293,8 @@ function () {
                           private_time: 15 * 60 * 1000,
                           display: true
                         }, function (response) {
-                          if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
+                          if (xbrowser.runtime.lastError) {
+                            if (this.debug) console.log('No front end tab is listening.');
                           }
                         }.bind(this));
                       } catch (e) {
@@ -32335,7 +32372,8 @@ function () {
                       action: "popup_private_time",
                       display: false
                     }, function (response) {
-                      if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
+                      if (xbrowser.runtime.lastError) {
+                        if (this.debug) console.log('No front end tab is listening.');
                       }
                     }.bind(this));
                   } catch (e) {
@@ -32429,7 +32467,8 @@ function () {
                       action: "private_mode",
                       private_mode: this.privateMode
                     }, function (response) {
-                      if (xbrowser.runtime.lastError) {//if (this.debug) console.log('No front end tab is listening.');
+                      if (xbrowser.runtime.lastError) {
+                        if (this.debug) console.log('No front end tab is listening.');
                       }
                     }.bind(this));
                   } catch (e) {
@@ -32650,7 +32689,8 @@ function () {
     key: "_onActivatedTab",
     value: function _onActivatedTab(activeInfo) {
       //on switch the active tabs between one window
-      //if (this.debug) console.log('_onActivatedTab');
+      if (this.debug) console.log('_onActivatedTab');
+
       if (this.pending_private_time_answer) {
         this.displayPrivateTimePopup();
       }
@@ -32705,16 +32745,16 @@ function () {
   }, {
     key: "_onTabUpdate",
     value: function _onTabUpdate(tabId, info, tab) {
-      ////if (this.debug) console.log('-> Extension._onTabUpdate');
+      //if (this.debug) console.log('-> Extension._onTabUpdate');
       if (!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')) {
-        //if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
+        if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
         this.event.emit(EVENT_NAMES.tabUpdate, {
           tabId: tabId,
           openerTabId: tab.hasOwnProperty('openerTabId') ? tab.openerTabId : null,
           tab: tab
         }, false);
       } //if
-      ////if (this.debug) console.log('<- Extension._onTabUpdate');
+      //if (this.debug) console.log('<- Extension._onTabUpdate');
 
     }
     /**
@@ -32740,17 +32780,21 @@ function () {
   }, {
     key: "_onContentMessage",
     value: function _onContentMessage(msg, sender, sendResponse) {
-      //if (this.debug) console.log('-> _onContentMessage');
-      if (this.tabs.hasOwnProperty(sender.tab.id)) {
-        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url));
-      }
+      if (this.debug) console.log('-> _onContentMessage');
 
       if (msg === 'ontracking') {
-        //if (this.debug) console.log('# ontracking');
+        if (this.debug) console.log('# ontracking');
+        var domain = this.urlFilter.get_location(sender.tab.url).hostname;
+        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
         sendResponse({
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
-          pending_private_time_answer: this.pending_private_time_answer
+          pending_private_time_answer: this.pending_private_time_answer,
+          privacy: {
+            only_domain: this.urlFilter.only_domain(domain),
+            only_url: this.urlFilter.only_url(domain),
+            is_blacklisted: !this.tabs[sender.tab.id].getState('allow')
+          }
         });
       } else if (msg.hasOwnProperty('private_time')) {
         if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
@@ -32785,19 +32829,19 @@ function () {
             unhashed_url: msg.unhashed_url,
             title: sender.tab.title
           });
-          msg.tabId = sender.tab.id; //if (this.debug) console.log('==== Emit Event: onTabContent ====');
-
+          msg.tabId = sender.tab.id;
+          if (this.debug) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
         } // return true;
 
       } else {
-          debugger; //if (this.debug) console.log('Private mode: ', this.privateMode);
+        debugger;
+        if (this.debug) console.log('Private mode: ', this.privateMode);
+        sendResponse(false);
+      }
 
-          sendResponse(false);
-        } //if (this.debug) console.log('<- _onContentMessage');
-
-
+      if (this.debug) console.log('<- _onContentMessage');
       return true;
     }
     /**
@@ -32992,7 +33036,7 @@ function () {
   }, {
     key: "stop",
     value: function stop() {
-      //if (this.debug) console.log('-> Extension.stop()');
+      if (this.debug) console.log('-> Extension.stop()');
       this.tabs = {};
       xbrowser.tabs.onCreated.removeListener(this._onTab);
       xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
@@ -38930,7 +38974,7 @@ function () {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = false;
+    this.debug = true;
     this.event = new eventemitter3_default.a();
   }
 
@@ -38945,52 +38989,55 @@ function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
+                if (this.debug) console.log('PageHandler.init()');
+                _context.prev = 1;
+                if (this.debug) console.log('***Load Configuration***');
+                _context.next = 5;
                 return this.config.load();
 
-              case 3:
-                _context.next = 9;
+              case 5:
+                if (this.debug) console.log('***Configuration Loaded***');
+                _context.next = 12;
                 break;
 
-              case 5:
-                _context.prev = 5;
-                _context.t0 = _context["catch"](0);
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](1);
                 console.log('ERROR IN INIT');
                 console.error(_context.t0);
 
-              case 9:
+              case 12:
                 private_mode = this.config.defaultId.get() == null;
                 selected = this.getSelect();
                 tmp_settings = this.config.getRunProjectTmpSettings(); // if project didn't load, proceed to disconnected mode
                 // if (!this.is_load){
-                //   //if (this.debug) console.log('this._loadDisconnectedMode(): ');
+                //   if (this.debug) console.log('this._loadDisconnectedMode(): ');
                 //   this._loadDisconnectedMode();
                 //   resolve(false);
                 // }
 
                 if (!(selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID))) {
-                  _context.next = 17;
+                  _context.next = 20;
                   break;
                 }
 
-                _context.next = 15;
+                _context.next = 18;
                 return this.selectProject(selected, private_mode);
 
-              case 15:
-                _context.next = 19;
+              case 18:
+                _context.next = 22;
                 break;
 
-              case 17:
-                _context.next = 19;
+              case 20:
+                _context.next = 22;
                 return this.selectProject(null, private_mode);
 
-              case 19:
+              case 22:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 5]]);
+        }, _callee, this, [[1, 8]]);
       }));
 
       return function init() {
@@ -39005,7 +39052,7 @@ function () {
   }, {
     key: "getProjectsTmpSettings",
     value: function getProjectsTmpSettings() {
-      //if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
+      if (this.debug) console.log('-> PageHandler.getProjectsTmpSettings()');
       return this.config._getProjectsTmpSettings();
     }
     /**
@@ -39017,7 +39064,7 @@ function () {
   }, {
     key: "getProject",
     value: function getProject(id) {
-      //if (this.debug) console.log('-> PageHandler.getProject()');
+      if (this.debug) console.log('-> PageHandler.getProject()');
       return this.config.getProject(id);
     }
     /**
@@ -39028,7 +39075,7 @@ function () {
   }, {
     key: "getProjects",
     value: function getProjects() {
-      //if (this.debug) console.log('-> PageHandler.getProjects()');
+      if (this.debug) console.log('-> PageHandler.getProjects()');
       return this.config.getProjects();
     }
     /**
@@ -39039,7 +39086,7 @@ function () {
   }, {
     key: "isLoaded",
     value: function isLoaded() {
-      //if (this.debug) console.log('-> PageHandler.isLoaded()');
+      if (this.debug) console.log('-> PageHandler.isLoaded()');
       return this.config.isLoaded();
     }
     /**
@@ -39050,7 +39097,7 @@ function () {
   }, {
     key: "getSelect",
     value: function getSelect() {
-      //if (this.debug) console.log('-> PageHandler.getSelect()');
+      if (this.debug) console.log('-> PageHandler.getSelect()');
       return this.config.getSelect();
     }
     /**
@@ -39063,7 +39110,7 @@ function () {
     value: function _createTracker() {
       var _this = this;
 
-      //if (this.debug) console.log('-> PageHandler._createTracker()');
+      if (this.debug) console.log('-> PageHandler._createTracker()');
       var selectId = this.config.getSelect(); // make sure the tracker is close
 
       this.close_tracker();
@@ -39088,7 +39135,7 @@ function () {
     value: function _createDummyTracker() {
       var _this2 = this;
 
-      //if (this.debug) console.log('PageHandler._createDummyTracker()');
+      if (this.debug) console.log('PageHandler._createDummyTracker()');
       this.tracker = new TrackingHandler_TrackingHandler(this.config, this.transfer, true, true);
       this.tracker.event.on('error', function (error) {
         _this2.event.emit('error', error, true);
@@ -39116,16 +39163,16 @@ function () {
   }, {
     key: "_getCurrentTracker",
     value: function _getCurrentTracker() {
-      //if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
+      if (this.debug) console.log('-> PageHandler._getCurrentTracker()');
       var tracker = this.tracker; // if the configuration was loaded correctly, and no project is selected
       // then return null
 
       if (this.config.isLoaded() && this.config.getSelect() == null) {
         console.log('No Select return null');
         tracker = null;
-      } //if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
+      }
 
-
+      if (this.debug) console.log('<- PageHandler._getCurrentTracker()');
       return tracker;
     }
     /**
@@ -39151,8 +39198,10 @@ function () {
               case 0:
                 id = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
                 private_mode = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : true;
+                if (this.debug) console.log('-> PageHandler.selectProject()');
                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  //if (this.debug) console.log('-> PageHandler.selectProject() - Promise');
+                  if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
+
                   try {
                     // console.log(parseInt(id, 10) , this.config.getSelect());
                     // do nothing if everything to be in place
@@ -39176,24 +39225,25 @@ function () {
                           var current_tracker = _this3._getCurrentTracker();
 
                           current_tracker.init(private_mode); // if setting enterid false then will be disabled the private mode
-                          //if (this.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
+
+                          if (_this3.debug) console.log('ENTERID', current_tracker.settings.ENTERID);
                         }
                       }
                     }
                   } catch (e) {
                     reject(e);
                   } finally {
-                    //if (this.debug) console.log('<- PageHandler.selectProject() - Promise');
+                    if (_this3.debug) console.log('<- PageHandler.selectProject() - Promise');
                     resolve();
                   }
                 }));
 
-              case 3:
+              case 4:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2);
+        }, _callee2, this);
       }));
 
       return function selectProject() {
@@ -39205,7 +39255,8 @@ function () {
   }, {
     key: "close_tracker",
     value: function close_tracker() {
-      //if (this.debug) console.log('-> close_tracker()');
+      if (this.debug) console.log('-> close_tracker()');
+
       if (this.tracker != null) {
         this.tracker.close();
         delete this.tracker;
@@ -39218,7 +39269,8 @@ function () {
       var _this4 = this;
 
       return new Promise(function (resolve, reject) {
-        //if (this.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
+        if (_this4.debug) console.log('-> PageHandler.disconnectedMode() - Promise');
+
         try {
           // make sure there is no tracker
           _this4.close_tracker();
@@ -39228,11 +39280,12 @@ function () {
           var current_tracker = _this4._getCurrentTracker();
 
           current_tracker.init(true); // if setting enterid false then will be disabled the private mode
-          //if (this.debug) console.log('settings', current_tracker.settings);
+
+          if (_this4.debug) console.log('settings', current_tracker.settings);
         } catch (e) {
           reject(e);
         } finally {
-          //if (this.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
+          if (_this4.debug) console.log('<- PageHandler.disconnectedMode() - Promise');
           resolve();
         }
       });
@@ -39246,7 +39299,7 @@ function () {
   }, {
     key: "setClientId",
     value: function setClientId(clientId) {
-      //if (this.debug) console.log('-> PageHandler.setClientId(',clientId,')')
+      if (this.debug) console.log('-> PageHandler.setClientId(', clientId, ')');
       return this.config.setClientId(clientId, this.config.getSelect());
     }
     /**
@@ -39257,7 +39310,7 @@ function () {
   }, {
     key: "getNextPeriode",
     value: function getNextPeriode() {
-      //if (this.debug) console.log('PageHandler.getNextPeriode()')
+      if (this.debug) console.log('PageHandler.getNextPeriode()');
       return this._getCurrentTracker().getNextPeriode();
     }
     /**
@@ -39268,7 +39321,8 @@ function () {
   }, {
     key: "isSending",
     value: function isSending() {
-      //if (this.debug) console.log('PageHandler.isSending()')
+      if (this.debug) console.log('PageHandler.isSending()');
+
       var settings = this.config._getProjectsTmpSettings()[this.config.getSelect()];
 
       if (settings == undefined || !settings.hasOwnProperty('sending')) {
@@ -39285,11 +39339,12 @@ function () {
   }, {
     key: "getPages",
     value: function getPages() {
-      //if (this.debug) console.log('-> PageHandler.getPages()');
+      if (this.debug) console.log('-> PageHandler.getPages()');
+
       var tracker = this._getCurrentTracker();
 
-      var pages = tracker.getPages(); //if (this.debug) console.log('<- PageHandler.getPages()');
-
+      var pages = tracker.getPages();
+      if (this.debug) console.log('<- PageHandler.getPages()');
       return pages;
     }
   }, {
@@ -39306,7 +39361,7 @@ function () {
   }, {
     key: "deletePage",
     value: function deletePage(pageId) {
-      //if (this.debug) console.log('deletePage', pageId);
+      if (this.debug) console.log('deletePage', pageId);
       return this._getCurrentTracker().deletePage(pageId);
     }
     /**
@@ -39319,7 +39374,7 @@ function () {
     key: "sendData",
     value: function sendData() {
       var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      //if (this.debug) console.log('sendData');
+      if (this.debug) console.log('sendData');
       return this._getCurrentTracker().sendData(pages);
     }
     /**
@@ -39374,7 +39429,8 @@ function () {
                 if (extension.privateMode) {
                   //on focus other tab
                   extension.event.once(PageHandler_EVENT_NAMES.extendPrivateMode, function (new_private_time) {
-                    //if (this.debug) console.log('PageHandler.onExtendPrivateMode');
+                    if (_this5.debug) console.log('PageHandler.onExtendPrivateMode');
+
                     if (new_private_time > 0) {
                       _this5.confirm_public_mode(component, new_private_time);
                     } else {

@@ -15905,6 +15905,92 @@ function (_Tracker) {
 
 
 
+// CONCATENATED MODULE: ./src/content/addon/BlacklistTracker.js
+function BlacklistTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { BlacklistTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { BlacklistTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return BlacklistTracker_typeof(obj); }
+
+function BlacklistTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function BlacklistTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function BlacklistTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) BlacklistTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) BlacklistTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function BlacklistTracker_possibleConstructorReturn(self, call) { if (call && (BlacklistTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return BlacklistTracker_assertThisInitialized(self); }
+
+function BlacklistTracker_getPrototypeOf(o) { BlacklistTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return BlacklistTracker_getPrototypeOf(o); }
+
+function BlacklistTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function BlacklistTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) BlacklistTracker_setPrototypeOf(subClass, superClass); }
+
+function BlacklistTracker_setPrototypeOf(o, p) { BlacklistTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return BlacklistTracker_setPrototypeOf(o, p); }
+
+
+
+var BlacklistTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  BlacklistTracker_inherits(BlacklistTracker, _Tracker);
+
+  function BlacklistTracker(worker) {
+    var _this;
+
+    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    BlacklistTracker_classCallCheck(this, BlacklistTracker);
+
+    _this = BlacklistTracker_possibleConstructorReturn(this, BlacklistTracker_getPrototypeOf(BlacklistTracker).call(this, worker));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(BlacklistTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
+    _this.blacklist_debug = false;
+    return _this;
+  }
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+
+
+  BlacklistTracker_createClass(BlacklistTracker, [{
+    key: "getMetadata",
+    value: function getMetadata() {
+      return {
+        description: [],
+        keywords: [],
+        blacklisted: true
+      };
+    }
+    /**
+     * [isAllow returns if the path is allowed in social media platforms]
+     * @param  {Location}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     */
+
+  }, {
+    key: "is_path_allow",
+    value: function is_path_allow(path) {
+      return false;
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      setTimeout(function () {
+        //if (this.domain_debug) console.log('-> onStart!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return BlacklistTracker;
+}(Tracker_Tracker); //class
+
+
+
 // CONCATENATED MODULE: ./src/content/DomDetector.js
 function DomDetector_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16123,6 +16209,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 
+
 var DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
 var YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 var TWITTER_SET = new Set(['ads', 'analytics', 'help']);
@@ -16145,7 +16232,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
     this.onPrivateModeListener = this.onPrivateModeListener.bind(this); // needs to be initialized, if restarting
 
     this.tracker = null;
@@ -16165,7 +16252,7 @@ function () {
 
   ContentHandler_createClass(ContentHandler, [{
     key: "_getTracker",
-    value: function _getTracker() {
+    value: function _getTracker(privacy) {
       var hostname_parts = location.hostname.split('.');
 
       if (hostname_parts.length > 1) {
@@ -16198,10 +16285,13 @@ function () {
         } else if (str.endsWith('apple')) {
           if (this.debug) console.log('AppleTracker');
           return AppleTracker;
-        } else if (DOMAIN_SET.has(str)) {
+        } else if (privacy.is_blacklisted) {
+          if (this.debug) console.log('BlacklistTracker');
+          return BlacklistTracker;
+        } else if (privacy.only_domain) {
           if (this.debug) console.log('DomainTracker');
           return DomainTracker;
-        } else if (URL_SET.has(str)) {
+        } else if (privacy.only_url) {
           if (this.debug) console.log('URLTracker');
           return URLTracker;
         }
@@ -16490,12 +16580,12 @@ function () {
 
   }, {
     key: "createTracker",
-    value: function createTracker() {
+    value: function createTracker(privacy) {
       var _this6 = this;
 
       if (this.debug) console.log('-> createTracker()');
 
-      var Tracker = this._getTracker();
+      var Tracker = this._getTracker(privacy);
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
@@ -16703,23 +16793,25 @@ function () {
               case 5:
                 this.param = _context2.sent;
 
-                if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
-                  this.createTracker();
-                } else {
-                  this.init_timer = setTimeout(function () {
-                    return _this8.init(false);
-                  }, 2000); //if (this.debug) console.log('Not allow to tracked from extension handler');
+                if (ContentHandler_typeof(this.param) == 'object') {
+                  if (this.param.allow) {
+                    this.createTracker(this.param.privacy);
+                  } else {//if (this.debug) console.log('Not allow to tracked from extension handler');
+                  }
                 }
 
-                _context2.next = 12;
+                _context2.next = 13;
                 break;
 
               case 9:
                 _context2.prev = 9;
                 _context2.t0 = _context2["catch"](2);
+                this.init_timer = setTimeout(function () {
+                  return _this8.init(false);
+                }, 2000);
                 console.log(_context2.t0);
 
-              case 12:
+              case 13:
               case "end":
                 return _context2.stop();
             }

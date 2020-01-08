@@ -6,6 +6,7 @@ import DomainTracker from './addon/DomainTracker';
 import URLTracker from './addon/URLTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import AppleTracker from './addon/AppleTracker';
+import BlacklistTracker from './addon/BlacklistTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
 
@@ -34,7 +35,7 @@ export default class ContentHandler {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
 
     this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
     
@@ -54,9 +55,8 @@ export default class ContentHandler {
    * [return specific tracker for the current page]
    * @return {[type]} [description]
    */
-  _getTracker(){
+  _getTracker(privacy){
     let hostname_parts = location.hostname.split('.');
-
     if (hostname_parts.length > 1) {
 
       let str = hostname_parts[hostname_parts.length - 2];
@@ -88,13 +88,16 @@ export default class ContentHandler {
       } else if(str.endsWith('apple')){
         if (this.debug) console.log('AppleTracker');
         return AppleTracker;
-      } else if (DOMAIN_SET.has(str)){
+      } else if (privacy.is_blacklisted){
+        if (this.debug) console.log('BlacklistTracker');
+        return BlacklistTracker;
+      } else if (privacy.only_domain){
         if (this.debug) console.log('DomainTracker');
         return DomainTracker;
-      } else if (URL_SET.has(str)){
+      } else if (privacy.only_url){
         if (this.debug) console.log('URLTracker');
         return URLTracker;
-      }
+      } 
     }
     if (this.debug) console.log('Tracker');
     return Tracker
@@ -346,9 +349,9 @@ export default class ContentHandler {
   /**
    * [create the tracker and start the event listeners for fetching the data]
    */
-  createTracker(){
+  createTracker(privacy){
     if (this.debug) console.log('-> createTracker()')
-    const Tracker = this._getTracker();
+    const Tracker = this._getTracker(privacy);
     this.tracker = new Tracker(5, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
       this.close();
@@ -527,15 +530,18 @@ export default class ContentHandler {
     if (first_call){
       this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
     }
+
     try {
       this.param = await this._getParam();
-      if(typeof this.param == 'object' && this.param.allow){
-        this.createTracker();
-      }else{
-        this.init_timer = setTimeout(()=> this.init(false), 2000)
-        //if (this.debug) console.log('Not allow to tracked from extension handler');
+      if(typeof this.param == 'object'){
+        if (this.param.allow){
+          this.createTracker(this.param.privacy);
+        } else{        
+          //if (this.debug) console.log('Not allow to tracked from extension handler');
+        }
       }
     } catch (e) {
+      this.init_timer = setTimeout(()=> this.init(false), 2000)
       console.log(e);
     }
   }

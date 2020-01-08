@@ -174,10 +174,10 @@ export default class URLFilter {
 
   /**
    * [isAllow checks the domain of the URL and compare with the settings and URL-list to have access to page]
-   * @param  {String}  url [description]
+   * @param  {String} domain [description]
    * @return {Boolean}     [description]
    */
-  isAllow(url){
+  isAllow(domain){
     if(this.active){
 
       //uncomment to text the list in tests.json
@@ -187,7 +187,7 @@ export default class URLFilter {
       // for (var i = 0; i < this.lists.tests.length; i++) {
       //   let location = this.get_location(this.lists.tests[i]);
       //   //let domain = this.lists.tests[i];
-      //   if (!this.isincluded(location.hostname)) {
+      //   if (!this.isincluded(domain)) {
       //     white.push(this.lists.tests[i]);
       //   } else {
       //     black.push(this.lists.tests[i]);
@@ -195,23 +195,60 @@ export default class URLFilter {
       // }
       // debugger;
 
-      var location = this.get_location(url);
 
-      if(!this.cache.hasOwnProperty(location.hostname)){
-        let isinlist = this.isincluded(location.hostname);
+
+      if(!this.cache.hasOwnProperty(domain)){
+        let isinlist = this.isincluded(domain);
        
         let is_allow = 
               // is in whitelist
               (isinlist && this.white_or_black) ||
               // is not in blacklist
               (!isinlist && !this.white_or_black);
-        this.cache[location.hostname] = is_allow;
+        this.cache[domain] = is_allow;
       }
-      let is_allow = this.cache[location.hostname];
+      let is_allow = this.cache[domain];
             
       return is_allow;
     }else{
       return true;
+    }
+  }
+
+  /**
+   * [only_domain returns if the only tracking should be done for the domain]
+   * @param  {String} domain [description]
+   * @return {Boolean}     [description]
+   */
+  only_domain(domain){
+    if(this.active){
+      let hostname_parts = domain.split('.');
+
+      if (hostname_parts.length > 1) {
+        return this.lists.simple.only_domain.has(
+          hostname_parts[hostname_parts.length - 2]);
+      }
+
+      return false;
+    }
+  }
+
+
+  /**
+   * [only_url returns if the only tracking should be done for the url]
+   * @param  {String} domain [description]
+   * @return {Boolean}     [description]
+   */
+  only_url(domain){
+    if(this.active){
+      let hostname_parts = domain.split('.');
+
+      if (hostname_parts.length > 1) {
+        return this.lists.simple.only_url.has(
+          hostname_parts[hostname_parts.length - 2]);
+      }
+
+      return false;
     }
   }
 }

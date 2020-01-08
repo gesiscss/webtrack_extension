@@ -349,16 +349,21 @@ export default class Extension {
    */
   _onContentMessage(msg, sender, sendResponse){
       if (this.debug) console.log('-> _onContentMessage');
-      if(this.tabs.hasOwnProperty(sender.tab.id)) {
-        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(sender.tab.url))
-      }
 
       if(msg==='ontracking'){
         if (this.debug) console.log('# ontracking');
+        let domain = this.urlFilter.get_location(sender.tab.url).hostname;
+        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
+
         sendResponse({
           allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
           extensionfilter: this.extensionfilter, 
-          pending_private_time_answer: this.pending_private_time_answer
+          pending_private_time_answer: this.pending_private_time_answer,
+          privacy:{
+              only_domain: this.urlFilter.only_domain(domain),
+              only_url: this.urlFilter.only_url(domain),
+              is_blacklisted: !this.tabs[sender.tab.id].getState('allow')
+          }
         });
       } else if (msg.hasOwnProperty('private_time')){
         if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
