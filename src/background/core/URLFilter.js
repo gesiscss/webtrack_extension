@@ -180,15 +180,19 @@ export default class URLFilter {
   isAllow(url){
     if(this.active){
 
-
+      //uncomment to text the list in tests.json
       // console.log('TEST blacklist:');
+      // let white=[]
+      // let black=[]
       // for (var i = 0; i < this.lists.tests.length; i++) {
-      //   if (!this.isincluded(this.lists.tests[i])) {
-      //     console.log(this.lists.tests[i]);
-      //     debugger;
+      //   let location = this.get_location(this.lists.tests[i]);
+      //   //let domain = this.lists.tests[i];
+      //   if (!this.isincluded(location.hostname)) {
+      //     white.push(this.lists.tests[i]);
+      //   } else {
+      //     black.push(this.lists.tests[i]);
       //   }
       // }
-
       // debugger;
 
       var location = this.get_location(url);
