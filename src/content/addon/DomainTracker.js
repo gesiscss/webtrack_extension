@@ -22,7 +22,7 @@ export default class DomainTracker extends Tracker{
     return {
         description: [],
         keywords: [],
-        full_anonym: true
+        domain_only: true
       }
   }
 
