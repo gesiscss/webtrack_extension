@@ -204,6 +204,9 @@ export default class Tracker extends MultiFetch {
     result['domain_only'] = this.metadata['domain_only'];
     result['domain_only'] = data['domain_only'];
 
+    result['url_only'] = this.metadata['url_only'];
+    result['url_only'] = data['url_only'];
+
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
     this.eventEmitter.emit(EVENT_NAMES.data, {meta: result}, false);
   }

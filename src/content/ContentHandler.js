@@ -17,7 +17,7 @@ const YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 
 const TWITTER_SET = new Set(['ads', 'analytics', 'help']);
 
-const SURVEY_SET = new Set(['soscisurvey']);
+const URL_SET = new Set(['soscisurvey']);
 
 export default class ContentHandler {
 
@@ -92,8 +92,8 @@ export default class ContentHandler {
         if (this.debug) console.log('DomainTracker');
         return DomainTracker;
       } else if (URL_SET.has(str)){
-        if (this.debug) console.log('DomainTracker');
-        return DomainTracker;
+        if (this.debug) console.log('URLTracker');
+        return URLTracker;
       }
     }
     if (this.debug) console.log('Tracker');

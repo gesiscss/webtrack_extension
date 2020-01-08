@@ -10301,6 +10301,8 @@ function (_MultiFetch) {
       result['anonym'] = data['anonym'];
       result['domain_only'] = this.metadata['domain_only'];
       result['domain_only'] = data['domain_only'];
+      result['url_only'] = this.metadata['url_only'];
+      result['url_only'] = data['url_only'];
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       this.eventEmitter.emit(EVENT_NAMES.data, {
         meta: result
@@ -16124,7 +16126,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 var DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
 var YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 var TWITTER_SET = new Set(['ads', 'analytics', 'help']);
-var SURVEY_SET = new Set(['soscisurvey']);
+var URL_SET = new Set(['soscisurvey']);
 
 var ContentHandler_ContentHandler =
 /*#__PURE__*/
@@ -16200,8 +16202,8 @@ function () {
           if (this.debug) console.log('DomainTracker');
           return DomainTracker;
         } else if (URL_SET.has(str)) {
-          if (this.debug) console.log('DomainTracker');
-          return DomainTracker;
+          if (this.debug) console.log('URLTracker');
+          return URLTracker;
         }
       }
 

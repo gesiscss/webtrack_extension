@@ -38525,7 +38525,7 @@ function () {
           }
 
           page["favicon"] = "";
-          page['content'][0].html = ' ';
+          page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
         }
       }
 
@@ -38540,7 +38540,17 @@ function () {
           if (page.hasOwnProperty('hashes')) {
             page['hashes'] = [];
           }
+
+          page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
         }
+      }
+
+      if (page.meta.hasOwnProperty('url_only')) {
+        if (page.meta.url_only) {
+          page['title'] = '';
+        }
+
+        page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
       }
 
       if (page.meta.hasOwnProperty('anonym')) {
