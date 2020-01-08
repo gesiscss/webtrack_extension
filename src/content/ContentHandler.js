@@ -3,18 +3,21 @@ import YouTubeTracker from './addon/YouTubeTracker';
 import TwitterTracker from './addon/TwitterTracker';
 import InstagramTracker from './addon/InstagramTracker';
 import DomainTracker from './addon/DomainTracker';
+import URLTracker from './addon/URLTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import AppleTracker from './addon/AppleTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
 
-const SMM_SET = new Set(['instagram', 'skype', 'xing', 
+const DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 
   'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 
   'wechat', 'viber', 'vk', 'whatsapp', 'telegram' ]);
 
 const YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 
 const TWITTER_SET = new Set(['ads', 'analytics', 'help']);
+
+const SURVEY_SET = new Set(['soscisurvey']);
 
 export default class ContentHandler {
 
@@ -85,11 +88,12 @@ export default class ContentHandler {
       } else if(str.endsWith('apple')){
         if (this.debug) console.log('AppleTracker');
         return AppleTracker;
-      } else {
-        if (SMM_SET.has(str)){
-          if (this.debug) console.log('DomainTracker');
-          return DomainTracker;
-        }
+      } else if (DOMAIN_SET.has(str)){
+        if (this.debug) console.log('DomainTracker');
+        return DomainTracker;
+      } else if (URL_SET.has(str)){
+        if (this.debug) console.log('DomainTracker');
+        return DomainTracker;
       }
     }
     if (this.debug) console.log('Tracker');

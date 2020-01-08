@@ -10299,8 +10299,8 @@ function (_MultiFetch) {
 
       result['anonym'] = this.metadata['anonym'];
       result['anonym'] = data['anonym'];
-      result['full_anonym'] = this.metadata['full_anonym'];
-      result['full_anonym'] = data['full_anonym'];
+      result['domain_only'] = this.metadata['domain_only'];
+      result['domain_only'] = data['domain_only'];
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       this.eventEmitter.emit(EVENT_NAMES.data, {
         meta: result
@@ -15550,7 +15550,7 @@ function (_Tracker) {
       return {
         description: [],
         keywords: [],
-        full_anonym: true
+        domain_only: true
       };
     }
     /**
@@ -15580,6 +15580,92 @@ function (_Tracker) {
   }]);
 
   return DomainTracker;
+}(Tracker_Tracker); //class
+
+
+
+// CONCATENATED MODULE: ./src/content/addon/URLTracker.js
+function URLTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { URLTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { URLTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return URLTracker_typeof(obj); }
+
+function URLTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function URLTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function URLTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) URLTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) URLTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function URLTracker_possibleConstructorReturn(self, call) { if (call && (URLTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return URLTracker_assertThisInitialized(self); }
+
+function URLTracker_getPrototypeOf(o) { URLTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return URLTracker_getPrototypeOf(o); }
+
+function URLTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function URLTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) URLTracker_setPrototypeOf(subClass, superClass); }
+
+function URLTracker_setPrototypeOf(o, p) { URLTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return URLTracker_setPrototypeOf(o, p); }
+
+
+
+var URLTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  URLTracker_inherits(URLTracker, _Tracker);
+
+  function URLTracker(worker) {
+    var _this;
+
+    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    URLTracker_classCallCheck(this, URLTracker);
+
+    _this = URLTracker_possibleConstructorReturn(this, URLTracker_getPrototypeOf(URLTracker).call(this, worker));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(URLTracker_assertThisInitialized(_this));
+    _this.is_allowed = null;
+    _this.url_debug = false;
+    return _this;
+  }
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+
+
+  URLTracker_createClass(URLTracker, [{
+    key: "getMetadata",
+    value: function getMetadata() {
+      return {
+        description: [],
+        keywords: [],
+        url_only: true
+      };
+    }
+    /**
+     * [isAllow returns if the path is allowed in social media platforms]
+     * @param  {Location}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     */
+
+  }, {
+    key: "is_path_allow",
+    value: function is_path_allow(path) {
+      return false;
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      setTimeout(function () {
+        //if (this.url_debug) console.log('-> onStart!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return URLTracker;
 }(Tracker_Tracker); //class
 
 
@@ -16034,9 +16120,11 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 
-var SMM_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
+
+var DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
 var YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
 var TWITTER_SET = new Set(['ads', 'analytics', 'help']);
+var SURVEY_SET = new Set(['soscisurvey']);
 
 var ContentHandler_ContentHandler =
 /*#__PURE__*/
@@ -16108,11 +16196,12 @@ function () {
         } else if (str.endsWith('apple')) {
           if (this.debug) console.log('AppleTracker');
           return AppleTracker;
-        } else {
-          if (SMM_SET.has(str)) {
-            if (this.debug) console.log('DomainTracker');
-            return DomainTracker;
-          }
+        } else if (DOMAIN_SET.has(str)) {
+          if (this.debug) console.log('DomainTracker');
+          return DomainTracker;
+        } else if (URL_SET.has(str)) {
+          if (this.debug) console.log('DomainTracker');
+          return DomainTracker;
         }
       }
 
