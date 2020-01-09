@@ -71,6 +71,8 @@ export default class URLFilter {
     // top level domain index
     let tld_idx = domain.lastIndexOf(".");
 
+
+
     // check if it is ip based on the Top Level Domain. If there is a 
     // number in the last position, it should be an IP as of Nov 2019.
     // e.g. 20.32.3.4
@@ -133,8 +135,9 @@ export default class URLFilter {
     }
 
     // check if the sub_domain endsWith any of the blocked domains
+    let subdot_domain = '.' + sub_domain;
     for (let item of this.lists.simple.ends_with) {
-      if (sub_domain.endsWith(item)){
+      if (subdot_domain.endsWith(item)){
         return true;
       }
     }

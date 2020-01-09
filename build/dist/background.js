@@ -31938,6 +31938,7 @@ function () {
       } // check if the sub_domain endsWith any of the blocked domains
 
 
+      var subdot_domain = '.' + sub_domain;
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -31946,7 +31947,7 @@ function () {
         for (var _iterator = this.lists.simple.ends_with[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var item = _step.value;
 
-          if (sub_domain.endsWith(item)) {
+          if (subdot_domain.endsWith(item)) {
             return true;
           }
         }
