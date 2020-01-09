@@ -137,6 +137,7 @@ export default class TabHandler {
    */
   async _updateDuration(){
     try {
+      console.log('_updateDuration is still being called');
       let tabIds = (await this.extension.getActiveTabIds()).filter((tabId, i) => this.tabs.hasOwnProperty(tabId));
       if(tabIds.length>0){
         for (let id of tabIds) {
