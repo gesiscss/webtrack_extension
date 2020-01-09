@@ -31255,8 +31255,9 @@ function Configuration_defineProperties(target, props) { for (var i = 0; i < pro
 function Configuration_createClass(Constructor, protoProps, staticProps) { if (protoProps) Configuration_defineProperties(Constructor.prototype, protoProps); if (staticProps) Configuration_defineProperties(Constructor, staticProps); return Constructor; }
 
 
-var LOAD_CERT_AFTER_SECONDS = 60 * 60 * 24;
-var UPDATE_INTERVAL = 60 * 15 * 1000;
+var LOAD_CERT_AFTER_SECONDS = 60 * 60 * 24; // Every 20 minutes
+
+var UPDATE_INTERVAL = 20 * 60 * 1000;
 
 var Configuration_Configuration =
 /*#__PURE__*/
@@ -31379,7 +31380,26 @@ function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.transfer.jsonFetch(_this2.settings.server + 'client/getProjects').then(function (projects) {
+        var client_hash = null;
+
+        if (_this2.getRunProjectTmpSettings()) {
+          client_hash = _this2.getRunProjectTmpSettings().clientId;
+        }
+
+        if (client_hash == null) {
+          client_hash = 'NULL';
+        }
+
+        _this2.transfer.jsonFetch(_this2.settings.server + 'client/getProjects', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            client_hash: client_hash
+          })
+        }).then(function (projects) {
           //if (this.debug) console.log('Fetch projects!');
           _this2.projectsStorage.set(projects);
 
@@ -36864,10 +36884,11 @@ function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.prev = 0;
-                _context2.next = 3;
+                console.log('_updateDuration is still being called');
+                _context2.next = 4;
                 return this.extension.getActiveTabIds();
 
-              case 3:
+              case 4:
                 _context2.t0 = function (tabId, i) {
                   return _this2.tabs.hasOwnProperty(tabId);
                 };
@@ -36875,59 +36896,59 @@ function () {
                 tabIds = _context2.sent.filter(_context2.t0);
 
                 if (!(tabIds.length > 0)) {
-                  _context2.next = 25;
+                  _context2.next = 26;
                   break;
                 }
 
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
                 _iteratorError = undefined;
-                _context2.prev = 9;
+                _context2.prev = 10;
 
                 for (_iterator = tabIds[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   id = _step.value;
                   this.tabs[id].updateDuration(this.UPDATE_INTERVAL_DURATION);
                 }
 
-                _context2.next = 17;
+                _context2.next = 18;
                 break;
 
-              case 13:
-                _context2.prev = 13;
-                _context2.t1 = _context2["catch"](9);
+              case 14:
+                _context2.prev = 14;
+                _context2.t1 = _context2["catch"](10);
                 _didIteratorError = true;
                 _iteratorError = _context2.t1;
 
-              case 17:
-                _context2.prev = 17;
+              case 18:
                 _context2.prev = 18;
+                _context2.prev = 19;
 
                 if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                   _iterator["return"]();
                 }
 
-              case 20:
-                _context2.prev = 20;
+              case 21:
+                _context2.prev = 21;
 
                 if (!_didIteratorError) {
-                  _context2.next = 23;
+                  _context2.next = 24;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 23:
-                return _context2.finish(20);
-
               case 24:
-                return _context2.finish(17);
+                return _context2.finish(21);
 
               case 25:
-                _context2.next = 32;
+                return _context2.finish(18);
+
+              case 26:
+                _context2.next = 33;
                 break;
 
-              case 27:
-                _context2.prev = 27;
+              case 28:
+                _context2.prev = 28;
                 _context2.t2 = _context2["catch"](0);
                 console.log(_context2.t2);
 
@@ -36935,12 +36956,12 @@ function () {
 
                 this.event.emit('error', _context2.t2, true);
 
-              case 32:
+              case 33:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 27], [9, 13, 17, 25], [18,, 20, 24]]);
+        }, _callee2, this, [[0, 28], [10, 14, 18, 26], [19,, 21, 25]]);
       }));
 
       return function _updateDuration() {

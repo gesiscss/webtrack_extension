@@ -2,7 +2,8 @@ import LocalstorageHandler from './LocalstorageHandler';
 
 
 const LOAD_CERT_AFTER_SECONDS = 60*60*24;
-const UPDATE_INTERVAL = 60*15*1000
+// Every 20 minutes
+const UPDATE_INTERVAL = 20*60*1000
 
 
 export default class Configuration {
@@ -103,8 +104,21 @@ export default class Configuration {
   _fetchProject(){
     return new Promise((resolve, reject)=>{
 
-      this.transfer.jsonFetch(this.settings.server+'client/getProjects')
-        .then(projects => {
+      let client_hash = null;
+      if (this.getRunProjectTmpSettings()){
+        client_hash = this.getRunProjectTmpSettings().clientId;
+      } 
+      if (client_hash == null ) {
+        client_hash = 'NULL';
+      }
+      this.transfer.jsonFetch(this.settings.server+'client/getProjects', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({client_hash: client_hash})})
+      .then(projects => {
           //if (this.debug) console.log('Fetch projects!');
           this.projectsStorage.set(projects);
           this.store_projects(projects);
