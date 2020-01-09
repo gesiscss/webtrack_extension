@@ -4,7 +4,7 @@ var settings = {
   },
   id: 'webtracker.sowi.unibe.ch',
   lang: 'de',
-  versionType: 'Chrome',
+  versionType: 'Chrome v0.7.8',
   mobile: false,
   requireVersion: {
     chrome: 45
