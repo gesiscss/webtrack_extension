@@ -32294,7 +32294,7 @@ function () {
                           display: true
                         }, function (response) {
                           if (xbrowser.runtime.lastError) {
-                            if (this.debug) console.log('No front end tab is listening.');
+                            if (this.debug) console.log('displayPrivateTimePopup: No front end tab is listening.');
                           }
                         }.bind(this));
                       } catch (e) {
@@ -32373,7 +32373,7 @@ function () {
                       display: false
                     }, function (response) {
                       if (xbrowser.runtime.lastError) {
-                        if (this.debug) console.log('No front end tab is listening.');
+                        if (this.debug) console.log('removePrivateTimePopup: No front end tab is listening.');
                       }
                     }.bind(this));
                   } catch (e) {
@@ -32427,6 +32427,102 @@ function () {
       };
     }()
     /**
+     * initFrontent send a message asking to initialize the frontend tracking
+     * @param {Boolean} 
+     */
+
+  }, {
+    key: "initAllTabs",
+    value: function () {
+      var _initAllTabs = Extension_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee3() {
+        var tabs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, tab;
+
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (this.debug) console.log('-> initAllTabs()'); // send a message to all tabs
+
+                _context3.next = 3;
+                return this.getAllTabsIds({}, false);
+
+              case 3:
+                tabs = _context3.sent;
+
+                if (!(tabs.length > 0)) {
+                  _context3.next = 24;
+                  break;
+                }
+
+                _iteratorNormalCompletion3 = true;
+                _didIteratorError3 = false;
+                _iteratorError3 = undefined;
+                _context3.prev = 8;
+
+                for (_iterator3 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                  tab = _step3.value;
+
+                  try {
+                    xbrowser.tabs.sendMessage(tab.id, {
+                      action: "init"
+                    }, function (response) {
+                      if (xbrowser.runtime.lastError) {
+                        if (this.debug) console.log('OnInit: No front end tab is listening.');
+                      }
+                    }.bind(this));
+                  } catch (e) {
+                    console.log('caught');
+                  }
+                }
+
+                _context3.next = 16;
+                break;
+
+              case 12:
+                _context3.prev = 12;
+                _context3.t0 = _context3["catch"](8);
+                _didIteratorError3 = true;
+                _iteratorError3 = _context3.t0;
+
+              case 16:
+                _context3.prev = 16;
+                _context3.prev = 17;
+
+                if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                  _iterator3["return"]();
+                }
+
+              case 19:
+                _context3.prev = 19;
+
+                if (!_didIteratorError3) {
+                  _context3.next = 22;
+                  break;
+                }
+
+                throw _iteratorError3;
+
+              case 22:
+                return _context3.finish(19);
+
+              case 23:
+                return _context3.finish(16);
+
+              case 24:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[8, 12, 16, 24], [17,, 19, 23]]);
+      }));
+
+      return function initAllTabs() {
+        return _initAllTabs.apply(this, arguments);
+      };
+    }()
+    /**
      * removePrivateTimePopup send a message indicating that the popup should be hidden
      * @param {Boolean} 
      */
@@ -32436,132 +32532,20 @@ function () {
     value: function () {
       var _notifyPrivateMode = Extension_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
-        var tabs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, tab;
-
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _context3.next = 2;
-                return this.getAllTabsIds({}, false);
-
-              case 2:
-                tabs = _context3.sent;
-
-                if (!(tabs.length > 0)) {
-                  _context3.next = 23;
-                  break;
-                }
-
-                _iteratorNormalCompletion3 = true;
-                _didIteratorError3 = false;
-                _iteratorError3 = undefined;
-                _context3.prev = 7;
-
-                for (_iterator3 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                  tab = _step3.value;
-
-                  try {
-                    xbrowser.tabs.sendMessage(tab.id, {
-                      action: "private_mode",
-                      private_mode: this.privateMode
-                    }, function (response) {
-                      if (xbrowser.runtime.lastError) {
-                        if (this.debug) console.log('No front end tab is listening.');
-                      }
-                    }.bind(this));
-                  } catch (e) {
-                    console.log('caught');
-                  }
-                }
-
-                _context3.next = 15;
-                break;
-
-              case 11:
-                _context3.prev = 11;
-                _context3.t0 = _context3["catch"](7);
-                _didIteratorError3 = true;
-                _iteratorError3 = _context3.t0;
-
-              case 15:
-                _context3.prev = 15;
-                _context3.prev = 16;
-
-                if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                  _iterator3["return"]();
-                }
-
-              case 18:
-                _context3.prev = 18;
-
-                if (!_didIteratorError3) {
-                  _context3.next = 21;
-                  break;
-                }
-
-                throw _iteratorError3;
-
-              case 21:
-                return _context3.finish(18);
-
-              case 22:
-                return _context3.finish(15);
-
-              case 23:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this, [[7, 11, 15, 23], [16,, 18, 22]]);
-      }));
-
-      return function notifyPrivateMode() {
-        return _notifyPrivateMode.apply(this, arguments);
-      };
-    }()
-    /**
-     * [setImage set black or full color image]
-     * @param {Boolean} b [default: false]
-     */
-
-  }, {
-    key: "setImage",
-    value: function setImage() {
-      var b = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      // console.log('before', b);
-      // console.log(this.privateMode);
-      if (this.privateMode) b = false;else if (!this.privateMode && !this.changeIcon) b = true; // console.log('after', b);
-
-      xbrowser.browserAction.setIcon({
-        path: b ? 'images/on.png' : 'images/off.png'
-      });
-    }
-    /**
-       * [resetPublicMode apropiately reset to public image]
-       * @param {Boolean} b
-       */
-
-  }, {
-    key: "resetPublicImage",
-    value: function () {
-      var _resetPublicImage = Extension_asyncToGenerator(
-      /*#__PURE__*/
       regeneratorRuntime.mark(function _callee4() {
-        var activeTabIds, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, id;
+        var tabs, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, tab;
 
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return this.getActiveTabIds();
+                return this.getAllTabsIds({}, false);
 
               case 2:
-                activeTabIds = _context4.sent;
+                tabs = _context4.sent;
 
-                if (!(activeTabIds.length > 0)) {
+                if (!(tabs.length > 0)) {
                   _context4.next = 23;
                   break;
                 }
@@ -32571,11 +32555,21 @@ function () {
                 _iteratorError4 = undefined;
                 _context4.prev = 7;
 
-                for (_iterator4 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                  id = _step4.value;
-                  //this.resetImage(tabs[0].id);
-                  this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked')); //this.setPrivateMode(false);
-                  //component.setTooglePrivateMode(false);
+                for (_iterator4 = tabs[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  tab = _step4.value;
+
+                  try {
+                    xbrowser.tabs.sendMessage(tab.id, {
+                      action: "private_mode",
+                      private_mode: this.privateMode
+                    }, function (response) {
+                      if (xbrowser.runtime.lastError) {
+                        if (this.debug) console.log('notifyPrivateMode: No front end tab is listening.');
+                      }
+                    }.bind(this));
+                  } catch (e) {
+                    console.log('caught');
+                  }
                 }
 
                 _context4.next = 15;
@@ -32619,6 +32613,108 @@ function () {
         }, _callee4, this, [[7, 11, 15, 23], [16,, 18, 22]]);
       }));
 
+      return function notifyPrivateMode() {
+        return _notifyPrivateMode.apply(this, arguments);
+      };
+    }()
+    /**
+     * [setImage set black or full color image]
+     * @param {Boolean} b [default: false]
+     */
+
+  }, {
+    key: "setImage",
+    value: function setImage() {
+      var b = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      // console.log('before', b);
+      // console.log(this.privateMode);
+      if (this.privateMode) b = false;else if (!this.privateMode && !this.changeIcon) b = true; // console.log('after', b);
+
+      xbrowser.browserAction.setIcon({
+        path: b ? 'images/on.png' : 'images/off.png'
+      });
+    }
+    /**
+       * [resetPublicMode apropiately reset to public image]
+       * @param {Boolean} b
+       */
+
+  }, {
+    key: "resetPublicImage",
+    value: function () {
+      var _resetPublicImage = Extension_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee5() {
+        var activeTabIds, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, id;
+
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.next = 2;
+                return this.getActiveTabIds();
+
+              case 2:
+                activeTabIds = _context5.sent;
+
+                if (!(activeTabIds.length > 0)) {
+                  _context5.next = 23;
+                  break;
+                }
+
+                _iteratorNormalCompletion5 = true;
+                _didIteratorError5 = false;
+                _iteratorError5 = undefined;
+                _context5.prev = 7;
+
+                for (_iterator5 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                  id = _step5.value;
+                  //this.resetImage(tabs[0].id);
+                  this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked')); //this.setPrivateMode(false);
+                  //component.setTooglePrivateMode(false);
+                }
+
+                _context5.next = 15;
+                break;
+
+              case 11:
+                _context5.prev = 11;
+                _context5.t0 = _context5["catch"](7);
+                _didIteratorError5 = true;
+                _iteratorError5 = _context5.t0;
+
+              case 15:
+                _context5.prev = 15;
+                _context5.prev = 16;
+
+                if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                  _iterator5["return"]();
+                }
+
+              case 18:
+                _context5.prev = 18;
+
+                if (!_didIteratorError5) {
+                  _context5.next = 21;
+                  break;
+                }
+
+                throw _iteratorError5;
+
+              case 21:
+                return _context5.finish(18);
+
+              case 22:
+                return _context5.finish(15);
+
+              case 23:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this, [[7, 11, 15, 23], [16,, 18, 22]]);
+      }));
+
       return function resetPublicImage() {
         return _resetPublicImage.apply(this, arguments);
       };
@@ -32638,38 +32734,38 @@ function () {
       function () {
         var _ref = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee5(resolve, reject) {
+        regeneratorRuntime.mark(function _callee6(resolve, reject) {
           var tabs;
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context5.prev = _context5.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
-                  _context5.prev = 0;
-                  _context5.next = 3;
+                  _context6.prev = 0;
+                  _context6.next = 3;
                   return _this.getAllTabsIds({}, false);
 
                 case 3:
-                  tabs = _context5.sent;
+                  tabs = _context6.sent;
                   if (_this.activWindowId >= 1) tabs = tabs.filter(function (e) {
                     return e.windowId == _this.activWindowId && e.highlighted == true;
                   });
                   resolve(tabs.map(function (v) {
                     return v.id;
                   }));
-                  _context5.next = 11;
+                  _context6.next = 11;
                   break;
 
                 case 8:
-                  _context5.prev = 8;
-                  _context5.t0 = _context5["catch"](0);
-                  reject(_context5.t0);
+                  _context6.prev = 8;
+                  _context6.t0 = _context6["catch"](0);
+                  reject(_context6.t0);
 
                 case 11:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee5, null, [[0, 8]]);
+          }, _callee6, null, [[0, 8]]);
         }));
 
         return function (_x, _x2) {
@@ -32786,16 +32882,19 @@ function () {
         if (this.debug) console.log('# ontracking');
         var domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
-        sendResponse({
+        var r = {
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
           pending_private_time_answer: this.pending_private_time_answer,
           privacy: {
             only_domain: this.urlFilter.only_domain(domain),
             only_url: this.urlFilter.only_url(domain),
-            is_blacklisted: !this.tabs[sender.tab.id].getState('allow')
+            is_blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+            private_mode: this.privateMode,
+            is_tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
-        });
+        };
+        sendResponse(r);
       } else if (msg.hasOwnProperty('private_time')) {
         if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
@@ -32862,22 +32961,22 @@ function () {
       function () {
         var _ref2 = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee6(resolve, reject) {
+        regeneratorRuntime.mark(function _callee7(resolve, reject) {
           var tabId;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
-                  _context6.prev = 0;
-                  _context6.next = 3;
+                  _context7.prev = 0;
+                  _context7.next = 3;
                   return _this2.getAllTabsIds({}, false);
 
                 case 3:
-                  _context6.t0 = function (e) {
+                  _context7.t0 = function (e) {
                     return e.windowId == _this2.activWindowId && e.highlighted == true;
                   };
 
-                  tabId = _context6.sent.filter(_context6.t0)[0].id;
+                  tabId = _context7.sent.filter(_context7.t0)[0].id;
 
                   _this2.tabs[tabId].setState('disabled', _boolean2);
 
@@ -32888,20 +32987,20 @@ function () {
                   }
 
                   resolve();
-                  _context6.next = 13;
+                  _context7.next = 13;
                   break;
 
                 case 10:
-                  _context6.prev = 10;
-                  _context6.t1 = _context6["catch"](0);
-                  reject(_context6.t1);
+                  _context7.prev = 10;
+                  _context7.t1 = _context7["catch"](0);
+                  reject(_context7.t1);
 
                 case 13:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6, null, [[0, 10]]);
+          }, _callee7, null, [[0, 10]]);
         }));
 
         return function (_x3, _x4) {
@@ -32924,37 +33023,37 @@ function () {
       function () {
         var _ref3 = Extension_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee7(resolve, reject) {
+        regeneratorRuntime.mark(function _callee8(resolve, reject) {
           var tabId;
-          return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
-              switch (_context7.prev = _context7.next) {
+              switch (_context8.prev = _context8.next) {
                 case 0:
-                  _context7.prev = 0;
-                  _context7.next = 3;
+                  _context8.prev = 0;
+                  _context8.next = 3;
                   return _this3.getAllTabsIds({}, false);
 
                 case 3:
-                  _context7.t0 = function (e) {
+                  _context8.t0 = function (e) {
                     return e.windowId == _this3.activWindowId && e.highlighted == true;
                   };
 
-                  tabId = _context7.sent.filter(_context7.t0)[0].id;
+                  tabId = _context8.sent.filter(_context8.t0)[0].id;
                   resolve(_this3.tabs[tabId].getState('disabled'));
-                  _context7.next = 11;
+                  _context8.next = 11;
                   break;
 
                 case 8:
-                  _context7.prev = 8;
-                  _context7.t1 = _context7["catch"](0);
-                  reject(_context7.t1);
+                  _context8.prev = 8;
+                  _context8.t1 = _context8["catch"](0);
+                  reject(_context8.t1);
 
                 case 11:
                 case "end":
-                  return _context7.stop();
+                  return _context8.stop();
               }
             }
-          }, _callee7, null, [[0, 8]]);
+          }, _callee8, null, [[0, 8]]);
         }));
 
         return function (_x5, _x6) {
@@ -33001,26 +33100,26 @@ function () {
         xbrowser.tabs.onHighlighted.addListener(_this4._onHighlightedWindows);
 
         _this4.getAllTabsIds().then(function (tabIds) {
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
 
           try {
-            for (var _iterator5 = tabIds[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var id = _step5.value;
+            for (var _iterator6 = tabIds[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var id = _step6.value;
               _this4.tabs[id] = new Extension_Tab();
             }
           } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-                _iterator5["return"]();
+              if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+                _iterator6["return"]();
               }
             } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }
@@ -38216,7 +38315,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = false;
+    this.debug = true;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
@@ -38310,25 +38409,34 @@ function () {
                   // data immediately
 
 
-                  if (_this2.AUTOSTART) _this2.start(private_mode);
+                  if (!_this2.AUTOSTART) {
+                    _context.next = 15;
+                    break;
+                  }
 
+                  _context.next = 15;
+                  return _this2.start(private_mode);
+
+                case 15:
                   if (!_this2.is_dummy) {
                     if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
                       if (_this2.debug) console.log(':- Autostart send');
 
                       _this2.sendData(null, true);
                     }
+
+                    _this2.extension.initAllTabs();
                   }
 
                   resolve();
                   return _context.finish(9);
 
-                case 16:
+                case 18:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 5, 9, 16]]);
+          }, _callee, null, [[0, 5, 9, 18]]);
         }));
 
         return function (_x, _x2) {

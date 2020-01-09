@@ -30,6 +30,7 @@ export default class ContentHandler {
     this.page = null;
     this.allow = false;
     this.isSend = false;
+    this.isListeningPrivateMode = false;
 
     // initialized only once
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
@@ -38,6 +39,7 @@ export default class ContentHandler {
     this.debug = true;
 
     this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
+    this.onInitListener = this.onInitListener.bind(this);
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -113,6 +115,7 @@ export default class ContentHandler {
       this.browser.runtime.sendMessage('ontracking', (response) => {
         if(this.browser.runtime.lastError) {
           /*ignore when the background is not listening*/;
+          // console.log(this.browser.runtime.lastError);
         } else {
           if (response.pending_private_time_answer){
             this.display_notification = true;
@@ -287,6 +290,7 @@ export default class ContentHandler {
   close(){
     this.domDetector.removeAllEventListener();
     this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
+    this.isListeningPrivateMode = false;
     if (this.tracker && this.tracker.eventEmitter){
       this.tracker.eventEmitter.removeAllListeners('onData');
       this.tracker.eventEmitter.removeAllListeners('onStart');
@@ -309,41 +313,41 @@ export default class ContentHandler {
   }
 
   onPrivateModeListener (message, sender, sendResponse) {
-      if (this.debug) console.log(message);
-      if (message.action == 'private_mode'){
-        if (message.private_mode) {
-          this.closeOnData();
-          if(typeof this.param == 'object' && this.param.allow){
-            this.sendMessage({ 
-              meta: {
-                is_private_mode: true,
-              }
-            });
-          }
-        } else {
-          this.openOnData();
-          if(typeof this.param == 'object' && this.param.allow){
-            this.tracker.fetchHTML(100).then(() => {
-             //this.tracker.fetchFavicon();
-             this.tracker.fetchMetaData();
-           })
-          }
+    if (this.debug) console.log(message);
+    if (message.action == 'private_mode'){
+      if (message.private_mode) {
+        this.closeOnData();
+        if(typeof this.param == 'object' && this.param.allow){
+          this.sendMessage({ 
+            meta: {
+              is_private_mode: true,
+            }
+          });
         }
-      }
-      if (message.action == 'popup_private_time'){
-        if (this.debug) console.log('popup_private_time');
-        if (this.debug) console.log(message);
-        if (message.display){
-          this.showNotification();
-        } else {
-          this.hideNotification();
+      } else {
+        this.openOnData();
+        if(typeof this.param == 'object' && this.param.allow){
+          this.tracker.fetchHTML(100).then(() => {
+           //this.tracker.fetchFavicon();
+           this.tracker.fetchMetaData();
+         })
         }
-
-      sendResponse(true);              
-      //return true;
-      return Promise.resolve("Dummy response to keep the console quiet");
       }
     }
+    if (message.action == 'popup_private_time'){
+      if (this.debug) console.log('popup_private_time');
+      if (this.debug) console.log(message);
+      if (message.display){
+        this.showNotification();
+      } else {
+        this.hideNotification();
+      }
+
+    sendResponse(true);              
+    //return true;
+    return Promise.resolve("Dummy response to keep the console quiet");
+    }
+  }
 
 
   /**
@@ -523,25 +527,47 @@ export default class ContentHandler {
     this.last = 0;
   }
 
+
+  /**
+   * Listent to event asking to turn on listeners
+   * @param  {[type]} message      [description]
+   * @param  {[type]} sender       [description]
+   * @param  {[type]} sendResponse [description]
+   * @return {[type]}              [description]
+   */
+  onInitListener (message, sender, sendResponse) {
+    if (this.debug) console.log(message);
+    if (message.action == 'init'){
+      console.log('is tracker null');
+      if (this.tracker==null){
+        console.log('call init');
+        this.init();
+      }      
+    }
+  }
+
+
+
   /**
    * [initalizate the contenthandler]
    */
-  async init(first_call = true){
-    if (first_call){
+  async init(){
+    if (!this.isListeningPrivateMode){
       this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
+      this.isListeningPrivateMode = true;
     }
 
     try {
       this.param = await this._getParam();
-      if(typeof this.param == 'object'){
-        if (this.param.allow){
+
+      if(typeof this.param == 'object' && this.param.allow){
           this.createTracker(this.param.privacy);
-        } else{        
-          //if (this.debug) console.log('Not allow to tracked from extension handler');
-        }
+      }else{
+        this.browser.runtime.onMessage.addListener(this.onInitListener);
+        //if (this.debug) console.log('Not allow to tracked from extension handler');
       }
     } catch (e) {
-      this.init_timer = setTimeout(()=> this.init(false), 2000)
+      this.init_timer = setTimeout(()=> this.init(), 2000)
       console.log(e);
     }
   }

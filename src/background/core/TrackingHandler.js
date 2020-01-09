@@ -50,7 +50,7 @@ export default class TrackingHandler {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new EventEmitter();
-    this.debug = false;
+    this.debug = true;
     this.settings = {};
 
     // fields that should be anonymized
@@ -127,12 +127,13 @@ export default class TrackingHandler {
           this.startTimeoutScheudle();
           // I am forcing it to start in private mode so it doesnt try to collect
           // data immediately
-          if(this.AUTOSTART) this.start(private_mode);
+          if(this.AUTOSTART) await this.start(private_mode);
           if (!this.is_dummy){
             if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
               if (this.debug) console.log(':- Autostart send');
               this.sendData(null, true);
             }
+            this.extension.initAllTabs();
           }
           resolve();
         }

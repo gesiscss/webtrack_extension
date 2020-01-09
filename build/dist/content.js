@@ -16227,13 +16227,15 @@ function () {
     // probably not used
     this.page = null;
     this.allow = false;
-    this.isSend = false; // initialized only once
+    this.isSend = false;
+    this.isListeningPrivateMode = false; // initialized only once
 
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
     this.debug = true;
-    this.onPrivateModeListener = this.onPrivateModeListener.bind(this); // needs to be initialized, if restarting
+    this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
+    this.onInitListener = this.onInitListener.bind(this); // needs to be initialized, if restarting
 
     this.tracker = null;
     this.init_timer = null;
@@ -16316,7 +16318,7 @@ function () {
         _this.browser.runtime.sendMessage('ontracking', function (response) {
           if (_this.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
-            ;
+            ; // console.log(this.browser.runtime.lastError);
           } else {
             if (response.pending_private_time_answer) {
               _this.display_notification = true;
@@ -16503,6 +16505,7 @@ function () {
     value: function close() {
       this.domDetector.removeAllEventListener();
       this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
+      this.isListeningPrivateMode = false;
 
       if (this.tracker && this.tracker.eventEmitter) {
         this.tracker.eventEmitter.removeAllListeners('onData');
@@ -16763,6 +16766,28 @@ function () {
       this.last = 0;
     }
     /**
+     * Listent to event asking to turn on listeners
+     * @param  {[type]} message      [description]
+     * @param  {[type]} sender       [description]
+     * @param  {[type]} sendResponse [description]
+     * @return {[type]}              [description]
+     */
+
+  }, {
+    key: "onInitListener",
+    value: function onInitListener(message, sender, sendResponse) {
+      if (this.debug) console.log(message);
+
+      if (message.action == 'init') {
+        console.log('is tracker null');
+
+        if (this.tracker == null) {
+          console.log('call init');
+          this.init();
+        }
+      }
+    }
+    /**
      * [initalizate the contenthandler]
      */
 
@@ -16774,49 +16799,45 @@ function () {
       regeneratorRuntime.mark(function _callee2() {
         var _this8 = this;
 
-        var first_call,
-            _args2 = arguments;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                first_call = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : true;
-
-                if (first_call) {
+                if (!this.isListeningPrivateMode) {
                   this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
+                  this.isListeningPrivateMode = true;
                 }
 
-                _context2.prev = 2;
-                _context2.next = 5;
+                _context2.prev = 1;
+                _context2.next = 4;
                 return this._getParam();
 
-              case 5:
+              case 4:
                 this.param = _context2.sent;
 
-                if (ContentHandler_typeof(this.param) == 'object') {
-                  if (this.param.allow) {
-                    this.createTracker(this.param.privacy);
-                  } else {//if (this.debug) console.log('Not allow to tracked from extension handler');
-                  }
+                if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+                  this.createTracker(this.param.privacy);
+                } else {
+                  this.browser.runtime.onMessage.addListener(this.onInitListener); //if (this.debug) console.log('Not allow to tracked from extension handler');
                 }
 
-                _context2.next = 13;
+                _context2.next = 12;
                 break;
 
-              case 9:
-                _context2.prev = 9;
-                _context2.t0 = _context2["catch"](2);
+              case 8:
+                _context2.prev = 8;
+                _context2.t0 = _context2["catch"](1);
                 this.init_timer = setTimeout(function () {
-                  return _this8.init(false);
+                  return _this8.init();
                 }, 2000);
                 console.log(_context2.t0);
 
-              case 13:
+              case 12:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[2, 9]]);
+        }, _callee2, this, [[1, 8]]);
       }));
 
       return function init() {

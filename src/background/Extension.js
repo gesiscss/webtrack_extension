@@ -151,7 +151,7 @@ export default class Extension {
             }, 
             function(response) {
               if(xbrowser.runtime.lastError) {
-                if (this.debug) console.log('No front end tab is listening.');
+                if (this.debug) console.log('displayPrivateTimePopup: No front end tab is listening.');
               }
             }.bind(this));
         } catch (e){
@@ -176,7 +176,7 @@ export default class Extension {
           xbrowser.tabs.sendMessage(tab.id, {action: "popup_private_time", display: false}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
-                if (this.debug) console.log('No front end tab is listening.');
+                if (this.debug) console.log('removePrivateTimePopup: No front end tab is listening.');
               }
             }.bind(this));
         } catch (e){
@@ -186,6 +186,33 @@ export default class Extension {
     }
   }
 
+
+  /**
+   * initFrontent send a message asking to initialize the frontend tracking
+   * @param {Boolean} 
+   */
+  async initAllTabs(){
+    if (this.debug) console.log('-> initAllTabs()');
+    // send a message to all tabs
+    let tabs = await this.getAllTabsIds({}, false);
+    if(tabs.length>0){
+      for (let tab of tabs) {
+        try{
+          xbrowser.tabs.sendMessage(
+            tab.id, {
+              action: "init"
+            }, 
+            function(response) {
+              if(xbrowser.runtime.lastError) {
+                if (this.debug) console.log('OnInit: No front end tab is listening.');
+              }
+            }.bind(this));
+        } catch (e){
+          console.log('caught');
+        }
+      }
+    }
+  }
 
   /**
    * removePrivateTimePopup send a message indicating that the popup should be hidden
@@ -200,7 +227,7 @@ export default class Extension {
           xbrowser.tabs.sendMessage(tab.id, {action: "private_mode", private_mode: this.privateMode}, 
             function(response) {
               if(xbrowser.runtime.lastError) {
-                if (this.debug) console.log('No front end tab is listening.');
+                if (this.debug) console.log('notifyPrivateMode: No front end tab is listening.');
               }
             }.bind(this));
         } catch (e){
@@ -354,17 +381,19 @@ export default class Extension {
         if (this.debug) console.log('# ontracking');
         let domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
-
-        sendResponse({
+        let r = {
           allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
           extensionfilter: this.extensionfilter, 
           pending_private_time_answer: this.pending_private_time_answer,
-          privacy:{
+          privacy: {
               only_domain: this.urlFilter.only_domain(domain),
               only_url: this.urlFilter.only_url(domain),
-              is_blacklisted: !this.tabs[sender.tab.id].getState('allow')
+              is_blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+              private_mode: this.privateMode,
+              is_tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
-        });
+        }
+        sendResponse(r);
       } else if (msg.hasOwnProperty('private_time')){
         if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
