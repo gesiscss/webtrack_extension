@@ -260,12 +260,6 @@ export default class Project extends DefaultComponent {
               </Tab>
             )}
           </Tabs>
-          <Toolbar tabbar position={'bottom'}>
-            {tabs.map((e, i) => <Link key={i} tabLink={'#tab'+i} onClick={()=> this.activeTab(i)} tabLinkActive={e.default} >
-                {e.icon}
-              </Link>
-            )}
-          </Toolbar>
       </div>)
     }
 
@@ -273,7 +267,6 @@ export default class Project extends DefaultComponent {
       <Page name={this.constructor.name.toLowerCase()} >
         <Headerlogo name={this.props.getCompanie().name} >
             <NavTitle>{this.state.projectName}</NavTitle>
-            <span><a href="#" slot="nav-right" onClick={this.handleLogout} ><FontAwesomeIcon icon={Icons.faSignOutAlt} /></a></span>
         </Headerlogo>
         {content}      
       </Page>
