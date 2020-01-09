@@ -30,7 +30,7 @@ export default class ContentHandler {
     this.page = null;
     this.allow = false;
     this.isSend = false;
-    this.isListeningPrivateMode = false;
+    this.isListeningToBackend = false;
 
     // initialized only once
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
@@ -38,8 +38,7 @@ export default class ContentHandler {
     this.DELAY = 1000;
     this.debug = true;
 
-    this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
-    this.onInitListener = this.onInitListener.bind(this);
+    this.onBackendMessage = this.onBackendMessage.bind(this);
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -289,8 +288,8 @@ export default class ContentHandler {
 
   close(){
     this.domDetector.removeAllEventListener();
-    this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
-    this.isListeningPrivateMode = false;
+    this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
+    this.isListeningToBackend = false;
     if (this.tracker && this.tracker.eventEmitter){
       this.tracker.eventEmitter.removeAllListeners('onData');
       this.tracker.eventEmitter.removeAllListeners('onStart');
@@ -312,9 +311,14 @@ export default class ContentHandler {
     }
   }
 
-  onPrivateModeListener (message, sender, sendResponse) {
+  onBackendMessage (message, sender, sendResponse) {
     if (this.debug) console.log(message);
-    if (message.action == 'private_mode'){
+    
+    if (message.action == 'init'){
+      if (this.tracker==null){
+        this.init();
+      }      
+    } else if (message.action == 'private_mode'){
       if (message.private_mode) {
         this.closeOnData();
         if(typeof this.param == 'object' && this.param.allow){
@@ -334,7 +338,7 @@ export default class ContentHandler {
         }
       }
     }
-    if (message.action == 'popup_private_time'){
+    else if (message.action == 'popup_private_time'){
       if (this.debug) console.log('popup_private_time');
       if (this.debug) console.log(message);
       if (message.display){
@@ -343,9 +347,9 @@ export default class ContentHandler {
         this.hideNotification();
       }
 
-    sendResponse(true);              
-    //return true;
-    return Promise.resolve("Dummy response to keep the console quiet");
+      sendResponse(true);              
+      //return true;
+      return Promise.resolve("Dummy response to keep the console quiet");
     }
   }
 
@@ -529,32 +533,12 @@ export default class ContentHandler {
 
 
   /**
-   * Listent to event asking to turn on listeners
-   * @param  {[type]} message      [description]
-   * @param  {[type]} sender       [description]
-   * @param  {[type]} sendResponse [description]
-   * @return {[type]}              [description]
-   */
-  onInitListener (message, sender, sendResponse) {
-    if (this.debug) console.log(message);
-    if (message.action == 'init'){
-      console.log('is tracker null');
-      if (this.tracker==null){
-        console.log('call init');
-        this.init();
-      }      
-    }
-  }
-
-
-
-  /**
    * [initalizate the contenthandler]
    */
   async init(){
-    if (!this.isListeningPrivateMode){
-      this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
-      this.isListeningPrivateMode = true;
+    if (!this.isListeningToBackend){
+      this.browser.runtime.onMessage.addListener(this.onBackendMessage);
+      this.isListeningToBackend = true;
     }
 
     try {
@@ -562,9 +546,6 @@ export default class ContentHandler {
 
       if(typeof this.param == 'object' && this.param.allow){
           this.createTracker(this.param.privacy);
-      }else{
-        this.browser.runtime.onMessage.addListener(this.onInitListener);
-        //if (this.debug) console.log('Not allow to tracked from extension handler');
       }
     } catch (e) {
       this.init_timer = setTimeout(()=> this.init(), 2000)

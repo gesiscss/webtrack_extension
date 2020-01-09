@@ -16228,14 +16228,13 @@ function () {
     this.page = null;
     this.allow = false;
     this.isSend = false;
-    this.isListeningPrivateMode = false; // initialized only once
+    this.isListeningToBackend = false; // initialized only once
 
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
     this.debug = true;
-    this.onPrivateModeListener = this.onPrivateModeListener.bind(this);
-    this.onInitListener = this.onInitListener.bind(this); // needs to be initialized, if restarting
+    this.onBackendMessage = this.onBackendMessage.bind(this); // needs to be initialized, if restarting
 
     this.tracker = null;
     this.init_timer = null;
@@ -16504,8 +16503,8 @@ function () {
     key: "close",
     value: function close() {
       this.domDetector.removeAllEventListener();
-      this.browser.runtime.onMessage.removeListener(this.onPrivateModeListener);
-      this.isListeningPrivateMode = false;
+      this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
+      this.isListeningToBackend = false;
 
       if (this.tracker && this.tracker.eventEmitter) {
         this.tracker.eventEmitter.removeAllListeners('onData');
@@ -16533,13 +16532,17 @@ function () {
       }
     }
   }, {
-    key: "onPrivateModeListener",
-    value: function onPrivateModeListener(message, sender, sendResponse) {
+    key: "onBackendMessage",
+    value: function onBackendMessage(message, sender, sendResponse) {
       var _this5 = this;
 
       if (this.debug) console.log(message);
 
-      if (message.action == 'private_mode') {
+      if (message.action == 'init') {
+        if (this.tracker == null) {
+          this.init();
+        }
+      } else if (message.action == 'private_mode') {
         if (message.private_mode) {
           this.closeOnData();
 
@@ -16560,9 +16563,7 @@ function () {
             });
           }
         }
-      }
-
-      if (message.action == 'popup_private_time') {
+      } else if (message.action == 'popup_private_time') {
         if (this.debug) console.log('popup_private_time');
         if (this.debug) console.log(message);
 
@@ -16766,28 +16767,6 @@ function () {
       this.last = 0;
     }
     /**
-     * Listent to event asking to turn on listeners
-     * @param  {[type]} message      [description]
-     * @param  {[type]} sender       [description]
-     * @param  {[type]} sendResponse [description]
-     * @return {[type]}              [description]
-     */
-
-  }, {
-    key: "onInitListener",
-    value: function onInitListener(message, sender, sendResponse) {
-      if (this.debug) console.log(message);
-
-      if (message.action == 'init') {
-        console.log('is tracker null');
-
-        if (this.tracker == null) {
-          console.log('call init');
-          this.init();
-        }
-      }
-    }
-    /**
      * [initalizate the contenthandler]
      */
 
@@ -16803,9 +16782,9 @@ function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!this.isListeningPrivateMode) {
-                  this.browser.runtime.onMessage.addListener(this.onPrivateModeListener);
-                  this.isListeningPrivateMode = true;
+                if (!this.isListeningToBackend) {
+                  this.browser.runtime.onMessage.addListener(this.onBackendMessage);
+                  this.isListeningToBackend = true;
                 }
 
                 _context2.prev = 1;
@@ -16817,8 +16796,6 @@ function () {
 
                 if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
                   this.createTracker(this.param.privacy);
-                } else {
-                  this.browser.runtime.onMessage.addListener(this.onInitListener); //if (this.debug) console.log('Not allow to tracked from extension handler');
                 }
 
                 _context2.next = 12;
