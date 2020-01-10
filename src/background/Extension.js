@@ -49,6 +49,9 @@ export default class Extension {
     this.activWindowId = 0;
     this.event = new EventEmitter();
 
+    this.prev_active_tab = -1;
+    this.active_tab = -1;
+
     this._onContentMessage = this._onContentMessage.bind(this);
     this._onTabUpdate = this._onTabUpdate.bind(this);
     this._onTabRemove = this._onTabRemove.bind(this);
@@ -296,6 +299,12 @@ export default class Extension {
   _onActivatedTab(activeInfo){
     //on switch the active tabs between one window
     if (this.debug) console.log('_onActivatedTab');
+
+    this.prev_active_tab = this.active_tab;
+    this.active_tab = activeInfo.tabId;
+
+    console.log(this.prev_active_tab);
+    console.log(this.active_tab);
     
     if (this.pending_private_time_answer){
       this.displayPrivateTimePopup();
@@ -350,7 +359,10 @@ export default class Extension {
     if(!this.privateMode && this.tabs.hasOwnProperty(tabId) && info.hasOwnProperty('status') 
       && info.status == 'complete' && tab.hasOwnProperty('title') && tab.hasOwnProperty('url')){
       if (this.debug) console.log('==== Emit Event: onTabUpdate ====');
-      this.event.emit(EVENT_NAMES.tabUpdate, {tabId: tabId, openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: null, tab: tab}, false);
+      this.event.emit(EVENT_NAMES.tabUpdate, {
+        tabId: tabId, 
+        openerTabId: tab.hasOwnProperty('openerTabId')? tab.openerTabId: this.prev_active_tab, 
+        tab: tab}, false);
     }//if
     //if (this.debug) console.log('<- Extension._onTabUpdate');
   }
