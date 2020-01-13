@@ -56,8 +56,8 @@ export default class GoogleTracker extends Tracker{
           let m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/)
           if (m && m.length == 3){
             this.is_logged_in = true;
-            this.logged_fullname = m[1];
-            this.logged_email = m[2];
+            this.logged_fullname = m[1].trim();
+            this.logged_email = m[2].trim();
           }
         }
       }
