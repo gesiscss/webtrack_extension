@@ -419,8 +419,8 @@ export default class Extension {
           this.tabs[sender.tab.id].getState('disabled')){
         if (sender.tab.id == this.active_tab){
           this.setImage(false);
-          sendResponse(false);
         }
+        sendResponse(false);
       // background controls
       }else if(!this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)){
         if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false && sender.tab.id == this.active_tab){
