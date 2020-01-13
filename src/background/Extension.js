@@ -302,9 +302,6 @@ export default class Extension {
 
     this.prev_active_tab = this.active_tab;
     this.active_tab = activeInfo.tabId;
-
-    console.log(this.prev_active_tab);
-    console.log(this.active_tab);
     
     if (this.pending_private_time_answer){
       this.displayPrivateTimePopup();
