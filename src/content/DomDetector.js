@@ -7,24 +7,35 @@
      this.stack = [];
      this._decide = this._decide.bind(this);
      this._callback = this._callback.bind(this);
+     this._observer_callback = this._observer_callback.bind(this);
      this.support = {};
      this.remain = 3;
 
      // attach test events
-     if (window.addEventListener) {
-         this._test('DOMSubtreeModified');
-         this._test('DOMNodeInserted');
-         this._test('DOMNodeRemoved');
-     } else {
-         this._decide();
-     }
+     // if (window.addEventListener) {
+     //     this._test('DOMSubtreeModified');
+     //     this._test('DOMNodeInserted');
+     //     this._test('DOMNodeRemoved');
+     // } else {
+     //     this._decide();
+     // }
+     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+     var observer = new MutationObserver(this._observer_callback);
+
+      // define what element should be observed by the observer
+      // and what types of mutations trigger the callback
+      observer.observe(this._getElement(), {
+        childList: true,
+        subtree: true,
+        attributes: true
+      });
 
      this.current_hash = window.location.hash;
      //this.createLocationChangeEvent();
 
-     var dummy = document.createElement("div");
-     this._getElement().appendChild(dummy);
-     this._getElement().removeChild(dummy);
+     // var dummy = document.createElement("div");
+     // this._getElement().appendChild(dummy);
+     // this._getElement().removeChild(dummy);
    }
 
    /**
@@ -72,6 +83,20 @@
     * [call all function on the stack]
     */
    _callback(){
+     let now = +new Date();
+     if (now - this.last > this.delay) {
+         this.last = now;
+         for (let i = 0; i < this.stack.length; i++) {
+             this.stack[i]();
+         }
+
+     }
+   }
+
+    /**
+    * [call all function on the stack]
+    */
+   _observer_callback(mutations, observer){
      let now = +new Date();
      if (now - this.last > this.delay) {
          this.last = now;
