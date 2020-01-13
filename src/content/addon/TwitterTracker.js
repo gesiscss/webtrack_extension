@@ -368,16 +368,21 @@ export default class TwitterTracker extends Tracker{
 
     if (this.is_logged_in){
       this.credentials = this.get_credentials();
-      if (this.credentials == null) {
-        this.logged_username = this.get_username();
-      } else {
-        if (this.credentials.hasOwnProperty('user')){
-          this.logged_username = this.credentials.user.screen_name;
-          this.logged_fullname = this.credentials.user.name;
-        }
-        this.logged_guest_id = this.credentials.guestId;
-        this.logged_user_id = this.credentials.user_id;
+      if (this.credentials != null) {
+        try {
+          this.logged_user_id = this.credentials.session.user_id;
+          this.entity = this.credentials.entities.users.entities[this.logged_user_id];
+          this.logged_username = this.entity.screen_name;
+          this.logged_fullname = this.entity.name;
+          this.logged_guest_id = this.credentials.session.guestId;
 
+          
+        } catch( error) {
+          this.logged_username = this.get_username();
+        }
+        
+      } else {
+        this.logged_username = this.get_username();
       }
       
 
@@ -429,8 +434,13 @@ export default class TwitterTracker extends Tracker{
     for (var i = 0; i < scripts.length; i++) {
       let sc = scripts[i].textContent;
       if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
-        return JSON.parse(sc.substring(sc.lastIndexOf('"session":') + 10, 
-          sc.lastIndexOf(',"typeaheadUsers"')));
+        try {
+          return JSON.parse(sc.substring(sc.indexOf('{'), sc.indexOf(';\n')));
+        } catch (error){
+          console.log(error);
+        }
+
+        
       }
     }
     return null;
