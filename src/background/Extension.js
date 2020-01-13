@@ -408,36 +408,36 @@ export default class Extension {
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
-      } else if(!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')){
-        this.setImage(false);
-        sendResponse(false);
-
+      } else if(!this.tabs.hasOwnProperty(sender.tab.id) || 
+          !this.tabs[sender.tab.id].getState('allow') || 
+          this.tabs[sender.tab.id].getState('disabled')){
+        if (sender.tab.id == this.active_tab){
+          this.setImage(false);
+          sendResponse(false);
+        }
       // background controls
-      }else if((!this.tabs[sender.tab.id].getState('disabled')) 
-        && this.tabs.hasOwnProperty(sender.tab.id)){
-
-        if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false){
+      }else if(!this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)){
+        if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false && sender.tab.id == this.active_tab){
           this.setImage(false);
           sendResponse(false);
         }else {
-
-          // if the property indicated that is allow to not trach the content
+        
+          // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
+          let is_track_allow = true;
           if (msg.content[0].hasOwnProperty('is_track_allow')){
-            this.tabs[sender.tab.id].setState('content_blocked', !msg.content[0].is_track_allow);
-            this.setImage(msg.content[0].is_track_allow);
-            //sendResponse(false);
-          } else {
-            this.tabs[sender.tab.id].setState('content_blocked', false);
-            this.setImage(true);
+            is_track_allow = msg.content[0].is_track_allow;
           }
+          this.tabs[sender.tab.id].setState('content_blocked', !is_track_allow);
 
-
-          // even if the content is block, the metainformation is sent in order to
+          // update the indicator if this the active tab is the one sending the content
+          // the DOM of a non active tab could be changing in the background
+          if (sender.tab.id == this.active_tab){
+            this.setImage(is_track_allow);
+          }
+         
+          // even if the content is blocked, the metainformation is sent in order to
           // keep track of the precursors
-          // TODO: This is probably unnecessary. If the content is blocked, nothing is uploaded
-          // unless the block is due to a social media tracker. 
-          // Note: Special attention to the departing_url as it is not added anywhere else.
           msg = Object.assign(msg, {
             departing_url: sender.tab.url,
             unhashed_url: msg.unhashed_url,
