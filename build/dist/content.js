@@ -15746,27 +15746,48 @@ function (_Tracker) {
   }, {
     key: "setup_credentials",
     value: function setup_credentials() {
-      var email = document.querySelector('.gb_nb');
+      var email = document.querySelector('.gb_nb, .gb_hb, .gb_qb');
 
-      if (email) {
+      if (email && email.innerText != '') {
+        this.is_logged_in = true;
         this.logged_email = email.innerText;
       } else {
-        email = document.querySelector('.gb_hb');
+        var logged = document.querySelector('a[href*="SignOut"]');
 
-        if (email) {
-          this.logged_email = email.innerText;
+        if (logged) {
+          var _str = logged.title;
+
+          if (logged.title) {
+            _str = logged.title;
+          } else {
+            _str = logged.getAttribute('aria-label');
+          }
+
+          if (_str) {
+            var m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/);
+
+            if (m && m.length == 3) {
+              this.is_logged_in = true;
+              this.logged_fullname = m[1];
+              this.logged_email = m[2];
+            }
+          }
         }
       }
 
-      var fullname = document.querySelector('.gb_ob');
-
-      if (fullname) {
-        this.logged_fullname = fullname.innerText;
-      } else {
-        fullname = document.querySelector('.gb_fb.gb_gb');
+      if (this.logged_fullname && this.logged_fullname == '') {
+        var fullname = document.querySelector('.gb_ob');
 
         if (fullname) {
+          this.is_logged_in = true;
           this.logged_fullname = fullname.innerText;
+        } else {
+          fullname = document.querySelector('.gb_fb.gb_gb');
+
+          if (fullname) {
+            this.is_logged_in = true;
+            this.logged_fullname = fullname.innerText;
+          }
         }
       }
     }
