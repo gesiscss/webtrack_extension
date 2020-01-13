@@ -133,7 +133,8 @@ export default class Extension {
       this.notifyPrivateMode();
     }
     this.privateMode = b;
-    this.setImage(!this.privateMode);
+    this.resetPublicImage();
+    //this.setImage(!this.privateMode);
   }
 
 
@@ -263,11 +264,16 @@ export default class Extension {
     if(activeTabIds.length>0){
       for (let id of activeTabIds) {
         //this.resetImage(tabs[0].id);
-        this.setImage(this.tabs[id].getState('allow') 
-          && !this.tabs[id].getState('disabled')
-          && !this.tabs[id].getState('content_blocked'));
-        //this.setPrivateMode(false);
-        //component.setTooglePrivateMode(false);
+        if (this.tabs.hasOwnProperty(id)) {
+          this.setImage(this.tabs[id].getState('allow') 
+              && !this.tabs[id].getState('disabled')
+              && !this.tabs[id].getState('content_blocked'));
+          
+        } else {
+          this.setImage(this.privateMode);
+
+        }
+
       }
     }
   }

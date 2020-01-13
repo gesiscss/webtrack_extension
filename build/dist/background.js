@@ -32280,7 +32280,7 @@ function () {
       }
 
       this.privateMode = b;
-      this.setImage(!this.privateMode);
+      this.resetPublicImage(); //this.setImage(!this.privateMode);
     }
     /**
      * displayPrivateTimePopup send a message indicating that a popup should appear
@@ -32692,9 +32692,13 @@ function () {
 
                 for (_iterator5 = activeTabIds[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
                   id = _step5.value;
+
                   //this.resetImage(tabs[0].id);
-                  this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked')); //this.setPrivateMode(false);
-                  //component.setTooglePrivateMode(false);
+                  if (this.tabs.hasOwnProperty(id)) {
+                    this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked'));
+                  } else {
+                    this.setImage(this.privateMode);
+                  }
                 }
 
                 _context5.next = 15;
