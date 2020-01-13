@@ -14,8 +14,6 @@ export default class AppleTracker extends Tracker{
 
     this.apple_debug = false;
 
-    this.setup_credentials();
-
   }
 
   /**

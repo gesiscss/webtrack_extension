@@ -14,7 +14,7 @@ export default class GoogleTracker extends Tracker{
 
     this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/'];
 
-    this.setup_credentials();
+    this.reset_credentials();
 
   }
 
@@ -36,46 +36,53 @@ export default class GoogleTracker extends Tracker{
   /**
    * Setup the credentials for the logged user (if any)
    */
-  setup_credentials(){
-    
-    let email =  document.querySelector('.gb_nb, .gb_hb, .gb_qb');
-    if (email && email.innerText != ''){
-      this.is_logged_in = true;
-      this.logged_email = email.innerText;
-    } else {
-      let logged = document.querySelector('a[href*="SignOut"]');
-      if (logged){
-        let _str = logged.title;
-        if (logged.title) {
-          _str = logged.title;
-        } else {
-          _str = logged.getAttribute('aria-label');
-        }
+  reset_credentials(){
 
-        if (_str) {
-          let m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/)
-          if (m && m.length == 3){
-            this.is_logged_in = true;
-            this.logged_fullname = m[1].trim();
-            this.logged_email = m[2].trim();
+
+    if (!this.logged_fullname || !this.logged_email){
+      
+      let email =  document.querySelector('.gb_nb, .gb_hb, .gb_qb');
+      if (email && email.innerText != ''){
+        this.is_logged_in = true;
+        this.logged_email = email.innerText;
+      } else {
+        let logged = document.querySelector('a[href*="SignOut"]');
+        if (logged){
+          let _str = logged.title;
+          if (logged.title) {
+            _str = logged.title;
+          } else {
+            _str = logged.getAttribute('aria-label');
+          }
+
+          if (_str) {
+            let m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/)
+            if (m && m.length == 3){
+              this.is_logged_in = true;
+              this.logged_fullname = m[1].trim();
+              this.logged_email = m[2].trim();
+            }
           }
         }
       }
-    }
 
-    if (this.logged_fullname  && this.logged_fullname == ''){
-      let fullname = document.querySelector('.gb_ob');
-      if (fullname){
-        this.is_logged_in = true;
-        this.logged_fullname = fullname.innerText;
-      } else {
-        fullname = document.querySelector('.gb_fb.gb_gb');
+      if (this.logged_fullname  && this.logged_fullname == ''){
+        let fullname = document.querySelector('.gb_ob');
         if (fullname){
           this.is_logged_in = true;
           this.logged_fullname = fullname.innerText;
+        } else {
+          fullname = document.querySelector('.gb_fb.gb_gb');
+          if (fullname){
+            this.is_logged_in = true;
+            this.logged_fullname = fullname.innerText;
+          }
         }
       }
+
+      this.fetchMetaData();
     }
+
   }
 
 

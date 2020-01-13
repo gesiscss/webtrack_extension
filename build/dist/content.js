@@ -15718,7 +15718,7 @@ function (_Tracker) {
     _this.logged_fullname = null;
     _this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/'];
 
-    _this.setup_credentials();
+    _this.reset_credentials();
 
     return _this;
   }
@@ -15744,51 +15744,55 @@ function (_Tracker) {
      */
 
   }, {
-    key: "setup_credentials",
-    value: function setup_credentials() {
-      var email = document.querySelector('.gb_nb, .gb_hb, .gb_qb');
+    key: "reset_credentials",
+    value: function reset_credentials() {
+      if (!this.logged_fullname || !this.logged_email) {
+        var email = document.querySelector('.gb_nb, .gb_hb, .gb_qb');
 
-      if (email && email.innerText != '') {
-        this.is_logged_in = true;
-        this.logged_email = email.innerText;
-      } else {
-        var logged = document.querySelector('a[href*="SignOut"]');
+        if (email && email.innerText != '') {
+          this.is_logged_in = true;
+          this.logged_email = email.innerText;
+        } else {
+          var logged = document.querySelector('a[href*="SignOut"]');
 
-        if (logged) {
-          var _str = logged.title;
+          if (logged) {
+            var _str = logged.title;
 
-          if (logged.title) {
-            _str = logged.title;
-          } else {
-            _str = logged.getAttribute('aria-label');
-          }
+            if (logged.title) {
+              _str = logged.title;
+            } else {
+              _str = logged.getAttribute('aria-label');
+            }
 
-          if (_str) {
-            var m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/);
+            if (_str) {
+              var m = _str.match(/.*: (.*) [\n|.]?\((.*)\)/);
 
-            if (m && m.length == 3) {
-              this.is_logged_in = true;
-              this.logged_fullname = m[1].trim();
-              this.logged_email = m[2].trim();
+              if (m && m.length == 3) {
+                this.is_logged_in = true;
+                this.logged_fullname = m[1].trim();
+                this.logged_email = m[2].trim();
+              }
             }
           }
         }
-      }
 
-      if (this.logged_fullname && this.logged_fullname == '') {
-        var fullname = document.querySelector('.gb_ob');
-
-        if (fullname) {
-          this.is_logged_in = true;
-          this.logged_fullname = fullname.innerText;
-        } else {
-          fullname = document.querySelector('.gb_fb.gb_gb');
+        if (this.logged_fullname && this.logged_fullname == '') {
+          var fullname = document.querySelector('.gb_ob');
 
           if (fullname) {
             this.is_logged_in = true;
             this.logged_fullname = fullname.innerText;
+          } else {
+            fullname = document.querySelector('.gb_fb.gb_gb');
+
+            if (fullname) {
+              this.is_logged_in = true;
+              this.logged_fullname = fullname.innerText;
+            }
           }
         }
+
+        this.fetchMetaData();
       }
     }
     /**
@@ -15890,9 +15894,6 @@ function (_Tracker) {
     _this.startswith_blacklist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
     _this.pos_2nd_blacklist = ['itunes', 'icloud'];
     _this.apple_debug = false;
-
-    _this.setup_credentials();
-
     return _this;
   }
   /**
