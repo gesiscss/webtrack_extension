@@ -1,14 +1,31 @@
 export default class URLFilter {
 
-  constructor(lists={}, active=false, white_or_black=true, server_list=[]) {
-    this.active = active;
-    this.white_or_black = white_or_black;
-    this.lists = lists;
-    this.server_list = server_list;
-    this.cache = {};
+  constructor(config, is_dummy){
 
+    this.config = config;
+    this.is_dummy = is_dummy;
+    this._reinit();
   }
 
+  _reinit(){
+    if (this.is_dummy){
+      this.projectId = -1
+      this.settings = null;
+      this.lists={}; 
+      this.active=false; 
+      this.white_or_black=true; 
+      this.server_list=[];
+    } else {
+      this.projectId = this.config.getSelect();
+      let project = this.config.getProject(this.projectId);
+      this.settings = project.SETTINGS;
+      this.active = this.settings.ACTIVE_URLLIST;
+      this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
+      this.lists = this.config.blacklists;
+      this.server_list = project.URLLIST;
+      this.cache = {};
+    }   
+  }
 
   /**
    * [extractRootDomain get from url the higher level domain]
@@ -187,6 +204,8 @@ export default class URLFilter {
    * @return {Boolean}     [description]
    */
   isAllow(domain){
+    this._reinit();
+
     if(this.active){
 
       //uncomment to text the list in tests.json

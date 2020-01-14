@@ -31,6 +31,7 @@ export default class ContentHandler {
     this.allow = false;
     this.isSend = false;
     this.isListeningToBackend = false;
+    this.default_private_ms = 15*60*1000;
 
     // initialized only once
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
@@ -425,7 +426,7 @@ export default class ContentHandler {
           if (notification == null){
             let notification_window = this.get_notification_window();
             notification_window.querySelector('#fifteen').addEventListener("click", function(){
-              this.request_more_private_time(15*60*1000);
+              this.request_more_private_time(this.default_private_ms);
               body.removeChild(notification_window);
               this.display_notification = false;
             }.bind(this));
@@ -546,6 +547,7 @@ export default class ContentHandler {
 
       if(typeof this.param == 'object' && this.param.allow){
         if(this.debug) console.log(this.param);
+        this.default_private_ms = this.params.default_private_ms;
         this.createTracker(this.param.privacy);
       }
     } catch (e) {

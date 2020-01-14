@@ -31814,28 +31814,43 @@ function URLFilter_createClass(Constructor, protoProps, staticProps) { if (proto
 var URLFilter =
 /*#__PURE__*/
 function () {
-  function URLFilter() {
-    var lists = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-    var white_or_black = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-    var server_list = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-
+  function URLFilter(config, is_dummy) {
     URLFilter_classCallCheck(this, URLFilter);
 
-    this.active = active;
-    this.white_or_black = white_or_black;
-    this.lists = lists;
-    this.server_list = server_list;
-    this.cache = {};
-  }
-  /**
-   * [extractRootDomain get from url the higher level domain]
-   * @param  {String} url        [e.g. https://www.google.de/search?q=]
-   * @return {String} domain     [e.g. google.de]
-   */
+    this.config = config;
+    this.is_dummy = is_dummy;
 
+    this._reinit();
+  }
 
   URLFilter_createClass(URLFilter, [{
+    key: "_reinit",
+    value: function _reinit() {
+      if (this.is_dummy) {
+        this.projectId = -1;
+        this.settings = null;
+        this.lists = {};
+        this.active = false;
+        this.white_or_black = true;
+        this.server_list = [];
+      } else {
+        this.projectId = this.config.getSelect();
+        var project = this.config.getProject(this.projectId);
+        this.settings = project.SETTINGS;
+        this.active = this.settings.ACTIVE_URLLIST;
+        this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
+        this.lists = this.config.blacklists;
+        this.server_list = project.URLLIST;
+        this.cache = {};
+      }
+    }
+    /**
+     * [extractRootDomain get from url the higher level domain]
+     * @param  {String} url        [e.g. https://www.google.de/search?q=]
+     * @return {String} domain     [e.g. google.de]
+     */
+
+  }, {
     key: "extractRootDomain",
     value: function extractRootDomain(url) {
       var hostname;
@@ -32059,6 +32074,8 @@ function () {
   }, {
     key: "isAllow",
     value: function isAllow(domain) {
+      this._reinit();
+
       if (this.active) {
         //uncomment to text the list in tests.json
         // console.log('TEST blacklist:');
@@ -32218,6 +32235,7 @@ function () {
     this.extensionfilter = extensionfilter;
     this.activWindowId = 0;
     this.event = new eventemitter3_default.a();
+    this.default_private_time_ms = 15 * 60 * 1000;
     this.prev_active_tab = -1;
     this.active_tab = -1;
     this._onContentMessage = this._onContentMessage.bind(this);
@@ -32348,7 +32366,6 @@ function () {
                       try {
                         xbrowser.tabs.sendMessage(tab.id, {
                           action: "popup_private_time",
-                          private_time: 15 * 60 * 1000,
                           display: true
                         }, function (response) {
                           if (xbrowser.runtime.lastError) {
@@ -32950,6 +32967,7 @@ function () {
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
           pending_private_time_answer: this.pending_private_time_answer,
+          default_private_time_ms: this.default_private_time_ms,
           privacy: {
             only_domain: this.urlFilter.only_domain(domain),
             only_url: this.urlFilter.only_url(domain),
@@ -38399,7 +38417,7 @@ function () {
         this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
         var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
-        var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK, settings.URLLIST);
+        var urlFilter = new URLFilter(this.config, is_dummy);
         this.extension = new Extension_Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
         this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
         this.tabHandler.event.on('error', function (error) {
@@ -38418,7 +38436,7 @@ function () {
     } else {
       this.schedule == null;
 
-      var _urlFilter = new URLFilter({});
+      var _urlFilter = new URLFilter(this.config, is_dummy);
 
       this.extension = new Extension_Extension(_urlFilter);
       this.tabHandler = new TabHandler_TabHandler(null, this.extension);
@@ -39158,34 +39176,59 @@ function () {
   }
 
   PageHandler_createClass(PageHandler, [{
-    key: "init",
+    key: "reload_config",
     value: function () {
-      var _init = PageHandler_asyncToGenerator(
+      var _reload_config = PageHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee() {
-        var private_mode, selected, tmp_settings;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (this.debug) console.log('PageHandler.init()');
-                _context.prev = 1;
+                _context.prev = 0;
                 if (this.debug) console.log('***Load Configuration***');
-                _context.next = 5;
+                _context.next = 4;
                 return this.config.load();
 
-              case 5:
+              case 4:
                 if (this.debug) console.log('***Configuration Loaded***');
-                _context.next = 12;
+                _context.next = 11;
                 break;
 
-              case 8:
-                _context.prev = 8;
-                _context.t0 = _context["catch"](1);
+              case 7:
+                _context.prev = 7;
+                _context.t0 = _context["catch"](0);
                 console.log('ERROR IN INIT');
                 console.error(_context.t0);
 
-              case 12:
+              case 11:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[0, 7]]);
+      }));
+
+      return function reload_config() {
+        return _reload_config.apply(this, arguments);
+      };
+    }()
+  }, {
+    key: "init",
+    value: function () {
+      var _init = PageHandler_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        var private_mode, selected, tmp_settings;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (this.debug) console.log('PageHandler.init()');
+                _context2.next = 3;
+                return this.reload_config();
+
+              case 3:
                 private_mode = this.config.defaultId.get() == null;
                 selected = this.getSelect();
                 tmp_settings = this.config.getRunProjectTmpSettings(); // if project didn't load, proceed to disconnected mode
@@ -39196,27 +39239,27 @@ function () {
                 // }
 
                 if (!(selected != null && tmp_settings && (tmp_settings.clientId != null || !this.getProject(selected).SETTINGS.ENTERID))) {
-                  _context.next = 20;
+                  _context2.next = 11;
                   break;
                 }
 
-                _context.next = 18;
+                _context2.next = 9;
                 return this.selectProject(selected, private_mode);
 
-              case 18:
-                _context.next = 22;
+              case 9:
+                _context2.next = 13;
                 break;
 
-              case 20:
-                _context.next = 22;
+              case 11:
+                _context2.next = 13;
                 return this.selectProject(null, private_mode);
 
-              case 22:
+              case 13:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this, [[1, 8]]);
+        }, _callee2, this);
       }));
 
       return function init() {
@@ -39365,20 +39408,20 @@ function () {
     value: function () {
       var _selectProject = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      regeneratorRuntime.mark(function _callee3() {
         var _this3 = this;
 
         var id,
             private_mode,
-            _args2 = arguments;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            _args3 = arguments;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                id = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
-                private_mode = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : true;
+                id = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : null;
+                private_mode = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : true;
                 if (this.debug) console.log('-> PageHandler.selectProject()');
-                return _context2.abrupt("return", new Promise(function (resolve, reject) {
+                return _context3.abrupt("return", new Promise(function (resolve, reject) {
                   if (_this3.debug) console.log('-> PageHandler.selectProject() - Promise');
 
                   try {
@@ -39419,10 +39462,10 @@ function () {
 
               case 4:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       return function selectProject() {
@@ -39588,23 +39631,19 @@ function () {
     value: function () {
       var _confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(component) {
+      regeneratorRuntime.mark(function _callee4(component) {
         var _this5 = this;
 
-        var private_time,
-            extension,
-            _args3 = arguments;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        var extension;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                private_time = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : 15 * 60 * 1000;
-                _context3.next = 3;
-                return this.set_timeout(private_time);
+                extension = this._getCurrentTracker().extension;
+                _context4.next = 3;
+                return this.set_timeout(extension.default_private_time_ms);
 
               case 3:
-                extension = this._getCurrentTracker().extension;
-
                 if (extension.privateMode) {
                   //on focus other tab
                   extension.event.once(PageHandler_EVENT_NAMES.extendPrivateMode, function (new_private_time) {
@@ -39624,12 +39663,12 @@ function () {
                   extension.displayPrivateTimePopup();
                 }
 
-              case 5:
+              case 4:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       return function confirm_public_mode(_x) {
@@ -39647,11 +39686,11 @@ function () {
     value: function () {
       var _cancel_confirm_public_mode = PageHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee4() {
+      regeneratorRuntime.mark(function _callee5() {
         var extension;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 clearTimeout(this.timer);
                 extension = this._getCurrentTracker().extension;
@@ -39659,10 +39698,10 @@ function () {
 
               case 3:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
       return function cancel_confirm_public_mode() {

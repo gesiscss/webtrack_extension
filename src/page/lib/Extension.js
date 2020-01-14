@@ -18,7 +18,10 @@ export default class Extension{
 
       // if the pagehanlder is not loaded (e.g. because the server
       // is down) try to load it
-      if (!this.pageHandler.isLoaded()){
+      if (this.pageHandler.isLoaded()){
+        //only reload configuration to update parameters such as the urllist
+        this.pageHandler.reload_config();
+      } else {
         this.pageHandler.init();
       }
       

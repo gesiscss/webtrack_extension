@@ -20,9 +20,7 @@ export default class PageHandler {
     this.event = new EventEmitter();
   }
 
-  async init(){
-    if (this.debug) console.log('PageHandler.init()');
-
+  async reload_config(){
     try {
       if (this.debug) console.log('***Load Configuration***');
       await this.config.load();
@@ -31,6 +29,13 @@ export default class PageHandler {
       console.log('ERROR IN INIT');
       console.error(err);
     }
+  }
+
+
+  async init(){
+    if (this.debug) console.log('PageHandler.init()');
+
+    await this.reload_config();
 
     let private_mode = this.config.defaultId.get()==null;
     let selected = this.getSelect();
@@ -342,11 +347,10 @@ export default class PageHandler {
    * @param  {[type]} component [description]
    * @return {[type]}           [description]
    */
-  async confirm_public_mode(component, private_time=15*60*1000){
-    await this.set_timeout(private_time);
-
-
+  async confirm_public_mode(component){
     let extension = this._getCurrentTracker().extension;
+
+    await this.set_timeout(extension.default_private_time_ms);
     if (extension.privateMode) {
 
       //on focus other tab

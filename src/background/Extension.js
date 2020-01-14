@@ -48,6 +48,7 @@ export default class Extension {
     this.extensionfilter = extensionfilter;
     this.activWindowId = 0;
     this.event = new EventEmitter();
+    this.default_private_time_ms = 15*60*1000;
 
     this.prev_active_tab = -1;
     this.active_tab = -1;
@@ -150,7 +151,6 @@ export default class Extension {
         try{
           xbrowser.tabs.sendMessage(tab.id, { 
               action: "popup_private_time", 
-              private_time: 15*60*1000,
               display: true
             }, 
             function(response) {
@@ -400,6 +400,7 @@ export default class Extension {
           allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
           extensionfilter: this.extensionfilter, 
           pending_private_time_answer: this.pending_private_time_answer,
+          default_private_time_ms: this.default_private_time_ms,
           privacy: {
               only_domain: this.urlFilter.only_domain(domain),
               only_url: this.urlFilter.only_url(domain),

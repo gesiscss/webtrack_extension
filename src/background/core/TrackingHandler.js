@@ -76,7 +76,7 @@ export default class TrackingHandler {
         let privateMode = (this.schedule==null || this.schedule.getNextPeriode()===0)? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
 
-        let urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK, settings.URLLIST);
+        let urlFilter = new URLFilter(this.config, is_dummy);
         this.extension = new Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
         this.tabHandler = new TabHandler(this.projectId, this.extension);
         this.tabHandler.event.on('error', error => {
@@ -95,7 +95,7 @@ export default class TrackingHandler {
       }
     } else {
       this.schedule == null;
-      let urlFilter = new URLFilter({});
+      let urlFilter = new URLFilter(this.config, is_dummy);
       this.extension = new Extension(urlFilter);
       this.tabHandler = new TabHandler(null, this.extension);
       this.tabHandler.event.on('error', error => {
