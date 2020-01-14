@@ -249,7 +249,7 @@ export default class TrackingHandler {
     return string.replace(this.regex_escapers, '\\$&'); // $& means the whole matched string
   }
 
-  anonymize(page){
+  anonymize(page, client_hash){
 
     if (page.meta.hasOwnProperty('is_private_mode')){
       if (page.meta.is_private_mode) {
@@ -310,9 +310,9 @@ export default class TrackingHandler {
 
         if (piperegex.length > 0){
           let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-          page['content'][0].html = page['content'][0].html.replace(pipe_regex,'_*_*_*_');
-          page.meta.description = page.meta.description.replace(pipe_regex,'_*_*_*_');
-          page.meta.keywords = page.meta.keywords.replace(pipe_regex,'_*_*_*_');
+          page['content'][0].html = page['content'][0].html.replace(pipe_regex,'__:'+client_hash+':__');
+          page.meta.description = page.meta.description.replace(pipe_regex,'__:'+client_hash+':__');
+          page.meta.keywords = page.meta.keywords.replace(pipe_regex,'__:'+client_hash+':__');
         }
       }
 
@@ -369,12 +369,13 @@ export default class TrackingHandler {
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
 
+                let client_hash = this.getClientId();
                 this.transfer.sendingData(
                   JSON.stringify ({
-                    id: this.getClientId(),
+                    id: client_hash,
                     projectId: this.projectId,
                     versionType: this.config.versionType,
-                    pages: [this.anonymize(page)]
+                    pages: [this.anonymize(page, client_hash)]
                   }), status => {
                     //count += 1;
                     // this.event.emit('onSendData', {
