@@ -16848,6 +16848,7 @@ function () {
                 this.param = _context2.sent;
 
                 if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+                  if (this.debug) console.log(this.param);
                   this.createTracker(this.param.privacy);
                 }
 

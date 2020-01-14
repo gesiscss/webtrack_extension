@@ -31904,7 +31904,12 @@ function () {
       } // extract the sub domain; ignore the TLD from now on
 
 
-      var sub_domain = domain.slice(0, tld_idx); // check for exact matches under special domains (e.g. tumblr and blogspot)
+      var sub_domain = domain.slice(0, tld_idx); // cut www out of the sub_domain, e.g. www.bank -> bank
+
+      if (sub_domain.startsWith('www.')) {
+        sub_domain = sub_domain.slice(4);
+      } // check for exact matches under special domains (e.g. tumblr and blogspot)
+
 
       for (var _i = 0, _Object$entries = Object.entries(this.lists.specials); _i < _Object$entries.length; _i++) {
         var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
@@ -31920,11 +31925,6 @@ function () {
             return true;
           }
         }
-      } // cut www out of the sub_domain, e.g. www.bank -> bank
-
-
-      if (sub_domain.startsWith('www.')) {
-        sub_domain = sub_domain.slice(4);
       } // bottom level domain index
 
 
@@ -31935,16 +31935,16 @@ function () {
         if (this.lists.simple.languages.has(sub_domain.slice(0, bld_idx))) {
           sub_domain = sub_domain.slice(bld_idx + 1);
         }
-      } // check for exact matches under special domains (e.g. tumblr and blogspot)
+      } // check for exact matches under special filters
 
 
       for (var _i2 = 0, _Object$entries2 = Object.entries(this.lists.filters); _i2 < _Object$entries2.length; _i2++) {
         var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-            key = _Object$entries2$_i[0],
+            _filter = _Object$entries2$_i[0],
             set = _Object$entries2$_i[1];
 
         // check if the sub_domain passes the filter
-        if (new RegExp(key).test(sub_domain)) {
+        if (new RegExp(_filter).test(sub_domain)) {
           // if so, check if the sub_domain exists in the list (actually a Set)
           if (set.has(sub_domain)) {
             return true;

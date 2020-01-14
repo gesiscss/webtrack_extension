@@ -71,8 +71,6 @@ export default class URLFilter {
     // top level domain index
     let tld_idx = domain.lastIndexOf(".");
 
-
-
     // check if it is ip based on the Top Level Domain. If there is a 
     // number in the last position, it should be an IP as of Nov 2019.
     // e.g. 20.32.3.4
@@ -91,6 +89,11 @@ export default class URLFilter {
     let sub_domain = domain.slice(0,tld_idx);
 
 
+    // cut www out of the sub_domain, e.g. www.bank -> bank
+    if (sub_domain.startsWith('www.')){
+      sub_domain = sub_domain.slice(4);
+    }
+
     // check for exact matches under special domains (e.g. tumblr and blogspot)
     for (let [key, set] of Object.entries(this.lists.specials)) {
       // subdomain index
@@ -103,11 +106,6 @@ export default class URLFilter {
       }
     }
 
-
-    // cut www out of the sub_domain, e.g. www.bank -> bank
-    if (sub_domain.startsWith('www.')){
-      sub_domain = sub_domain.slice(4);
-    }
     // bottom level domain index
     let bld_idx = sub_domain.indexOf(".");
     // if a bottom level domain has only two chars and it corresponds to a country code
@@ -118,10 +116,10 @@ export default class URLFilter {
       }
     }
 
-    // check for exact matches under special domains (e.g. tumblr and blogspot)
-    for (let [key, set] of Object.entries(this.lists.filters)) {
+    // check for exact matches under special filters
+    for (let [_filter, set] of Object.entries(this.lists.filters)) {
       // check if the sub_domain passes the filter
-      if ((new RegExp(key)).test(sub_domain)) {
+      if ((new RegExp(_filter)).test(sub_domain)) {
         // if so, check if the sub_domain exists in the list (actually a Set)
         if (set.has(sub_domain)) {
           return true;

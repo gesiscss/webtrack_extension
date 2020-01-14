@@ -545,7 +545,8 @@ export default class ContentHandler {
       this.param = await this._getParam();
 
       if(typeof this.param == 'object' && this.param.allow){
-          this.createTracker(this.param.privacy);
+        if(this.debug) console.log(this.param);
+        this.createTracker(this.param.privacy);
       }
     } catch (e) {
       this.init_timer = setTimeout(()=> this.init(), 2000)
