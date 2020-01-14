@@ -10,7 +10,7 @@ export default class InstagramTracker extends Tracker{
     this.is_allowed = null;
     this.instagram_debug = false;
 
-    this.svg_account = 'nav a svg g path[d="M24 27c-7.1 0-12.9-5.8-12.9-12.9s5.8-13 12.9-13c7.1 0 12.9 5.8 12.9 12.9S31.1 27 24 27zm0-22.9c-5.5 0-9.9 4.5-9.9 9.9s4.4 10 9.9 10 9.9-4.5 9.9-9.9-4.4-10-9.9-10zM44 46.9c-.8 0-1.5-.7-1.5-1.5V42c0-5-4-9-9-9h-19c-5 0-9 4-9 9v3.4c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5V42c0-6.6 5.4-12 12-12h19c6.6 0 12 5.4 12 12v3.4c0 .8-.7 1.5-1.5 1.5z"]';
+    this.svg_account = 'a path[d="M24 27c-7.1 0-12.9-5.8-12.9-12.9s5.8-13 12.9-13c7.1 0 12.9 5.8 12.9 12.9S31.1 27 24 27zm0-22.9c-5.5 0-9.9 4.5-9.9 9.9s4.4 10 9.9 10 9.9-4.5 9.9-9.9-4.4-10-9.9-10zm20 42.8c-.8 0-1.5-.7-1.5-1.5V42c0-5-4-9-9-9h-19c-5 0-9 4-9 9v3.4c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5V42c0-6.6 5.4-12 12-12h19c6.6 0 12 5.4 12 12v3.4c0 .8-.7 1.5-1.5 1.5z"]';
     this.div_fullname = '.f5Yes.oL_O8';
     this.span_heart = 'section span.fr66n';
     this.span_comment = 'section span._15y0l';
@@ -46,46 +46,49 @@ export default class InstagramTracker extends Tracker{
    * Setup the credentials for the logged user (if any)
    */
   reset_credentials(){
-    let svg_account = this.get_svg_account();
-    this.is_logged_in = this._isLogged(svg_account);
-
-    if (this.is_logged_in){
+    
+    try {
       this.credentials = this.get_credentials();
-      
-      if (this.credentials == null) {
-        this.logged_username = this.get_username(svg_account);
-        this.logged_fullname = this.get_fullname();
+      this.logged_username = this.credentials.config.viewer.username;
+      this.is_logged_in = true;
+      this.logged_fullname = this.credentials.config.viewer.full_name;
+      this.logged_user_id = this.credentials.config.viewer.id;          
+      this.profile_pic_url = this.credentials.config.viewer.profile_pic_url;
+      this.profile_pic_url_hd = this.credentials.config.viewer.profile_pic_url_hd;
+      this.is_private = this.credentials.config.viewer.is_private;
+    } catch (error){
+      this.logged_username = this.get_username(svg_account);
+      this.logged_fullname = this.get_fullname();
+      if (this.logged_fullname || this.logged_fullname){
+        this.is_logged_in = true;
       } else {
-        this.logged_user_id = this.credentials.id;
-        this.logged_username = this.credentials.username;
-        this.logged_fullname = this.credentials.full_name;
-        this.profile_pic_url = this.credentials.profile_pic_url;
-        this.profile_pic_url_hd = this.credentials.profile_pic_url_hd;
-        this.is_private = this.credentials.is_private;
-      }
-
-      let pathname = location.pathname;
-      if (pathname == '/'){
-        if (this.instagram_debug) console.log('credentials: is_timeline');
-        this.is_timeline = true;
-      } else if (pathname.startsWith('/explore/')) {
-        if (this.instagram_debug) console.log('credentials: is_explore');
-        this.is_explore = true;
-      } else if (pathname.startsWith('/p/')) {
-        if (this.instagram_debug) console.log('credentials: is_post');
-        this.is_post = true;
-      } else {
-        let parts = pathname.split('/');
-        if (parts.length == 3) {
-          if (this.instagram_debug) console.log('credentials: is_profile');
-          this.is_profile = true;
-        }
-        if (parts[1] == this.logged_username){
-          if (this.instagram_debug) console.log('credentials: is_my_profile');
-          this.is_my_profile = true;
-        }
+        let svg_account = this.get_svg_account();
+        this.is_logged_in = this._isLogged(svg_account);
       }
     }
+
+    let pathname = location.pathname;
+    if (pathname == '/'){
+      if (this.instagram_debug) console.log('credentials: is_timeline');
+      this.is_timeline = true;
+    } else if (pathname.startsWith('/explore/')) {
+      if (this.instagram_debug) console.log('credentials: is_explore');
+      this.is_explore = true;
+    } else if (pathname.startsWith('/p/')) {
+      if (this.instagram_debug) console.log('credentials: is_post');
+      this.is_post = true;
+    } else {
+      let parts = pathname.split('/');
+      if (parts.length == 3) {
+        if (this.instagram_debug) console.log('credentials: is_profile');
+        this.is_profile = true;
+      }
+      if (parts[1] == this.logged_username){
+        if (this.instagram_debug) console.log('credentials: is_my_profile');
+        this.is_my_profile = true;
+      }
+    }
+
     this.is_content_allowed = true;
 
   }
@@ -137,8 +140,7 @@ export default class InstagramTracker extends Tracker{
     for (var i = 0; i < scripts.length; i++) {
       let sc = scripts[i].textContent;
       if (sc.startsWith('window._sharedData = ')) {
-        return JSON.parse(sc.substring(sc.lastIndexOf('"viewer":') + 9, 
-          sc.lastIndexOf(',"viewerId"')));
+        return JSON.parse(sc.substring(sc.indexOf('{'), sc.indexOf('};') + 1));
       }
     }
     return null;
