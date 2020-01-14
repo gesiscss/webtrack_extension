@@ -31818,12 +31818,14 @@ function () {
     var lists = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     var white_or_black = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var server_list = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
 
     URLFilter_classCallCheck(this, URLFilter);
 
     this.active = active;
     this.white_or_black = white_or_black;
     this.lists = lists;
+    this.server_list = server_list;
     this.cache = {};
   }
   /**
@@ -31982,6 +31984,34 @@ function () {
         } finally {
           if (_didIteratorError) {
             throw _iteratorError;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.server_list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var _item = _step2.value;
+          console.log(_item);
+
+          if (subdot_domain.endsWith(_item)) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
       }
@@ -38369,7 +38399,7 @@ function () {
         this.schedule = TrackingHandler_typeof(settings.SCHEDULE) === 'object' && Object.keys(settings.SCHEDULE).length > 0 ? new Schedule(settings.SCHEDULE) : null;
         var privateMode = this.schedule == null || this.schedule.getNextPeriode() === 0 ? this.config.getRunProjectTmpSettings().privateMode : true;
         this.SENDDATAAUTOMATICALLY = settings.SETTINGS.SENDDATAAUTOMATICALLY;
-        var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK);
+        var urlFilter = new URLFilter(this.config.blacklists, settings.SETTINGS.ACTIVE_URLLIST, settings.SETTINGS.URLLIST_WHITE_OR_BLACK, settings.URLLIST);
         this.extension = new Extension_Extension(urlFilter, privateMode, settings.SHOW_DOMAIN_HINT, settings.SETTINGS.EXTENSIONSFILTER);
         this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
         this.tabHandler.event.on('error', function (error) {

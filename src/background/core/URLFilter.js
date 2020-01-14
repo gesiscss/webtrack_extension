@@ -1,9 +1,10 @@
 export default class URLFilter {
 
-  constructor(lists={}, active=false, white_or_black=true) {
+  constructor(lists={}, active=false, white_or_black=true, server_list=[]) {
     this.active = active;
     this.white_or_black = white_or_black;
     this.lists = lists;
+    this.server_list = server_list;
     this.cache = {};
 
   }
@@ -135,6 +136,13 @@ export default class URLFilter {
     // check if the sub_domain endsWith any of the blocked domains
     let subdot_domain = '.' + sub_domain;
     for (let item of this.lists.simple.ends_with) {
+      if (subdot_domain.endsWith(item)){
+        return true;
+      }
+    }
+
+    for (let item of this.server_list) {
+      console.log(item)
       if (subdot_domain.endsWith(item)){
         return true;
       }
