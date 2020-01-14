@@ -57,6 +57,8 @@ export default class FacebookTracker extends Tracker{
       'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'likes', 'music', 
       'notes', 'photos', 'reviews', 'sports']
 
+    this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
+
     this.entries_found = 0;
     this.logged_uid = null;
     this.logged_user_id = null;
@@ -411,6 +413,14 @@ export default class FacebookTracker extends Tracker{
       return false;
     }
 
+    let els = target.querySelectorAll('i[class*=sx_')
+    for (let i = 0; i < els.length; i++) {
+      if (getComputedStyle(els[i])['background-position'] == '-13px -308px'){
+        return true;
+      } else if (this.blocked.has(getComputedStyle(els[i])['background-position'])) {
+        return false;
+      }
+    }
 
     //let a_list = target.querySelectorAll('.fwn.fcg a');
     //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
@@ -471,16 +481,18 @@ export default class FacebookTracker extends Tracker{
 
       found[i].classList.add('tracked');
       if (this._isPublicOrLogInUser(found[i])){
-        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
+        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid green !important;");
         this._setLikeEvent(found[i]);
         this._setCommentEvent(found[i]);
         this._eventcommentFromCommentButton(found[i]);
         this._setLikeCommentEvent(found[i]);
         this._setShareEvent(found[i]);
+        bucket.push(found[i])
       }else{
+        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
         delete found[i];
       }
-      bucket.push(found[i])
+
     }
     //}
     return bucket.filter(e => e!=undefined);
