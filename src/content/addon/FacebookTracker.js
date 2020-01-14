@@ -61,6 +61,9 @@ export default class FacebookTracker extends Tracker{
     this.logged_uid = null;
     this.logged_user_id = null;
     this.logged_username = null;
+    this.logged_account_id = null;
+    this.logged_fullname = null;
+    this.logged_shortname = null;
 
     this.reset_credentials();
 
@@ -154,6 +157,8 @@ export default class FacebookTracker extends Tracker{
    */
   reset_credentials(){
 
+    
+
     let location = document.querySelector('._2s25._606w');
     this.logged_username = this.get_username(location);
 
@@ -174,8 +179,20 @@ export default class FacebookTracker extends Tracker{
       this.logged_uid = this.logged_user_id;
     }
 
+    // try now with the credentials
+    let credentials = this.get_credentials();
+    if (credentials){
+      if (this.logged_user_id == null){
+        this.logged_user_id = credentials.USER_ID;
+      }
+      this.logged_account_id = credentials.ACCOUNT_ID;
+      this.logged_fullname = credentials.NAME;
+      this.logged_shortname = credentials.SHORT_NAME;
+
+    }
+
     // logged in
-    if (this.logged_uid){
+    if (this.logged_uid || credentials){
       this.is_logged_in = true;
       this.is_content_allowed = this.get_content_allowed();
 
@@ -184,10 +201,27 @@ export default class FacebookTracker extends Tracker{
       this.is_logged_in = false;
       this.is_content_allowed = true;
     }
-
-
-
   }
+
+
+  /**
+  Load the credentials from the script in Facebook
+  returns a dictionary with the credentials
+  **/  
+  get_credentials() {
+    try{
+      let scripts = document.querySelectorAll('script:not([src])');
+      for (var i = 0; i < scripts.length; i++) {
+        let sc = scripts[i].textContent;
+        if (sc.startsWith('require("TimeSliceImpl").guard(')) {
+          return JSON.parse('{' + sc.match(/"USER_ID":".*?"|"SHORT_NAME":".*?"|"NAME":".*?"|"ACCOUNT_ID":".*?"/g).join(',') + '}')      
+        }
+      }
+    } catch(e){
+
+    }
+    return null;
+  }  
 
   /**
    * Comapare an anchor selector to the logged in user
@@ -796,6 +830,16 @@ export default class FacebookTracker extends Tracker{
 
     if (this.logged_username) {
       anonym['username'] = this.logged_username;
+    }
+
+    if (this.logged_account_id) {
+      anonym['account_id'] = this.logged_account_id;
+    }
+    if (this.logged_fullname) {
+      anonym['fullname'] = this.logged_fullname;
+    }
+    if (this.logged_shortname) {
+      anonym['shortname'] = this.logged_shortname;
     }
 
     metadata['anonym'] = anonym;
