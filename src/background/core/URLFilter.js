@@ -186,14 +186,20 @@ export default class URLFilter {
       // let white=[]
       // let black=[]
       // for (var i = 0; i < this.lists.tests.length; i++) {
-      //   let location = this.get_location(this.lists.tests[i]);
-      //   //let domain = this.lists.tests[i];
+      //   //when the test contains URLs
+      //   //domain = this.get_location(this.lists.tests[i]).hostname
+
+      //   //when the test contain domains
+      //   domain = this.lists.tests[i];
       //   if (!this.isincluded(domain)) {
+      //     console.log(this.lists.tests[i])
       //     white.push(this.lists.tests[i]);
       //   } else {
       //     black.push(this.lists.tests[i]);
       //   }
       // }
+      // console.log(white);
+      // console.log(black);
       // debugger;
 
 
