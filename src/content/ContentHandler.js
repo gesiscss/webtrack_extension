@@ -416,7 +416,7 @@ export default class ContentHandler {
   createTracker(privacy){
     if (this.debug) console.log('-> createTracker()')
     const Tracker = this._getTracker(privacy);
-    this.tracker = new Tracker(5, this.param.extensionfilter);
+    this.tracker = new Tracker(5, privacy, this.param.extensionfilter);
     this.tracker.eventEmitter.on('onNewURL', () => {
       this.close();
       this.clear();

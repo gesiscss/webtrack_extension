@@ -9,10 +9,11 @@ const EVENT_NAMES = {
 
 export default class Tracker extends MultiFetch {
 
-  constructor(worker, extensionfilter=[], is_track_allow=true) {
+  constructor(worker, privacy, extensionfilter=[]) {
     super(worker);
+    this.privacy = privacy; 
     this.extensionfilter = extensionfilter;
-    this.is_track_allow = is_track_allow;
+    this.is_track_allow = true;
     this.eventEmitter = new EventEmitter();
 
     this.rootElement = document;
@@ -25,9 +26,13 @@ export default class Tracker extends MultiFetch {
     this.metadata = {
       description: [],
       keywords: [],
-      anonym: ''
-
+      anonym: null,
+      url_only: privacy.only_url,
+      domain_only: privacy.only_domain
     };
+
+    console.log('constructor');
+    console.log(this.metadata);
     this.links = [];
     this.lastURL = '';
     this.original_url = '';
@@ -198,14 +203,23 @@ export default class Tracker extends MultiFetch {
       result['keywords'] = this.metadata['keywords'].join(',');
     }
 
-    result['anonym'] = this.metadata['anonym'];
-    result['anonym'] = data['anonym'];
+    if (data.hasOwnProperty('anonym')){
+      result['anonym'] = data['anonym'];
+    } else {
+      result['anonym'] = this.metadata['anonym'];
+    }
+    
+    if (data.hasOwnProperty('domain_only')){
+      result['domain_only'] = data['domain_only'];
+    } else {
+      result['domain_only'] = this.metadata['domain_only'];
+    }
 
-    result['domain_only'] = this.metadata['domain_only'];
-    result['domain_only'] = data['domain_only'];
-
-    result['url_only'] = this.metadata['url_only'];
-    result['url_only'] = data['url_only'];
+    if (data.hasOwnProperty('url_only')){
+      result['url_only'] = data['url_only'];
+    } else {
+      result['url_only'] = this.metadata['url_only'];
+    }
 
     
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');

@@ -10065,17 +10065,17 @@ var Tracker_Tracker =
 function (_MultiFetch) {
   _inherits(Tracker, _MultiFetch);
 
-  function Tracker(worker) {
+  function Tracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-    var is_track_allow = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     Tracker_classCallCheck(this, Tracker);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tracker).call(this, worker));
+    _this.privacy = privacy;
     _this.extensionfilter = extensionfilter;
-    _this.is_track_allow = is_track_allow;
+    _this.is_track_allow = true;
     _this.eventEmitter = new eventemitter3_default.a();
     _this.rootElement = document;
     _this.eventFn = {
@@ -10088,8 +10088,12 @@ function (_MultiFetch) {
     _this.metadata = {
       description: [],
       keywords: [],
-      anonym: ''
+      anonym: null,
+      url_only: privacy.only_url,
+      domain_only: privacy.only_domain
     };
+    console.log('constructor');
+    console.log(_this.metadata);
     _this.links = [];
     _this.lastURL = '';
     _this.original_url = '';
@@ -10297,12 +10301,24 @@ function (_MultiFetch) {
         result['keywords'] = this.metadata['keywords'].join(',');
       }
 
-      result['anonym'] = this.metadata['anonym'];
-      result['anonym'] = data['anonym'];
-      result['domain_only'] = this.metadata['domain_only'];
-      result['domain_only'] = data['domain_only'];
-      result['url_only'] = this.metadata['url_only'];
-      result['url_only'] = data['url_only'];
+      if (data.hasOwnProperty('anonym')) {
+        result['anonym'] = data['anonym'];
+      } else {
+        result['anonym'] = this.metadata['anonym'];
+      }
+
+      if (data.hasOwnProperty('domain_only')) {
+        result['domain_only'] = data['domain_only'];
+      } else {
+        result['domain_only'] = this.metadata['domain_only'];
+      }
+
+      if (data.hasOwnProperty('url_only')) {
+        result['url_only'] = data['url_only'];
+      } else {
+        result['url_only'] = this.metadata['url_only'];
+      }
+
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
       if (this.debug) console.log(result);
       this.eventEmitter.emit(EVENT_NAMES.data, {
@@ -11046,14 +11062,14 @@ var FacebookTracker =
 function (_Tracker) {
   FacebookTracker_inherits(FacebookTracker, _Tracker);
 
-  function FacebookTracker(worker) {
+  function FacebookTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     FacebookTracker_classCallCheck(this, FacebookTracker);
 
-    _this = FacebookTracker_possibleConstructorReturn(this, FacebookTracker_getPrototypeOf(FacebookTracker).call(this, worker));
+    _this = FacebookTracker_possibleConstructorReturn(this, FacebookTracker_getPrototypeOf(FacebookTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
@@ -12568,14 +12584,14 @@ var YouTubeTracker =
 function (_Tracker) {
   YouTubeTracker_inherits(YouTubeTracker, _Tracker);
 
-  function YouTubeTracker(worker) {
+  function YouTubeTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     YouTubeTracker_classCallCheck(this, YouTubeTracker);
 
-    _this = YouTubeTracker_possibleConstructorReturn(this, YouTubeTracker_getPrototypeOf(YouTubeTracker).call(this, worker));
+    _this = YouTubeTracker_possibleConstructorReturn(this, YouTubeTracker_getPrototypeOf(YouTubeTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(YouTubeTracker_assertThisInitialized(_this));
     _this.rootElement = null;
@@ -13997,14 +14013,14 @@ var TwitterTracker =
 function (_Tracker) {
   TwitterTracker_inherits(TwitterTracker, _Tracker);
 
-  function TwitterTracker(worker) {
+  function TwitterTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     TwitterTracker_classCallCheck(this, TwitterTracker);
 
-    _this = TwitterTracker_possibleConstructorReturn(this, TwitterTracker_getPrototypeOf(TwitterTracker).call(this, worker));
+    _this = TwitterTracker_possibleConstructorReturn(this, TwitterTracker_getPrototypeOf(TwitterTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(TwitterTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -15102,14 +15118,14 @@ var InstagramTracker =
 function (_Tracker) {
   InstagramTracker_inherits(InstagramTracker, _Tracker);
 
-  function InstagramTracker(worker) {
+  function InstagramTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     InstagramTracker_classCallCheck(this, InstagramTracker);
 
-    _this = InstagramTracker_possibleConstructorReturn(this, InstagramTracker_getPrototypeOf(InstagramTracker).call(this, worker));
+    _this = InstagramTracker_possibleConstructorReturn(this, InstagramTracker_getPrototypeOf(InstagramTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(InstagramTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -15598,14 +15614,14 @@ var DomainTracker =
 function (_Tracker) {
   DomainTracker_inherits(DomainTracker, _Tracker);
 
-  function DomainTracker(worker) {
+  function DomainTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     DomainTracker_classCallCheck(this, DomainTracker);
 
-    _this = DomainTracker_possibleConstructorReturn(this, DomainTracker_getPrototypeOf(DomainTracker).call(this, worker));
+    _this = DomainTracker_possibleConstructorReturn(this, DomainTracker_getPrototypeOf(DomainTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(DomainTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -15684,14 +15700,14 @@ var URLTracker =
 function (_Tracker) {
   URLTracker_inherits(URLTracker, _Tracker);
 
-  function URLTracker(worker) {
+  function URLTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     URLTracker_classCallCheck(this, URLTracker);
 
-    _this = URLTracker_possibleConstructorReturn(this, URLTracker_getPrototypeOf(URLTracker).call(this, worker));
+    _this = URLTracker_possibleConstructorReturn(this, URLTracker_getPrototypeOf(URLTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(URLTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -15774,14 +15790,14 @@ var GoogleTracker =
 function (_Tracker) {
   GoogleTracker_inherits(GoogleTracker, _Tracker);
 
-  function GoogleTracker(worker) {
+  function GoogleTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     GoogleTracker_classCallCheck(this, GoogleTracker);
 
-    _this = GoogleTracker_possibleConstructorReturn(this, GoogleTracker_getPrototypeOf(GoogleTracker).call(this, worker));
+    _this = GoogleTracker_possibleConstructorReturn(this, GoogleTracker_getPrototypeOf(GoogleTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(GoogleTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -15952,14 +15968,14 @@ var AppleTracker =
 function (_Tracker) {
   AppleTracker_inherits(AppleTracker, _Tracker);
 
-  function AppleTracker(worker) {
+  function AppleTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     AppleTracker_classCallCheck(this, AppleTracker);
 
-    _this = AppleTracker_possibleConstructorReturn(this, AppleTracker_getPrototypeOf(AppleTracker).call(this, worker));
+    _this = AppleTracker_possibleConstructorReturn(this, AppleTracker_getPrototypeOf(AppleTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(AppleTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -16025,14 +16041,14 @@ var BlacklistTracker =
 function (_Tracker) {
   BlacklistTracker_inherits(BlacklistTracker, _Tracker);
 
-  function BlacklistTracker(worker) {
+  function BlacklistTracker(worker, privacy) {
     var _this;
 
-    var extensionfilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     BlacklistTracker_classCallCheck(this, BlacklistTracker);
 
-    _this = BlacklistTracker_possibleConstructorReturn(this, BlacklistTracker_getPrototypeOf(BlacklistTracker).call(this, worker));
+    _this = BlacklistTracker_possibleConstructorReturn(this, BlacklistTracker_getPrototypeOf(BlacklistTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(BlacklistTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
@@ -16774,7 +16790,7 @@ function () {
 
       var Tracker = this._getTracker(privacy);
 
-      this.tracker = new Tracker(5, this.param.extensionfilter);
+      this.tracker = new Tracker(5, privacy, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
         _this7.close();
 

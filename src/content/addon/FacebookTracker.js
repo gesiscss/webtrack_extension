@@ -2,8 +2,8 @@ import Tracker from '../Tracker';
 
 export default class FacebookTracker extends Tracker{
 
-  constructor(worker, extensionfilter=[]){
-    super(worker);
+  constructor(worker, privacy, extensionfilter=[]){
+    super(worker, privacy);
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
