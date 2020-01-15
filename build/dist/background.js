@@ -38788,9 +38788,8 @@ function () {
       if (page.meta.hasOwnProperty('url_only')) {
         if (page.meta.url_only) {
           page['title'] = '';
+          page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
         }
-
-        page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
       }
 
       if (page.meta.hasOwnProperty('anonym')) {
@@ -38810,13 +38809,13 @@ function () {
               } catch (e) {}
             }
           }
+        }
 
-          if (piperegex.length > 0) {
-            var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-            page['content'][0].html = page['content'][0].html.replace(pipe_regex, '__:' + client_hash + ':__');
-            page.meta.description = page.meta.description.replace(pipe_regex, '__:' + client_hash + ':__');
-            page.meta.keywords = page.meta.keywords.replace(pipe_regex, '__:' + client_hash + ':__');
-          }
+        if (piperegex.length > 0) {
+          var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
+          page['content'][0].html = page['content'][0].html.replace(pipe_regex, '__:' + client_hash + ':__');
+          page.meta.description = page.meta.description.replace(pipe_regex, '__:' + client_hash + ':__');
+          page.meta.keywords = page.meta.keywords.replace(pipe_regex, '__:' + client_hash + ':__');
         }
 
         delete page.meta.anonym;
