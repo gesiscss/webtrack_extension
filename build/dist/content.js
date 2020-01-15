@@ -16343,8 +16343,9 @@ function () {
     this.page = null;
     this.allow = false;
     this.isSend = false;
-    this.isListeningToBackend = false;
-    this.default_private_ms = 15 * 60 * 1000; // initialized only once
+    this.isListeningToBackend = false; // this value gets overwritten in the init
+
+    this.default_private_time_ms = 15 * 60 * 1000; // initialized only once
 
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
@@ -16820,7 +16821,7 @@ function () {
         if (notification == null) {
           var notification_window = this.get_notification_window();
           notification_window.querySelector('#fifteen').addEventListener("click", function () {
-            this.request_more_private_time(this.default_private_ms);
+            this.request_more_private_time(this.default_private_time_ms);
             body.removeChild(notification_window);
             this.display_notification = false;
           }.bind(this));
@@ -16912,7 +16913,7 @@ function () {
 
                 if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
                   if (this.debug) console.log(this.param);
-                  this.default_private_ms = this.params.default_private_ms;
+                  this.default_private_time_ms = this.param.default_private_time_ms;
                   this.createTracker(this.param.privacy);
                 }
 
