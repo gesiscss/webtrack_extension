@@ -14,7 +14,7 @@ export default class InstagramTracker extends Tracker{
     this.div_fullname = '.f5Yes.oL_O8';
     this.span_heart = 'section span.fr66n';
     this.span_comment = 'section span._15y0l';
-    this.span_share = 'section span._5e4p';
+    this.span_share = 'section span.glyphsSpriteDirect__outline__24__grey_9';
     this.span_save = 'section span.wmtNn';
     this.anchor_article = 'div.eo2As a.c-Yi7';
     this.article = 'article.M9sTE.L_LMM.ePUX4';
@@ -186,21 +186,26 @@ export default class InstagramTracker extends Tracker{
 
     // if the user is not logged in, the content is public for sure
     if (!this.is_logged_in){
+      if (this.instagram_debug) console.log('not logged in');
       return true;
     }
 
     if (this.is_explore){
+      if (this.instagram_debug) console.log('is explore');
       return true;
     }
 
     if (this.is_profile){
+      if (this.instagram_debug) console.log('is profile');
       return true;
     }
 
     // if the protected svg appear in the tweet, the content is private
     if (target.querySelector(this.span_share)) {
+      if (this.instagram_debug) console.log('is share');
       return true;
     } else {
+      if (this.instagram_debug) console.log('not share');
       return false;
     }
 
