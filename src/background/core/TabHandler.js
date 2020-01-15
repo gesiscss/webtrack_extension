@@ -178,9 +178,7 @@ export default class TabHandler {
           this.tabs[id].elapsed_timer = now;
 
           // set the right image on the tracking icon
-          this.extension.setImage(this.extension.tabs[id].getState('allow') 
-            && !this.extension.tabs[id].getState('disabled')
-            && !this.extension.tabs[id].getState('content_blocked'));
+          this.extension.resetPublicImage();
         }
       }
 
