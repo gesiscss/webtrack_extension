@@ -45,19 +45,10 @@ export default class ContentHandler {
     this.click_counter = this.click_counter.bind(this);
     this.focus_counter = this.focus_counter.bind(this);
     this.scroll_counter = this.scroll_counter.bind(this);
-    this.clicks = 0;
-    this.scrolls = 0;
-    this.focuses = 0;
-    this.is_scroll_timed = false;
+    
     
     // needs to be initialized, if restarting
-    this.tracker = null;
-    this.init_timer = null;
-    this.count = 0;
-    this.domDetector = new DomDetector();
-    this.startTime = +new Date();
-    this.data = this.init_data();
-    this.last = 0;
+    this.clear();
 
     this.display_notification = false;
   }
@@ -105,7 +96,6 @@ export default class ContentHandler {
    */
   focus_counter () {
     this.focuses += 1;
-    console.log(this.focuses);
     this.sendMessage({ 
       focuses: this.focuses
     });
@@ -279,7 +269,7 @@ export default class ContentHandler {
     object['count'] = this.count;
 
     this.data = Object.assign(this.data, object);
-    console.log(this.data)
+    if (this.debug) console.log(this.data);
 
     // console.log(this.data.landing_url);
     // if (now - this.last > this.DELAY) {
@@ -596,7 +586,8 @@ export default class ContentHandler {
     this.last = 0;
     this.clicks = 0;
     this.scrolls = 0;
-    this.is_timed = false;
+    this.focuses = 0;
+    this.is_scroll_timed = false;
     this.data = this.init_data();
   }
 
