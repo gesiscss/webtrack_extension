@@ -16351,7 +16351,9 @@ function () {
     this.param = null;
     this.DELAY = 1000;
     this.debug = true;
-    this.onBackendMessage = this.onBackendMessage.bind(this); // needs to be initialized, if restarting
+    this.onBackendMessage = this.onBackendMessage.bind(this);
+    this.click_counter = this.click_counter.bind(this);
+    this.clicks = 0; // needs to be initialized, if restarting
 
     this.tracker = null;
     this.init_timer = null;
@@ -16362,6 +16364,11 @@ function () {
     this.last = 0;
     this.display_notification = false;
   }
+  /**
+   * initialize the data
+   * @return {[type]} [description]
+   */
+
 
   ContentHandler_createClass(ContentHandler, [{
     key: "init_data",
@@ -16381,8 +16388,22 @@ function () {
         landing_url: window.location.href,
         hostname: location.protocol + '//' + location.hostname,
         page_load_time: window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart,
-        unhashed_url: this.get_unhashed_href()
+        unhashed_url: this.get_unhashed_href(),
+        clicks: this.clicks
       };
+    }
+    /**
+     * count clicks in the page
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "click_counter",
+    value: function click_counter() {
+      this.clicks += 1;
+      this.sendMessage({
+        clicks: this.clicks
+      });
     }
     /**
      * [return specific tracker for the current page]
@@ -16626,6 +16647,7 @@ function () {
     value: function close() {
       this.domDetector.removeAllEventListener();
       this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
+      window.removeEventListener("click", this.click_counter);
       this.isListeningToBackend = false;
 
       if (this.tracker && this.tracker.eventEmitter) {
@@ -16886,6 +16908,7 @@ function () {
       this.domDetector = new DomDetector();
       this.startTime = +new Date();
       this.last = 0;
+      this.clicks = 0;
       this.data = this.init_data();
     }
     /**
@@ -16905,6 +16928,7 @@ function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (!this.isListeningToBackend) {
+                  window.addEventListener("click", this.click_counter);
                   this.browser.runtime.onMessage.addListener(this.onBackendMessage);
                   this.isListeningToBackend = true;
                 }

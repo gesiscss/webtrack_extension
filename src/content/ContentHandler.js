@@ -42,6 +42,8 @@ export default class ContentHandler {
     this.debug = true;
 
     this.onBackendMessage = this.onBackendMessage.bind(this);
+    this.click_counter = this.click_counter.bind(this);
+    this.clicks = 0;
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -55,6 +57,10 @@ export default class ContentHandler {
     this.display_notification = false;
   }
 
+  /**
+   * initialize the data
+   * @return {[type]} [description]
+   */
   init_data(){
     return {
       createData: new Date(),
@@ -71,9 +77,20 @@ export default class ContentHandler {
       landing_url: window.location.href,
       hostname: location.protocol + '//' + location.hostname,
       page_load_time: window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart,
-      unhashed_url: this.get_unhashed_href()
+      unhashed_url: this.get_unhashed_href(),
+      clicks: this.clicks
     }
+  }
 
+  /**
+   * count clicks in the page
+   * @return {[type]} [description]
+   */
+  click_counter () {
+     this.clicks += 1;
+     this.sendMessage({ 
+        clicks: this.clicks
+      });
   }
 
   /**
@@ -190,8 +207,11 @@ export default class ContentHandler {
   sendMessage(object={}){
     this.count += 1;
 
+
     let type = null;
     if(object.hasOwnProperty('html')){
+
+
       if (this.debug){
         console.log('Count: ' + this.count);
 
@@ -201,7 +221,7 @@ export default class ContentHandler {
       }
       object = {
         //links: object['links'],
-        content: [object]
+        content: [object],
       };
       type = 'html';
     } else if(object.hasOwnProperty('links')){
@@ -293,6 +313,7 @@ export default class ContentHandler {
   close(){
     this.domDetector.removeAllEventListener();
     this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
+    window.removeEventListener("click", this.click_counter);
     this.isListeningToBackend = false;
     if (this.tracker && this.tracker.eventEmitter){
       this.tracker.eventEmitter.removeAllListeners('onData');
@@ -532,6 +553,7 @@ export default class ContentHandler {
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
     this.last = 0;
+    this.clicks = 0;
     this.data = this.init_data();
   }
 
@@ -541,6 +563,7 @@ export default class ContentHandler {
    */
   async init(){
     if (!this.isListeningToBackend){
+      window.addEventListener("click", this.click_counter);
       this.browser.runtime.onMessage.addListener(this.onBackendMessage);
       this.isListeningToBackend = true;
     }
