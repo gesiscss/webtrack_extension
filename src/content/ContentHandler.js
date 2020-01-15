@@ -43,7 +43,10 @@ export default class ContentHandler {
 
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_counter = this.click_counter.bind(this);
+    this.scroll_counter = this.scroll_counter.bind(this);
     this.clicks = 0;
+    this.scrolls = 0;
+    this.is_scroll_timed = false;
     
     // needs to be initialized, if restarting
     this.tracker = null;
@@ -78,7 +81,8 @@ export default class ContentHandler {
       hostname: location.protocol + '//' + location.hostname,
       page_load_time: window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart,
       unhashed_url: this.get_unhashed_href(),
-      clicks: this.clicks
+      clicks: this.clicks,
+      scrolls: this.scrolls
     }
   }
 
@@ -87,10 +91,30 @@ export default class ContentHandler {
    * @return {[type]} [description]
    */
   click_counter () {
-     this.clicks += 1;
-     this.sendMessage({ 
-        clicks: this.clicks
-      });
+    this.clicks += 1;
+    this.sendMessage({ 
+      clicks: this.clicks
+    });
+  }
+
+
+  /**
+   * count scrolls in the page
+   * @return {[type]} [description]
+   */
+  scroll_counter (e) {
+    this.scrolls += 1;
+    if (!this.is_scroll_timed) {
+      this.is_scroll_timed = true;
+      setTimeout(()=> this.send_scroll(), 500)
+    }
+  }
+
+  send_scroll () {
+    this.sendMessage({ 
+      scrolls: this.scrolls
+    });
+    this.is_scroll_timed = false;
   }
 
   /**
@@ -241,6 +265,7 @@ export default class ContentHandler {
     object['count'] = this.count;
 
     this.data = Object.assign(this.data, object);
+    console.log(this.data)
 
     // console.log(this.data.landing_url);
     // if (now - this.last > this.DELAY) {
@@ -314,6 +339,7 @@ export default class ContentHandler {
     this.domDetector.removeAllEventListener();
     this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
     window.removeEventListener("click", this.click_counter);
+    window.removeEventListener("scroll", this.scroll_counter);
     this.isListeningToBackend = false;
     if (this.tracker && this.tracker.eventEmitter){
       this.tracker.eventEmitter.removeAllListeners('onData');
@@ -554,6 +580,8 @@ export default class ContentHandler {
     this.startTime = +new Date();
     this.last = 0;
     this.clicks = 0;
+    this.scrolls = 0;
+    this.is_timed = false;
     this.data = this.init_data();
   }
 
@@ -564,6 +592,7 @@ export default class ContentHandler {
   async init(){
     if (!this.isListeningToBackend){
       window.addEventListener("click", this.click_counter);
+      window.addEventListener("scroll", this.scroll_counter);
       this.browser.runtime.onMessage.addListener(this.onBackendMessage);
       this.isListeningToBackend = true;
     }

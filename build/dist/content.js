@@ -16353,7 +16353,10 @@ function () {
     this.debug = true;
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_counter = this.click_counter.bind(this);
-    this.clicks = 0; // needs to be initialized, if restarting
+    this.scroll_counter = this.scroll_counter.bind(this);
+    this.clicks = 0;
+    this.scrolls = 0;
+    this.is_scroll_timed = false; // needs to be initialized, if restarting
 
     this.tracker = null;
     this.init_timer = null;
@@ -16389,7 +16392,8 @@ function () {
         hostname: location.protocol + '//' + location.hostname,
         page_load_time: window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart,
         unhashed_url: this.get_unhashed_href(),
-        clicks: this.clicks
+        clicks: this.clicks,
+        scrolls: this.scrolls
       };
     }
     /**
@@ -16404,6 +16408,33 @@ function () {
       this.sendMessage({
         clicks: this.clicks
       });
+    }
+    /**
+     * count scrolls in the page
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "scroll_counter",
+    value: function scroll_counter(e) {
+      var _this = this;
+
+      this.scrolls += 1;
+
+      if (!this.is_scroll_timed) {
+        this.is_scroll_timed = true;
+        setTimeout(function () {
+          return _this.send_scroll();
+        }, 500);
+      }
+    }
+  }, {
+    key: "send_scroll",
+    value: function send_scroll() {
+      this.sendMessage({
+        scrolls: this.scrolls
+      });
+      this.is_scroll_timed = false;
     }
     /**
      * [return specific tracker for the current page]
@@ -16468,20 +16499,20 @@ function () {
   }, {
     key: "_getParam",
     value: function _getParam() {
-      var _this = this;
+      var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this.debug) console.log('sendMessage("ontracking")');
+        if (_this2.debug) console.log('sendMessage("ontracking")');
 
-        _this.browser.runtime.sendMessage('ontracking', function (response) {
-          if (_this.browser.runtime.lastError) {
+        _this2.browser.runtime.sendMessage('ontracking', function (response) {
+          if (_this2.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
             ; // console.log(this.browser.runtime.lastError);
           } else {
             if (response.pending_private_time_answer) {
-              _this.display_notification = true;
+              _this2.display_notification = true;
 
-              _this.showNotification();
+              _this2.showNotification();
             }
           }
 
@@ -16497,13 +16528,13 @@ function () {
   }, {
     key: "deletePage",
     value: function deletePage() {
-      var _this2 = this;
+      var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this2.debug) console.log('sendMessage("delete_page")');
+        if (_this3.debug) console.log('sendMessage("delete_page")');
 
-        _this2.browser.runtime.sendMessage('delete_page', function (response) {
-          if (_this2.browser.runtime.lastError) {
+        _this3.browser.runtime.sendMessage('delete_page', function (response) {
+          if (_this3.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
             ;
           }
@@ -16531,7 +16562,7 @@ function () {
   }, {
     key: "sendMessage",
     value: function sendMessage() {
-      var _this3 = this;
+      var _this4 = this;
 
       var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       this.count += 1;
@@ -16571,7 +16602,8 @@ function () {
       }
 
       object['count'] = this.count;
-      this.data = Object.assign(this.data, object); // console.log(this.data.landing_url);
+      this.data = Object.assign(this.data, object);
+      console.log(this.data); // console.log(this.data.landing_url);
       // if (now - this.last > this.DELAY) {
       // console.log(this.data.unhashed_url);
       // try {
@@ -16590,13 +16622,13 @@ function () {
             try {
               if (this.debug) console.log('html: runtime.sendMessage(this.data,...');
               this.browser.runtime.sendMessage(this.data, function (response) {
-                if (_this3.browser.runtime.lastError) {
+                if (_this4.browser.runtime.lastError) {
                   /*ignore when the background is not listening*/
                   ;
                 }
 
                 if (response == undefined) {
-                  _this3.close();
+                  _this4.close();
                 }
               });
             } catch (err) {
@@ -16617,13 +16649,13 @@ function () {
             try {
               if (this.debug) console.log('default:  runtime.sendMessage(this.data,...');
               this.browser.runtime.sendMessage(this.data, function (response) {
-                if (_this3.browser.runtime.lastError) {
+                if (_this4.browser.runtime.lastError) {
                   /*ignore when the background is not listening*/
                   ;
                 }
 
                 if (response == undefined) {
-                  _this3.close();
+                  _this4.close();
 
                   console.log('Close');
                 }
@@ -16648,6 +16680,7 @@ function () {
       this.domDetector.removeAllEventListener();
       this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
       window.removeEventListener("click", this.click_counter);
+      window.removeEventListener("scroll", this.scroll_counter);
       this.isListeningToBackend = false;
 
       if (this.tracker && this.tracker.eventEmitter) {
@@ -16665,20 +16698,20 @@ function () {
   }, {
     key: "openOnData",
     value: function openOnData() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (this.tracker) {
         this.tracker.eventEmitter.on('onData', function (data) {
-          if (_this4.debug) console.log('onData: this.sendMessage');
+          if (_this5.debug) console.log('onData: this.sendMessage');
 
-          _this4.sendMessage(data);
+          _this5.sendMessage(data);
         });
       }
     }
   }, {
     key: "onBackendMessage",
     value: function onBackendMessage(message, sender, sendResponse) {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.debug) console.log(message);
 
@@ -16703,7 +16736,7 @@ function () {
           if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
             this.tracker.fetchHTML(100).then(function () {
               //this.tracker.fetchFavicon();
-              _this5.tracker.fetchMetaData();
+              _this6.tracker.fetchMetaData();
             });
           }
         }
@@ -16729,7 +16762,7 @@ function () {
   }, {
     key: "createTracker",
     value: function createTracker(privacy) {
-      var _this6 = this;
+      var _this7 = this;
 
       if (this.debug) console.log('-> createTracker()');
 
@@ -16737,11 +16770,11 @@ function () {
 
       this.tracker = new Tracker(5, this.param.extensionfilter);
       this.tracker.eventEmitter.on('onNewURL', function () {
-        _this6.close();
+        _this7.close();
 
-        _this6.clear();
+        _this7.clear();
 
-        _this6.init();
+        _this7.init();
       });
       this.openOnData();
       this.tracker.eventEmitter.on('onStart',
@@ -16755,16 +16788,16 @@ function () {
               switch (_context.prev = _context.next) {
                 case 0:
                   // this.DELAY = delay;
-                  if (_this6.debug) console.log('onStart this.sendMessage');
+                  if (_this7.debug) console.log('onStart this.sendMessage');
                   _context.prev = 1;
 
-                  _this6.sendMessage({
-                    startTime: _this6.startTime,
+                  _this7.sendMessage({
+                    startTime: _this7.startTime,
                     createData: new Date()
                   });
 
                   _context.next = 5;
-                  return _this6.tracker.fetchHTML();
+                  return _this7.tracker.fetchHTML();
 
                 case 5:
                   if (!_context.sent) {
@@ -16773,7 +16806,7 @@ function () {
                   }
 
                   //this.tracker.fetchFavicon();
-                  _this6.tracker.fetchMetaData();
+                  _this7.tracker.fetchMetaData();
 
                 case 7:
                   _context.next = 12;
@@ -16787,11 +16820,11 @@ function () {
                 case 12:
                   _context.prev = 12;
 
-                  _this6.domDetector.onChange(function () {
-                    if (_this6.debug) console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
+                  _this7.domDetector.onChange(function () {
+                    if (_this7.debug) console.log('Dom Change'); // 500 millisecons are necessary as the content changes before 
                     // the url in pages like Facebook
 
-                    _this6.tracker.fetchHTML(500);
+                    _this7.tracker.fetchHTML(500);
                   }, delay);
 
                   return _context.finish(12);
@@ -16870,15 +16903,15 @@ function () {
   }, {
     key: "request_more_private_time",
     value: function request_more_private_time(private_time) {
-      var _this7 = this;
+      var _this8 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this7.debug) console.log('sendMessage("private_time")');
+        if (_this8.debug) console.log('sendMessage("private_time")');
 
-        _this7.browser.runtime.sendMessage({
+        _this8.browser.runtime.sendMessage({
           'private_time': private_time
         }, function (response) {
-          if (_this7.browser.runtime.lastError) {
+          if (_this8.browser.runtime.lastError) {
             /*ignore when the background is not listening*/
             ;
           }
@@ -16909,6 +16942,8 @@ function () {
       this.startTime = +new Date();
       this.last = 0;
       this.clicks = 0;
+      this.scrolls = 0;
+      this.is_timed = false;
       this.data = this.init_data();
     }
     /**
@@ -16921,7 +16956,7 @@ function () {
       var _init = ContentHandler_asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2() {
-        var _this8 = this;
+        var _this9 = this;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -16929,6 +16964,7 @@ function () {
               case 0:
                 if (!this.isListeningToBackend) {
                   window.addEventListener("click", this.click_counter);
+                  window.addEventListener("scroll", this.scroll_counter);
                   this.browser.runtime.onMessage.addListener(this.onBackendMessage);
                   this.isListeningToBackend = true;
                 }
@@ -16953,7 +16989,7 @@ function () {
                 _context2.prev = 8;
                 _context2.t0 = _context2["catch"](1);
                 this.init_timer = setTimeout(function () {
-                  return _this8.init();
+                  return _this9.init();
                 }, 2000);
                 console.log(_context2.t0);
 
