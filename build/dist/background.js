@@ -32747,7 +32747,7 @@ function () {
 
                   //this.resetImage(tabs[0].id);
                   if (this.tabs.hasOwnProperty(id)) {
-                    this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked'));
+                    this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked') && !this.tabs[id].getState('only_domain') && !this.tabs[id].getState('only_url') && !this.privateMode);
                   } else {
                     this.setImage(this.privateMode);
                   }
@@ -32878,9 +32878,7 @@ function () {
         this.event.emit(EVENT_NAMES.focusTabCallback, null, false);
         this.setImage(false);
       } else {
-        this.resetPublicImage(); // this.setImage(this.tabs[activeInfo.tabId].getState('allow') 
-        //   && !this.tabs[activeInfo.tabId].getState('disabled')
-        //   && !this.tabs[activeInfo.tabId].getState('content_blocked'));
+        this.resetPublicImage();
       }
     }
     /**
@@ -32963,14 +32961,16 @@ function () {
         if (this.debug) console.log('# ontracking');
         var domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
+        this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
+        this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
         var r = {
           allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
           pending_private_time_answer: this.pending_private_time_answer,
           default_private_time_ms: this.default_private_time_ms,
           privacy: {
-            only_domain: this.urlFilter.only_domain(domain),
-            only_url: this.urlFilter.only_url(domain),
+            only_domain: this.tabs[sender.tab.id].getState('only_domain'),
+            only_url: this.tabs[sender.tab.id].getState('only_url'),
             is_blacklisted: !this.tabs[sender.tab.id].getState('allow'),
             private_mode: this.privateMode,
             is_tab_disabled: this.tabs[sender.tab.id].getState('disabled')
@@ -37143,7 +37143,7 @@ function () {
                   _id = _step3.value;
                   this.tabs[_id].elapsed_timer = now; // set the right image on the tracking icon
 
-                  this.extension.setImage(this.extension.tabs[_id].getState('allow') && !this.extension.tabs[_id].getState('disabled') && !this.extension.tabs[_id].getState('content_blocked'));
+                  this.extension.resetPublicImage();
                 }
 
                 _context3.next = 42;
