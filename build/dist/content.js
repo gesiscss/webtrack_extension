@@ -16353,9 +16353,11 @@ function () {
     this.debug = true;
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_counter = this.click_counter.bind(this);
+    this.focus_counter = this.focus_counter.bind(this);
     this.scroll_counter = this.scroll_counter.bind(this);
     this.clicks = 0;
     this.scrolls = 0;
+    this.focuses = 0;
     this.is_scroll_timed = false; // needs to be initialized, if restarting
 
     this.tracker = null;
@@ -16407,6 +16409,20 @@ function () {
       this.clicks += 1;
       this.sendMessage({
         clicks: this.clicks
+      });
+    }
+    /**
+     * count focuses in the page
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "focus_counter",
+    value: function focus_counter() {
+      this.focuses += 1;
+      console.log(this.focuses);
+      this.sendMessage({
+        focuses: this.focuses
       });
     }
     /**
@@ -16681,6 +16697,7 @@ function () {
       this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
       window.removeEventListener("click", this.click_counter);
       window.removeEventListener("scroll", this.scroll_counter);
+      window.removeEventListener("focus", this.focus_counter);
       this.isListeningToBackend = false;
 
       if (this.tracker && this.tracker.eventEmitter) {
@@ -16965,6 +16982,7 @@ function () {
                 if (!this.isListeningToBackend) {
                   window.addEventListener("click", this.click_counter);
                   window.addEventListener("scroll", this.scroll_counter);
+                  window.addEventListener("focus", this.focus_counter);
                   this.browser.runtime.onMessage.addListener(this.onBackendMessage);
                   this.isListeningToBackend = true;
                 }
