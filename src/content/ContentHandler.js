@@ -49,10 +49,31 @@ export default class ContentHandler {
     this.count = 0;
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
-    this.data = {}
+    this.data = this.init_data();
     this.last = 0;
 
     this.display_notification = false;
+  }
+
+  init_data(){
+    return {
+      createData: new Date(),
+      content: [],
+      source: [],
+      events: [],
+      meta: Object.assign({
+        description: '',
+        keywords: ''
+      }),
+      favicon: '',
+      count: 0,
+      startTime: this.startTime,
+      landing_url: window.location.href,
+      hostname: location.protocol + '//' + location.hostname,
+      page_load_time: window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart,
+      unhashed_url: this.get_unhashed_href()
+    }
+
   }
 
   /**
@@ -197,29 +218,9 @@ export default class ContentHandler {
       type = 'event';
     }
 
-    this.data = Object.assign(
-      {
-        startTime: this.startTime,
-        createData: new Date(),
-        landing_url: window.location.href,
-        hostname: location.protocol + '//' + location.hostname,
-        content: [],
-        source: [],
-        events: [],
-        meta: Object.assign({
-          description: '',
-          keywords: ''
-        }),
-        favicon: '',
-        count: 0
-      }, 
-      this.data, 
-      object, 
-      {
-        unhashed_url: this.get_unhashed_href(),
-        count: this.count,
-      }
-    );
+    object['count'] = this.count;
+
+    this.data = Object.assign(this.data, object);
 
     // console.log(this.data.landing_url);
     // if (now - this.last > this.DELAY) {
@@ -530,8 +531,8 @@ export default class ContentHandler {
     this.count = 0;
     this.domDetector = new DomDetector();
     this.startTime = +new Date();
-    this.data = {}
     this.last = 0;
+    this.data = this.init_data();
   }
 
 
