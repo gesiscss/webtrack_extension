@@ -83,17 +83,23 @@ export default class Extension {
    * [_onConnectedPopup listen when the extension popup is open]
    */
   _onConnectPopup(externalPort){
-    if (this.debug) console.log('_onConnectPopup');
-    externalPort.onDisconnect.addListener(this._onDisconnectPopup);
-    this.event.emit(EVENT_NAMES.connectedPopup);
+    if (this.debug) console.log('-->_onConnectPopup:', externalPort);
+    if (externalPort.name == "extension_popup"){
+      externalPort.onDisconnect.addListener(this._onDisconnectPopup);
+      this.event.emit(EVENT_NAMES.connectedPopup);
+    }
+    if (this.debug) console.log('<--_onConnectPopup:');
   }
 
   /**
    * [_onDisconnectPopup listen when the extension popup is closed]
    */
-  _onDisconnectPopup(windowId){
-    if (this.debug) console.log('-->_onDisconnectPopup');
-    this.event.emit(EVENT_NAMES.disconnectPopup);
+  _onDisconnectPopup(externalPort){
+    if (this.debug) console.log('-->_onDisconnectPopup:', externalPort);
+    if (externalPort.name == "extension_popup"){
+      externalPort.onDisconnect.removeListener(this._onDisconnectPopup);
+      this.event.emit(EVENT_NAMES.disconnectPopup);
+    }
     if (this.debug) console.log('<--_onDisconnectPopup');
   }
 
@@ -504,7 +510,12 @@ export default class Extension {
     return new Promise(async (resolve, reject) =>{
         try {
           let tabId = (await this.getAllTabsIds({}, false)).filter(e => e.windowId == this.activWindowId && e.highlighted == true)[0].id;
-          resolve(this.tabs[tabId].getState('disabled'))
+          if (tabId && this.tabs[tabId]) {
+            if (this.debug) console.log(tabId);
+            resolve(this.tabs[tabId].getState('disabled'))
+          }else{
+            resolve(false);
+          }
         } catch (e) {
           reject(e)
         }
@@ -572,9 +583,9 @@ export default class Extension {
     xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
     xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
     xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
-    xbrowser.runtime.onConnect.removeListener(this._onConnectPopup);
-    xbrowser.runtime.onConnect.removeListener(this._onDisconnectPopup);
-    xbrowser.tabs.onHighlighted.removeListener(this._onHighlightedWindows);
+    // xbrowser.runtime.onConnect.removeListener(this._onConnectPopup);
+    // xbrowser.runtime.onConnect.removeListener(this._onDisconnectPopup);
+    // xbrowser.tabs.onHighlighted.removeListener(this._onHighlightedWindows);
     
     this.setImage(false);
     delete this

@@ -32269,9 +32269,14 @@ function () {
   }, {
     key: "_onConnectPopup",
     value: function _onConnectPopup(externalPort) {
-      if (this.debug) console.log('_onConnectPopup');
-      externalPort.onDisconnect.addListener(this._onDisconnectPopup);
-      this.event.emit(EVENT_NAMES.connectedPopup);
+      if (this.debug) console.log('-->_onConnectPopup:', externalPort);
+
+      if (externalPort.name == "extension_popup") {
+        externalPort.onDisconnect.addListener(this._onDisconnectPopup);
+        this.event.emit(EVENT_NAMES.connectedPopup);
+      }
+
+      if (this.debug) console.log('<--_onConnectPopup:');
     }
     /**
      * [_onDisconnectPopup listen when the extension popup is closed]
@@ -32279,9 +32284,14 @@ function () {
 
   }, {
     key: "_onDisconnectPopup",
-    value: function _onDisconnectPopup(windowId) {
-      if (this.debug) console.log('-->_onDisconnectPopup');
-      this.event.emit(EVENT_NAMES.disconnectPopup);
+    value: function _onDisconnectPopup(externalPort) {
+      if (this.debug) console.log('-->_onDisconnectPopup:', externalPort);
+
+      if (externalPort.name == "extension_popup") {
+        externalPort.onDisconnect.removeListener(this._onDisconnectPopup);
+        this.event.emit(EVENT_NAMES.disconnectPopup);
+      }
+
       if (this.debug) console.log('<--_onDisconnectPopup');
     }
     /**
@@ -33127,7 +33137,14 @@ function () {
                   };
 
                   tabId = _context8.sent.filter(_context8.t0)[0].id;
-                  resolve(_this3.tabs[tabId].getState('disabled'));
+
+                  if (tabId && _this3.tabs[tabId]) {
+                    if (_this3.debug) console.log(tabId);
+                    resolve(_this3.tabs[tabId].getState('disabled'));
+                  } else {
+                    resolve(false);
+                  }
+
                   _context8.next = 11;
                   break;
 
@@ -33230,10 +33247,10 @@ function () {
       xbrowser.tabs.onRemoved.removeListener(this._onTabRemove);
       xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
       xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
-      xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
-      xbrowser.runtime.onConnect.removeListener(this._onConnectPopup);
-      xbrowser.runtime.onConnect.removeListener(this._onDisconnectPopup);
-      xbrowser.tabs.onHighlighted.removeListener(this._onHighlightedWindows);
+      xbrowser.tabs.onActivated.removeListener(this._onActivatedTab); // xbrowser.runtime.onConnect.removeListener(this._onConnectPopup);
+      // xbrowser.runtime.onConnect.removeListener(this._onDisconnectPopup);
+      // xbrowser.tabs.onHighlighted.removeListener(this._onHighlightedWindows);
+
       this.setImage(false);
       delete this;
     }

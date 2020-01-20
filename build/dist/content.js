@@ -16881,7 +16881,10 @@ function () {
           return _ref.apply(this, arguments);
         };
       }());
-      this.browser.runtime.connect().onDisconnect.addListener(function () {
+      this.browser.runtime.connect({
+        name: "content_handler_connection"
+      }).onDisconnect.addListener(function (externalPort) {
+        if (this.debug) console.log(externalPort);
         this.close();
         this.clear();
 

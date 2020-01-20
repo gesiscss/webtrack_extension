@@ -26,7 +26,7 @@ export default class Extension{
       }
       
       // hack to force an event in the background when the extension is closed
-      var port = this.xbrowser.runtime.connect();
+      var port = this.xbrowser.runtime.connect({name:"extension_popup"});
       this._onReady();
     }
 
