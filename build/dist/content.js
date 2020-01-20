@@ -16627,7 +16627,12 @@ function () {
         type = 'event';
       }
 
-      object['count'] = this.count;
+      object['count'] = this.count; // in firefox the domContentLoadedEventEnd is loaded only after the domContentLoadedEventEnd
+
+      if (this.data['page_load_time'] < -9999) {
+        this.data['page_load_time'] = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+      }
+
       this.data = Object.assign(this.data, object);
       if (this.debug) console.log(this.data); // console.log(this.data.landing_url);
       // if (now - this.last > this.DELAY) {
@@ -16695,7 +16700,7 @@ function () {
               }
             }
           } else {
-            if (this.debug) console.log('wait for content');
+            if (this.debug) console.log('waiting for content...');
           }
 
       }
@@ -16803,7 +16808,11 @@ function () {
       this.tracker.eventEmitter.on('onNewURL', function () {
         _this7.close();
 
-        _this7.clear();
+        _this7.clear(); // In case a new url is open from javascript, it is not possible to
+        // recover the loading time 
+
+
+        _this7.data['page_load_time'] = -9999;
 
         _this7.init();
       });

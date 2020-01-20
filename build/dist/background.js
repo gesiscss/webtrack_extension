@@ -38828,7 +38828,11 @@ function () {
 
       //when the extension popup is closed, then stop listenning
       this.extension.event.on(TrackingHandler_EVENT_NAMES.disconnectPopup, function () {
+        if (_this4.debug) console.log('--> this.event.removeListener(onSend)');
+
         _this4.event.removeListener('onSend');
+
+        if (_this4.debug) console.log('<-- this.event.removeListener(onSend)');
       }, this);
       this.event.on('onSend', onSendCallBack);
     }

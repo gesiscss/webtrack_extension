@@ -323,7 +323,9 @@ export default class TrackingHandler {
     //when the extension popup is closed, then stop listenning
     this.extension.event.on(EVENT_NAMES.disconnectPopup, 
       () => {
+        if (this.debug) console.log('--> this.event.removeListener(onSend)');
         this.event.removeListener('onSend');
+        if (this.debug) console.log('<-- this.event.removeListener(onSend)');
       }, this);
 
     this.event.on('onSend', onSendCallBack);
