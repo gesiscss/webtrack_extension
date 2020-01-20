@@ -32993,6 +32993,7 @@ function () {
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
+        sendResponse(false);
       } else if (!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')) {
         if (sender.tab.id == this.active_tab) {
           this.setImage(false);
@@ -33030,6 +33031,7 @@ function () {
           if (this.debug) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
           sendResponse(true);
+          if (this.debug) console.log('==== Event emitted: onTabContent ====');
         } // return true;
 
       } else {
@@ -33039,7 +33041,6 @@ function () {
       }
 
       if (this.debug) console.log('<- _onContentMessage');
-      return true;
     }
     /**
      * [setTabPrivate set tab disabled]

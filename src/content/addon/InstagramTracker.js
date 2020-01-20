@@ -57,12 +57,12 @@ export default class InstagramTracker extends Tracker{
       this.profile_pic_url_hd = this.credentials.config.viewer.profile_pic_url_hd;
       this.is_private = this.credentials.config.viewer.is_private;
     } catch (error){
+      let svg_account = this.get_svg_account();
       this.logged_username = this.get_username(svg_account);
       this.logged_fullname = this.get_fullname();
       if (this.logged_fullname || this.logged_fullname){
         this.is_logged_in = true;
-      } else {
-        let svg_account = this.get_svg_account();
+      } else {        
         this.is_logged_in = this._isLogged(svg_account);
       }
     }
@@ -334,8 +334,9 @@ export default class InstagramTracker extends Tracker{
 
     if(this.is_timeline){
       if (this.instagram_debug) console.log('is_timeline');
-      let timeline_body = dom.querySelector(this.article).parentNode;
-      if (timeline_body){
+      let timeline_body = dom.querySelector(this.article);
+      if (timeline_body && timeline_body.parentNode){
+        timeline_body = timeline_body.parentNode;
         timeline_body.innerHTML = "";
         for (var key in this.articleId2Element) {
           if (this.articleId2Element.hasOwnProperty(key)){

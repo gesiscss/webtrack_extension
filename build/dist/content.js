@@ -15175,15 +15175,14 @@ function (_Tracker) {
         this.profile_pic_url_hd = this.credentials.config.viewer.profile_pic_url_hd;
         this.is_private = this.credentials.config.viewer.is_private;
       } catch (error) {
+        var svg_account = this.get_svg_account();
         this.logged_username = this.get_username(svg_account);
         this.logged_fullname = this.get_fullname();
 
         if (this.logged_fullname || this.logged_fullname) {
           this.is_logged_in = true;
         } else {
-          var _svg_account = this.get_svg_account();
-
-          this.is_logged_in = this._isLogged(_svg_account);
+          this.is_logged_in = this._isLogged(svg_account);
         }
       }
 
@@ -15475,9 +15474,10 @@ function (_Tracker) {
 
       if (this.is_timeline) {
         if (this.instagram_debug) console.log('is_timeline');
-        var timeline_body = dom.querySelector(this.article).parentNode;
+        var timeline_body = dom.querySelector(this.article);
 
-        if (timeline_body) {
+        if (timeline_body && timeline_body.parentNode) {
+          timeline_body = timeline_body.parentNode;
           timeline_body.innerHTML = "";
 
           for (var key in this.articleId2Element) {
