@@ -16323,11 +16323,11 @@ function () {
 
 
 // CONCATENATED MODULE: ./src/content/ContentHandler.js
+function ContentHandler_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { ContentHandler_typeof = function _typeof(obj) { return typeof obj; }; } else { ContentHandler_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return ContentHandler_typeof(obj); }
+
 function ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function ContentHandler_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { ContentHandler_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ContentHandler_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { ContentHandler_typeof = function _typeof(obj) { return typeof obj; }; } else { ContentHandler_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return ContentHandler_typeof(obj); }
 
 function ContentHandler_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16733,6 +16733,8 @@ function () {
 
           _this5.sendMessage(data);
         });
+      } else {
+        this.init();
       }
     }
   }, {
@@ -16746,30 +16748,32 @@ function () {
         if (this.tracker == null) {
           this.init();
         }
+
+        sendResponse(true);
       } else if (message.action == 'private_mode') {
         if (message.private_mode) {
           this.closeOnData();
-
-          if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
-            this.sendMessage({
-              meta: {
-                is_private_mode: true
-              }
-            });
-          }
+          this.sendMessage({
+            meta: {
+              is_private_mode: true
+            }
+          });
         } else {
-          this.openOnData();
+          console.log('is allow?');
+          console.log(message.allow);
 
-          if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+          if (message.allow) {
+            this.openOnData();
             this.tracker.fetchHTML(100).then(function () {
               //this.tracker.fetchFavicon();
               _this6.tracker.fetchMetaData();
             });
           }
         }
+
+        sendResponse(true);
       } else if (message.action == 'popup_private_time') {
         if (this.debug) console.log('popup_private_time');
-        if (this.debug) console.log(message);
 
         if (message.display) {
           this.showNotification();

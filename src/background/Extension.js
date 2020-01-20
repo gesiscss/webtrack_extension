@@ -228,7 +228,11 @@ export default class Extension {
     if(tabs.length>0){
       for (let tab of tabs) {
         try{
-          xbrowser.tabs.sendMessage(tab.id, {action: "private_mode", private_mode: this.privateMode}, 
+          xbrowser.tabs.sendMessage(tab.id, {
+            action: "private_mode", 
+            private_mode: this.privateMode, 
+            allow: (!this.privateMode && !this.tabs[tab.id].getState('disabled'))
+          }, 
             function(response) {
               if(xbrowser.runtime.lastError) {
                 if (this.debug) console.log('notifyPrivateMode: No front end tab is listening.');

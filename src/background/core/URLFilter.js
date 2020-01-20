@@ -159,7 +159,6 @@ export default class URLFilter {
     }
 
     for (let item of this.server_list) {
-      console.log(item)
       if (subdot_domain.endsWith(item)){
         return true;
       }

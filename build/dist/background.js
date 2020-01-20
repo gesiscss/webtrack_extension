@@ -32010,7 +32010,6 @@ function () {
       try {
         for (var _iterator2 = this.server_list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var _item = _step2.value;
-          console.log(_item);
 
           if (subdot_domain.endsWith(_item)) {
             return true;
@@ -32636,7 +32635,8 @@ function () {
                   try {
                     xbrowser.tabs.sendMessage(tab.id, {
                       action: "private_mode",
-                      private_mode: this.privateMode
+                      private_mode: this.privateMode,
+                      allow: !this.privateMode && !this.tabs[tab.id].getState('disabled')
                     }, function (response) {
                       if (xbrowser.runtime.lastError) {
                         if (this.debug) console.log('notifyPrivateMode: No front end tab is listening.');

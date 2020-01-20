@@ -364,6 +364,8 @@ export default class ContentHandler {
          if (this.debug) console.log('onData: this.sendMessage');
          this.sendMessage(data);
       });
+    } else {
+      this.init();
     }
   }
 
@@ -373,37 +375,39 @@ export default class ContentHandler {
     if (message.action == 'init'){
       if (this.tracker==null){
         this.init();
-      }      
+      } 
+      sendResponse(true);
     } else if (message.action == 'private_mode'){
       if (message.private_mode) {
         this.closeOnData();
-        if(typeof this.param == 'object' && this.param.allow){
-          this.sendMessage({ 
-            meta: {
-              is_private_mode: true,
-            }
-          });
-        }
+        this.sendMessage({ 
+          meta: {
+            is_private_mode: true,
+          }
+        });
       } else {
-        this.openOnData();
-        if(typeof this.param == 'object' && this.param.allow){
+        console.log('is allow?');
+        console.log(message.allow);
+        if(message.allow){
+
+          this.openOnData();
           this.tracker.fetchHTML(100).then(() => {
            //this.tracker.fetchFavicon();
            this.tracker.fetchMetaData();
          })
         }
       }
+      sendResponse(true);
     }
     else if (message.action == 'popup_private_time'){
       if (this.debug) console.log('popup_private_time');
-      if (this.debug) console.log(message);
       if (message.display){
         this.showNotification();
       } else {
         this.hideNotification();
       }
 
-      sendResponse(true);              
+      sendResponse(true);
       //return true;
       return Promise.resolve("Dummy response to keep the console quiet");
     }
