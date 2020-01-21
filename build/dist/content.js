@@ -15236,7 +15236,7 @@ function (_Tracker) {
       }
 
       if (this.profile_pic_url) {
-        anonym['guest_id'] = this.profile_pic_url;
+        anonym['profile_pic_url'] = this.profile_pic_url;
       }
 
       if (this.logged_fullname) {
@@ -15244,7 +15244,7 @@ function (_Tracker) {
       }
 
       if (this.profile_pic_url_hd) {
-        anonym['guest_id'] = this.profile_pic_url_hd;
+        anonym['profile_pic_url_hd'] = this.profile_pic_url_hd;
       }
 
       metadata['anonym'] = anonym;
