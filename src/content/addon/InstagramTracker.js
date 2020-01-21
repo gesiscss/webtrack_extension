@@ -8,9 +8,13 @@ export default class InstagramTracker extends Tracker{
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
-    this.instagram_debug = false;
+    this.instagram_debug = true;
 
     this.svg_account = 'a path[d="M24 27c-7.1 0-12.9-5.8-12.9-12.9s5.8-13 12.9-13c7.1 0 12.9 5.8 12.9 12.9S31.1 27 24 27zm0-22.9c-5.5 0-9.9 4.5-9.9 9.9s4.4 10 9.9 10 9.9-4.5 9.9-9.9-4.4-10-9.9-10zm20 42.8c-.8 0-1.5-.7-1.5-1.5V42c0-5-4-9-9-9h-19c-5 0-9 4-9 9v3.4c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5V42c0-6.6 5.4-12 12-12h19c6.6 0 12 5.4 12 12v3.4c0 .8-.7 1.5-1.5 1.5z"]';
+
+    this.svg_share = 'path[d="M46.5 3.5h-45C.6 3.5.2 4.6.8 5.2l16 15.8 5.5 22.8c.2.9 1.4 1 1.8.3L47.4 5c.4-.7-.1-1.5-.9-1.5zm-40.1 3h33.5L19.1 18c-.4.2-.9.1-1.2-.2L6.4 6.5zm17.7 31.8l-4-16.6c-.1-.4.1-.9.5-1.1L41.5 9 24.1 38.3z"]';
+    this.svg_like = 'path[d="M34.3 3.5C27.2 3.5 24 8.8 24 8.8s-3.2-5.3-10.3-5.3C6.4 3.5.5 9.9.5 17.8s6.1 12.4 12.2 17.8c9.2 8.2 9.8 8.9 11.3 8.9s2.1-.7 11.3-8.9c6.2-5.5 12.2-10 12.2-17.8 0-7.9-5.9-14.3-13.2-14.3zm-1 29.8c-5.4 4.8-8.3 7.5-9.3 8.1-1-.7-4.6-3.9-9.3-8.1-5.5-4.9-11.2-9-11.2-15.6 0-6.2 4.6-11.3 10.2-11.3 4.1 0 6.3 2 7.9 4.2 3.6 5.1 1.2 5.1 4.8 0 1.6-2.2 3.8-4.2 7.9-4.2 5.6 0 10.2 5.1 10.2 11.3 0 6.7-5.7 10.8-11.2 15.6z"]';
+
     this.div_fullname = '.f5Yes.oL_O8';
     this.span_heart = 'section span.fr66n';
     this.span_comment = 'section span._15y0l';
@@ -200,14 +204,19 @@ export default class InstagramTracker extends Tracker{
       return true;
     }
 
-    // if the protected svg appear in the tweet, the content is private
-    if (target.querySelector(this.span_share)) {
-      if (this.instagram_debug) console.log('is share');
-      return true;
-    } else {
-      if (this.instagram_debug) console.log('not share');
-      return false;
+
+    // check that the like icon is of svg type (it is then likely tha the
+    // svg is the way of controlling for public posts)
+    if (target.querySelector(this.svg_like)) {
+      // if the protected svg appear in the tweet, the content is private
+      if (target.querySelector(this.svg_share)) {
+        if (this.instagram_debug) console.log('is share');
+        return true;
+      }
     }
+
+    if (this.instagram_debug) console.log('is public (assumption)');
+    return true;
 
   }
 
@@ -269,6 +278,7 @@ export default class InstagramTracker extends Tracker{
    * @return {Array} true if at least one article was found
    */
   addPublicArticles(){
+    if (this.instagram_debug) console.log('-> addPublicArticles()')
     
     let articles = document.querySelectorAll(this.article);
     let counter = 0;
@@ -402,7 +412,6 @@ export default class InstagramTracker extends Tracker{
     //    return super.getDom();
     //} else {
       return new Promise((resolve, reject) => {
-        console.log('promise');
         if(this.is_timeline){
           if (this.instagram_debug) console.log('is_timeline');
           this.addPublicArticles();
