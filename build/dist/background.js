@@ -31819,6 +31819,7 @@ function () {
 
     this.config = config;
     this.is_dummy = is_dummy;
+    this.debug = true;
 
     this._reinit();
   }
@@ -31911,12 +31912,14 @@ function () {
       var tld = domain.slice(tld_idx + 1);
 
       if (/^\d+$/.test(tld)) {
+        if (this.debug) console.log('if (/^\d+$/.test(tld))');
         return true;
       } // check if the top level domain is a exact match against the exact match set
       // e.g, example.xxx
 
 
       if (this.lists.simple.tld.has(tld)) {
+        if (this.debug) console.log('if (this.lists.simple.tld.has(tld))');
         return true;
       } // extract the sub domain; ignore the TLD from now on
 
@@ -31939,6 +31942,7 @@ function () {
         if (sub_idx != -1) {
           // check if the sub_domain exists in the list (actually a Set)
           if (set.has(sub_domain.slice(0, sub_idx))) {
+            if (this.debug) console.log('if (set.has(sub_domain.slice(0, sub_idx)))');
             return true;
           }
         }
@@ -31964,6 +31968,7 @@ function () {
         if (new RegExp(_filter).test(sub_domain)) {
           // if so, check if the sub_domain exists in the list (actually a Set)
           if (set.has(sub_domain)) {
+            if (this.debug) console.log('if (set.has(sub_domain))');
             return true;
           }
         }
@@ -31971,6 +31976,7 @@ function () {
 
 
       if (this.lists.simple.exact.has(sub_domain)) {
+        if (this.debug) console.log('if (this.lists.simple.exact.has(sub_domain))');
         return true;
       } // check if the sub_domain endsWith any of the blocked domains
 
@@ -31985,6 +31991,7 @@ function () {
           var item = _step.value;
 
           if (subdot_domain.endsWith(item)) {
+            if (this.debug) console.log('if (subdot_domain.endsWith(item))');
             return true;
           }
         }
@@ -32012,6 +32019,7 @@ function () {
           var _item = _step2.value;
 
           if (subdot_domain.endsWith(_item)) {
+            if (this.debug) console.log('if (subdot_domain.endsWith(item))');
             return true;
           }
         }
@@ -32030,6 +32038,7 @@ function () {
         }
       }
 
+      if (this.debug) console.log('it is not blacklisted');
       return false;
     }
     /**

@@ -4,7 +4,10 @@ export default class URLFilter {
 
     this.config = config;
     this.is_dummy = is_dummy;
+    this.debug = true;
+
     this._reinit();
+
   }
 
   _reinit(){
@@ -94,12 +97,14 @@ export default class URLFilter {
     // e.g. 20.32.3.4
     let tld = domain.slice(tld_idx+1);
     if (/^\d+$/.test(tld)) {
+      if (this.debug) console.log('if (/^\d+$/.test(tld))');
       return true;
     }
 
     // check if the top level domain is a exact match against the exact match set
     // e.g, example.xxx
     if (this.lists.simple.tld.has(tld)) {
+      if (this.debug) console.log('if (this.lists.simple.tld.has(tld))');
       return true;
     }
 
@@ -119,6 +124,7 @@ export default class URLFilter {
       if (sub_idx != -1) {
         // check if the sub_domain exists in the list (actually a Set)
         if (set.has(sub_domain.slice(0, sub_idx))){
+          if (this.debug) console.log('if (set.has(sub_domain.slice(0, sub_idx)))');
           return true;
         }
       }
@@ -140,6 +146,7 @@ export default class URLFilter {
       if ((new RegExp(_filter)).test(sub_domain)) {
         // if so, check if the sub_domain exists in the list (actually a Set)
         if (set.has(sub_domain)) {
+          if (this.debug) console.log('if (set.has(sub_domain))');
           return true;
         }
       }
@@ -147,6 +154,7 @@ export default class URLFilter {
 
     // check if the sub_domain is a exact match against the exact match set
     if (this.lists.simple.exact.has(sub_domain)) {
+      if (this.debug) console.log('if (this.lists.simple.exact.has(sub_domain))');
       return true;
     }
 
@@ -154,16 +162,19 @@ export default class URLFilter {
     let subdot_domain = '.' + sub_domain;
     for (let item of this.lists.simple.ends_with) {
       if (subdot_domain.endsWith(item)){
+        if (this.debug) console.log('if (subdot_domain.endsWith(item))');
         return true;
       }
     }
 
     for (let item of this.server_list) {
       if (subdot_domain.endsWith(item)){
+        if (this.debug) console.log('if (subdot_domain.endsWith(item))');
         return true;
       }
     }
 
+    if (this.debug) console.log('it is not blacklisted');
     return false;
   }
 
