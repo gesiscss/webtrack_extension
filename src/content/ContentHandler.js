@@ -14,7 +14,7 @@ const DOMAIN_SET = new Set(['instagram', 'skype', 'xing',
   'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 
   'wechat', 'viber', 'vk', 'whatsapp', 'telegram' ]);
 
-const YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
+const YOUTUBE_SET = new Set(['studio', 'artists', 'creatoracademy']);
 
 const TWITTER_SET = new Set(['ads', 'analytics', 'help']);
 
@@ -131,7 +131,13 @@ export default class ContentHandler {
 
       let str = hostname_parts[hostname_parts.length - 2];
 
-      if(str.endsWith('facebook')){
+      if (privacy.only_domain){
+        if (this.debug) console.log('DomainTracker');
+        return DomainTracker;
+      } else if (privacy.only_url){
+        if (this.debug) console.log('URLTracker');
+        return URLTracker;
+      } else if(str.endsWith('facebook')){
         if (this.debug) console.log('FacebookTracker');
         return FacebookTracker;
       }else if(str.endsWith('youtube')){
@@ -161,13 +167,7 @@ export default class ContentHandler {
       } else if (privacy.is_blacklisted){
         if (this.debug) console.log('BlacklistTracker');
         return BlacklistTracker;
-      } else if (privacy.only_domain){
-        if (this.debug) console.log('DomainTracker');
-        return DomainTracker;
-      } else if (privacy.only_url){
-        if (this.debug) console.log('URLTracker');
-        return URLTracker;
-      } 
+      }
     }
     if (this.debug) console.log('Tracker');
     return Tracker
@@ -458,7 +458,7 @@ export default class ContentHandler {
         }
     });
     this.browser.runtime.connect({name:"content_handler_connection"}).onDisconnect.addListener(function(externalPort) {
-      if (this.debug) console.log(externalPort);
+    if (this.debug) console.log(externalPort);
 
       this.close();
       this.clear();

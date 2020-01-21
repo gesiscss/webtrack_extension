@@ -16352,7 +16352,7 @@ function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (
 
 
 var DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 'wechat', 'viber', 'vk', 'whatsapp', 'telegram']);
-var YOUTUBE_SET = new Set(['artists', 'creatoracademy']);
+var YOUTUBE_SET = new Set(['studio', 'artists', 'creatoracademy']);
 var TWITTER_SET = new Set(['ads', 'analytics', 'help']);
 var URL_SET = new Set(['soscisurvey']);
 
@@ -16480,7 +16480,13 @@ function () {
       if (hostname_parts.length > 1) {
         var str = hostname_parts[hostname_parts.length - 2];
 
-        if (str.endsWith('facebook')) {
+        if (privacy.only_domain) {
+          if (this.debug) console.log('DomainTracker');
+          return DomainTracker;
+        } else if (privacy.only_url) {
+          if (this.debug) console.log('URLTracker');
+          return URLTracker;
+        } else if (str.endsWith('facebook')) {
           if (this.debug) console.log('FacebookTracker');
           return FacebookTracker;
         } else if (str.endsWith('youtube')) {
@@ -16510,12 +16516,6 @@ function () {
         } else if (privacy.is_blacklisted) {
           if (this.debug) console.log('BlacklistTracker');
           return BlacklistTracker;
-        } else if (privacy.only_domain) {
-          if (this.debug) console.log('DomainTracker');
-          return DomainTracker;
-        } else if (privacy.only_url) {
-          if (this.debug) console.log('URLTracker');
-          return URLTracker;
         }
       }
 
