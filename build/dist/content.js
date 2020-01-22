@@ -16689,7 +16689,8 @@ function () {
       }
 
       this.data = Object.assign(this.data, object);
-      if (this.debug) console.log(this.data); // console.log(this.data.landing_url);
+      if (this.debug) console.log(this.data);
+      if (this.debug) console.log(this.data.events); // console.log(this.data.landing_url);
       // if (now - this.last > this.DELAY) {
       // console.log(this.data.unhashed_url);
       // try {

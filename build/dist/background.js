@@ -33079,6 +33079,7 @@ function () {
       }
 
       if (this.debug) console.log('<- _onContentMessage');
+      return true;
     }
     /**
      * [setTabPrivate set tab disabled]
@@ -36843,7 +36844,7 @@ function () {
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
-    this.debug = false;
+    this.debug = true;
   }
   /**
    * [_getHashCode return hashcode from string]

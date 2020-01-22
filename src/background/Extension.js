@@ -480,6 +480,7 @@ export default class Extension {
       }
       
       if (this.debug) console.log('<- _onContentMessage');
+      return true;
   }
 
   /**

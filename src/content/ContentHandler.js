@@ -274,6 +274,7 @@ export default class ContentHandler {
 
     this.data = Object.assign(this.data, object);
     if (this.debug) console.log(this.data);
+    if (this.debug) console.log(this.data.events);
 
     // console.log(this.data.landing_url);
     // if (now - this.last > this.DELAY) {
