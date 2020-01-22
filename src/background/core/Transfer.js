@@ -103,6 +103,7 @@ export default class Transfer {
     })
   }
 
+
   /**
    * [_direktSending compress data-string to zip file and sending to the server]
    * @param  {String} string
@@ -110,6 +111,33 @@ export default class Transfer {
    * @return {Promise}
    */
   _direktSending(string, callbackStatus){
+    // return new Promise((resolve, reject)=>{
+    //   this.sendFile(this.options.url, 'page', new Blob([string], {type: "application/json"})).then(resolve).catch(reject);
+    // });
+
+    // return this._fetch(url, options);
+
+    return new Promise((resolve, reject)=>{
+      //var fd = new FormData();
+      //fd.append(type, blob);
+      this._fetch(this.options.url, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: string
+      }).then(resolve).catch(reject)
+    });
+  }
+
+  /**
+   * [_direktSending compress data-string to zip file and sending to the server]
+   * @param  {String} string
+   * @param  {Function} callbackStatus
+   * @return {Promise}
+   */
+  _direktSending_old(string, callbackStatus){
     return new Promise((resolve, reject)=>{
       this.sendFile(this.options.url, 'page', new Blob([string], {type: "application/json"})).then(resolve).catch(reject);
     });

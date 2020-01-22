@@ -30983,8 +30983,37 @@ function () {
     value: function _direktSending(string, callbackStatus) {
       var _this3 = this;
 
+      // return new Promise((resolve, reject)=>{
+      //   this.sendFile(this.options.url, 'page', new Blob([string], {type: "application/json"})).then(resolve).catch(reject);
+      // });
+      // return this._fetch(url, options);
       return new Promise(function (resolve, reject) {
-        _this3.sendFile(_this3.options.url, 'page', new Blob([string], {
+        //var fd = new FormData();
+        //fd.append(type, blob);
+        _this3._fetch(_this3.options.url, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: string
+        }).then(resolve)["catch"](reject);
+      });
+    }
+    /**
+     * [_direktSending compress data-string to zip file and sending to the server]
+     * @param  {String} string
+     * @param  {Function} callbackStatus
+     * @return {Promise}
+     */
+
+  }, {
+    key: "_direktSending_old",
+    value: function _direktSending_old(string, callbackStatus) {
+      var _this4 = this;
+
+      return new Promise(function (resolve, reject) {
+        _this4.sendFile(_this4.options.url, 'page', new Blob([string], {
           type: "application/json"
         })).then(resolve)["catch"](reject);
       });
@@ -30999,22 +31028,22 @@ function () {
   }, {
     key: "_storageDestationSending",
     value: function _storageDestationSending(string, callbackStatus) {
-      var _this4 = this;
+      var _this5 = this;
 
       return new Promise(function (resolve, reject) {
         var reader = new FileReader();
 
-        _this4.zipHandler.create(string).then(function (zipBlob) {
+        _this5.zipHandler.create(string).then(function (zipBlob) {
           reader.onload = function () {
-            var r = _this4._cryptHandler.encrypt(reader.result); // <-- crypt data
+            var r = _this5._cryptHandler.encrypt(reader.result); // <-- crypt data
 
 
             var blob = new Blob([JSON.stringify(r)], {
-              type: _this4.MINI_TYPE
+              type: _this5.MINI_TYPE
             });
             callbackStatus('compressed');
 
-            _this4.getThirdDestation().upload({
+            _this5.getThirdDestation().upload({
               Body: blob
             }).then(resolve)["catch"](reject);
           };
@@ -31034,13 +31063,13 @@ function () {
   }, {
     key: "sendFile",
     value: function sendFile(url, type, blob) {
-      var _this5 = this;
+      var _this6 = this;
 
       return new Promise(function (resolve, reject) {
         var fd = new FormData();
         fd.append(type, blob);
 
-        _this5._fetch(url, {
+        _this6._fetch(url, {
           method: 'POST',
           body: fd
         }).then(resolve)["catch"](reject);
