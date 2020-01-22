@@ -15216,6 +15216,17 @@ function (_Tracker) {
     _this.is_profile = false;
     _this.is_my_profile = false;
     _this.is_post = false;
+    _this.privacy_flags = {
+      'is_logged_in': null,
+      'is_my_profile': null,
+      'public': null,
+      'has_like': null,
+      'user_id': null,
+      'username': null,
+      'profile_pic_url': null,
+      'fullname': null,
+      'profile_pic_url_hd': null
+    };
     _this.startswith_blacklist = ['/accounts/', '/settings/', '/emails/settings/', '/session/login_activity/', '/emails/emails_sent/'];
     _this.pos_2nd_blacklist = ['followers', 'following', 'saved', 'tagged'];
     return _this;
@@ -15249,6 +15260,10 @@ function (_Tracker) {
         }
       }
 
+      if (this.is_logged_in) {
+        this.privacy_flags['is_logged_in'] = true;
+      }
+
       var pathname = location.pathname;
 
       if (pathname == '/') {
@@ -15270,6 +15285,7 @@ function (_Tracker) {
 
         if (parts[1] == this.logged_username) {
           if (this.instagram_debug) console.log('credentials: is_my_profile');
+          this.privacy_flags['is_my_profile'] = true;
           this.is_my_profile = true;
         }
       }
@@ -15290,25 +15306,31 @@ function (_Tracker) {
 
       if (this.logged_user_id) {
         anonym['user_id'] = this.logged_user_id;
+        this.privacy_flags['user_id'] = true;
       }
 
       if (this.logged_username) {
         anonym['username'] = this.logged_username;
+        this.privacy_flags['username'] = true;
       }
 
       if (this.profile_pic_url) {
         anonym['profile_pic_url'] = this.profile_pic_url;
+        this.privacy_flags['profile_pic_url'] = true;
       }
 
       if (this.logged_fullname) {
         anonym['fullname'] = this.logged_fullname;
+        this.privacy_flags['fullname'] = true;
       }
 
       if (this.profile_pic_url_hd) {
         anonym['profile_pic_url_hd'] = this.profile_pic_url_hd;
+        this.privacy_flags['profile_pic_url_hd'] = true;
       }
 
       metadata['anonym'] = anonym;
+      metadata['privacy_flags'] = this.privacy_flags;
       return metadata;
     }
     /**
@@ -15398,10 +15420,12 @@ function (_Tracker) {
 
 
       if (target.querySelector(this.svg_like)) {
-        if (this.instagram_debug) console.log('it has svg_like icon'); // if the protected svg appear in the tweet, the content is private
+        if (this.instagram_debug) console.log('it has svg_like icon');
+        this.privacy_flags['has_like'] = true; // if the protected svg appear in the tweet, the content is private
 
         if (target.querySelector(this.svg_share)) {
           if (this.instagram_debug) console.log('is share');
+          this.privacy_flags['public'] = true;
           return true;
         } else {
           if (this.instagram_debug) console.log('it is private (no share icon)');
