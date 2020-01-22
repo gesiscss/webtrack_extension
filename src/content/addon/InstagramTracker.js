@@ -208,11 +208,17 @@ export default class InstagramTracker extends Tracker{
     // check that the like icon is of svg type (it is then likely tha the
     // svg is the way of controlling for public posts)
     if (target.querySelector(this.svg_like)) {
+      if (this.instagram_debug) console.log('it has svg_like icon');
       // if the protected svg appear in the tweet, the content is private
       if (target.querySelector(this.svg_share)) {
         if (this.instagram_debug) console.log('is share');
         return true;
+      } else {
+        if (this.instagram_debug) console.log('it is private (no share icon)');
+        return false;
       }
+    } else {
+
     }
 
     if (this.instagram_debug) console.log('is public (assumption)');
@@ -330,6 +336,13 @@ export default class InstagramTracker extends Tracker{
     return mosaiks.length > 0;
   }
 
+  __getDom(){
+    // this needs to be overwritten in instagram because removing scripts breaks the 
+    // SVGs and then it is not possible to detect if posts are private
+    return document.documentElement.cloneNode(true);
+
+  }
+
   /**
    * [assembleDom with the existent html]
    * @return {String}
@@ -435,8 +448,8 @@ export default class InstagramTracker extends Tracker{
   onStart(fn){
     setTimeout(() => {
       if (this.instagram_debug) console.log('START!!!!');
-      fn(1000);
-    }, 500);
+      fn(1500);
+    }, 1000);
   }
 
 }//class
