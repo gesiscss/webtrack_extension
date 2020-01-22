@@ -4,7 +4,7 @@ export default class URLFilter {
 
     this.config = config;
     this.is_dummy = is_dummy;
-    this.debug = true;
+    this.debug = false;
 
     this._reinit();
 

@@ -30,7 +30,7 @@ export default class TabHandler {
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
 
-    this.debug = true;
+    this.debug = false;
   }
 
 

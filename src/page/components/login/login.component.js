@@ -23,7 +23,7 @@ export default class Login extends Component {
       this.id = parseInt(this.props.id, 10)
       this.pageHandler = this.props.getPageHandler();
       this.project = this.pageHandler.getProject(this.id);
-      this.debug = true;
+      this.debug = false;
 
       this.MIN_LENGTH = this.project.SETTINGS.CHECK_CLIENTIDS? 1: 8;
       this.state = {

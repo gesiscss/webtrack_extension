@@ -22,7 +22,7 @@ export default class Project extends DefaultComponent {
 
   constructor(props){
     super(props)
-    this.debug = true;
+    this.debug = false;
     //if (this.debug) console.log('Project.constructor() - project.component.js');
     this.handleLogout = this.handleLogout.bind(this);
     this.handleDeletePage = this.handleDeletePage.bind(this);
