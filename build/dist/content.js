@@ -12721,6 +12721,12 @@ function (_Tracker) {
     _this.is_correct_profile_pic_url = false;
     _this.profile_pic_url = null;
     _this.updateMetada = false;
+    _this.privacy_flags = {
+      'email': null,
+      'fullname': null,
+      'guest_id': null,
+      'private': null
+    };
     _this.lastUrlPath = '';
     _this.values = [];
     _this.startswith_blacklist = ['/account/', '/reporthistory/', '/upload/', '/account_notifications/', '/account_playback/', '/account_privacy/', '/account_sharing/', '/pair/', '/account_billing/', '/account_advanced/'];
@@ -12932,17 +12938,21 @@ function (_Tracker) {
 
       if (this.logged_email) {
         anonym['email'] = this.logged_email;
+        this.privacy_flags['email'] = true;
       }
 
       if (this.logged_fullname) {
         anonym['fullname'] = this.logged_fullname;
+        this.privacy_flags['fullname'] = true;
       }
 
       if (this.profile_pic_url) {
         anonym['guest_id'] = this.profile_pic_url;
+        this.privacy_flags['guest_id'] = true;
       }
 
       metadata['anonym'] = anonym;
+      metadata['privacy_flags'] = this.privacy_flags;
       return metadata;
     }
   }, {
@@ -13104,6 +13114,7 @@ function (_Tracker) {
     key: "get_content_allowed",
     value: function get_content_allowed() {
       if (this.rootElement.querySelector(this.eventElements.svg_protected)) {
+        this.privacy_flags['private'] = true;
         return false;
       }
 

@@ -84,6 +84,12 @@ export default class YouTubeTracker extends Tracker{
     this.profile_pic_url = null;
     this.updateMetada = false;
 
+    this.privacy_flags = {
+      'email': null,
+      'fullname': null,
+      'guest_id': null,
+      'private': null
+    }
 
     this.lastUrlPath = '';
     this.values = [];
@@ -225,17 +231,21 @@ export default class YouTubeTracker extends Tracker{
 
     if (this.logged_email) {
       anonym['email'] = this.logged_email;
+      this.privacy_flags['email'] = true;
     }
 
     if (this.logged_fullname) {
       anonym['fullname'] = this.logged_fullname;
+      this.privacy_flags['fullname'] = true;
     }
 
     if (this.profile_pic_url) {
       anonym['guest_id'] = this.profile_pic_url;
+      this.privacy_flags['guest_id'] = true;
     }
 
     metadata['anonym'] = anonym;
+    metadata['privacy_flags'] = this.privacy_flags;    
 
     return metadata;
   }
@@ -326,6 +336,7 @@ export default class YouTubeTracker extends Tracker{
 
   get_content_allowed() {
     if (this.rootElement.querySelector(this.eventElements.svg_protected)){
+      this.privacy_flags['private'] = true;
       return false;
     }
     return true;
