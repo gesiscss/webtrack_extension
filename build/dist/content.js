@@ -16428,7 +16428,8 @@ function () {
     this.DELAY = 1000;
     this.debug = true;
     this.onBackendMessage = this.onBackendMessage.bind(this);
-    this.click_counter = this.click_counter.bind(this);
+    this.click_recorder = this.click_recorder.bind(this);
+    this.contextmenu_recorder = this.contextmenu_recorder.bind(this);
     this.focus_counter = this.focus_counter.bind(this);
     this.scroll_counter = this.scroll_counter.bind(this); // needs to be initialized, if restarting
 
@@ -16461,6 +16462,9 @@ function () {
         page_load_time: window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart,
         unhashed_url: this.get_unhashed_href(),
         clicks: this.clicks,
+        clicks_counter: 0,
+        rightclicks: this.contextmenu_clicks,
+        rightclicks_counter: 0,
         scrolls: this.scrolls
       };
     }
@@ -16470,11 +16474,26 @@ function () {
      */
 
   }, {
-    key: "click_counter",
-    value: function click_counter() {
-      this.clicks += 1;
+    key: "click_recorder",
+    value: function click_recorder() {
+      this.clicks.push(+new Date());
       this.sendMessage({
-        clicks: this.clicks
+        clicks: this.clicks,
+        clicks_counter: this.clicks.length
+      });
+    }
+    /**
+     * count right clicks in the page
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "contextmenu_recorder",
+    value: function contextmenu_recorder() {
+      this.contextmenu_clicks.push(+new Date());
+      this.sendMessage({
+        rightclicks: this.contextmenu_clicks,
+        rightclicks_counter: this.contextmenu_clicks.length
       });
     }
     /**
@@ -16766,7 +16785,8 @@ function () {
     value: function close() {
       this.domDetector.removeAllEventListener();
       this.browser.runtime.onMessage.removeListener(this.onBackendMessage);
-      window.removeEventListener("click", this.click_counter);
+      window.removeEventListener("click", this.click_recorder);
+      window.removeEventListener("contextmenu", this.contextmenu_recorder);
       window.removeEventListener("scroll", this.scroll_counter);
       window.removeEventListener("focus", this.focus_counter);
       this.isListeningToBackend = false;
@@ -17040,7 +17060,8 @@ function () {
       this.domDetector = new DomDetector();
       this.startTime = +new Date();
       this.last = 0;
-      this.clicks = 0;
+      this.clicks = [];
+      this.contextmenu_clicks = [];
       this.scrolls = 0;
       this.focuses = 0;
       this.is_scroll_timed = false;
@@ -17063,7 +17084,8 @@ function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (!this.isListeningToBackend) {
-                  window.addEventListener("click", this.click_counter);
+                  window.addEventListener("click", this.click_recorder);
+                  window.addEventListener("contextmenu", this.contextmenu_recorder);
                   window.addEventListener("scroll", this.scroll_counter);
                   window.addEventListener("focus", this.focus_counter);
                   this.browser.runtime.onMessage.addListener(this.onBackendMessage);
