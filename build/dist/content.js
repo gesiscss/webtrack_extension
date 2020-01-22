@@ -11162,6 +11162,20 @@ function (_Tracker) {
     _this.startswith_whitelist = ['/pg/'];
     _this.pos_2nd_blacklist = ['about', 'archive', 'events', 'films', 'followers', 'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'likes', 'music', 'notes', 'photos', 'reviews', 'sports'];
     _this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
+    _this.public_map = {
+      // public
+      'rfZj1qaBrro.png': '-39px -300px'
+    };
+    _this.blocked_map = {
+      // friends
+      'vtaY25qSQy-.png': '0px -101px' // only me (all of the user is public)
+      // 'JTNOKcsLgL6.png': ['-19px -327px'], 
+
+    };
+    _this.post_capture = {
+      'public': null,
+      'private': null
+    };
     _this.entries_found = 0;
     _this.logged_uid = null;
     _this.logged_user_id = null;
@@ -11568,38 +11582,63 @@ function (_Tracker) {
 
       if (is_same != null) {
         if (is_same) {
+          if (this.facebook_debug) console.log('is same');
           return true;
         }
       }
 
       if (!this.is_content_allowed) {
+        if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
         return false;
       }
 
       var els = target.querySelectorAll('i[class*=sx_');
+      var is_public = false;
 
       for (var i = 0; i < els.length; i++) {
-        if (getComputedStyle(els[i])['background-position'] == '-13px -308px') {
-          return true;
-        } else if (this.blocked.has(getComputedStyle(els[i])['background-position'])) {
-          return false;
+        var style = getComputedStyle(els[i]);
+
+        for (var key in this.blocked_map) {
+          if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']) {
+            if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
+            this.post_capture['private'] = true;
+            return false;
+          }
         }
+
+        for (var _key in this.public_map) {
+          if (style['background-image'].includes(_key) && this.public_map[_key] == style['background-position']) {
+            if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
+            this.post_capture['public'] = true;
+            is_public = true;
+          }
+        }
+      } // the return is not immediate in the loop because there could icons inside indicating
+      // that the post is private. We can only be sure after all icons have been checked.
+
+
+      if (is_public) {
+        return true;
       } //let a_list = target.querySelectorAll('.fwn.fcg a');
       //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
 
 
-      var friends_list = target.querySelectorAll('i.sx_b75a4a');
-      var onlyme_list = target.querySelectorAll('i.sx_e89a24');
-      var friendoffriend_list = target.querySelectorAll('i.sx_6be848'); // let c = 0;
-      // for (let a in a_list.length) {
-      //   let attr = a_list[a].getAttribute("data-hovercard");
-      //   if(attr != null && attr.indexOf('user') > 0){
-      //     c++;
-      //   }
-      // }
-      //return c==0 && 
+      var _friends = target.querySelectorAll('i.sx_94649f'); //let onlyme = target.querySelectorAll('i.sx_e89a24');
 
-      return friends_list.length == 0 && onlyme_list.length == 0 && friendoffriend_list.length == 0;
+
+      var _public = target.querySelectorAll('i.sx_6be848');
+
+      if (_friends.length > 0) {
+        this.post_capture['private'] = true;
+        return false;
+      }
+
+      if (_public.length > 0) {
+        this.post_capture['public'] = true;
+        return true;
+      }
+
+      return true;
     }
     /**
      * [_isPrivate checks if element is for the public oder private]
@@ -11611,7 +11650,7 @@ function (_Tracker) {
     key: "_isPrivate",
     value: function _isPrivate(target) {
       //let a_list = target.querySelectorAll('.fwn.fcg a');
-      var a_list = target.querySelectorAll('.sx_b75a4a');
+      var a_list = target.querySelectorAll('.sx_94649f');
       var c = 0;
 
       for (var a in a_list.length) {

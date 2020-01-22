@@ -59,6 +59,23 @@ export default class FacebookTracker extends Tracker{
 
     this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
 
+    this.public_map = {
+      // public
+      'rfZj1qaBrro.png': '-39px -300px',
+    }
+    this.blocked_map = {
+      // friends
+      'vtaY25qSQy-.png': '0px -101px',
+      // only me (all of the user is public)
+      // 'JTNOKcsLgL6.png': ['-19px -327px'], 
+    }
+
+    this.post_capture = {
+      'public': null,
+      'private': null,
+    }
+
+
     this.entries_found = 0;
     this.logged_uid = null;
     this.logged_user_id = null;
@@ -399,48 +416,64 @@ export default class FacebookTracker extends Tracker{
    */
   _isPublicOrLogInUser(target){
 
-
     // try to detect if the is the same user as logged in
     let is_same = this.is_link_same_as_logged_user(target, '.fwn.fcg a');
 
     if (is_same != null){
       if (is_same){
+        if (this.facebook_debug) console.log('is same');
         return true;
       }
     }
 
     if (!this.is_content_allowed){
+      if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
       return false;
     }
 
     let els = target.querySelectorAll('i[class*=sx_')
+    let is_public = false;
     for (let i = 0; i < els.length; i++) {
-      if (getComputedStyle(els[i])['background-position'] == '-13px -308px'){
-        return true;
-      } else if (this.blocked.has(getComputedStyle(els[i])['background-position'])) {
-        return false;
+      let style = getComputedStyle(els[i]);
+      for (let key in this.blocked_map) {
+        if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']){
+          if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
+          this.post_capture['private'] = true;
+          return false;
+        }
       }
+      for (let key in this.public_map) {
+        if (style['background-image'].includes(key) && this.public_map[key] == style['background-position']){
+          if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
+          this.post_capture['public'] = true;
+          is_public = true;
+        }
+      }
+    }
+
+    // the return is not immediate in the loop because there could icons inside indicating
+    // that the post is private. We can only be sure after all icons have been checked.
+    if (is_public){
+      return true;
     }
 
     //let a_list = target.querySelectorAll('.fwn.fcg a');
     //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
-    let friends_list = target.querySelectorAll('i.sx_b75a4a');
-    let onlyme_list = target.querySelectorAll('i.sx_e89a24');
-    let friendoffriend_list = target.querySelectorAll('i.sx_6be848');
-    
-    
-    // let c = 0;
-    // for (let a in a_list.length) {
-    //   let attr = a_list[a].getAttribute("data-hovercard");
-    //   if(attr != null && attr.indexOf('user') > 0){
-    //     c++;
-    //   }
-    // }
+    let _friends = target.querySelectorAll('i.sx_94649f');
+    //let onlyme = target.querySelectorAll('i.sx_e89a24');
+    let _public = target.querySelectorAll('i.sx_6be848');
 
-    //return c==0 && 
-    return ((friends_list.length == 0) 
-      && (onlyme_list.length==0)
-      && (friendoffriend_list.length==0));
+    if (_friends.length > 0){
+      this.post_capture['private'] = true;
+      return false;
+    }
+
+    if (_public.length > 0){
+      this.post_capture['public'] = true;
+      return true;
+    }
+    
+    return true;
   }
 
 
@@ -452,7 +485,7 @@ export default class FacebookTracker extends Tracker{
    */
   _isPrivate(target){
     //let a_list = target.querySelectorAll('.fwn.fcg a');
-    let a_list = target.querySelectorAll('.sx_b75a4a');    
+    let a_list = target.querySelectorAll('.sx_94649f');    
     let c = 0;
     for (let a in a_list.length) {
       let attr = a_list[a].getAttribute("data-hovercard");
