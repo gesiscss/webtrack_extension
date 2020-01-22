@@ -14164,6 +14164,14 @@ function (_Tracker) {
     _this.sidebar_right = null;
     _this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/'];
     _this.pos_2nd_blacklist = ['bookmarks', 'signup'];
+    _this.privacy_flags = {
+      'user_id': null,
+      'username': null,
+      'guest_id': null,
+      'email': null,
+      'is_logged_in': null,
+      'private': null
+    };
     _this.logged_username = null;
     _this.credentials = null;
     console.log(+new Date());
@@ -14605,21 +14613,26 @@ function (_Tracker) {
 
       if (this.logged_user_id) {
         anonym['user_id'] = this.logged_user_id;
+        this.privacy_flags['user_id'] = true;
       }
 
       if (this.logged_username) {
         anonym['username'] = this.logged_username;
+        this.privacy_flags['username'] = true;
       }
 
       if (this.logged_guest_id) {
         anonym['guest_id'] = this.logged_guest_id;
+        this.privacy_flags['guest_id'] = true;
       }
 
       if (this.logged_fullname) {
         anonym['email'] = this.logged_fullname;
+        this.privacy_flags['email'] = true;
       }
 
       metadata['anonym'] = anonym;
+      metadata['privacy_flags'] = this.privacy_flags;
       return metadata;
     }
     /**
@@ -14686,11 +14699,13 @@ function (_Tracker) {
       var svgs = document.documentElement.querySelectorAll(this.selectors.svg_home_deactivated);
 
       if (svgs && svgs.length > 0) {
+        this.privacy_flags['is_logged_in'] = true;
         return true;
       } else {
         var svgs = document.documentElement.querySelectorAll(this.selectors.svg_home_activated);
 
         if (svgs && svgs.length > 0) {
+          this.privacy_flags['is_logged_in'] = true;
           return true;
         }
       }
@@ -14713,6 +14728,7 @@ function (_Tracker) {
 
 
       if (target.querySelector(this.selectors.svg_tweet_protected)) {
+        this.privacy_flags['private'] = true;
         return false;
       } else {
         return true;
