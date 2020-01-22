@@ -70,9 +70,15 @@ export default class FacebookTracker extends Tracker{
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
     }
 
-    this.post_capture = {
+    this.privacy_flags = {
       'public': null,
       'private': null,
+      'issame': null,
+      'user_id': null,
+      'username': null,
+      'account_id': null,
+      'fullname': null,
+      'shortname': null
     }
 
 
@@ -422,6 +428,8 @@ export default class FacebookTracker extends Tracker{
     if (is_same != null){
       if (is_same){
         if (this.facebook_debug) console.log('is same');
+        this.privacy_flags['issame'] = true;
+        target.classList.add('is_same_webtracker_flag');
         return true;
       }
     }
@@ -438,14 +446,15 @@ export default class FacebookTracker extends Tracker{
       for (let key in this.blocked_map) {
         if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']){
           if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
-          this.post_capture['private'] = true;
+          this.privacy_flags['private'] = true;
+          target.classList.add('private_webtracker_flag');
           return false;
         }
       }
       for (let key in this.public_map) {
         if (style['background-image'].includes(key) && this.public_map[key] == style['background-position']){
           if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
-          this.post_capture['public'] = true;
+          this.privacy_flags['public'] = true;
           is_public = true;
         }
       }
@@ -454,6 +463,7 @@ export default class FacebookTracker extends Tracker{
     // the return is not immediate in the loop because there could icons inside indicating
     // that the post is private. We can only be sure after all icons have been checked.
     if (is_public){
+      target.classList.add('public_webtracker_flag');
       return true;
     }
 
@@ -464,12 +474,14 @@ export default class FacebookTracker extends Tracker{
     let _public = target.querySelectorAll('i.sx_6be848');
 
     if (_friends.length > 0){
-      this.post_capture['private'] = true;
+      this.privacy_flags['private'] = true;
+      target.classList.add('private_webtracker_flag');
       return false;
     }
 
     if (_public.length > 0){
-      this.post_capture['public'] = true;
+      this.privacy_flags['public'] = true;
+      target.classList.add('public_webtracker_flag');
       return true;
     }
     
@@ -871,23 +883,29 @@ export default class FacebookTracker extends Tracker{
 
     if (this.logged_user_id) {
       anonym['user_id'] = this.logged_user_id;
+      this.privacy_flags['user_id'] = true;
     }
 
     if (this.logged_username) {
       anonym['username'] = this.logged_username;
+      this.privacy_flags['username'] = true;
     }
 
     if (this.logged_account_id) {
       anonym['account_id'] = this.logged_account_id;
+      this.privacy_flags['account_id'] = true;
     }
     if (this.logged_fullname) {
       anonym['fullname'] = this.logged_fullname;
+      this.privacy_flags['fullname'] = true;
     }
     if (this.logged_shortname) {
       anonym['shortname'] = this.logged_shortname;
+      this.privacy_flags['shortname'] = true;
     }
 
     metadata['anonym'] = anonym;
+    metadata['privacy_flags'] = this.privacy_flags;
 
     return metadata;
 

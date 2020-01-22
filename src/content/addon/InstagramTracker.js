@@ -217,9 +217,7 @@ export default class InstagramTracker extends Tracker{
         if (this.instagram_debug) console.log('it is private (no share icon)');
         return false;
       }
-    } else {
-
-    }
+    } 
 
     if (this.instagram_debug) console.log('is public (assumption)');
     return true;

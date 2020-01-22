@@ -10092,8 +10092,6 @@ function (_MultiFetch) {
       url_only: privacy.only_url,
       domain_only: privacy.only_domain
     };
-    console.log('constructor');
-    console.log(_this.metadata);
     _this.links = [];
     _this.lastURL = '';
     _this.original_url = '';
@@ -10305,6 +10303,12 @@ function (_MultiFetch) {
         result['anonym'] = data['anonym'];
       } else {
         result['anonym'] = this.metadata['anonym'];
+      }
+
+      if (data.hasOwnProperty('privacy_flags')) {
+        result['privacy_flags'] = data['privacy_flags'];
+      } else {
+        result['privacy_flags'] = this.metadata['privacy_flags'];
       }
 
       if (data.hasOwnProperty('domain_only')) {
@@ -11172,9 +11176,15 @@ function (_Tracker) {
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
 
     };
-    _this.post_capture = {
+    _this.privacy_flags = {
       'public': null,
-      'private': null
+      'private': null,
+      'issame': null,
+      'user_id': null,
+      'username': null,
+      'account_id': null,
+      'fullname': null,
+      'shortname': null
     };
     _this.entries_found = 0;
     _this.logged_uid = null;
@@ -11583,6 +11593,8 @@ function (_Tracker) {
       if (is_same != null) {
         if (is_same) {
           if (this.facebook_debug) console.log('is same');
+          this.privacy_flags['issame'] = true;
+          target.classList.add('is_same_webtracker_flag');
           return true;
         }
       }
@@ -11601,7 +11613,8 @@ function (_Tracker) {
         for (var key in this.blocked_map) {
           if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']) {
             if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
-            this.post_capture['private'] = true;
+            this.privacy_flags['private'] = true;
+            target.classList.add('private_webtracker_flag');
             return false;
           }
         }
@@ -11609,7 +11622,7 @@ function (_Tracker) {
         for (var _key in this.public_map) {
           if (style['background-image'].includes(_key) && this.public_map[_key] == style['background-position']) {
             if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
-            this.post_capture['public'] = true;
+            this.privacy_flags['public'] = true;
             is_public = true;
           }
         }
@@ -11618,6 +11631,7 @@ function (_Tracker) {
 
 
       if (is_public) {
+        target.classList.add('public_webtracker_flag');
         return true;
       } //let a_list = target.querySelectorAll('.fwn.fcg a');
       //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
@@ -11629,12 +11643,14 @@ function (_Tracker) {
       var _public = target.querySelectorAll('i.sx_6be848');
 
       if (_friends.length > 0) {
-        this.post_capture['private'] = true;
+        this.privacy_flags['private'] = true;
+        target.classList.add('private_webtracker_flag');
         return false;
       }
 
       if (_public.length > 0) {
-        this.post_capture['public'] = true;
+        this.privacy_flags['public'] = true;
+        target.classList.add('public_webtracker_flag');
         return true;
       }
 
@@ -12269,25 +12285,31 @@ function (_Tracker) {
 
       if (this.logged_user_id) {
         anonym['user_id'] = this.logged_user_id;
+        this.privacy_flags['user_id'] = true;
       }
 
       if (this.logged_username) {
         anonym['username'] = this.logged_username;
+        this.privacy_flags['username'] = true;
       }
 
       if (this.logged_account_id) {
         anonym['account_id'] = this.logged_account_id;
+        this.privacy_flags['account_id'] = true;
       }
 
       if (this.logged_fullname) {
         anonym['fullname'] = this.logged_fullname;
+        this.privacy_flags['fullname'] = true;
       }
 
       if (this.logged_shortname) {
         anonym['shortname'] = this.logged_shortname;
+        this.privacy_flags['shortname'] = true;
       }
 
       metadata['anonym'] = anonym;
+      metadata['privacy_flags'] = this.privacy_flags;
       return metadata;
     }
     /**
@@ -15385,7 +15407,7 @@ function (_Tracker) {
           if (this.instagram_debug) console.log('it is private (no share icon)');
           return false;
         }
-      } else {}
+      }
 
       if (this.instagram_debug) console.log('is public (assumption)');
       return true;

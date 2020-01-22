@@ -31,8 +31,6 @@ export default class Tracker extends MultiFetch {
       domain_only: privacy.only_domain
     };
 
-    console.log('constructor');
-    console.log(this.metadata);
     this.links = [];
     this.lastURL = '';
     this.original_url = '';
@@ -207,6 +205,12 @@ export default class Tracker extends MultiFetch {
       result['anonym'] = data['anonym'];
     } else {
       result['anonym'] = this.metadata['anonym'];
+    }
+
+    if (data.hasOwnProperty('privacy_flags')){
+      result['privacy_flags'] = data['privacy_flags'];
+    } else {
+      result['privacy_flags'] = this.metadata['privacy_flags'];
     }
     
     if (data.hasOwnProperty('domain_only')){
