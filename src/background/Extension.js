@@ -66,7 +66,7 @@ export default class Extension {
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
 
-    this.debug = false;
+    this.debug = true;
   }
 
   /**
@@ -238,7 +238,7 @@ export default class Extension {
           xbrowser.tabs.sendMessage(tab.id, {
             action: "private_mode", 
             private_mode: this.privateMode, 
-            allow: (!this.privateMode && !this.tabs[tab.id].getState('disabled'))
+            tab_disabled: this.tabs[tab.id].getState('disabled')
           }, 
             function(response) {
               if(xbrowser.runtime.lastError) {
@@ -410,16 +410,15 @@ export default class Extension {
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
         this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
         let r = {
-          allow: (!this.privateMode && !this.tabs[sender.tab.id].getState('disabled')), 
           extensionfilter: this.extensionfilter, 
           pending_private_time_answer: this.pending_private_time_answer,
           default_private_time_ms: this.default_private_time_ms,
           privacy: {
               only_domain: this.tabs[sender.tab.id].getState('only_domain'),
               only_url: this.tabs[sender.tab.id].getState('only_url'),
-              is_blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+              blacklisted: !this.tabs[sender.tab.id].getState('allow'),
               private_mode: this.privateMode,
-              is_tab_disabled: this.tabs[sender.tab.id].getState('disabled')
+              tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
         }
         sendResponse(r);
@@ -430,8 +429,8 @@ export default class Extension {
         this.pending_private_time_answer = false;
         sendResponse(false);
       } else if(!this.tabs.hasOwnProperty(sender.tab.id) || 
-          !this.tabs[sender.tab.id].getState('allow') || 
           this.tabs[sender.tab.id].getState('disabled')){
+        if (this.debug) console.log('# tab disabled');
         if (sender.tab.id == this.active_tab){
           this.setImage(false);
         }
@@ -442,6 +441,7 @@ export default class Extension {
           this.setImage(false);
           sendResponse(false);
         }else {
+          console.log();
         
           // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed

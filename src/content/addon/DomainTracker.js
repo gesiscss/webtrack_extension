@@ -9,6 +9,9 @@ export default class DomainTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
 
+    // make sure this is the case as it can be blocked due to dynamic content
+    this.privacy.domain_only = true;
+
     this.domain_debug = false;
 
   }
@@ -21,8 +24,7 @@ export default class DomainTracker extends Tracker{
   getMetadata(){
     return {
         description: [],
-        keywords: [],
-        domain_only: true
+        keywords: []
       }
   }
 

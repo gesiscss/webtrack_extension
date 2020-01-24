@@ -10089,8 +10089,7 @@ function (_MultiFetch) {
       description: [],
       keywords: [],
       anonym: null,
-      url_only: privacy.only_url,
-      domain_only: privacy.only_domain
+      privacy: privacy
     };
     _this.links = [];
     _this.lastURL = '';
@@ -10129,6 +10128,26 @@ function (_MultiFetch) {
       //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
       //   });
       // }.bind(this));
+    }
+    /**
+     * turn on the private mode on the tracker
+     * @param {[type]} b [description]
+     */
+
+  }, {
+    key: "set_private_mode",
+    value: function set_private_mode(b) {
+      this.privacy['private_mode'] = b;
+    }
+    /**
+     * get_privacy flags
+     * @return {[type]} [description]
+     */
+
+  }, {
+    key: "get_privacy",
+    value: function get_privacy() {
+      return this.privacy;
     }
     /**
     * [_getHead return header of HTML-Dom]
@@ -10311,16 +10330,10 @@ function (_MultiFetch) {
         result['privacy_flags'] = this.metadata['privacy_flags'];
       }
 
-      if (data.hasOwnProperty('domain_only')) {
-        result['domain_only'] = data['domain_only'];
+      if (data.hasOwnProperty('privacy')) {
+        result['privacy'] = data['privacy'];
       } else {
-        result['domain_only'] = this.metadata['domain_only'];
-      }
-
-      if (data.hasOwnProperty('url_only')) {
-        result['url_only'] = data['url_only'];
-      } else {
-        result['url_only'] = this.metadata['url_only'];
+        result['privacy'] = this.metadata['privacy'];
       }
 
       if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
@@ -15757,7 +15770,9 @@ function (_Tracker) {
     _this = DomainTracker_possibleConstructorReturn(this, DomainTracker_getPrototypeOf(DomainTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(DomainTracker_assertThisInitialized(_this));
-    _this.is_allowed = null;
+    _this.is_allowed = null; // make sure this is the case as it can be blocked due to dynamic content
+
+    _this.privacy.domain_only = true;
     _this.domain_debug = false;
     return _this;
   }
@@ -15772,8 +15787,7 @@ function (_Tracker) {
     value: function getMetadata() {
       return {
         description: [],
-        keywords: [],
-        domain_only: true
+        keywords: []
       };
     }
     /**
@@ -15843,7 +15857,9 @@ function (_Tracker) {
     _this = URLTracker_possibleConstructorReturn(this, URLTracker_getPrototypeOf(URLTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(URLTracker_assertThisInitialized(_this));
-    _this.is_allowed = null;
+    _this.is_allowed = null; // make sure this is the case as it can be blocked due to dynamic content
+
+    _this.privacy.url_only = true;
     _this.url_debug = false;
     return _this;
   }
@@ -15858,8 +15874,7 @@ function (_Tracker) {
     value: function getMetadata() {
       return {
         description: [],
-        keywords: [],
-        url_only: true
+        keywords: []
       };
     }
     /**
@@ -16184,7 +16199,10 @@ function (_Tracker) {
     _this = BlacklistTracker_possibleConstructorReturn(this, BlacklistTracker_getPrototypeOf(BlacklistTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(BlacklistTracker_assertThisInitialized(_this));
-    _this.is_allowed = null;
+    _this.is_allowed = null; // make sure this is the case as it can be blocked due to dynamic content
+    // however, currently this is not the case
+
+    _this.privacy.blacklisted = true;
     _this.blacklist_debug = false;
     return _this;
   }
@@ -16199,8 +16217,7 @@ function (_Tracker) {
     value: function getMetadata() {
       return {
         description: [],
-        keywords: [],
-        blacklisted: true
+        keywords: []
       };
     }
     /**
@@ -16499,7 +16516,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_recorder = this.click_recorder.bind(this);
     this.contextmenu_recorder = this.contextmenu_recorder.bind(this);
@@ -16628,6 +16645,16 @@ function () {
         } else if (privacy.only_url) {
           if (this.debug) console.log('URLTracker');
           return URLTracker;
+        }
+
+        if (privacy.blacklisted) {
+          if (this.debug) console.log('BlacklistTracker');
+          return BlacklistTracker;
+        }
+
+        if (privacy.private_mode) {
+          if (this.debug) console.log('PrivateModeTracker');
+          return PrivateModeTracker;
         } else if (str.endsWith('facebook')) {
           if (this.debug) console.log('FacebookTracker');
           return FacebookTracker;
@@ -16655,9 +16682,6 @@ function () {
         } else if (str.endsWith('apple')) {
           if (this.debug) console.log('AppleTracker');
           return AppleTracker;
-        } else if (privacy.is_blacklisted) {
-          if (this.debug) console.log('BlacklistTracker');
-          return BlacklistTracker;
         }
       }
 
@@ -16907,17 +16931,16 @@ function () {
       } else if (message.action == 'private_mode') {
         if (message.private_mode) {
           this.closeOnData();
+          this.tracker.set_private_mode(true);
           this.sendMessage({
             meta: {
-              is_private_mode: true
+              privacy: this.tracker.get_privacy()
             }
           });
         } else {
-          console.log('is allow?');
-          console.log(message.allow);
-
-          if (message.allow) {
+          if (!message.is_tab_disabled) {
             this.openOnData();
+            this.tracker.set_private_mode(false);
             this.tracker.fetchHTML(100).then(function () {
               //this.tracker.fetchFavicon();
               _this6.tracker.fetchMetaData();
@@ -17172,7 +17195,7 @@ function () {
               case 4:
                 this.param = _context2.sent;
 
-                if (ContentHandler_typeof(this.param) == 'object' && this.param.allow) {
+                if (ContentHandler_typeof(this.param) == 'object' && !this.param.tab_disabled) {
                   if (this.debug) console.log(this.param);
                   this.default_private_time_ms = this.param.default_private_time_ms;
                   this.createTracker(this.param.privacy);

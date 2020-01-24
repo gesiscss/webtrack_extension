@@ -39,7 +39,7 @@ export default class ContentHandler {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
 
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_recorder = this.click_recorder.bind(this);
@@ -155,6 +155,12 @@ export default class ContentHandler {
       } else if (privacy.only_url){
         if (this.debug) console.log('URLTracker');
         return URLTracker;
+      } if (privacy.blacklisted){
+        if (this.debug) console.log('BlacklistTracker');
+        return BlacklistTracker;
+      } if (privacy.private_mode){
+        if (this.debug) console.log('PrivateModeTracker');
+        return PrivateModeTracker;
       } else if(str.endsWith('facebook')){
         if (this.debug) console.log('FacebookTracker');
         return FacebookTracker;
@@ -182,9 +188,6 @@ export default class ContentHandler {
       } else if(str.endsWith('apple')){
         if (this.debug) console.log('AppleTracker');
         return AppleTracker;
-      } else if (privacy.is_blacklisted){
-        if (this.debug) console.log('BlacklistTracker');
-        return BlacklistTracker;
       }
     }
     if (this.debug) console.log('Tracker');
@@ -404,17 +407,14 @@ export default class ContentHandler {
     } else if (message.action == 'private_mode'){
       if (message.private_mode) {
         this.closeOnData();
-        this.sendMessage({ 
-          meta: {
-            is_private_mode: true,
-          }
-        });
+        this.tracker.set_private_mode(true);
+        this.sendMessage({ meta: {
+          privacy: this.tracker.get_privacy() 
+        }});
       } else {
-        console.log('is allow?');
-        console.log(message.allow);
-        if(message.allow){
-
+        if(!message.is_tab_disabled){
           this.openOnData();
+          this.tracker.set_private_mode(false);
           this.tracker.fetchHTML(100).then(() => {
            //this.tracker.fetchFavicon();
            this.tracker.fetchMetaData();
@@ -642,7 +642,7 @@ export default class ContentHandler {
     try {
       this.param = await this._getParam();
 
-      if(typeof this.param == 'object' && this.param.allow){
+      if(typeof this.param == 'object' && !this.param.tab_disabled){
         if(this.debug) console.log(this.param);
         this.default_private_time_ms = this.param.default_private_time_ms;
         this.createTracker(this.param.privacy);

@@ -32286,7 +32286,7 @@ function () {
     this._onConnectPopup = this._onConnectPopup.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
-    this.debug = false;
+    this.debug = true;
   }
   /**
    * [_onActiveWindows listenen the active windowId for check the active tab]
@@ -32685,7 +32685,7 @@ function () {
                     xbrowser.tabs.sendMessage(tab.id, {
                       action: "private_mode",
                       private_mode: this.privateMode,
-                      allow: !this.privateMode && !this.tabs[tab.id].getState('disabled')
+                      tab_disabled: this.tabs[tab.id].getState('disabled')
                     }, function (response) {
                       if (xbrowser.runtime.lastError) {
                         if (this.debug) console.log('notifyPrivateMode: No front end tab is listening.');
@@ -33013,16 +33013,15 @@ function () {
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
         this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
         var r = {
-          allow: !this.privateMode && !this.tabs[sender.tab.id].getState('disabled'),
           extensionfilter: this.extensionfilter,
           pending_private_time_answer: this.pending_private_time_answer,
           default_private_time_ms: this.default_private_time_ms,
           privacy: {
             only_domain: this.tabs[sender.tab.id].getState('only_domain'),
             only_url: this.tabs[sender.tab.id].getState('only_url'),
-            is_blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+            blacklisted: !this.tabs[sender.tab.id].getState('allow'),
             private_mode: this.privateMode,
-            is_tab_disabled: this.tabs[sender.tab.id].getState('disabled')
+            tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
         };
         sendResponse(r);
@@ -33032,7 +33031,9 @@ function () {
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
         sendResponse(false);
-      } else if (!this.tabs.hasOwnProperty(sender.tab.id) || !this.tabs[sender.tab.id].getState('allow') || this.tabs[sender.tab.id].getState('disabled')) {
+      } else if (!this.tabs.hasOwnProperty(sender.tab.id) || this.tabs[sender.tab.id].getState('disabled')) {
+        if (this.debug) console.log('# tab disabled');
+
         if (sender.tab.id == this.active_tab) {
           this.setImage(false);
         }
@@ -33043,8 +33044,9 @@ function () {
           this.setImage(false);
           sendResponse(false);
         } else {
-          // if the property indicated that is allow to not track the content
+          console.log(); // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
+
           var is_track_allow = true;
 
           if (msg.content[0].hasOwnProperty('is_track_allow')) {
@@ -36844,7 +36846,7 @@ function () {
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
-    this.debug = false;
+    this.debug = true;
   }
   /**
    * [_getHashCode return hashcode from string]
@@ -38464,7 +38466,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = false;
+    this.debug = true;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
@@ -38807,44 +38809,48 @@ function () {
   }, {
     key: "anonymize",
     value: function anonymize(page, client_hash) {
-      if (page.meta.hasOwnProperty('is_private_mode') && page.meta.is_private_mode) {
-        for (var i = 0; i < this.to_anonym.length; i++) {
-          page['hostname'] = 'http://private.mode/';
+      if (page.meta.hasOwnProperty('privacy')) {
+        var privacy = page.meta.privacy;
 
-          try {
-            page[this.to_anonym[i]] = page['hostname'];
-          } catch (e) {}
+        if (privacy.domain_only || privacy.blacklisted || privacy.private_mode) {
+          if (privacy.blacklisted) {
+            page['hostname'] = 'BLACKLISTED';
+          }
+
+          if (privacy.private_mode) {
+            page['hostname'] = 'PRIVATE_MODE';
+          }
+
+          var hostname = page['hostname'];
+
+          for (var i = 0; i < this.to_anonym.length; i++) {
+            try {
+              page[this.to_anonym[i]] = page['hostname'];
+            } catch (e) {}
+          }
+
+          if (page.hasOwnProperty('hashes')) {
+            page['hashes'] = [];
+          }
+
+          if (page.hasOwnProperty('events')) {
+            page['events'] = [];
+          }
+
+          page["favicon"] = "";
+          page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
         }
 
-        if (page.hasOwnProperty('hashes')) {
-          page['hashes'] = [];
+        if (privacy.url_only) {
+          if (page.hasOwnProperty('events')) {
+            page['events'] = [];
+          }
+
+          page['title'] = '';
+          page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
         }
-
-        if (page.hasOwnProperty('events')) {
-          page['events'] = [];
-        }
-
-        page["favicon"] = "";
-        page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
-      }
-
-      if (page.meta.hasOwnProperty('domain_only') && page.meta.domain_only) {
-        for (var i = 0; i < this.to_anonym.length; i++) {
-          try {
-            page[this.to_anonym[i]] = page['hostname'];
-          } catch (e) {}
-        }
-
-        if (page.hasOwnProperty('hashes')) {
-          page['hashes'] = [];
-        }
-
-        page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
-      }
-
-      if (page.meta.hasOwnProperty('url_only') && page.meta.url_only) {
-        page['title'] = '';
-        page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
+      } else {
+        console.warn("There is no privacy flags in the metadata");
       }
 
       if (page.meta.hasOwnProperty('anonym') && page.meta.anonym) {
@@ -38948,7 +38954,7 @@ function () {
                   return _context6.delegateYield(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee5() {
-                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, client_hash;
+                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, anonymous_page, client_hash;
 
                     return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
@@ -38964,7 +38970,7 @@ function () {
 
                           case 7:
                             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context5.next = 31;
+                              _context5.next = 33;
                               break;
                             }
 
@@ -38985,6 +38991,8 @@ function () {
 
                           case 16:
                             page = _context5.sent;
+                            if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                            anonymous_page = _this5.anonymize(page, client_hash);
                             if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                             client_hash = _this5.getClientId();
 
@@ -38992,7 +39000,7 @@ function () {
                               id: client_hash,
                               projectId: _this5.projectId,
                               versionType: _this5.config.versionType,
-                              pages: [_this5.anonymize(page, client_hash)]
+                              pages: [_this5.anonymize(page, anonymous_page)]
                             }), function (status) {//count += 1;
                               // this.event.emit('onSendData', {
                               //   max: max,
@@ -39041,68 +39049,68 @@ function () {
                             });
 
                             if (_this5.debug) console.log('<- sendData');
-                            _context5.next = 28;
+                            _context5.next = 30;
                             break;
 
-                          case 23:
-                            _context5.prev = 23;
+                          case 25:
+                            _context5.prev = 25;
                             _context5.t0 = _context5["catch"](10);
                             count += 1; // this.event.emit('error', e, true);
 
                             if (_this5.debug) console.log('Unknown error sending data: ', page);
                             console.warn(_context5.t0);
 
-                          case 28:
+                          case 30:
                             _iteratorNormalCompletion = true;
                             _context5.next = 7;
                             break;
 
-                          case 31:
-                            _context5.next = 37;
+                          case 33:
+                            _context5.next = 39;
                             break;
 
-                          case 33:
-                            _context5.prev = 33;
+                          case 35:
+                            _context5.prev = 35;
                             _context5.t1 = _context5["catch"](5);
                             _didIteratorError = true;
                             _iteratorError = _context5.t1;
 
-                          case 37:
-                            _context5.prev = 37;
-                            _context5.prev = 38;
+                          case 39:
+                            _context5.prev = 39;
+                            _context5.prev = 40;
 
                             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                               _iterator["return"]();
                             }
 
-                          case 40:
-                            _context5.prev = 40;
+                          case 42:
+                            _context5.prev = 42;
 
                             if (!_didIteratorError) {
-                              _context5.next = 43;
+                              _context5.next = 45;
                               break;
                             }
 
                             throw _iteratorError;
 
-                          case 43:
-                            return _context5.finish(40);
-
-                          case 44:
-                            return _context5.finish(37);
-
                           case 45:
+                            return _context5.finish(42);
+
+                          case 46:
+                            return _context5.finish(39);
+
+                          case 47:
                             //for
                             if (!_this5.SENDDATAAUTOMATICALLY) {
                               _this5.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                             }
 
-                          case 46:
+                          case 48:
                           case "end":
                             return _context5.stop();
                         }
                       }
-                    }, _callee5, null, [[5, 33, 37, 45], [10, 23], [38,, 40, 44]]);
+                    }, _callee5, null, [[5, 35, 39, 47], [10, 25], [40,, 42, 46]]);
                   })(), "t0", 7);
 
                 case 7:

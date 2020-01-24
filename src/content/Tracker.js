@@ -27,9 +27,9 @@ export default class Tracker extends MultiFetch {
       description: [],
       keywords: [],
       anonym: null,
-      url_only: privacy.only_url,
-      domain_only: privacy.only_domain
+      privacy: privacy
     };
+
 
     this.links = [];
     this.lastURL = '';
@@ -68,6 +68,22 @@ export default class Tracker extends MultiFetch {
     //     this.eventEmitter.emit(EVENT_NAMES.start, delay, false)
     //   });
     // }.bind(this));
+  }
+
+  /**
+   * turn on the private mode on the tracker
+   * @param {[type]} b [description]
+   */
+  set_private_mode(b) {
+    this.privacy['private_mode'] = b;
+  }
+
+  /**
+   * get_privacy flags
+   * @return {[type]} [description]
+   */
+  get_privacy(){
+    return this.privacy;
   }
 
     /**
@@ -213,19 +229,12 @@ export default class Tracker extends MultiFetch {
       result['privacy_flags'] = this.metadata['privacy_flags'];
     }
     
-    if (data.hasOwnProperty('domain_only')){
-      result['domain_only'] = data['domain_only'];
+    if (data.hasOwnProperty('privacy')){
+      result['privacy'] = data['privacy'];
     } else {
-      result['domain_only'] = this.metadata['domain_only'];
+      result['privacy'] = this.metadata['privacy'];
     }
-
-    if (data.hasOwnProperty('url_only')){
-      result['url_only'] = data['url_only'];
-    } else {
-      result['url_only'] = this.metadata['url_only'];
-    }
-
-    
+   
     if (this.debug) console.log('======Emit Event: onData (METADATA) =======');
     if (this.debug) console.log(result);
 

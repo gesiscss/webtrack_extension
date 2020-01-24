@@ -1,7 +1,7 @@
 
 import Tracker from '../Tracker';
 
-export default class BlacklistTracker extends Tracker{
+export default class PrivateModeTracker extends Tracker{
 
   constructor(worker, privacy, extensionfilter=[]){
     super(worker, privacy);
@@ -11,7 +11,7 @@ export default class BlacklistTracker extends Tracker{
 
     // make sure this is the case as it can be blocked due to dynamic content
     // however, currently this is not the case
-    this.privacy.blacklisted = true;
+    this.privacy.is_private_mode = true;
 
     this.blacklist_debug = false;
 

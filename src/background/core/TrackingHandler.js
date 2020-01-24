@@ -50,7 +50,7 @@ export default class TrackingHandler {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new EventEmitter();
-    this.debug = false;
+    this.debug = true;
     this.settings = {};
 
     // fields that should be anonymized
@@ -251,39 +251,51 @@ export default class TrackingHandler {
 
   anonymize(page, client_hash){
 
-    if (page.meta.hasOwnProperty('is_private_mode') && page.meta.is_private_mode) {
-      for (var i = 0; i < this.to_anonym.length; i++) {
-        page['hostname'] = 'http://private.mode/';
-        try {
-          page[this.to_anonym[i]] = page['hostname'];
-        } catch (e){}
+
+    if (page.meta.hasOwnProperty('privacy')){
+      let privacy = page.meta.privacy;
+
+      if (privacy.domain_only || privacy.blacklisted || privacy.private_mode) {
+
+        if (privacy.blacklisted) {
+          page['hostname'] = 'BLACKLISTED';
+        }
+        if (privacy.private_mode) {
+          page['hostname'] = 'PRIVATE_MODE';
+        }
+
+        let hostname = page['hostname'];
+
+        for (var i = 0; i < this.to_anonym.length; i++) {          
+          try {
+            page[this.to_anonym[i]] = page['hostname'];
+          } catch (e){}
+        }
+        if (page.hasOwnProperty('hashes')){ 
+          page['hashes'] = []; 
+        }
+        if (page.hasOwnProperty('events')){ 
+          page['events'] = []; 
+        }
+
+        page["favicon"] = "";
+        page['content'][0].html =  '<html><head></head><body>'+page['hostname']+'</body></html>';
       }
-      if (page.hasOwnProperty('hashes')){ 
-        page['hashes'] = []; 
+
+
+      if (privacy.url_only) {
+
+        if (page.hasOwnProperty('events')){ 
+          page['events'] = []; 
+        }
+
+        page['title'] = ''
+        page['content'][0].html = '<html><head></head><body>'+page['landing_url']+'</body></html>';
       }
-      if (page.hasOwnProperty('events')){ 
-        page['events'] = []; 
-      }
-      page["favicon"] = "";
-      page['content'][0].html =  '<html><head></head><body>'+page['hostname']+'</body></html>';
+    } else {
+      console.warn("There is no privacy flags in the metadata");
     }
 
-    if (page.meta.hasOwnProperty('domain_only') && page.meta.domain_only) {
-      for (var i = 0; i < this.to_anonym.length; i++) {
-        try {
-          page[this.to_anonym[i]] = page['hostname'];
-        } catch (e){}
-      }
-      if (page.hasOwnProperty('hashes')){ 
-        page['hashes'] = []; 
-      }
-      page['content'][0].html = '<html><head></head><body>'+page['hostname']+'</body></html>';
-    }
-
-    if (page.meta.hasOwnProperty('url_only') && page.meta.url_only) {
-      page['title'] = ''
-      page['content'][0].html = '<html><head></head><body>'+page['landing_url']+'</body></html>';
-    }
 
     if (page.meta.hasOwnProperty('anonym') && page.meta.anonym){ 
       let anonym = page.meta.anonym;
@@ -363,15 +375,17 @@ export default class TrackingHandler {
 
                 page = await this.pageCache.getOnly(id);
 
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                let anonymous_page = this.anonymize(page, client_hash);
 
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                 let client_hash = this.getClientId();
                 this.transfer.sendingData(
                   JSON.stringify ({
                     id: client_hash,
                     projectId: this.projectId,
                     versionType: this.config.versionType,
-                    pages: [this.anonymize(page, client_hash)]
+                    pages: [this.anonymize(page, anonymous_page)]
                   }), status => {
                     //count += 1;
                     // this.event.emit('onSendData', {

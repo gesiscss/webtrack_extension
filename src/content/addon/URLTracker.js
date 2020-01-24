@@ -9,6 +9,9 @@ export default class URLTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
 
+    // make sure this is the case as it can be blocked due to dynamic content
+    this.privacy.url_only = true;
+
     this.url_debug = false;
 
   }
@@ -21,8 +24,7 @@ export default class URLTracker extends Tracker{
   getMetadata(){
     return {
         description: [],
-        keywords: [],
-        url_only: true
+        keywords: []
       }
   }
 
