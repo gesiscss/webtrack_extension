@@ -1,3 +1,3 @@
 node_modules
 npm-debug.log
-build/data/test.json
+build/data/test*.json

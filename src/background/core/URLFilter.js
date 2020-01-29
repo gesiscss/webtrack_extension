@@ -153,8 +153,56 @@ export default class URLFilter {
     }
 
     // check if the sub_domain is a exact match against the exact match set
-    if (this.lists.simple.exact.has(sub_domain)) {
+    if (this.lists.simple.exact.has(sub_domain + '.' + tld)) {
       if (this.debug) console.log('if (this.lists.simple.exact.has(sub_domain))');
+      // // conflicting against live.com
+      // if (sub_domain == 'live'){
+      //   return tld == 'tv';
+      // }
+      // // conflicting against yelp.com
+      // if (sub_domain == 'yelp'){
+      //   return tld == 'org';
+      // }
+      // // conflicting against emp.de
+      // if (sub_domain == 'emp'){
+      //   return tld == 'tv';
+      // }
+      // // conflicting against guru.de
+      // if (sub_domain == 'guru'){
+      //   return tld == 'nu';
+      // }
+      // // conflicting against uni.de
+      // if (sub_domain == 'uni'){
+      //   return tld == 'cc';
+      // }
+      // // conflicting against peak.ag
+      // if (sub_domain == 'peak'){
+      //   return tld == 'dk';
+      // }
+      // // conflicting against peak.ag
+      // if (sub_domain == 'tvnow'){
+      //   return tld == 'nl';
+      // }
+      // // conflicting against bonus.ch
+      // if (sub_domain == 'bonus'){
+      //   return tld == 'to';
+      // }
+      // // conflicting against berlin.de
+      // if (sub_domain == 'berlin'){
+      //   return tld == 'pl';
+      // }
+      // // conflicting against etoro.com
+      // if (sub_domain == 'etoro'){
+      //   return tld == 'ws';
+      // }
+      // // conflicting against ch.oui.sncf
+      // if (sub_domain == 'oui'){
+      //   return tld == 'pl';
+      // }
+      // // conflicting against alternate.de
+      // if (sub_domain == 'alternate'){
+      //   return tld == 'com';
+      // }
       return true;
     }
 
@@ -219,8 +267,12 @@ export default class URLFilter {
     if(this.active){
 
       //uncomment to text the list in tests.json
+      /////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       // console.log('TEST blacklist:');
       // let white=[]
+      // let only_domain=[]
+      // let only_url=[]
       // let black=[]
       // for (var i = 0; i < this.lists.tests.length; i++) {
       //   //when the test contains URLs
@@ -228,16 +280,39 @@ export default class URLFilter {
 
       //   //when the test contain domains
       //   domain = this.lists.tests[i];
+
+      //   if ("????" == domain){
+      //     this.debug=true;
+      //   }
       //   if (!this.isincluded(domain)) {
-      //     console.log(this.lists.tests[i])
-      //     white.push(this.lists.tests[i]);
+      //     if (this.only_domain(domain)){
+      //       only_domain.push(this.lists.tests[i]);
+      //     } else if (this.only_url(domain)){
+      //       only_url.push(this.lists.tests[i]);
+      //     } else {
+      //       white.push(this.lists.tests[i]);
+      //     }
       //   } else {
       //     black.push(this.lists.tests[i]);
       //   }
+      //   if(this.debug){
+      //     debugger;
+      //   }
       // }
+      // console.log('Whitelist:');
       // console.log(white);
+
+      // console.log('Blacklist:');
       // console.log(black);
+
+      // console.log('Only Domain:');
+      // console.log(only_domain);
+
+      // console.log('Only URL:');
+      // console.log(only_url);
       // debugger;
+      ///////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
 
 
 
@@ -269,8 +344,15 @@ export default class URLFilter {
       let hostname_parts = domain.split('.');
 
       if (hostname_parts.length > 1) {
-        return this.lists.simple.only_domain.has(
-          hostname_parts[hostname_parts.length - 2]);
+
+        // extract the sub domain; ignore the TLD from now on
+        let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
+
+        for (let item of this.lists.simple.only_domain) {
+          if (dot_subdomain.endsWith(item)){
+            return true;
+          }
+        }
       }
 
       return false;
@@ -288,8 +370,14 @@ export default class URLFilter {
       let hostname_parts = domain.split('.');
 
       if (hostname_parts.length > 1) {
-        return this.lists.simple.only_url.has(
-          hostname_parts[hostname_parts.length - 2]);
+        // extract the sub domain; ignore the TLD from now on
+        let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
+
+        for (let item of this.lists.simple.only_url) {
+          if (dot_subdomain.endsWith(item)){
+            return true;
+          }
+        }
       }
 
       return false;

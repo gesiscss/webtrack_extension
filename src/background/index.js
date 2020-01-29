@@ -40,10 +40,10 @@ async function load_blacklists(xbrowser) {
     });
 
 
-
     // uncomment to load the tests.json file to perform tests
+    ///////////////////////////////////////////////////////////
     // var tests = null;
-    // await fetch(xbrowser.runtime.getURL('data/test.json')).then(
+    // await fetch(xbrowser.runtime.getURL('data/test_domain.json')).then(
     //   (response) => response.json()).then((json) => {
     //     tests = json;
     // });
