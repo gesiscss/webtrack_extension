@@ -16,7 +16,7 @@ export default class PageHandler {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = true;
+    this.debug = false;
     this.event = new EventEmitter();
   }
 

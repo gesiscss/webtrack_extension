@@ -16619,7 +16619,7 @@ function () {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = true;
+    this.debug = false;
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_recorder = this.click_recorder.bind(this);
     this.contextmenu_recorder = this.contextmenu_recorder.bind(this);

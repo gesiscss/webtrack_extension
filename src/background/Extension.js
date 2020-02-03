@@ -65,7 +65,7 @@ export default class Extension {
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
 
-    this.debug = true;
+    this.debug = false;
   }
 
   /**
@@ -454,9 +454,7 @@ export default class Extension {
         if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false && sender.tab.id == this.active_tab){
           this.setImage(false);
           sendResponse(false);
-        }else {
-          console.log();
-        
+        }else {        
           // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
           let is_sm_path_allowed = true;

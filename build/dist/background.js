@@ -32410,7 +32410,7 @@ function () {
     this._onConnectPopup = this._onConnectPopup.bind(this);
     this.getAllTabsIds = this.getAllTabsIds.bind(this);
     this.pending_private_time_answer = false;
-    this.debug = true;
+    this.debug = false;
   }
   /**
    * [_onActiveWindows listenen the active windowId for check the active tab]
@@ -33178,9 +33178,8 @@ function () {
           this.setImage(false);
           sendResponse(false);
         } else {
-          console.log(); // if the property indicated that is allow to not track the content
+          // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
-
           var is_sm_path_allowed = true;
 
           if (msg.content[0].hasOwnProperty('is_sm_path_allowed')) {
@@ -36988,7 +36987,7 @@ function () {
     this.onFocusTabInterval = null;
     this.openerTabId2tab = {};
     this.tabID2Opener = {};
-    this.debug = true;
+    this.debug = false;
   }
   /**
    * [_getHashCode return hashcode from string]
@@ -38610,7 +38609,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = true;
+    this.debug = false;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
@@ -39398,7 +39397,7 @@ function () {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = true;
+    this.debug = false;
     this.event = new eventemitter3_default.a();
   }
 
