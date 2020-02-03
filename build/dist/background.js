@@ -32355,7 +32355,6 @@ function () {
 
     this.allow = true;
     this.disabled = false;
-    this.content_blocked = false;
   }
 
   Extension_createClass(Tab, [{
@@ -32921,7 +32920,14 @@ function () {
 
                   //this.resetImage(tabs[0].id);
                   if (this.tabs.hasOwnProperty(id)) {
-                    this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && !this.tabs[id].getState('content_blocked') && !this.tabs[id].getState('only_domain') && !this.tabs[id].getState('only_url') && !this.privateMode);
+                    // console.log('allow:', this.tabs[id].getState('allow'))
+                    // console.log('disabled:', this.tabs[id].getState('disabled'))
+                    // console.log('is_sm_path_allowed:', this.tabs[id].getState('is_sm_path_allowed'))
+                    // console.log('is_content_allowed:', this.tabs[id].getState('is_content_allowed'))
+                    // console.log('only_domain:', this.tabs[id].getState('only_domain'))
+                    // console.log('only_url:', this.tabs[id].getState('only_url'))
+                    // console.log('private_mode:', this.privateMode)
+                    this.setImage(this.tabs[id].getState('allow') && !this.tabs[id].getState('disabled') && this.tabs[id].getState('is_sm_path_allowed') && this.tabs[id].getState('is_content_allowed') && !this.tabs[id].getState('only_domain') && !this.tabs[id].getState('only_url') && !this.privateMode);
                   } else {
                     this.setImage(this.privateMode);
                   }
@@ -33136,7 +33142,10 @@ function () {
         var domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
-        this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
+        this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain)); //assume it is allowed
+
+        this.tabs[sender.tab.id].setState('is_sm_path_allowed', true);
+        this.tabs[sender.tab.id].setState('is_content_allowed', true);
         var r = {
           extensionfilter: this.extensionfilter,
           pending_private_time_answer: this.pending_private_time_answer,
@@ -33172,17 +33181,25 @@ function () {
           console.log(); // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
 
-          var is_track_allow = true;
+          var is_sm_path_allowed = true;
 
-          if (msg.content[0].hasOwnProperty('is_track_allow')) {
-            is_track_allow = msg.content[0].is_track_allow;
+          if (msg.content[0].hasOwnProperty('is_sm_path_allowed')) {
+            is_sm_path_allowed = msg.content[0].is_sm_path_allowed;
           }
 
-          this.tabs[sender.tab.id].setState('content_blocked', !is_track_allow); // update the indicator if this the active tab is the one sending the content
+          this.tabs[sender.tab.id].setState('is_sm_path_allowed', is_sm_path_allowed);
+          var is_content_allowed = true;
+
+          if (msg.content[0].hasOwnProperty('is_content_allowed')) {
+            is_content_allowed = msg.content[0].is_content_allowed;
+          }
+
+          this.tabs[sender.tab.id].setState('is_content_allowed', is_content_allowed); // update the indicator if this the active tab is the one sending the content
           // the DOM of a non active tab could be changing in the background
 
           if (sender.tab.id == this.active_tab) {
-            this.setImage(is_track_allow);
+            //this.setImage(is_sm_path_allowed && is_content_allowed);
+            this.resetPublicImage();
           } // even if the content is blocked, the metainformation is sent in order to
           // keep track of the precursors
 
@@ -37817,14 +37834,16 @@ function () {
                           var event_url = _this7.get_unhashed_href(location); //let's collect the hashes
 
 
-                          if (tab.hasOwnProperty('hashes')) {
+                          if (tab && tab.hasOwnProperty('hashes')) {
                             tab.hashes.push(location.hash);
                           } //indicate to close the tab if the urls are different
 
 
-                          if (tab.url) {
-                            if (event_url != tab.url) {
-                              will_close = true;
+                          if (tab) {
+                            if (tab.url) {
+                              if (event_url != tab.url) {
+                                will_close = true;
+                              }
                             }
                           }
                         }
@@ -38963,7 +38982,7 @@ function () {
           }
 
           page["favicon"] = "";
-          page['content'][0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
+          page.content[0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
         }
 
         if (privacy.url_only) {
@@ -38972,10 +38991,23 @@ function () {
           }
 
           page['title'] = '';
-          page['content'][0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
+          page.content[0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
         }
       } else {
+        page.meta['privacy'] = {};
         console.warn("There is no privacy flags in the metadata");
+      }
+
+      if (page.content[0].hasOwnProperty('is_sm_path_allowed')) {
+        page.meta['privacy']['is_sm_path_allowed'] = page.content[0]['is_sm_path_allowed'];
+      }
+
+      if (page.content[0].hasOwnProperty('is_content_allowed')) {
+        page.meta['privacy']['is_content_allowed'] = page.content[0]['is_content_allowed'];
+      }
+
+      if (page.content[0].hasOwnProperty('is_allowed_by_lists')) {
+        page.meta['privacy']['is_allowed_by_lists'] = page.content[0]['is_allowed_by_lists'];
       }
 
       if (page.meta.hasOwnProperty('anonym') && page.meta.anonym) {
@@ -38999,7 +39031,7 @@ function () {
 
         if (piperegex.length > 0) {
           var pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-          page['content'][0].html = page['content'][0].html.replace(pipe_regex, '__:' + client_hash + ':__');
+          page.content[0].html = page.content[0].html.replace(pipe_regex, '__:' + client_hash + ':__');
           page.meta.description = page.meta.description.replace(pipe_regex, '__:' + client_hash + ':__');
           page.meta.keywords = page.meta.keywords.replace(pipe_regex, '__:' + client_hash + ':__');
         }
@@ -39125,7 +39157,7 @@ function () {
                               id: client_hash,
                               projectId: _this5.projectId,
                               versionType: _this5.config.versionType,
-                              pages: [_this5.anonymize(page, anonymous_page)]
+                              pages: [anonymous_page]
                             }), function (status) {//count += 1;
                               // this.event.emit('onSendData', {
                               //   max: max,
@@ -39264,7 +39296,11 @@ function () {
                   _context6.prev = 18;
                   if (_this5.debug) console.log('======Emit Event: onSend (false) =======');
 
-                  _this5.event.emit('onSend', false);
+                  try {
+                    _this5.event.emit('onSend', false);
+                  } catch (err) {
+                    console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)');
+                  }
 
                   return _context6.finish(18);
 

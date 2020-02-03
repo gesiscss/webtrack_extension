@@ -17,7 +17,6 @@ class Tab {
   constructor() {
     this.allow = true;
     this.disabled = false;
-    this.content_blocked = false;
   }
 
   setState(name, boolean){
@@ -276,9 +275,19 @@ export default class Extension {
       for (let id of activeTabIds) {
         //this.resetImage(tabs[0].id);
         if (this.tabs.hasOwnProperty(id)) {
+
+          // console.log('allow:', this.tabs[id].getState('allow'))
+          // console.log('disabled:', this.tabs[id].getState('disabled'))
+          // console.log('is_sm_path_allowed:', this.tabs[id].getState('is_sm_path_allowed'))
+          // console.log('is_content_allowed:', this.tabs[id].getState('is_content_allowed'))
+          // console.log('only_domain:', this.tabs[id].getState('only_domain'))
+          // console.log('only_url:', this.tabs[id].getState('only_url'))
+          // console.log('private_mode:', this.privateMode)
+
           this.setImage(this.tabs[id].getState('allow') 
               && !this.tabs[id].getState('disabled')
-              && !this.tabs[id].getState('content_blocked')
+              && this.tabs[id].getState('is_sm_path_allowed')
+              && this.tabs[id].getState('is_content_allowed')
               && !this.tabs[id].getState('only_domain')
               && !this.tabs[id].getState('only_url')
               && !this.privateMode);
@@ -409,6 +418,11 @@ export default class Extension {
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
         this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
+
+        //assume it is allowed
+        this.tabs[sender.tab.id].setState('is_sm_path_allowed', true);
+        this.tabs[sender.tab.id].setState('is_content_allowed', true);
+
         let r = {
           extensionfilter: this.extensionfilter, 
           pending_private_time_answer: this.pending_private_time_answer,
@@ -445,16 +459,23 @@ export default class Extension {
         
           // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
-          let is_track_allow = true;
-          if (msg.content[0].hasOwnProperty('is_track_allow')){
-            is_track_allow = msg.content[0].is_track_allow;
+          let is_sm_path_allowed = true;
+          if (msg.content[0].hasOwnProperty('is_sm_path_allowed')){
+            is_sm_path_allowed = msg.content[0].is_sm_path_allowed;
           }
-          this.tabs[sender.tab.id].setState('content_blocked', !is_track_allow);
+          this.tabs[sender.tab.id].setState('is_sm_path_allowed', is_sm_path_allowed);
+
+          let is_content_allowed = true;
+          if (msg.content[0].hasOwnProperty('is_content_allowed')){
+            is_content_allowed = msg.content[0].is_content_allowed;
+          }
+          this.tabs[sender.tab.id].setState('is_content_allowed', is_content_allowed);
 
           // update the indicator if this the active tab is the one sending the content
           // the DOM of a non active tab could be changing in the background
           if (sender.tab.id == this.active_tab){
-            this.setImage(is_track_allow);
+            //this.setImage(is_sm_path_allowed && is_content_allowed);
+            this.resetPublicImage();
           }
          
           // even if the content is blocked, the metainformation is sent in order to

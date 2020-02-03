@@ -251,7 +251,6 @@ export default class TrackingHandler {
 
   anonymize(page, client_hash){
 
-
     if (page.meta.hasOwnProperty('privacy')){
       let privacy = page.meta.privacy;
 
@@ -279,7 +278,7 @@ export default class TrackingHandler {
         }
 
         page["favicon"] = "";
-        page['content'][0].html =  '<html><head></head><body>'+page['hostname']+'</body></html>';
+        page.content[0].html =  '<html><head></head><body>'+page['hostname']+'</body></html>';
       }
 
 
@@ -290,12 +289,24 @@ export default class TrackingHandler {
         }
 
         page['title'] = ''
-        page['content'][0].html = '<html><head></head><body>'+page['landing_url']+'</body></html>';
+        page.content[0].html = '<html><head></head><body>'+page['landing_url']+'</body></html>';
       }
     } else {
+      page.meta['privacy'] = {}
       console.warn("There is no privacy flags in the metadata");
     }
 
+    if (page.content[0].hasOwnProperty('is_sm_path_allowed')){
+      page.meta['privacy']['is_sm_path_allowed'] = page.content[0]['is_sm_path_allowed'];
+    }
+
+    if (page.content[0].hasOwnProperty('is_content_allowed')){
+      page.meta['privacy']['is_content_allowed'] = page.content[0]['is_content_allowed'];
+    }
+
+    if (page.content[0].hasOwnProperty('is_allowed_by_lists')){
+      page.meta['privacy']['is_allowed_by_lists'] = page.content[0]['is_allowed_by_lists'];
+    } 
 
     if (page.meta.hasOwnProperty('anonym') && page.meta.anonym){ 
       let anonym = page.meta.anonym;
@@ -317,7 +328,7 @@ export default class TrackingHandler {
 
       if (piperegex.length > 0){
         let pipe_regex = new RegExp(piperegex.slice(0, -1), "g");
-        page['content'][0].html = page['content'][0].html.replace(pipe_regex,'__:'+client_hash+':__');
+        page.content[0].html = page.content[0].html.replace(pipe_regex,'__:'+client_hash+':__');
         page.meta.description = page.meta.description.replace(pipe_regex,'__:'+client_hash+':__');
         page.meta.keywords = page.meta.keywords.replace(pipe_regex,'__:'+client_hash+':__');
       }
@@ -385,7 +396,7 @@ export default class TrackingHandler {
                     id: client_hash,
                     projectId: this.projectId,
                     versionType: this.config.versionType,
-                    pages: [this.anonymize(page, anonymous_page)]
+                    pages: [anonymous_page]
                   }), status => {
                     //count += 1;
                     // this.event.emit('onSendData', {
@@ -446,7 +457,11 @@ export default class TrackingHandler {
           reject(err);
         } finally {
           if (this.debug) console.log('======Emit Event: onSend (false) =======');
-          this.event.emit('onSend', false);
+          try {
+            this.event.emit('onSend', false);
+          } catch (err) {
+            console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)')
+          }
         }
       });
   }

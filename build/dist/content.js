@@ -10175,8 +10175,8 @@ function (_MultiFetch) {
      */
 
   }, {
-    key: "is_path_allow",
-    value: function is_path_allow(path) {
+    key: "is_sm_path_allowed",
+    value: function is_sm_path_allowed(path) {
       if (!this.is_logged_in) {
         return true;
       }
@@ -10207,6 +10207,17 @@ function (_MultiFetch) {
         }
       }
 
+      return true;
+    }
+    /**
+     * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+     * @param  {path}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to different lists in the background]
+     */
+
+  }, {
+    key: "is_allowed_by_lists",
+    value: function is_allowed_by_lists(path) {
       return true;
     }
     /**
@@ -10957,7 +10968,7 @@ function (_MultiFetch) {
                   _asyncToGenerator(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee5() {
-                    var html;
+                    var html, is_sm_path_allowed;
                     return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
                         switch (_context5.prev = _context5.next) {
@@ -10978,7 +10989,7 @@ function (_MultiFetch) {
                             }, false);
                             resolve(false); // if the URL has not changed
 
-                            _context5.next = 12;
+                            _context5.next = 13;
                             break;
 
                           case 8:
@@ -10987,10 +10998,11 @@ function (_MultiFetch) {
 
                           case 10:
                             html = _context5.sent;
-
-                            // if is it ok to track the current address, and some html was
+                            // is social media path allowed
+                            is_sm_path_allowed = this.is_sm_path_allowed(location.pathname); // if is it ok to track the current address, and some html was
                             // recovered, then send the data
-                            if (html && this.is_path_allow(location.pathname) && this.is_content_allowed) {
+
+                            if (html && is_sm_path_allowed && this.is_allowed_by_lists(location.pathname) && this.is_content_allowed) {
                               if (this.debug) console.log('======Emit Event: onData (DATA) =======');
                               this.eventEmitter.emit(EVENT_NAMES.data, {
                                 html: html,
@@ -11002,13 +11014,15 @@ function (_MultiFetch) {
                               if (this.debug) console.log('======Emit Event: onData (DISALLOW) =======');
                               this.eventEmitter.emit(EVENT_NAMES.data, {
                                 html: ' ',
-                                is_track_allow: false,
+                                is_sm_path_allowed: is_sm_path_allowed,
+                                is_content_allowed: this.is_content_allowed,
+                                is_allowed_by_lists: this.is_allowed_by_lists(location.pathname),
                                 create: new Date().toJSON()
                               }, false);
                               resolve(true);
                             }
 
-                          case 12:
+                          case 13:
                           case "end":
                             return _context5.stop();
                         }
@@ -15791,14 +15805,14 @@ function (_Tracker) {
       };
     }
     /**
-     * [isAllow returns if the path is allowed in social media platforms]
-     * @param  {Location}  [the location element to analyze the url]
-     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+     * @param  {path}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to different lists in the background]
      */
 
   }, {
-    key: "is_path_allow",
-    value: function is_path_allow(path) {
+    key: "is_allowed_by_lists",
+    value: function is_allowed_by_lists(path) {
       return false;
     }
     /**
@@ -15878,20 +15892,20 @@ function (_Tracker) {
       };
     }
     /**
-     * [isAllow returns if the path is allowed in social media platforms]
-     * @param  {Location}  [the location element to analyze the url]
-     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+     * @param  {path}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to different lists in the background]
      */
 
   }, {
-    key: "is_path_allow",
-    value: function is_path_allow(path) {
+    key: "is_allowed_by_lists",
+    value: function is_allowed_by_lists(path) {
       return false;
     }
     /**
-     * [onStart on start event]
-     * @param  {Function} fn
-     */
+       * [onStart on start event]
+       * @param  {Function} fn
+       */
 
   }, {
     key: "onStart",
@@ -16221,14 +16235,14 @@ function (_Tracker) {
       };
     }
     /**
-     * [isAllow returns if the path is allowed in social media platforms]
-     * @param  {Location}  [the location element to analyze the url]
-     * @return {Boolean}   [if it is allow according to social media platforms rules]
+     * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+     * @param  {path}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to different lists in the background]
      */
 
   }, {
-    key: "is_path_allow",
-    value: function is_path_allow(path) {
+    key: "is_allowed_by_lists",
+    value: function is_allowed_by_lists(path) {
       return false;
     }
     /**
@@ -16247,6 +16261,94 @@ function (_Tracker) {
   }]);
 
   return BlacklistTracker;
+}(Tracker_Tracker); //class
+
+
+
+// CONCATENATED MODULE: ./src/content/addon/PrivateModeTracker.js
+function PrivateModeTracker_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { PrivateModeTracker_typeof = function _typeof(obj) { return typeof obj; }; } else { PrivateModeTracker_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return PrivateModeTracker_typeof(obj); }
+
+function PrivateModeTracker_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function PrivateModeTracker_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function PrivateModeTracker_createClass(Constructor, protoProps, staticProps) { if (protoProps) PrivateModeTracker_defineProperties(Constructor.prototype, protoProps); if (staticProps) PrivateModeTracker_defineProperties(Constructor, staticProps); return Constructor; }
+
+function PrivateModeTracker_possibleConstructorReturn(self, call) { if (call && (PrivateModeTracker_typeof(call) === "object" || typeof call === "function")) { return call; } return PrivateModeTracker_assertThisInitialized(self); }
+
+function PrivateModeTracker_getPrototypeOf(o) { PrivateModeTracker_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return PrivateModeTracker_getPrototypeOf(o); }
+
+function PrivateModeTracker_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function PrivateModeTracker_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) PrivateModeTracker_setPrototypeOf(subClass, superClass); }
+
+function PrivateModeTracker_setPrototypeOf(o, p) { PrivateModeTracker_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return PrivateModeTracker_setPrototypeOf(o, p); }
+
+
+
+var PrivateModeTracker =
+/*#__PURE__*/
+function (_Tracker) {
+  PrivateModeTracker_inherits(PrivateModeTracker, _Tracker);
+
+  function PrivateModeTracker(worker, privacy) {
+    var _this;
+
+    var extensionfilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+    PrivateModeTracker_classCallCheck(this, PrivateModeTracker);
+
+    _this = PrivateModeTracker_possibleConstructorReturn(this, PrivateModeTracker_getPrototypeOf(PrivateModeTracker).call(this, worker, privacy));
+    _this.extensionfilter = extensionfilter;
+    _this.onStart = _this.onStart.bind(PrivateModeTracker_assertThisInitialized(_this));
+    _this.is_allowed = null; // make sure this is the case as it can be blocked due to dynamic content
+    // however, currently this is not the case
+
+    _this.privacy.is_private_mode = true;
+    _this.blacklist_debug = false;
+    return _this;
+  }
+  /**
+   * get the metadata from the file
+   * @return {object} the metadata of the html
+   */
+
+
+  PrivateModeTracker_createClass(PrivateModeTracker, [{
+    key: "getMetadata",
+    value: function getMetadata() {
+      return {
+        description: [],
+        keywords: []
+      };
+    }
+    /**
+     * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+     * @param  {path}  [the location element to analyze the url]
+     * @return {Boolean}   [if it is allow according to different lists in the background]
+     */
+
+  }, {
+    key: "is_allowed_by_lists",
+    value: function is_allowed_by_lists(path) {
+      return false;
+    }
+    /**
+     * [onStart on start event]
+     * @param  {Function} fn
+     */
+
+  }, {
+    key: "onStart",
+    value: function onStart(fn) {
+      setTimeout(function () {
+        //if (this.domain_debug) console.log('-> onStart!');
+        fn(1000);
+      }, 500);
+    }
+  }]);
+
+  return PrivateModeTracker;
 }(Tracker_Tracker); //class
 
 
@@ -16479,6 +16581,7 @@ function ContentHandler_classCallCheck(instance, Constructor) { if (!(instance i
 function ContentHandler_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function ContentHandler_createClass(Constructor, protoProps, staticProps) { if (protoProps) ContentHandler_defineProperties(Constructor.prototype, protoProps); if (staticProps) ContentHandler_defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 

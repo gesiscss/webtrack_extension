@@ -7,8 +7,10 @@ import URLTracker from './addon/URLTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import AppleTracker from './addon/AppleTracker';
 import BlacklistTracker from './addon/BlacklistTracker';
+import PrivateModeTracker from './addon/PrivateModeTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
+
 
 const DOMAIN_SET = new Set(['instagram', 'skype', 'xing', 
   'linkedin', 'twitch', 'tumblr', 'pinterest', 'flickr', 

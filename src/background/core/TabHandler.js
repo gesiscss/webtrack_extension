@@ -373,14 +373,16 @@ export default class TabHandler {
                 let event_url = this.get_unhashed_href(location);
 
                 //let's collect the hashes
-                if (tab.hasOwnProperty('hashes')){
+                if (tab && tab.hasOwnProperty('hashes')){
                   tab.hashes.push(location.hash);
                 }
 
                 //indicate to close the tab if the urls are different
-                if (tab.url){
-                  if (event_url != tab.url){
-                    will_close = true;
+                if (tab){
+                  if (tab.url){
+                    if (event_url != tab.url){
+                      will_close = true;
+                    }
                   }
                 }
               }

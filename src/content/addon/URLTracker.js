@@ -29,15 +29,15 @@ export default class URLTracker extends Tracker{
   }
 
   /**
-   * [isAllow returns if the path is allowed in social media platforms]
-   * @param  {Location}  [the location element to analyze the url]
-   * @return {Boolean}   [if it is allow according to social media platforms rules]
+   * [is_allowed_by_lists returns if the path is allowed in social media platforms]
+   * @param  {path}  [the location element to analyze the url]
+   * @return {Boolean}   [if it is allow according to different lists in the background]
    */
-  is_path_allow(path){
+  is_allowed_by_lists(path){
     return false;
   }
 
-  /**
+/**
    * [onStart on start event]
    * @param  {Function} fn
    */
