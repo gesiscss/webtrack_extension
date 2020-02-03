@@ -17224,7 +17224,7 @@ function () {
       var _this8 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this8.debug) console.log('sendMessage("private_time")');
+        if (_this8.debug) console.log('sendMessage("private_time")', private_time);
 
         _this8.browser.runtime.sendMessage({
           'private_time': private_time

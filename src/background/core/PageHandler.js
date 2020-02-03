@@ -16,7 +16,7 @@ export default class PageHandler {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = false;
+    this.debug = true;
     this.event = new EventEmitter();
   }
 
@@ -347,15 +347,19 @@ export default class PageHandler {
    * @param  {[type]} component [description]
    * @return {[type]}           [description]
    */
-  async confirm_public_mode(component){
+  async confirm_public_mode(component, private_time = null){
     let extension = this._getCurrentTracker().extension;
 
-    await this.set_timeout(extension.default_private_time_ms);
+    if (private_time == null){
+      private_time = extension.default_private_time_ms
+    }
+
+    await this.set_timeout(private_time);
     if (extension.privateMode) {
 
       //on focus other tab
       extension.event.once(EVENT_NAMES.extendPrivateMode, new_private_time => {
-        if (this.debug) console.log('PageHandler.onExtendPrivateMode');
+        if (this.debug) console.log('PageHandler.onExtendPrivateMode', new_private_time);
 
         if (new_private_time > 0){
           this.confirm_public_mode(component, new_private_time);

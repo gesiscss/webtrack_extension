@@ -39398,7 +39398,7 @@ function () {
     this.config = config;
     this.tracker = null;
     this.transfer = transfer;
-    this.debug = false;
+    this.debug = true;
     this.event = new eventemitter3_default.a();
   }
 
@@ -39861,20 +39861,28 @@ function () {
       regeneratorRuntime.mark(function _callee4(component) {
         var _this5 = this;
 
-        var extension;
+        var private_time,
+            extension,
+            _args4 = arguments;
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                private_time = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : null;
                 extension = this._getCurrentTracker().extension;
-                _context4.next = 3;
-                return this.set_timeout(extension.default_private_time_ms);
 
-              case 3:
+                if (private_time == null) {
+                  private_time = extension.default_private_time_ms;
+                }
+
+                _context4.next = 5;
+                return this.set_timeout(private_time);
+
+              case 5:
                 if (extension.privateMode) {
                   //on focus other tab
                   extension.event.once(PageHandler_EVENT_NAMES.extendPrivateMode, function (new_private_time) {
-                    if (_this5.debug) console.log('PageHandler.onExtendPrivateMode');
+                    if (_this5.debug) console.log('PageHandler.onExtendPrivateMode', new_private_time);
 
                     if (new_private_time > 0) {
                       _this5.confirm_public_mode(component, new_private_time);
@@ -39890,7 +39898,7 @@ function () {
                   extension.displayPrivateTimePopup();
                 }
 
-              case 4:
+              case 6:
               case "end":
                 return _context4.stop();
             }

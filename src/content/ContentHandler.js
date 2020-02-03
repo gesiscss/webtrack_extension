@@ -542,7 +542,7 @@ export default class ContentHandler {
 
   request_more_private_time(private_time){
     return new Promise((resolve, reject)=>{
-      if (this.debug) console.log('sendMessage("private_time")');
+      if (this.debug) console.log('sendMessage("private_time")', private_time);
       this.browser.runtime.sendMessage({'private_time': private_time}, (response) => {
         if(this.browser.runtime.lastError) {
           /*ignore when the background is not listening*/;
