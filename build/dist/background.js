@@ -38958,11 +38958,11 @@ function () {
 
         if (privacy.domain_only || privacy.blacklisted || privacy.private_mode) {
           if (privacy.blacklisted) {
-            page['hostname'] = 'BLACKLISTED';
+            page['hostname'] = 'http://BLACKLISTED';
           }
 
           if (privacy.private_mode) {
-            page['hostname'] = 'PRIVATE_MODE';
+            page['hostname'] = 'http://PRIVATE_MODE';
           }
 
           var hostname = page['hostname'];
