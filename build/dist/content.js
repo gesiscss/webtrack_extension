@@ -11195,11 +11195,11 @@ function (_Tracker) {
     _this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
     _this.public_map = {
       // public
-      'rfZj1qaBrro.png': '-39px -300px'
+      '1EHoEekiTcE.png': '-13px -308px'
     };
     _this.blocked_map = {
       // friends
-      'vtaY25qSQy-.png': '0px -101px' // only me (all of the user is public)
+      '7dOM-M8m26G.png': '-15px -377px' // only me (all of the user is public)
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
 
     };
@@ -14124,7 +14124,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(TwitterTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
     _this.allow = false;
-    _this.twitter_debug = false;
+    _this.twitter_debug = true;
     _this.twitter_debugEvents = false;
     _this.selectors = {
       root: ['#stream-items-id'],
@@ -14200,8 +14200,8 @@ function (_Tracker) {
     _this.header = null;
     _this.sidebar_left = null;
     _this.sidebar_right = null;
-    _this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/'];
-    _this.pos_2nd_blacklist = ['bookmarks', 'signup'];
+    _this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/', '/login/'];
+    _this.pos_2nd_blacklist = ['bookmarks', 'signup', 'flow'];
     _this.privacy_flags = {
       'user_id': null,
       'username': null,
@@ -15165,7 +15165,9 @@ function (_Tracker) {
             resolve(_this8._getDom());
           }
         } else {
-          var _found = _this8.addPublicArticlesIfLoggedOut();
+          // the code used for articles used to be different, but now
+          // the selectors look the same
+          var _found = _this8.addPublicArticles();
 
           _this8.tweets_exist = _found || _this8.tweets_exist;
 
@@ -15966,7 +15968,7 @@ function (_Tracker) {
     _this.google_debug = false;
     _this.logged_email = null;
     _this.logged_fullname = null;
-    _this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/'];
+    _this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/', '/shopping/', '/travel/', '/flights/'];
 
     _this.reset_credentials();
 

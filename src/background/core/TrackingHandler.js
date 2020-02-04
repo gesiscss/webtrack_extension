@@ -387,10 +387,10 @@ export default class TrackingHandler {
                 page = await this.pageCache.getOnly(id);
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                let client_hash = this.getClientId();
                 let anonymous_page = this.anonymize(page, client_hash);
 
                 if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                let client_hash = this.getClientId();
                 this.transfer.sendingData(
                   JSON.stringify ({
                     id: client_hash,

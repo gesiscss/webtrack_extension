@@ -9,7 +9,7 @@ export default class TwitterTracker extends Tracker{
     this.is_allowed = null;
     
     this.allow = false;
-    this.twitter_debug = false;
+    this.twitter_debug = true;
     this.twitter_debugEvents = false;
     this.selectors = {
       root: ['#stream-items-id'],
@@ -92,9 +92,9 @@ export default class TwitterTracker extends Tracker{
     this.sidebar_left = null;
     this.sidebar_right = null;
 
-    this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/'];
+    this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/', '/login/'];
 
-    this.pos_2nd_blacklist = ['bookmarks', 'signup'];
+    this.pos_2nd_blacklist = ['bookmarks', 'signup', 'flow'];
 
     this.privacy_flags = {
       'user_id': null,
@@ -905,7 +905,9 @@ export default class TwitterTracker extends Tracker{
           }
         }
         else { 
-          let found = this.addPublicArticlesIfLoggedOut();
+          // the code used for articles used to be different, but now
+          // the selectors look the same
+          let found = this.addPublicArticles();
           this.tweets_exist = found || this.tweets_exist;
 
           if (this.tweets_exist){

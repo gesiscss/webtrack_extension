@@ -61,11 +61,11 @@ export default class FacebookTracker extends Tracker{
 
     this.public_map = {
       // public
-      'rfZj1qaBrro.png': '-39px -300px',
+      '1EHoEekiTcE.png': '-13px -308px',
     }
     this.blocked_map = {
       // friends
-      'vtaY25qSQy-.png': '0px -101px',
+      '7dOM-M8m26G.png': '-15px -377px',
       // only me (all of the user is public)
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
     }

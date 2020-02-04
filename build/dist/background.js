@@ -39110,7 +39110,7 @@ function () {
                   return _context6.delegateYield(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee5() {
-                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, anonymous_page, client_hash;
+                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, client_hash, anonymous_page;
 
                     return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
@@ -39148,9 +39148,9 @@ function () {
                           case 16:
                             page = _context5.sent;
                             if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                            client_hash = _this5.getClientId();
                             anonymous_page = _this5.anonymize(page, client_hash);
                             if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                            client_hash = _this5.getClientId();
 
                             _this5.transfer.sendingData(JSON.stringify({
                               id: client_hash,

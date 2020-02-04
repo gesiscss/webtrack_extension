@@ -12,7 +12,8 @@ export default class GoogleTracker extends Tracker{
     this.logged_email = null;
     this.logged_fullname = null;
 
-    this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/'];
+    this.startswith_blacklist = ['/accounts/', '/settings/', '/drive/', '/shopping/', 
+    '/travel/', '/flights/',   ];
 
     this.reset_credentials();
 
