@@ -9,7 +9,7 @@ export default class TwitterTracker extends Tracker{
     this.is_allowed = null;
     
     this.allow = false;
-    this.twitter_debug = true;
+    this.twitter_debug = false;
     this.twitter_debugEvents = false;
     this.selectors = {
       root: ['#stream-items-id'],

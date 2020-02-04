@@ -14124,7 +14124,7 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(TwitterTracker_assertThisInitialized(_this));
     _this.is_allowed = null;
     _this.allow = false;
-    _this.twitter_debug = true;
+    _this.twitter_debug = false;
     _this.twitter_debugEvents = false;
     _this.selectors = {
       root: ['#stream-items-id'],
