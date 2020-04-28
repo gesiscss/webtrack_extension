@@ -32159,66 +32159,62 @@ function () {
   }, {
     key: "isAllow",
     value: function isAllow(domain) {
-      this._reinit();
+      this._reinit(); //uncomment to text the list in tests.json
+      /////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
+      // console.log('TEST blacklist:');
+      // let white=[]
+      // let only_domain=[]
+      // let only_url=[]
+      // let black=[]
+      // for (var i = 0; i < this.lists.tests.length; i++) {
+      //   //when the test contains URLs
+      //   //domain = this.get_location(this.lists.tests[i]).hostname
+      //   //when the test contain domains
+      //   domain = this.lists.tests[i];
+      //   if ("????" == domain){
+      //     this.debug=true;
+      //   }
+      //   if (!this.isincluded(domain)) {
+      //     if (this.only_domain(domain)){
+      //       only_domain.push(this.lists.tests[i]);
+      //     } else if (this.only_url(domain)){
+      //       only_url.push(this.lists.tests[i]);
+      //     } else {
+      //       white.push(this.lists.tests[i]);
+      //     }
+      //   } else {
+      //     black.push(this.lists.tests[i]);
+      //   }
+      //   if(this.debug){
+      //     debugger;
+      //   }
+      // }
+      // console.log('Whitelist:');
+      // console.log(white);
+      // console.log('Blacklist:');
+      // console.log(black);
+      // console.log('Only Domain:');
+      // console.log(only_domain);
+      // console.log('Only URL:');
+      // console.log(only_url);
+      // debugger;
+      ///////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
 
-      if (this.active) {
-        //uncomment to text the list in tests.json
-        /////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////
-        // console.log('TEST blacklist:');
-        // let white=[]
-        // let only_domain=[]
-        // let only_url=[]
-        // let black=[]
-        // for (var i = 0; i < this.lists.tests.length; i++) {
-        //   //when the test contains URLs
-        //   //domain = this.get_location(this.lists.tests[i]).hostname
-        //   //when the test contain domains
-        //   domain = this.lists.tests[i];
-        //   if ("????" == domain){
-        //     this.debug=true;
-        //   }
-        //   if (!this.isincluded(domain)) {
-        //     if (this.only_domain(domain)){
-        //       only_domain.push(this.lists.tests[i]);
-        //     } else if (this.only_url(domain)){
-        //       only_url.push(this.lists.tests[i]);
-        //     } else {
-        //       white.push(this.lists.tests[i]);
-        //     }
-        //   } else {
-        //     black.push(this.lists.tests[i]);
-        //   }
-        //   if(this.debug){
-        //     debugger;
-        //   }
-        // }
-        // console.log('Whitelist:');
-        // console.log(white);
-        // console.log('Blacklist:');
-        // console.log(black);
-        // console.log('Only Domain:');
-        // console.log(only_domain);
-        // console.log('Only URL:');
-        // console.log(only_url);
-        // debugger;
-        ///////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////
-        if (!this.cache.hasOwnProperty(domain)) {
-          var isinlist = this.isincluded(domain);
 
-          var _is_allow = // is in whitelist
-          isinlist && this.white_or_black || // is not in blacklist
-          !isinlist && !this.white_or_black;
+      if (!this.cache.hasOwnProperty(domain)) {
+        var isinlist = this.isincluded(domain);
 
-          this.cache[domain] = _is_allow;
-        }
+        var _is_allow = // is in whitelist
+        isinlist && this.white_or_black || // is not in blacklist
+        !isinlist && !this.white_or_black;
 
-        var is_allow = this.cache[domain];
-        return is_allow;
-      } else {
-        return true;
+        this.cache[domain] = _is_allow;
       }
+
+      var is_allow = this.cache[domain];
+      return is_allow;
     }
     /**
      * [only_domain returns if the only tracking should be done for the domain]
@@ -32229,42 +32225,40 @@ function () {
   }, {
     key: "only_domain",
     value: function only_domain(domain) {
-      if (this.active) {
-        var hostname_parts = domain.split('.');
+      var hostname_parts = domain.split('.');
 
-        if (hostname_parts.length > 1) {
-          // extract the sub domain; ignore the TLD from now on
-          var dot_subdomain = '.' + domain.slice(0, domain.lastIndexOf("."));
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+      if (hostname_parts.length > 1) {
+        // extract the sub domain; ignore the TLD from now on
+        var dot_subdomain = '.' + domain.slice(0, domain.lastIndexOf("."));
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
-          try {
-            for (var _iterator3 = this.lists.simple.only_domain[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var item = _step3.value;
+        try {
+          for (var _iterator3 = this.lists.simple.only_domain[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var item = _step3.value;
 
-              if (dot_subdomain.endsWith(item)) {
-                return true;
-              }
+            if (dot_subdomain.endsWith(item)) {
+              return true;
             }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
+            }
           } finally {
-            try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                _iterator3["return"]();
-              }
-            } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
-              }
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
-
-        return false;
       }
+
+      return false;
     }
     /**
      * [only_url returns if the only tracking should be done for the url]
@@ -32275,41 +32269,37 @@ function () {
   }, {
     key: "only_url",
     value: function only_url(domain) {
-      if (this.active) {
-        var hostname_parts = domain.split('.');
+      var hostname_parts = domain.split('.');
 
-        if (hostname_parts.length > 1) {
-          // extract the sub domain; ignore the TLD from now on
-          var dot_subdomain = '.' + domain.slice(0, domain.lastIndexOf("."));
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+      if (hostname_parts.length > 1) {
+        // extract the sub domain; ignore the TLD from now on
+        var dot_subdomain = '.' + domain.slice(0, domain.lastIndexOf("."));
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
-          try {
-            for (var _iterator4 = this.lists.simple.only_url[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var item = _step4.value;
+        try {
+          for (var _iterator4 = this.lists.simple.only_url[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var item = _step4.value;
 
-              if (dot_subdomain.endsWith(item)) {
-                return true;
-              }
+            if (dot_subdomain.endsWith(item)) {
+              return true;
             }
-          } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
+            }
           } finally {
-            try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                _iterator4["return"]();
-              }
-            } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
-              }
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
-
-        return false;
       }
     }
   }]);

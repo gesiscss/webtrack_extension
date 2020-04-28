@@ -264,74 +264,68 @@ export default class URLFilter {
   isAllow(domain){
     this._reinit();
 
-    if(this.active){
+    //uncomment to text the list in tests.json
+    /////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    // console.log('TEST blacklist:');
+    // let white=[]
+    // let only_domain=[]
+    // let only_url=[]
+    // let black=[]
+    // for (var i = 0; i < this.lists.tests.length; i++) {
+    //   //when the test contains URLs
+    //   //domain = this.get_location(this.lists.tests[i]).hostname
 
-      //uncomment to text the list in tests.json
-      /////////////////////////////////////////////////////////////////
-      //////////////////////////////////////////////////////////////////////////
-      // console.log('TEST blacklist:');
-      // let white=[]
-      // let only_domain=[]
-      // let only_url=[]
-      // let black=[]
-      // for (var i = 0; i < this.lists.tests.length; i++) {
-      //   //when the test contains URLs
-      //   //domain = this.get_location(this.lists.tests[i]).hostname
+    //   //when the test contain domains
+    //   domain = this.lists.tests[i];
 
-      //   //when the test contain domains
-      //   domain = this.lists.tests[i];
+    //   if ("????" == domain){
+    //     this.debug=true;
+    //   }
+    //   if (!this.isincluded(domain)) {
+    //     if (this.only_domain(domain)){
+    //       only_domain.push(this.lists.tests[i]);
+    //     } else if (this.only_url(domain)){
+    //       only_url.push(this.lists.tests[i]);
+    //     } else {
+    //       white.push(this.lists.tests[i]);
+    //     }
+    //   } else {
+    //     black.push(this.lists.tests[i]);
+    //   }
+    //   if(this.debug){
+    //     debugger;
+    //   }
+    // }
+    // console.log('Whitelist:');
+    // console.log(white);
 
-      //   if ("????" == domain){
-      //     this.debug=true;
-      //   }
-      //   if (!this.isincluded(domain)) {
-      //     if (this.only_domain(domain)){
-      //       only_domain.push(this.lists.tests[i]);
-      //     } else if (this.only_url(domain)){
-      //       only_url.push(this.lists.tests[i]);
-      //     } else {
-      //       white.push(this.lists.tests[i]);
-      //     }
-      //   } else {
-      //     black.push(this.lists.tests[i]);
-      //   }
-      //   if(this.debug){
-      //     debugger;
-      //   }
-      // }
-      // console.log('Whitelist:');
-      // console.log(white);
+    // console.log('Blacklist:');
+    // console.log(black);
 
-      // console.log('Blacklist:');
-      // console.log(black);
+    // console.log('Only Domain:');
+    // console.log(only_domain);
 
-      // console.log('Only Domain:');
-      // console.log(only_domain);
-
-      // console.log('Only URL:');
-      // console.log(only_url);
-      // debugger;
-      ///////////////////////////////////////////////////////////////////////
-      //////////////////////////////////////////////////////////////////////////
+    // console.log('Only URL:');
+    // console.log(only_url);
+    // debugger;
+    ///////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 
-
-      if(!this.cache.hasOwnProperty(domain)){
-        let isinlist = this.isincluded(domain);
-       
-        let is_allow = 
-              // is in whitelist
-              (isinlist && this.white_or_black) ||
-              // is not in blacklist
-              (!isinlist && !this.white_or_black);
-        this.cache[domain] = is_allow;
-      }
-      let is_allow = this.cache[domain];
-            
-      return is_allow;
-    }else{
-      return true;
+    if(!this.cache.hasOwnProperty(domain)){
+      let isinlist = this.isincluded(domain);
+     
+      let is_allow = 
+            // is in whitelist
+            (isinlist && this.white_or_black) ||
+            // is not in blacklist
+            (!isinlist && !this.white_or_black);
+      this.cache[domain] = is_allow;
     }
+    let is_allow = this.cache[domain];
+          
+    return is_allow;
   }
 
   /**
@@ -340,23 +334,21 @@ export default class URLFilter {
    * @return {Boolean}     [description]
    */
   only_domain(domain){
-    if(this.active){
-      let hostname_parts = domain.split('.');
+    let hostname_parts = domain.split('.');
 
-      if (hostname_parts.length > 1) {
+    if (hostname_parts.length > 1) {
 
-        // extract the sub domain; ignore the TLD from now on
-        let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
+      // extract the sub domain; ignore the TLD from now on
+      let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
 
-        for (let item of this.lists.simple.only_domain) {
-          if (dot_subdomain.endsWith(item)){
-            return true;
-          }
+      for (let item of this.lists.simple.only_domain) {
+        if (dot_subdomain.endsWith(item)){
+          return true;
         }
       }
-
-      return false;
     }
+
+    return false;
   }
 
 
@@ -366,21 +358,17 @@ export default class URLFilter {
    * @return {Boolean}     [description]
    */
   only_url(domain){
-    if(this.active){
-      let hostname_parts = domain.split('.');
+    let hostname_parts = domain.split('.');
 
-      if (hostname_parts.length > 1) {
-        // extract the sub domain; ignore the TLD from now on
-        let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
+    if (hostname_parts.length > 1) {
+      // extract the sub domain; ignore the TLD from now on
+      let dot_subdomain = '.' + domain.slice(0,domain.lastIndexOf("."));
 
-        for (let item of this.lists.simple.only_url) {
-          if (dot_subdomain.endsWith(item)){
-            return true;
-          }
+      for (let item of this.lists.simple.only_url) {
+        if (dot_subdomain.endsWith(item)){
+          return true;
         }
       }
-
-      return false;
     }
   }
 }
