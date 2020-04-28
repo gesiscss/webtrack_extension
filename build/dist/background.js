@@ -38828,15 +38828,19 @@ function () {
                   // return;
                   if (!page.hasOwnProperty('content') || page.content.length == 0) {
                     console.log('Page has no content!!!!', page);
-                  } else {
-                    this.pageCache.add(page, +new Date());
-                    this.event.emit(TrackingHandler_EVENT_NAMES.page, page, false);
-                  }
+                  } /// Remove the cache, and nobody is listening to the event
+                  //else{
+                  // if (this.debug) console.log('-> add page to cache!');
+                  // this.pageCache.add(page, +new Date());
+                  // this.event.emit(EVENT_NAMES.page, page, false);
+                  // }
+
                 } catch (e) {
                   console.warn(e);
                   this.event.emit('error', e, true);
                 } finally {
-                  if (this.SENDDATAAUTOMATICALLY) this.sendData();
+                  console.log(this.SENDDATAAUTOMATICALLY);
+                  if (this.SENDDATAAUTOMATICALLY) this.sendPage(page);
                 }
 
                 if (this.debug) console.log('<- _addPage(page)');
@@ -39060,6 +39064,97 @@ function () {
       this.event.on('onSend', onSendCallBack);
     }
     /**
+     * [sendPage upload page to the target]
+     * @param  {Array} [pages=null]         [description]
+     * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
+     * @return {Promise}                    [description]
+     */
+
+  }, {
+    key: "sendPage",
+    value: function sendPage(page) {
+      var _this5 = this;
+
+      return new Promise(
+      /*#__PURE__*/
+      function () {
+        var _ref2 = TrackingHandler_asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee5(resolve, reject) {
+          var sendTime, client_hash, anonymous_page;
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  try {
+                    if (_this5.debug) console.log('-> sendPage'); //this.cleanDeadReferenceInEvent('onSend');
+                    //this.event.emit('onSend', true);
+
+                    _this5.setSending(true);
+
+                    try {
+                      sendTime = new Date().toJSON();
+                      if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                      client_hash = _this5.getClientId();
+                      anonymous_page = _this5.anonymize(page, client_hash);
+                      if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+
+                      _this5.transfer.sendingData(JSON.stringify({
+                        id: client_hash,
+                        projectId: _this5.projectId,
+                        versionType: _this5.config.versionType,
+                        pages: [anonymous_page]
+                      }), function (status) {}).then(function () {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                      })["catch"](function (err) {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                        if (_this5.debug) console.log(err);
+                      })["finally"](function () {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                      });
+                    } catch (e) {
+                      // this.event.emit('error', e, true);
+                      if (_this5.debug) console.log('Unknown error sending data: ', page);
+                      console.warn(e);
+                    }
+
+                    _this5.setSending(false);
+
+                    if (_this5.debug) console.log('<- sendPage');
+                    resolve();
+                  } catch (err) {
+                    _this5.setSending(false);
+
+                    console.log(err);
+
+                    _this5.event.emit('error', err, true);
+
+                    reject(err);
+                  } finally {
+                    if (_this5.debug) console.log('======Emit Event: onSend (false) =======');
+
+                    try {
+                      // this sends messages to the popup to refresh, probably unnecessary
+                      _this5.event.emit('onSend', false);
+                    } catch (err) {
+                      console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)');
+                    }
+                  }
+
+                case 1:
+                case "end":
+                  return _context5.stop();
+              }
+            }
+          }, _callee5);
+        }));
+
+        return function (_x4, _x5) {
+          return _ref2.apply(this, arguments);
+        };
+      }());
+    }
+    /**
      * [sendData upload all pages to the target]
      * @param  {Array} [pages=null]         [description]
      * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
@@ -39069,28 +39164,28 @@ function () {
   }, {
     key: "sendData",
     value: function sendData() {
-      var _this5 = this;
+      var _this6 = this;
 
       var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
       var nonClosed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       return new Promise(
       /*#__PURE__*/
       function () {
-        var _ref2 = TrackingHandler_asyncToGenerator(
+        var _ref3 = TrackingHandler_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee6(resolve, reject) {
+        regeneratorRuntime.mark(function _callee7(resolve, reject) {
           var pageIds, page;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
-                  _context6.prev = 0;
-                  if (_this5.debug) console.log('-> sendData'); //this.cleanDeadReferenceInEvent('onSend');
+                  _context7.prev = 0;
+                  if (_this6.debug) console.log('-> sendData'); //this.cleanDeadReferenceInEvent('onSend');
                   //this.event.emit('onSend', true);
 
-                  _this5.setSending(true);
+                  _this6.setSending(true);
 
-                  pageIds = Object.values(_this5.pageCache.get()).filter(function (v) {
+                  pageIds = Object.values(_this6.pageCache.get()).filter(function (v) {
                     return v.send === false || nonClosed == true && v.send === true && v.sendTime === null;
                   }).map(function (e) {
                     return e.id;
@@ -39103,59 +39198,59 @@ function () {
                   }
 
                   if (!(pageIds.length > 0)) {
-                    _context6.next = 7;
+                    _context7.next = 7;
                     break;
                   }
 
-                  return _context6.delegateYield(
+                  return _context7.delegateYield(
                   /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee5() {
+                  regeneratorRuntime.mark(function _callee6() {
                     var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, client_hash, anonymous_page;
 
-                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                    return regeneratorRuntime.wrap(function _callee6$(_context6) {
                       while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                           case 0:
-                            max = _this5.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
+                            max = _this6.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
                             count = 0;
                             _iteratorNormalCompletion = true;
                             _didIteratorError = false;
                             _iteratorError = undefined;
-                            _context5.prev = 5;
+                            _context6.prev = 5;
                             _iterator = pageIds[Symbol.iterator]();
 
                           case 7:
                             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context5.next = 33;
+                              _context6.next = 33;
                               break;
                             }
 
                             id = _step.value;
                             page = null;
-                            _context5.prev = 10;
+                            _context6.prev = 10;
                             sendTime = new Date().toJSON();
-                            _context5.next = 14;
-                            return _this5.pageCache.update({
+                            _context6.next = 14;
+                            return _this6.pageCache.update({
                               id: id,
                               send: true,
                               sendTime: sendTime
                             }, undefined, true);
 
                           case 14:
-                            _context5.next = 16;
-                            return _this5.pageCache.getOnly(id);
+                            _context6.next = 16;
+                            return _this6.pageCache.getOnly(id);
 
                           case 16:
-                            page = _context5.sent;
-                            if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                            client_hash = _this5.getClientId();
-                            anonymous_page = _this5.anonymize(page, client_hash);
-                            if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                            page = _context6.sent;
+                            if (_this6.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+                            client_hash = _this6.getClientId();
+                            anonymous_page = _this6.anonymize(page, client_hash);
+                            if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
 
-                            _this5.transfer.sendingData(JSON.stringify({
+                            _this6.transfer.sendingData(JSON.stringify({
                               id: client_hash,
-                              projectId: _this5.projectId,
-                              versionType: _this5.config.versionType,
+                              projectId: _this6.projectId,
+                              versionType: _this6.config.versionType,
                               pages: [anonymous_page]
                             }), function (status) {//count += 1;
                               // this.event.emit('onSendData', {
@@ -39165,31 +39260,31 @@ function () {
                               //   status: status
                               // });
                             }).then(function () {
-                              if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
                               count += 1;
 
-                              _this5.event.emit('onSendData', {
+                              _this6.event.emit('onSendData', {
                                 max: max,
                                 now: count,
                                 title: page.title,
                                 status: status
                               });
                             })["catch"](function (err) {
-                              if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                              if (_this5.debug) console.log(err);
+                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                              if (_this6.debug) console.log(err);
                               count += 1;
 
-                              _this5.event.emit('onSendData', {
+                              _this6.event.emit('onSendData', {
                                 max: max,
                                 now: count,
                                 title: page.title,
                                 status: 'failed'
                               });
                             })["finally"](function () {
-                              if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50)); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
+                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50)); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
                               // the storapageCache. 
 
-                              _this5.pageCache.update({
+                              _this6.pageCache.update({
                                 id: page.id,
                                 content: [],
                                 links: [],
@@ -39200,119 +39295,119 @@ function () {
                               }, undefined, true); // set the page attr send to true
 
 
-                              _this5.pageCache.cleanSource(page.id); //.catch(console.warn);
+                              _this6.pageCache.cleanSource(page.id); //.catch(console.warn);
 
                             });
 
-                            if (_this5.debug) console.log('<- sendData');
-                            _context5.next = 30;
+                            if (_this6.debug) console.log('<- sendData');
+                            _context6.next = 30;
                             break;
 
                           case 25:
-                            _context5.prev = 25;
-                            _context5.t0 = _context5["catch"](10);
+                            _context6.prev = 25;
+                            _context6.t0 = _context6["catch"](10);
                             count += 1; // this.event.emit('error', e, true);
 
-                            if (_this5.debug) console.log('Unknown error sending data: ', page);
-                            console.warn(_context5.t0);
+                            if (_this6.debug) console.log('Unknown error sending data: ', page);
+                            console.warn(_context6.t0);
 
                           case 30:
                             _iteratorNormalCompletion = true;
-                            _context5.next = 7;
+                            _context6.next = 7;
                             break;
 
                           case 33:
-                            _context5.next = 39;
+                            _context6.next = 39;
                             break;
 
                           case 35:
-                            _context5.prev = 35;
-                            _context5.t1 = _context5["catch"](5);
+                            _context6.prev = 35;
+                            _context6.t1 = _context6["catch"](5);
                             _didIteratorError = true;
-                            _iteratorError = _context5.t1;
+                            _iteratorError = _context6.t1;
 
                           case 39:
-                            _context5.prev = 39;
-                            _context5.prev = 40;
+                            _context6.prev = 39;
+                            _context6.prev = 40;
 
                             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                               _iterator["return"]();
                             }
 
                           case 42:
-                            _context5.prev = 42;
+                            _context6.prev = 42;
 
                             if (!_didIteratorError) {
-                              _context5.next = 45;
+                              _context6.next = 45;
                               break;
                             }
 
                             throw _iteratorError;
 
                           case 45:
-                            return _context5.finish(42);
+                            return _context6.finish(42);
 
                           case 46:
-                            return _context5.finish(39);
+                            return _context6.finish(39);
 
                           case 47:
                             //for
-                            if (!_this5.SENDDATAAUTOMATICALLY) {
-                              _this5.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
+                            if (!_this6.SENDDATAAUTOMATICALLY) {
+                              _this6.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
                             }
 
                           case 48:
                           case "end":
-                            return _context5.stop();
+                            return _context6.stop();
                         }
                       }
-                    }, _callee5, null, [[5, 35, 39, 47], [10, 25], [40,, 42, 46]]);
+                    }, _callee6, null, [[5, 35, 39, 47], [10, 25], [40,, 42, 46]]);
                   })(), "t0", 7);
 
                 case 7:
                   //if
-                  _this5.setSending(false);
+                  _this6.setSending(false);
 
                   resolve();
-                  _context6.next = 18;
+                  _context7.next = 18;
                   break;
 
                 case 11:
-                  _context6.prev = 11;
-                  _context6.t1 = _context6["catch"](0);
+                  _context7.prev = 11;
+                  _context7.t1 = _context7["catch"](0);
 
-                  _this5.setSending(false);
+                  _this6.setSending(false);
 
-                  _this5.event.emit('error', _context6.t1, true);
+                  _this6.event.emit('error', _context7.t1, true);
 
-                  console.log(_context6.t1);
+                  console.log(_context7.t1);
 
-                  _this5.event.emit('error', _context6.t1, true);
+                  _this6.event.emit('error', _context7.t1, true);
 
-                  reject(_context6.t1);
+                  reject(_context7.t1);
 
                 case 18:
-                  _context6.prev = 18;
-                  if (_this5.debug) console.log('======Emit Event: onSend (false) =======');
+                  _context7.prev = 18;
+                  if (_this6.debug) console.log('======Emit Event: onSend (false) =======');
 
                   try {
-                    _this5.event.emit('onSend', false);
+                    _this6.event.emit('onSend', false);
                   } catch (err) {
                     console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)');
                   }
 
-                  return _context6.finish(18);
+                  return _context7.finish(18);
 
                 case 22:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6, null, [[0, 11, 18, 22]]);
+          }, _callee7, null, [[0, 11, 18, 22]]);
         }));
 
-        return function (_x4, _x5) {
-          return _ref2.apply(this, arguments);
+        return function (_x6, _x7) {
+          return _ref3.apply(this, arguments);
         };
       }());
     }
@@ -39338,11 +39433,11 @@ function () {
   }, {
     key: "deletePage",
     value: function deletePage(id) {
-      var _this6 = this;
+      var _this7 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this6.pageCache.is(id)) {
-          _this6.pageCache.del(id);
+        if (_this7.pageCache.is(id)) {
+          _this7.pageCache.del(id);
 
           resolve();
         } else {

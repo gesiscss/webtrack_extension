@@ -202,15 +202,20 @@ export default class TrackingHandler {
       // return;
       if(!page.hasOwnProperty('content') || page.content.length == 0){
         console.log('Page has no content!!!!', page);
-      }else{
-        this.pageCache.add(page, +new Date());
-        this.event.emit(EVENT_NAMES.page, page, false);
       }
+
+      /// Remove the cache, and nobody is listening to the event
+      //else{
+      // if (this.debug) console.log('-> add page to cache!');
+      // this.pageCache.add(page, +new Date());
+      // this.event.emit(EVENT_NAMES.page, page, false);
+      // }
     } catch (e) {
       console.warn(e);
       this.event.emit('error', e, true);
     } finally {
-      if(this.SENDDATAAUTOMATICALLY) this.sendData();
+      console.log(this.SENDDATAAUTOMATICALLY);
+      if(this.SENDDATAAUTOMATICALLY) this.sendPage(page);
     }
     if (this.debug) console.log('<- _addPage(page)');
   }
@@ -353,6 +358,74 @@ export default class TrackingHandler {
 
     this.event.on('onSend', onSendCallBack);
   }
+
+
+  /**
+   * [sendPage upload page to the target]
+   * @param  {Array} [pages=null]         [description]
+   * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
+   * @return {Promise}                    [description]
+   */
+  sendPage(page){
+      return new Promise(async (resolve, reject) => {
+        try {
+          if (this.debug) console.log('-> sendPage');
+          //this.cleanDeadReferenceInEvent('onSend');
+          //this.event.emit('onSend', true);
+          this.setSending(true);
+
+          try {
+            let sendTime = (new Date()).toJSON();
+
+            if (this.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+            let client_hash = this.getClientId();
+            let anonymous_page = this.anonymize(page, client_hash);
+
+            if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+            this.transfer.sendingData(
+              JSON.stringify ({
+                id: client_hash,
+                projectId: this.projectId,
+                versionType: this.config.versionType,
+                pages: [anonymous_page]
+              }), status => {
+
+              }).then(()=>{
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50))          
+              }).catch(err => {
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                if (this.debug) console.log(err);
+              }).finally( () => {
+                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+              });
+            
+          } catch (e) {
+            // this.event.emit('error', e, true);
+            if (this.debug) console.log('Unknown error sending data: ', page);
+            console.warn(e);
+          }
+
+          this.setSending(false);
+          if (this.debug) console.log('<- sendPage');
+          resolve();
+        } catch (err) {
+          this.setSending(false);
+          console.log(err);
+          this.event.emit('error', err, true);
+          reject(err);
+        } finally {
+          if (this.debug) console.log('======Emit Event: onSend (false) =======');
+          try {
+            // this sends messages to the popup to refresh, probably unnecessary
+            this.event.emit('onSend', false);
+          } catch (err) {
+            console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)')
+          }
+        }
+      });
+  }
+
+
 
   /**
    * [sendData upload all pages to the target]
