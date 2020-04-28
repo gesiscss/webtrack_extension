@@ -1,7 +1,6 @@
 import URLFilter from './URLFilter';
 import Extension from '../Extension';
 import TabHandler from './TabHandler';
-import PageCache from './PageCache';
 import Schedule from './Schedule';
 import {EventEmitter, clearEvent} from 'eventemitter3';
 import lang from '../../lib/lang';
@@ -82,8 +81,7 @@ export default class TrackingHandler {
         this.tabHandler.event.on('error', error => {
           this.event.emit('error', error, true);
         });
-        this.pageCache = new PageCache(this.projectId);
-
+        
 
         // this.extension.event.on('error', error => new ErrorCache().add(error));
         this.privateMode = privateMode;
@@ -101,14 +99,12 @@ export default class TrackingHandler {
       this.tabHandler.event.on('error', error => {
         this.event.emit('error', error, true);
       });
-      this.pageCache = new PageCache(null);
     }
   }
 
 
   /**
    * [_init
-   *  -initialize pageCache
    *  -start tracking
    *  -start Sending pages
    *  ]
@@ -118,7 +114,6 @@ export default class TrackingHandler {
       //if (this.debug) console.log('-> TrackingHandler.init()');
       return new Promise(async (resolve, reject) =>{
         try {
-          await this.pageCache.init();
         } catch (e) {
           this.event.emit('error', e, true);
           reject(e);
@@ -131,7 +126,8 @@ export default class TrackingHandler {
           if (!this.is_dummy){
             if(this.config.getRunProjectTmpSettings().sending || this.SENDDATAAUTOMATICALLY){
               if (this.debug) console.log(':- Autostart send');
-              this.sendData(null, true);
+              // Do not longer sendData in cache
+              // this.sendData(null, true);
             }
             this.extension.initAllTabs();
           }
@@ -198,18 +194,10 @@ export default class TrackingHandler {
   async _addPage(page){
     if (this.debug) console.log('-> _addPage(page)');
     try {
-      // console.log('DISBALE SAVE PAGE  !!!');
-      // return;
       if(!page.hasOwnProperty('content') || page.content.length == 0){
         console.log('Page has no content!!!!', page);
       }
 
-      /// Remove the cache, and nobody is listening to the event
-      //else{
-      // if (this.debug) console.log('-> add page to cache!');
-      // this.pageCache.add(page, +new Date());
-      // this.event.emit(EVENT_NAMES.page, page, false);
-      // }
     } catch (e) {
       console.warn(e);
       this.event.emit('error', e, true);
@@ -426,145 +414,6 @@ export default class TrackingHandler {
   }
 
 
-
-  /**
-   * [sendData upload all pages to the target]
-   * @param  {Array} [pages=null]         [description]
-   * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
-   * @return {Promise}                    [description]
-   */
-  sendData(pages=null, nonClosed=false){
-      return new Promise(async (resolve, reject) => {
-        try {
-          if (this.debug) console.log('-> sendData');
-          //this.cleanDeadReferenceInEvent('onSend');
-          //this.event.emit('onSend', true);
-          this.setSending(true);
-
-          let pageIds = Object.values(this.pageCache.get()).filter(v=> v.send===false || nonClosed==true && v.send===true && v.sendTime===null).map(e=>e.id);
-          if(typeof pages == 'object' && Array.isArray(pages)){
-            pageIds = pages.filter(id => pageIds.includes(id));
-          }
-
-          if(pageIds.length>0){
-            const max = this.settings.STORAGE_DESTINATION? pageIds.length*2: pageIds.length;
-            let count = 0;
-
-            for (let id of pageIds){
-
-              var page = null
-              try {
-                let sendTime = (new Date()).toJSON();
-                await this.pageCache.update({id: id, send: true, sendTime: sendTime}, undefined, true);
-
-                page = await this.pageCache.getOnly(id);
-
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                let client_hash = this.getClientId();
-                let anonymous_page = this.anonymize(page, client_hash);
-
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                this.transfer.sendingData(
-                  JSON.stringify ({
-                    id: client_hash,
-                    projectId: this.projectId,
-                    versionType: this.config.versionType,
-                    pages: [anonymous_page]
-                  }), status => {
-                    //count += 1;
-                    // this.event.emit('onSendData', {
-                    //   max: max,
-                    //   now: count,
-                    //   title: page.title,
-                    //   status: status
-                    // });
-                  }).then(()=>{
-                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                    count += 1;
-                    this.event.emit('onSendData', {
-                      max: max,
-                      now: count,
-                      title: page.title,
-                      status: status
-                    });                    
-                  }).catch(err => {
-                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                    if (this.debug) console.log(err);
-                    count += 1;
-                    this.event.emit('onSendData', {
-                      max: max,
-                      now: count,
-                      title: page.title,
-                      status: 'failed'
-                    });  
-                  }).finally( () => {
-                    if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-
-                    // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
-                    // the storapageCache. 
-                    this.pageCache.update({id: page.id, content: [], links: [], 
-                        hashes: [], source:[], events: [], meta: {}}, undefined, true) // set the page attr send to true
-                    this.pageCache.cleanSource(page.id);//.catch(console.warn);
-                  });
-              
-
-                if (this.debug) console.log('<- sendData');
-              } catch (e) {
-                count += 1;
-                // this.event.emit('error', e, true);
-                if (this.debug) console.log('Unknown error sending data: ', page);
-                console.warn(e);
-              }
-            }//for
-            if(!this.SENDDATAAUTOMATICALLY){
-              this.extension.createNotification(lang.trackingHandler.notification.title, lang.trackingHandler.notification.message);
-            }
-          }//if
-          this.setSending(false);
-          resolve();
-        } catch (err) {
-          this.setSending(false);
-          this.event.emit('error', err, true);
-          console.log(err);
-          this.event.emit('error', err, true);
-          reject(err);
-        } finally {
-          if (this.debug) console.log('======Emit Event: onSend (false) =======');
-          try {
-            this.event.emit('onSend', false);
-          } catch (err) {
-            console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)')
-          }
-        }
-      });
-  }
-
-  /**
-   * [getPages return list of pages]
-   * @return {Array}
-   */
-  getPages(){
-    //if (this.debug) console.log('-> TrackingHandler.getPages()');
-    let pages = Object.values(this.pageCache.get());
-    ////if (this.debug) console.log('<- TrackingHandler.getPages()');
-    return pages;
-  }
-
-  /**
-   * [deletePage delete page from storage]
-   * @param  {Number} id
-   * @return {Promise}
-   */
-  deletePage(id){
-    return new Promise((resolve, reject) => {
-      if(this.pageCache.is(id)){
-        this.pageCache.del(id);
-        resolve();
-      }else{
-        reject(new Error('Id not found'));
-      }
-    });
-  }
 
   /**
    * [getNextPeriode return time difference of next periode ]

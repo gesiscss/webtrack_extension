@@ -37921,170 +37921,6 @@ function () {
 }();
 
 
-// CONCATENATED MODULE: ./src/background/core/PageCache.js
-function PageCache_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { PageCache_typeof = function _typeof(obj) { return typeof obj; }; } else { PageCache_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return PageCache_typeof(obj); }
-
-function _templateObject() {
-  var data = _taggedTemplateLiteral([""]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-function PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function PageCache_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { PageCache_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function PageCache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function PageCache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function PageCache_createClass(Constructor, protoProps, staticProps) { if (protoProps) PageCache_defineProperties(Constructor.prototype, protoProps); if (staticProps) PageCache_defineProperties(Constructor, staticProps); return Constructor; }
-
-function PageCache_possibleConstructorReturn(self, call) { if (call && (PageCache_typeof(call) === "object" || typeof call === "function")) { return call; } return PageCache_assertThisInitialized(self); }
-
-function PageCache_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function PageCache_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { PageCache_get = Reflect.get; } else { PageCache_get = function _get(target, property, receiver) { var base = PageCache_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return PageCache_get(target, property, receiver || target); }
-
-function PageCache_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = PageCache_getPrototypeOf(object); if (object === null) break; } return object; }
-
-function PageCache_getPrototypeOf(o) { PageCache_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return PageCache_getPrototypeOf(o); }
-
-function PageCache_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) PageCache_setPrototypeOf(subClass, superClass); }
-
-function PageCache_setPrototypeOf(o, p) { PageCache_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return PageCache_setPrototypeOf(o, p); }
-
-
-
-
-var PageCache =
-/*#__PURE__*/
-function (_CacheHandler) {
-  PageCache_inherits(PageCache, _CacheHandler);
-
-  /**
-   * [constructor
-   * - create instance of FileHandler
-   * - create instance of LocalstorageHandler
-   * ]
-   * @param {Number} projectId
-   */
-  function PageCache() {
-    var _this;
-
-    var projectId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-    PageCache_classCallCheck(this, PageCache);
-
-    _this = PageCache_possibleConstructorReturn(this, PageCache_getPrototypeOf(PageCache).call(this));
-    _this.debug = false; // this.storage = new LocalstoreDB({databaseName: 'wt_page_'+projectId, objectStoreName: 'data', defaultContent: {}});
-    //if (this.debug) console.log('PageCache.constructor() - ', 'objectStoreName: ', 'cachehandler_' + projectId, ' this.storage: ', this.storage);
-    // this.delay = 50;
-    // this.fileAttr = ['content', 'source', 'links', 'events'];
-
-    _this.typeofId = 'string';
-    _this.fileAttr = [];
-    _this.LOAD_FILES_AFTER_INIT = false;
-    return _this;
-  }
-  /**
-   * [cleanSource delete all sources from source table]
-   * @param  {String} id
-   * @return {Promise}
-   */
-
-
-  PageCache_createClass(PageCache, [{
-    key: "cleanSource",
-    value: function cleanSource(id) {
-      var _this2 = this;
-
-      return new Promise(
-      /*#__PURE__*/
-      function () {
-        var _ref = PageCache_asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee(resolve, reject) {
-          var content, urls;
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  _context.prev = 0;
-                  _context.next = 3;
-                  return PageCache_get(PageCache_getPrototypeOf(PageCache.prototype), "getOnly", _this2).call(_this2, id);
-
-                case 3:
-                  content = _context.sent;
-
-                  if (!content.hasOwnProperty('source')) {
-                    _context.next = 9;
-                    break;
-                  }
-
-                  if (!(content.source.length > 0)) {
-                    _context.next = 9;
-                    break;
-                  }
-
-                  urls = content.source.map(function (e) {
-                    return e.url;
-                  }); //if (this.debug) console.log("Sources to clean:" + urls);
-
-                  _context.next = 9;
-                  return PageCache_get(PageCache_getPrototypeOf(PageCache.prototype), "cleanSource", _this2).call(_this2, urls);
-
-                case 9:
-                  resolve();
-                  _context.next = 15;
-                  break;
-
-                case 12:
-                  _context.prev = 12;
-                  _context.t0 = _context["catch"](0);
-                  reject(_context.t0)(_templateObject());
-
-                case 15:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee, null, [[0, 12]]);
-        }));
-
-        return function (_x, _x2) {
-          return _ref.apply(this, arguments);
-        };
-      }());
-    } // /**
-    //  * [getOnly return the merg content of page with source]
-    //  * @param  {String} id
-    //  * @return {Promise} Object
-    //  */
-    // getOnly(id){
-    //   return new Promise(async (resolve, reject) => {
-    //     try {
-    //       let content = await super.getOnly(id);
-    //       content.source = await this.source.getMerg(content.source);
-    //       resolve(content);
-    //     } catch (err) {
-    //       reject(err)
-    //     }
-    //   });
-    // }
-
-  }]);
-
-  return PageCache;
-}(CacheHandler_CacheHandler);
-
-
 // CONCATENATED MODULE: ./src/background/core/Schedule.js
 function Schedule_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -38556,7 +38392,6 @@ function TrackingHandler_createClass(Constructor, protoProps, staticProps) { if 
 
 
 
-
  // import ErrorCache from './ErrorCache';
 
 
@@ -38628,8 +38463,7 @@ function () {
         this.tabHandler = new TabHandler_TabHandler(this.projectId, this.extension);
         this.tabHandler.event.on('error', function (error) {
           _this.event.emit('error', error, true);
-        });
-        this.pageCache = new PageCache(this.projectId); // this.extension.event.on('error', error => new ErrorCache().add(error));
+        }); // this.extension.event.on('error', error => new ErrorCache().add(error));
 
         this.privateMode = privateMode;
         this.transfer = transfer;
@@ -38649,12 +38483,10 @@ function () {
       this.tabHandler.event.on('error', function (error) {
         _this.event.emit('error', error, true);
       });
-      this.pageCache = new PageCache(null);
     }
   }
   /**
    * [_init
-   *  -initialize pageCache
    *  -start tracking
    *  -start Sending pages
    *  ]
@@ -38680,23 +38512,19 @@ function () {
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.prev = 0;
-                  _context.next = 3;
-                  return _this2.pageCache.init();
-
-                case 3:
-                  _context.next = 9;
+                  _context.next = 7;
                   break;
 
-                case 5:
-                  _context.prev = 5;
+                case 3:
+                  _context.prev = 3;
                   _context.t0 = _context["catch"](0);
 
                   _this2.event.emit('error', _context.t0, true);
 
                   reject(_context.t0);
 
-                case 9:
-                  _context.prev = 9;
+                case 7:
+                  _context.prev = 7;
                   if (_this2.debug) console.log(':::AUTOSTART:::', _this2.AUTOSTART);
 
                   _this2.startTimeoutScheudle(); // I am forcing it to start in private mode so it doesnt try to collect
@@ -38704,33 +38532,32 @@ function () {
 
 
                   if (!_this2.AUTOSTART) {
-                    _context.next = 15;
+                    _context.next = 13;
                     break;
                   }
 
-                  _context.next = 15;
+                  _context.next = 13;
                   return _this2.start(private_mode);
 
-                case 15:
+                case 13:
                   if (!_this2.is_dummy) {
                     if (_this2.config.getRunProjectTmpSettings().sending || _this2.SENDDATAAUTOMATICALLY) {
-                      if (_this2.debug) console.log(':- Autostart send');
-
-                      _this2.sendData(null, true);
+                      if (_this2.debug) console.log(':- Autostart send'); // Do not longer sendData in cache
+                      // this.sendData(null, true);
                     }
 
                     _this2.extension.initAllTabs();
                   }
 
                   resolve();
-                  return _context.finish(9);
+                  return _context.finish(7);
 
-                case 18:
+                case 16:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, null, [[0, 5, 9, 18]]);
+          }, _callee, null, [[0, 3, 7, 16]]);
         }));
 
         return function (_x, _x2) {
@@ -38824,17 +38651,9 @@ function () {
                 if (this.debug) console.log('-> _addPage(page)');
 
                 try {
-                  // console.log('DISBALE SAVE PAGE  !!!');
-                  // return;
                   if (!page.hasOwnProperty('content') || page.content.length == 0) {
                     console.log('Page has no content!!!!', page);
-                  } /// Remove the cache, and nobody is listening to the event
-                  //else{
-                  // if (this.debug) console.log('-> add page to cache!');
-                  // this.pageCache.add(page, +new Date());
-                  // this.event.emit(EVENT_NAMES.page, page, false);
-                  // }
-
+                  }
                 } catch (e) {
                   console.warn(e);
                   this.event.emit('error', e, true);
@@ -39153,297 +38972,6 @@ function () {
           return _ref2.apply(this, arguments);
         };
       }());
-    }
-    /**
-     * [sendData upload all pages to the target]
-     * @param  {Array} [pages=null]         [description]
-     * @param  {Boolean} nonClosed [if they active the this function send pages who has the attribute send true but sendTime is null]
-     * @return {Promise}                    [description]
-     */
-
-  }, {
-    key: "sendData",
-    value: function sendData() {
-      var _this6 = this;
-
-      var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var nonClosed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return new Promise(
-      /*#__PURE__*/
-      function () {
-        var _ref3 = TrackingHandler_asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee7(resolve, reject) {
-          var pageIds, page;
-          return regeneratorRuntime.wrap(function _callee7$(_context7) {
-            while (1) {
-              switch (_context7.prev = _context7.next) {
-                case 0:
-                  _context7.prev = 0;
-                  if (_this6.debug) console.log('-> sendData'); //this.cleanDeadReferenceInEvent('onSend');
-                  //this.event.emit('onSend', true);
-
-                  _this6.setSending(true);
-
-                  pageIds = Object.values(_this6.pageCache.get()).filter(function (v) {
-                    return v.send === false || nonClosed == true && v.send === true && v.sendTime === null;
-                  }).map(function (e) {
-                    return e.id;
-                  });
-
-                  if (TrackingHandler_typeof(pages) == 'object' && Array.isArray(pages)) {
-                    pageIds = pages.filter(function (id) {
-                      return pageIds.includes(id);
-                    });
-                  }
-
-                  if (!(pageIds.length > 0)) {
-                    _context7.next = 7;
-                    break;
-                  }
-
-                  return _context7.delegateYield(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee6() {
-                    var max, count, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, id, sendTime, client_hash, anonymous_page;
-
-                    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-                      while (1) {
-                        switch (_context6.prev = _context6.next) {
-                          case 0:
-                            max = _this6.settings.STORAGE_DESTINATION ? pageIds.length * 2 : pageIds.length;
-                            count = 0;
-                            _iteratorNormalCompletion = true;
-                            _didIteratorError = false;
-                            _iteratorError = undefined;
-                            _context6.prev = 5;
-                            _iterator = pageIds[Symbol.iterator]();
-
-                          case 7:
-                            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                              _context6.next = 33;
-                              break;
-                            }
-
-                            id = _step.value;
-                            page = null;
-                            _context6.prev = 10;
-                            sendTime = new Date().toJSON();
-                            _context6.next = 14;
-                            return _this6.pageCache.update({
-                              id: id,
-                              send: true,
-                              sendTime: sendTime
-                            }, undefined, true);
-
-                          case 14:
-                            _context6.next = 16;
-                            return _this6.pageCache.getOnly(id);
-
-                          case 16:
-                            page = _context6.sent;
-                            if (_this6.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-                            client_hash = _this6.getClientId();
-                            anonymous_page = _this6.anonymize(page, client_hash);
-                            if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-
-                            _this6.transfer.sendingData(JSON.stringify({
-                              id: client_hash,
-                              projectId: _this6.projectId,
-                              versionType: _this6.config.versionType,
-                              pages: [anonymous_page]
-                            }), function (status) {//count += 1;
-                              // this.event.emit('onSendData', {
-                              //   max: max,
-                              //   now: count,
-                              //   title: page.title,
-                              //   status: status
-                              // });
-                            }).then(function () {
-                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                              count += 1;
-
-                              _this6.event.emit('onSendData', {
-                                max: max,
-                                now: count,
-                                title: page.title,
-                                status: status
-                              });
-                            })["catch"](function (err) {
-                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                              if (_this6.debug) console.log(err);
-                              count += 1;
-
-                              _this6.event.emit('onSendData', {
-                                max: max,
-                                now: count,
-                                title: page.title,
-                                status: 'failed'
-                              });
-                            })["finally"](function () {
-                              if (_this6.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50)); // This lines clean the bulky parts of the object (JSONs) that are not necessary to keep in
-                              // the storapageCache. 
-
-                              _this6.pageCache.update({
-                                id: page.id,
-                                content: [],
-                                links: [],
-                                hashes: [],
-                                source: [],
-                                events: [],
-                                meta: {}
-                              }, undefined, true); // set the page attr send to true
-
-
-                              _this6.pageCache.cleanSource(page.id); //.catch(console.warn);
-
-                            });
-
-                            if (_this6.debug) console.log('<- sendData');
-                            _context6.next = 30;
-                            break;
-
-                          case 25:
-                            _context6.prev = 25;
-                            _context6.t0 = _context6["catch"](10);
-                            count += 1; // this.event.emit('error', e, true);
-
-                            if (_this6.debug) console.log('Unknown error sending data: ', page);
-                            console.warn(_context6.t0);
-
-                          case 30:
-                            _iteratorNormalCompletion = true;
-                            _context6.next = 7;
-                            break;
-
-                          case 33:
-                            _context6.next = 39;
-                            break;
-
-                          case 35:
-                            _context6.prev = 35;
-                            _context6.t1 = _context6["catch"](5);
-                            _didIteratorError = true;
-                            _iteratorError = _context6.t1;
-
-                          case 39:
-                            _context6.prev = 39;
-                            _context6.prev = 40;
-
-                            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                              _iterator["return"]();
-                            }
-
-                          case 42:
-                            _context6.prev = 42;
-
-                            if (!_didIteratorError) {
-                              _context6.next = 45;
-                              break;
-                            }
-
-                            throw _iteratorError;
-
-                          case 45:
-                            return _context6.finish(42);
-
-                          case 46:
-                            return _context6.finish(39);
-
-                          case 47:
-                            //for
-                            if (!_this6.SENDDATAAUTOMATICALLY) {
-                              _this6.extension.createNotification(lib_lang.trackingHandler.notification.title, lib_lang.trackingHandler.notification.message);
-                            }
-
-                          case 48:
-                          case "end":
-                            return _context6.stop();
-                        }
-                      }
-                    }, _callee6, null, [[5, 35, 39, 47], [10, 25], [40,, 42, 46]]);
-                  })(), "t0", 7);
-
-                case 7:
-                  //if
-                  _this6.setSending(false);
-
-                  resolve();
-                  _context7.next = 18;
-                  break;
-
-                case 11:
-                  _context7.prev = 11;
-                  _context7.t1 = _context7["catch"](0);
-
-                  _this6.setSending(false);
-
-                  _this6.event.emit('error', _context7.t1, true);
-
-                  console.log(_context7.t1);
-
-                  _this6.event.emit('error', _context7.t1, true);
-
-                  reject(_context7.t1);
-
-                case 18:
-                  _context7.prev = 18;
-                  if (_this6.debug) console.log('======Emit Event: onSend (false) =======');
-
-                  try {
-                    _this6.event.emit('onSend', false);
-                  } catch (err) {
-                    console.log('The popup is not syncronized (Unknown bug that does not seem to affect collection)');
-                  }
-
-                  return _context7.finish(18);
-
-                case 22:
-                case "end":
-                  return _context7.stop();
-              }
-            }
-          }, _callee7, null, [[0, 11, 18, 22]]);
-        }));
-
-        return function (_x6, _x7) {
-          return _ref3.apply(this, arguments);
-        };
-      }());
-    }
-    /**
-     * [getPages return list of pages]
-     * @return {Array}
-     */
-
-  }, {
-    key: "getPages",
-    value: function getPages() {
-      //if (this.debug) console.log('-> TrackingHandler.getPages()');
-      var pages = Object.values(this.pageCache.get()); ////if (this.debug) console.log('<- TrackingHandler.getPages()');
-
-      return pages;
-    }
-    /**
-     * [deletePage delete page from storage]
-     * @param  {Number} id
-     * @return {Promise}
-     */
-
-  }, {
-    key: "deletePage",
-    value: function deletePage(id) {
-      var _this7 = this;
-
-      return new Promise(function (resolve, reject) {
-        if (_this7.pageCache.is(id)) {
-          _this7.pageCache.del(id);
-
-          resolve();
-        } else {
-          reject(new Error('Id not found'));
-        }
-      });
     }
     /**
      * [getNextPeriode return time difference of next periode ]
@@ -39882,11 +39410,10 @@ function () {
   }, {
     key: "getPages",
     value: function getPages() {
-      if (this.debug) console.log('-> PageHandler.getPages()');
+      if (this.debug) console.log('-> PageHandler.getPages()'); //let tracker = this._getCurrentTracker()
 
-      var tracker = this._getCurrentTracker();
+      var pages = []; //tracker.getPages();
 
-      var pages = tracker.getPages();
       if (this.debug) console.log('<- PageHandler.getPages()');
       return pages;
     }
@@ -39905,7 +39432,7 @@ function () {
     key: "deletePage",
     value: function deletePage(pageId) {
       if (this.debug) console.log('deletePage', pageId);
-      return this._getCurrentTracker().deletePage(pageId);
+      return null; //this._getCurrentTracker().deletePage(pageId);
     }
     /**
      * [call the sending function from trackingHandler]
@@ -39918,7 +39445,7 @@ function () {
     value: function sendData() {
       var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
       if (this.debug) console.log('sendData');
-      return this._getCurrentTracker().sendData(pages);
+      return null; //this._getCurrentTracker().sendData(pages);
     }
     /**
      * [public function to set the private mode for running trackingHandler]

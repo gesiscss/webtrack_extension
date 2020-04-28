@@ -296,8 +296,8 @@ export default class PageHandler {
    */
   getPages(){
     if (this.debug) console.log('-> PageHandler.getPages()');
-    let tracker = this._getCurrentTracker()
-    let pages = tracker.getPages();
+    //let tracker = this._getCurrentTracker()
+    let pages = []; //tracker.getPages();
     if (this.debug) console.log('<- PageHandler.getPages()');
     return pages;
   }
@@ -313,7 +313,7 @@ export default class PageHandler {
    */
   deletePage(pageId){
     if (this.debug) console.log('deletePage', pageId);
-    return this._getCurrentTracker().deletePage(pageId);
+    return null; //this._getCurrentTracker().deletePage(pageId);
   }
 
   /**
@@ -323,7 +323,7 @@ export default class PageHandler {
    */
   sendData(pages=null){
     if (this.debug) console.log('sendData');
-    return this._getCurrentTracker().sendData(pages);
+    return null; //this._getCurrentTracker().sendData(pages);
   }
 
   /**
