@@ -44,7 +44,6 @@ export default class TrackingHandler {
    */
   constructor(config, transfer, autostart=false, is_dummy=false) {
     this._addPage = this._addPage.bind(this);
-    this.deletePage = this.deletePage.bind(this);
     this.AUTOSTART = autostart;
     this.is_dummy = is_dummy;
     this.config = config;
