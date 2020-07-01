@@ -377,7 +377,7 @@ export default class TrackingHandler {
               JSON.stringify ({
                 id: client_hash,
                 projectId: this.projectId,
-                versionType: this.config.versionType,
+                versionType: (window.hasOwnProperty('chrome') ? 'Chrome ' : 'Firefox ') + this.config.versionType,
                 pages: [anonymous_page]
             }), status => {
 

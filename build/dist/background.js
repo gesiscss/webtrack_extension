@@ -38924,7 +38924,7 @@ function () {
                       _this5.transfer.sendingData(JSON.stringify({
                         id: client_hash,
                         projectId: _this5.projectId,
-                        versionType: _this5.config.versionType,
+                        versionType: (window.hasOwnProperty('chrome') ? 'Chrome ' : 'Firefox ') + _this5.config.versionType,
                         pages: [anonymous_page]
                       }), function (status) {}).then(function () {
                         if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
