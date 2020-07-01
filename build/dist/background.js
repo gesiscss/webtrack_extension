@@ -38807,7 +38807,7 @@ function () {
           }
 
           page["favicon"] = "";
-          page.content[0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
+          page.content[0].html = '<EMPTY>';
         }
 
         if (privacy.only_url) {
@@ -38816,7 +38816,7 @@ function () {
           }
 
           page['title'] = '';
-          page.content[0].html = '<html><head></head><body>' + page['landing_url'] + '</body></html>';
+          page.content[0].html = '<EMPTY>';
         }
       } else {
         page.meta['privacy'] = {};

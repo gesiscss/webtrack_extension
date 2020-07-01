@@ -608,7 +608,7 @@ export default class Tracker extends MultiFetch {
           } else {
             if (this.debug) console.log('======Emit Event: onData (DISALLOW) =======');
             this.eventEmitter.emit(EVENT_NAMES.data, {
-                html: ' ', 
+                html: '<EMPTY>', 
                 is_sm_path_allowed: is_sm_path_allowed,
                 is_content_allowed: this.is_content_allowed,
                 is_allowed_by_lists: this.is_allowed_by_lists(location.pathname),

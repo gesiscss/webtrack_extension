@@ -273,7 +273,7 @@ export default class TrackingHandler {
         }
 
         page["favicon"] = "";
-        page.content[0].html =  '<html><head></head><body>'+page['hostname']+'</body></html>';
+        page.content[0].html = '<EMPTY>';
       }
 
 
@@ -284,7 +284,7 @@ export default class TrackingHandler {
         }
 
         page['title'] = ''
-        page.content[0].html = '<html><head></head><body>'+page['landing_url']+'</body></html>';
+        page.content[0].html = '<EMPTY>';
       }
     } else {
       page.meta['privacy'] = {}
