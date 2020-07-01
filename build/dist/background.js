@@ -31856,10 +31856,15 @@ function () {
   URLFilter_createClass(URLFilter, [{
     key: "_reinit",
     value: function _reinit() {
+      this.cache = {}; // this needs to be reload each time because
+      // some lists are feed from the server so it cannot
+      // simply be in the constructor
+
+      this.lists = this.config.blacklists;
+
       if (this.is_dummy) {
         this.projectId = -1;
         this.settings = null;
-        this.lists = {};
         this.active = false;
         this.white_or_black = true;
         this.server_list = [];
@@ -31869,9 +31874,7 @@ function () {
         this.settings = project.SETTINGS;
         this.active = this.settings.ACTIVE_URLLIST;
         this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
-        this.lists = this.config.blacklists;
         this.server_list = project.URLLIST;
-        this.cache = {};
       }
     }
     /**
@@ -38889,7 +38892,7 @@ function () {
         var _ref2 = TrackingHandler_asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee5(resolve, reject) {
-          var sendTime, client_hash, anonymous_page;
+          var sendTime, client_hash, anonymous_page, i;
           return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
               switch (_context5.prev = _context5.next) {
@@ -38905,21 +38908,24 @@ function () {
                       if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                       client_hash = _this5.getClientId();
                       anonymous_page = _this5.anonymize(page, client_hash);
-                      if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
 
-                      _this5.transfer.sendingData(JSON.stringify({
-                        id: client_hash,
-                        projectId: _this5.projectId,
-                        versionType: _this5.config.versionType,
-                        pages: [anonymous_page]
-                      }), function (status) {}).then(function () {
-                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                      })["catch"](function (err) {
-                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                        if (_this5.debug) console.log(err);
-                      })["finally"](function () {
-                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                      });
+                      for (i = 1; i <= 10; i++) {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+
+                        _this5.transfer.sendingData(JSON.stringify({
+                          id: client_hash,
+                          projectId: _this5.projectId,
+                          versionType: _this5.config.versionType,
+                          pages: [anonymous_page]
+                        }), function (status) {}).then(function () {
+                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                        })["catch"](function (err) {
+                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                          if (_this5.debug) console.log(err);
+                        })["finally"](function () {
+                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                        });
+                      }
                     } catch (e) {
                       // this.event.emit('error', e, true);
                       if (_this5.debug) console.log('Unknown error sending data: ', page);

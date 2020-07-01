@@ -11,10 +11,16 @@ export default class URLFilter {
   }
 
   _reinit(){
+    this.cache = {};
+
+    // this needs to be reload each time because
+    // some lists are feed from the server so it cannot
+    // simply be in the constructor
+    this.lists = this.config.blacklists;
+    
     if (this.is_dummy){
       this.projectId = -1
       this.settings = null;
-      this.lists={}; 
       this.active=false; 
       this.white_or_black=true; 
       this.server_list=[];
@@ -24,9 +30,7 @@ export default class URLFilter {
       this.settings = project.SETTINGS;
       this.active = this.settings.ACTIVE_URLLIST;
       this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
-      this.lists = this.config.blacklists;
       this.server_list = project.URLLIST;
-      this.cache = {};
     }   
   }
 
