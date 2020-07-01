@@ -246,13 +246,16 @@ export default class TrackingHandler {
     if (page.meta.hasOwnProperty('privacy')){
       let privacy = page.meta.privacy;
 
-      if (privacy.domain_only || privacy.blacklisted || privacy.private_mode) {
+      if (privacy.domain_only || privacy.webtrack_off || privacy.blacklisted || privacy.private_mode) {
 
-        if (privacy.blacklisted) {
-          page['hostname'] = 'http://BLACKLISTED';
+        if (privacy.webtrack_off) {
+          page['hostname'] = 'http://WEBTRACK_OFF';
         }
-        if (privacy.private_mode) {
+        else if (privacy.private_mode) {
           page['hostname'] = 'http://PRIVATE_MODE';
+        }
+        else if (privacy.blacklisted) {
+          page['hostname'] = 'http://BLACKLISTED';
         }
 
         let hostname = page['hostname'];
@@ -368,7 +371,7 @@ export default class TrackingHandler {
             let client_hash = this.getClientId();
             let anonymous_page = this.anonymize(page, client_hash);
 
-            
+
             if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
             this.transfer.sendingData(
               JSON.stringify ({

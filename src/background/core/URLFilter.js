@@ -22,14 +22,15 @@ export default class URLFilter {
       this.projectId = -1
       this.settings = null;
       this.active=false; 
-      this.white_or_black=true; 
+      // false for DenyList, and true for AllowList 
+      this.is_allow_lists=false; 
       this.server_list=[];
     } else {
       this.projectId = this.config.getSelect();
       let project = this.config.getProject(this.projectId);
       this.settings = project.SETTINGS;
       this.active = this.settings.ACTIVE_URLLIST;
-      this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
+      this.is_allow_lists = this.settings.URLLIST_WHITE_OR_BLACK;
       this.server_list = project.URLLIST;
     }   
   }
@@ -319,18 +320,25 @@ export default class URLFilter {
 
     if(!this.cache.hasOwnProperty(domain)){
       let isinlist = this.isincluded(domain);
-     
       let is_allow = 
-            // is in whitelist
-            (isinlist && this.white_or_black) ||
-            // is not in blacklist
-            (!isinlist && !this.white_or_black);
+            (isinlist && this.is_allow_lists) ||
+            (!isinlist && !this.is_allow_lists);
       this.cache[domain] = is_allow;
     }
-    let is_allow = this.cache[domain];
-          
+    let is_allow = this.cache[domain];         
     return is_allow;
   }
+
+
+
+  /**
+   * [is_track_off returns true if the user has logged in the tracker]
+   * @return {Boolean}     [description]
+   */
+  is_track_off(){
+    return this.is_dummy;
+  }
+
 
   /**
    * [only_domain returns if the only tracking should be done for the domain]

@@ -416,6 +416,7 @@ export default class Extension {
         if (this.debug) console.log('# ontracking');
         let domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
+        this.tabs[sender.tab.id].setState('webtrack_off', this.urlFilter.is_track_off(domain));
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
         this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
 
@@ -431,6 +432,7 @@ export default class Extension {
               only_domain: this.tabs[sender.tab.id].getState('only_domain'),
               only_url: this.tabs[sender.tab.id].getState('only_url'),
               blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+              webtrack_off: this.tabs[sender.tab.id].getState('webtrack_off'),              
               private_mode: this.privateMode,
               tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }

@@ -31865,15 +31865,16 @@ function () {
       if (this.is_dummy) {
         this.projectId = -1;
         this.settings = null;
-        this.active = false;
-        this.white_or_black = true;
+        this.active = false; // false for DenyList, and true for AllowList 
+
+        this.is_allow_lists = false;
         this.server_list = [];
       } else {
         this.projectId = this.config.getSelect();
         var project = this.config.getProject(this.projectId);
         this.settings = project.SETTINGS;
         this.active = this.settings.ACTIVE_URLLIST;
-        this.white_or_black = this.settings.URLLIST_WHITE_OR_BLACK;
+        this.is_allow_lists = this.settings.URLLIST_WHITE_OR_BLACK;
         this.server_list = project.URLLIST;
       }
     }
@@ -32209,15 +32210,23 @@ function () {
       if (!this.cache.hasOwnProperty(domain)) {
         var isinlist = this.isincluded(domain);
 
-        var _is_allow = // is in whitelist
-        isinlist && this.white_or_black || // is not in blacklist
-        !isinlist && !this.white_or_black;
+        var _is_allow = isinlist && this.is_allow_lists || !isinlist && !this.is_allow_lists;
 
         this.cache[domain] = _is_allow;
       }
 
       var is_allow = this.cache[domain];
       return is_allow;
+    }
+    /**
+     * [is_track_off returns true if the user has logged in the tracker]
+     * @return {Boolean}     [description]
+     */
+
+  }, {
+    key: "is_track_off",
+    value: function is_track_off() {
+      return this.is_dummy;
     }
     /**
      * [only_domain returns if the only tracking should be done for the domain]
@@ -33134,6 +33143,7 @@ function () {
         if (this.debug) console.log('# ontracking');
         var domain = this.urlFilter.get_location(sender.tab.url).hostname;
         this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
+        this.tabs[sender.tab.id].setState('webtrack_off', this.urlFilter.is_track_off(domain));
         this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
         this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain)); //assume it is allowed
 
@@ -33147,6 +33157,7 @@ function () {
             only_domain: this.tabs[sender.tab.id].getState('only_domain'),
             only_url: this.tabs[sender.tab.id].getState('only_url'),
             blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+            webtrack_off: this.tabs[sender.tab.id].getState('webtrack_off'),
             private_mode: this.privateMode,
             tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
@@ -38770,13 +38781,13 @@ function () {
       if (page.meta.hasOwnProperty('privacy')) {
         var privacy = page.meta.privacy;
 
-        if (privacy.domain_only || privacy.blacklisted || privacy.private_mode) {
-          if (privacy.blacklisted) {
-            page['hostname'] = 'http://BLACKLISTED';
-          }
-
-          if (privacy.private_mode) {
+        if (privacy.domain_only || privacy.webtrack_off || privacy.blacklisted || privacy.private_mode) {
+          if (privacy.webtrack_off) {
+            page['hostname'] = 'http://WEBTRACK_OFF';
+          } else if (privacy.private_mode) {
             page['hostname'] = 'http://PRIVATE_MODE';
+          } else if (privacy.blacklisted) {
+            page['hostname'] = 'http://BLACKLISTED';
           }
 
           var hostname = page['hostname'];
