@@ -15,7 +15,7 @@ export default class Configuration {
    */
   constructor(settings, transfer, blacklists) {
     this.settings = settings;
-    this.versionType = settings.versionType;
+    this.versionType = settings.versionType + ' (' + settings.getBrowser().name + '-' + settings.getBrowser().version + ')';
     this.mobile = settings.mobile;
     this.transfer = transfer;
     this.blacklists = blacklists;

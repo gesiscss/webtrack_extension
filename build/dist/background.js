@@ -31300,7 +31300,7 @@ function () {
     Configuration_classCallCheck(this, Configuration);
 
     this.settings = settings;
-    this.versionType = settings.versionType;
+    this.versionType = settings.versionType + ' (' + settings.getBrowser().name + '-' + settings.getBrowser().version + ')';
     this.mobile = settings.mobile;
     this.transfer = transfer;
     this.blacklists = blacklists;
@@ -38924,7 +38924,7 @@ function () {
                       _this5.transfer.sendingData(JSON.stringify({
                         id: client_hash,
                         projectId: _this5.projectId,
-                        versionType: (window.hasOwnProperty('chrome') ? 'Chrome ' : 'Firefox ') + _this5.config.versionType,
+                        versionType: _this5.config.versionType,
                         pages: [anonymous_page]
                       }), function (status) {}).then(function () {
                         if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
