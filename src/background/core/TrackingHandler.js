@@ -48,7 +48,7 @@ export default class TrackingHandler {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new EventEmitter();
-    this.debug = false;
+    this.debug = true;
     this.settings = {};
 
     // fields that should be anonymized
@@ -368,25 +368,24 @@ export default class TrackingHandler {
             let client_hash = this.getClientId();
             let anonymous_page = this.anonymize(page, client_hash);
 
-            for (var i=1; i<=10; i++) {
-              if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-              this.transfer.sendingData(
-                JSON.stringify ({
-                  id: client_hash,
-                  projectId: this.projectId,
-                  versionType: this.config.versionType,
-                  pages: [anonymous_page]
-              }), status => {
+            
+            if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
+            this.transfer.sendingData(
+              JSON.stringify ({
+                id: client_hash,
+                projectId: this.projectId,
+                versionType: this.config.versionType,
+                pages: [anonymous_page]
+            }), status => {
 
-              }).then(()=>{
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50))          
-              }).catch(err => {
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                if (this.debug) console.log(err);
-              }).finally( () => {
-                if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-              });
-            }
+            }).then(()=>{
+              if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50))          
+            }).catch(err => {
+              if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+              if (this.debug) console.log(err);
+            }).finally( () => {
+              if (this.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+            });
             
           } catch (e) {
             // this.event.emit('error', e, true);

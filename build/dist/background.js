@@ -38436,7 +38436,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = false;
+    this.debug = true;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
@@ -38892,7 +38892,7 @@ function () {
         var _ref2 = TrackingHandler_asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee5(resolve, reject) {
-          var sendTime, client_hash, anonymous_page, i;
+          var sendTime, client_hash, anonymous_page;
           return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
               switch (_context5.prev = _context5.next) {
@@ -38908,24 +38908,21 @@ function () {
                       if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                       client_hash = _this5.getClientId();
                       anonymous_page = _this5.anonymize(page, client_hash);
+                      if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
 
-                      for (i = 1; i <= 10; i++) {
-                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
-
-                        _this5.transfer.sendingData(JSON.stringify({
-                          id: client_hash,
-                          projectId: _this5.projectId,
-                          versionType: _this5.config.versionType,
-                          pages: [anonymous_page]
-                        }), function (status) {}).then(function () {
-                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                        })["catch"](function (err) {
-                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                          if (_this5.debug) console.log(err);
-                        })["finally"](function () {
-                          if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
-                        });
-                      }
+                      _this5.transfer.sendingData(JSON.stringify({
+                        id: client_hash,
+                        projectId: _this5.projectId,
+                        versionType: _this5.config.versionType,
+                        pages: [anonymous_page]
+                      }), function (status) {}).then(function () {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER SUCCESS:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                      })["catch"](function (err) {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER ERROR:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                        if (_this5.debug) console.log(err);
+                      })["finally"](function () {
+                        if (_this5.debug) console.log('='.repeat(50), '\n>>>>> TRANSFER FINALIZED:', page.unhashed_url, ' <<<<<\n' + '='.repeat(50));
+                      });
                     } catch (e) {
                       // this.event.emit('error', e, true);
                       if (_this5.debug) console.log('Unknown error sending data: ', page);
