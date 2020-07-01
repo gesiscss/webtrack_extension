@@ -277,7 +277,7 @@ export default class TrackingHandler {
       }
 
 
-      if (privacy.url_only) {
+      if (privacy.only_url) {
 
         if (page.hasOwnProperty('events')){ 
           page['events'] = []; 

@@ -38810,7 +38810,7 @@ function () {
           page.content[0].html = '<html><head></head><body>' + page['hostname'] + '</body></html>';
         }
 
-        if (privacy.url_only) {
+        if (privacy.only_url) {
           if (page.hasOwnProperty('events')) {
             page['events'] = [];
           }

@@ -15873,9 +15873,7 @@ function (_Tracker) {
     _this = URLTracker_possibleConstructorReturn(this, URLTracker_getPrototypeOf(URLTracker).call(this, worker, privacy));
     _this.extensionfilter = extensionfilter;
     _this.onStart = _this.onStart.bind(URLTracker_assertThisInitialized(_this));
-    _this.is_allowed = null; // make sure this is the case as it can be blocked due to dynamic content
-
-    _this.privacy.url_only = true;
+    _this.is_allowed = null;
     _this.url_debug = false;
     return _this;
   }
