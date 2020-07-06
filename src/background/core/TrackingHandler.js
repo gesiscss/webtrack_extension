@@ -365,7 +365,9 @@ export default class TrackingHandler {
           this.setSending(true);
 
           try {
-            let sendTime = (new Date()).toJSON();
+
+            page.send = true;
+            page.sendTime = (new Date()).toJSON();
 
             if (this.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
             let client_hash = this.getClientId();

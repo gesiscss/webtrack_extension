@@ -38903,7 +38903,7 @@ function () {
         var _ref2 = TrackingHandler_asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee5(resolve, reject) {
-          var sendTime, client_hash, anonymous_page;
+          var client_hash, anonymous_page;
           return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
               switch (_context5.prev = _context5.next) {
@@ -38915,7 +38915,8 @@ function () {
                     _this5.setSending(true);
 
                     try {
-                      sendTime = new Date().toJSON();
+                      page.send = true;
+                      page.sendTime = new Date().toJSON();
                       if (_this5.debug) console.log('='.repeat(50), '\n>>>>> ANONYMIZING:', page.unhashed_url, ' hashes:', page.hashes, ' <<<<<\n' + '='.repeat(50));
                       client_hash = _this5.getClientId();
                       anonymous_page = _this5.anonymize(page, client_hash);
