@@ -9,8 +9,8 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
 
     this.is_allowed = null;
-    this.facebook_debug = true;
-    this.facebook_events_debug = true;
+    this.facebook_debug = false;
+    this.facebook_events_debug = false;
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
