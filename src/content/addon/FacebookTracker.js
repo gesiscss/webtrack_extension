@@ -113,7 +113,7 @@ export default class FacebookTracker extends Tracker{
 
     //own profile
     if (document.querySelector('fbProfileCoverPhotoSelector')){
-      if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+      //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
       return true;
     }
 
@@ -128,7 +128,7 @@ export default class FacebookTracker extends Tracker{
     
     // this is a timeline
     if (sidebar_timeline){
-      if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
+      //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
       // this is not my own timeline
       if (!(sidebar_timeline.querySelector('._6a._m'))){
         return false;
@@ -150,7 +150,7 @@ export default class FacebookTracker extends Tracker{
     // be identified)
     let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
     if (is_user_profile != null){
-      if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+      //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
 
       if (!is_user_profile){
         return false;
@@ -438,7 +438,7 @@ export default class FacebookTracker extends Tracker{
 
     if (is_same != null){
       if (is_same){
-        if (this.facebook_debug) console.log('is same');
+        //if (this.facebook_debug) console.log('is same');
         this.privacy_flags['issame'] = true;
         target.classList.add('is_same_webtracker_flag');
         return true;
@@ -446,7 +446,7 @@ export default class FacebookTracker extends Tracker{
     }
 
     if (!this.is_content_allowed){
-      if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
+      //if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
       return false;
     }
 
@@ -455,10 +455,9 @@ export default class FacebookTracker extends Tracker{
     let is_public = false;
     for (let i = 0; i < els.length; i++) {
       let style = getComputedStyle(els[i]);
-      console.log('style', style);
       for (let key in this.blocked_map) {
         if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']){
-          if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
+          //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
           this.privacy_flags['private'] = true;
           target.classList.add('private_webtracker_flag');
           return false;
@@ -466,7 +465,7 @@ export default class FacebookTracker extends Tracker{
       }
       for (let key in this.public_map) {
         if (style['background-image'].includes(key) && this.public_map[key] == style['background-position']){
-          if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
+          //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
           this.privacy_flags['public'] = true;
           is_public = true;
         }
@@ -661,7 +660,7 @@ export default class FacebookTracker extends Tracker{
                     ])
                   }
                 )
-                if(this.facebook_debug) console.log('commtent  '+comment+' auf comment '+ text);
+                //if(this.facebook_debug) console.log('commtent  '+comment+' auf comment '+ text);
               }, 0);
 
             }, 500);
@@ -691,7 +690,7 @@ export default class FacebookTracker extends Tracker{
               let comment = spans[spans.length-1].textContent;
               if(this.facebook_events_debug) fn('TEST '+comment);
               if(e.keyCode==13){
-                if(this.facebook_debug) console.log('comment', comment);
+                //if(this.facebook_debug) console.log('comment', comment);
                 fn(comment);
               }
             }
@@ -727,7 +726,7 @@ export default class FacebookTracker extends Tracker{
                   ])
                 }
               )
-              console.log('share', e.srcElement.textContent);
+              //console.log('share', e.srcElement.textContent);
             });
             if(this.facebook_events_debug) shares[i].addEventListener('mouseover', e => {
               this.eventFn.onEvent(
@@ -824,7 +823,7 @@ export default class FacebookTracker extends Tracker{
               });
             }
 
-            if(this.facebook_debug) console.log('like comment 1 text => ', text);
+            //if(this.facebook_debug) console.log('like comment 1 text => ', text);
           })
           buttons[i].addEventListener('mouseover', e => {
             let text = this.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
@@ -891,7 +890,7 @@ export default class FacebookTracker extends Tracker{
               })
             }
 
-            if(this.facebook_debug) console.log('like 1', articel);
+            //if(this.facebook_debug) console.log('like 1', articel);
           })
 
           buttons[i].addEventListener('mouseover', ()=> {
@@ -980,7 +979,7 @@ export default class FacebookTracker extends Tracker{
         this.trackedToolbarButtons.push(buttons[a]);
         if(this.facebook_debug) buttons[a].setAttribute("style", "border:2px solid blue !important;");
         buttons[a].onclick = e => {
-          if(this.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
+          //if(this.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
           fn({
             arial_label: e.srcElement.parentElement.parentElement.getAttribute("aria-label"),
             data_reaction: parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10)
@@ -1001,11 +1000,11 @@ export default class FacebookTracker extends Tracker{
           if(this.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(()=>{
-            if(this.facebook_debug) console.log('START REMOVE');
+            //if(this.facebook_debug) console.log('START REMOVE');
             if(this.facebook_debug) layer[i].setAttribute("style", "border: none");
             remove();
           }, 2000))
-          if(this.facebook_debug) console.log('start=>', layer[i].timeouts);
+          //if(this.facebook_debug) console.log('start=>', layer[i].timeouts);
           layer[i].stop = () => {
             for (let c in layer[i].timeouts) {
               if(typeof layer[i].timeouts[c] == 'number'){
@@ -1014,7 +1013,7 @@ export default class FacebookTracker extends Tracker{
               }
             }
             layer[i].timeouts = layer[i].timeouts.filter(e => e!= undefined);
-            if(this.facebook_debug) console.log('STOP', layer[i].timeouts);
+            //if(this.facebook_debug) console.log('STOP', layer[i].timeouts);
           }
           layer[i].onmouseleave = e => {
             layer[i].stop();
@@ -1057,7 +1056,7 @@ export default class FacebookTracker extends Tracker{
             id = parseInt(link.replace(/\D+/g, ""), 10);
             name = elementsOfGroupname[0].textContent;
           }
-          if(this.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
+          //if(this.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
         })
         if(this.facebook_events_debug) buttons[i].addEventListener('mouseover', e => {
           let elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
@@ -1126,7 +1125,7 @@ export default class FacebookTracker extends Tracker{
    */
   onStart(fn){
     setTimeout(() => {
-      if(this.facebook_debug) console.log('START!!!!');
+      //if(this.facebook_debug) console.log('START!!!!');
       fn(2500);
     }, 1000);
   }

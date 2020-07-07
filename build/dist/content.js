@@ -11241,7 +11241,7 @@ function (_Tracker) {
     value: function get_content_allowed() {
       //own profile
       if (document.querySelector('fbProfileCoverPhotoSelector')) {
-        if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+        //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
         return true;
       } //public page
       // if (document.querySelector('#entity_sidebar')){
@@ -11253,8 +11253,8 @@ function (_Tracker) {
       var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
       if (sidebar_timeline) {
-        if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline); // this is not my own timeline
-
+        //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
+        // this is not my own timeline
         if (!sidebar_timeline.querySelector('._6a._m')) {
           return false;
         }
@@ -11275,8 +11275,7 @@ function (_Tracker) {
       var is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
 
       if (is_user_profile != null) {
-        if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
-
+        //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
         if (!is_user_profile) {
           return false;
         }
@@ -11626,7 +11625,7 @@ function (_Tracker) {
 
       if (is_same != null) {
         if (is_same) {
-          if (this.facebook_debug) console.log('is same');
+          //if (this.facebook_debug) console.log('is same');
           this.privacy_flags['issame'] = true;
           target.classList.add('is_same_webtracker_flag');
           return true;
@@ -11634,7 +11633,7 @@ function (_Tracker) {
       }
 
       if (!this.is_content_allowed) {
-        if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
+        //if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
         return false;
       } // loop for old facebook interface
 
@@ -11644,11 +11643,10 @@ function (_Tracker) {
 
       for (var i = 0; i < els.length; i++) {
         var style = getComputedStyle(els[i]);
-        console.log('style', style);
 
         for (var key in this.blocked_map) {
           if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']) {
-            if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
+            //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
             this.privacy_flags['private'] = true;
             target.classList.add('private_webtracker_flag');
             return false;
@@ -11657,7 +11655,7 @@ function (_Tracker) {
 
         for (var _key in this.public_map) {
           if (style['background-image'].includes(_key) && this.public_map[_key] == style['background-position']) {
-            if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
+            //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
             this.privacy_flags['public'] = true;
             is_public = true;
           }
@@ -11900,9 +11898,8 @@ function (_Tracker) {
                         name: 'postanswer-text',
                         value: text
                       }])
-                    });
+                    }); //if(this.facebook_debug) console.log('commtent  '+comment+' auf comment '+ text);
 
-                    if (_this3.facebook_debug) console.log('commtent  ' + comment + ' auf comment ' + text);
                   }, 0);
                 }, 500);
               });
@@ -11966,7 +11963,7 @@ function (_Tracker) {
                   if (_this4.facebook_events_debug) fn('TEST ' + comment);
 
                   if (e.keyCode == 13) {
-                    if (_this4.facebook_debug) console.log('comment', comment);
+                    //if(this.facebook_debug) console.log('comment', comment);
                     fn(comment);
                   }
                 }
@@ -12023,9 +12020,8 @@ function (_Tracker) {
                     name: 'choice',
                     value: e.srcElement.textContent
                   }])
-                });
+                }); //console.log('share', e.srcElement.textContent);
 
-                console.log('share', e.srcElement.textContent);
               });
               if (_this5.facebook_events_debug) shares[i].addEventListener('mouseover', function (e) {
                 _this5.eventFn.onEvent({
@@ -12197,9 +12193,8 @@ function (_Tracker) {
                       value: text
                     }])
                   });
-                }
+                } //if(this.facebook_debug) console.log('like comment 1 text => ', text);
 
-                if (_this6.facebook_debug) console.log('like comment 1 text => ', text);
               });
               buttons[i].addEventListener('mouseover', function (e) {
                 var text = _this6.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
@@ -12296,9 +12291,8 @@ function (_Tracker) {
                       value: _this7.getValueOfLikeNumber(1)
                     }])
                   });
-                }
+                } //if(this.facebook_debug) console.log('like 1', articel);
 
-                if (_this7.facebook_debug) console.log('like 1', articel);
               });
               buttons[i].addEventListener('mouseover', function () {
                 // console.log(this._getValues(articel));
@@ -12422,7 +12416,7 @@ function (_Tracker) {
           if (_this8.facebook_debug) buttons[a].setAttribute("style", "border:2px solid blue !important;");
 
           buttons[a].onclick = function (e) {
-            if (_this8.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
+            //if(this.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
             fn({
               arial_label: e.srcElement.parentElement.parentElement.getAttribute("aria-label"),
               data_reaction: parseInt(e.srcElement.parentElement.getAttribute("data-reaction"), 10)
@@ -12443,11 +12437,10 @@ function (_Tracker) {
           if (_this8.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(function () {
-            if (_this8.facebook_debug) console.log('START REMOVE');
+            //if(this.facebook_debug) console.log('START REMOVE');
             if (_this8.facebook_debug) layer[i].setAttribute("style", "border: none");
             remove();
-          }, 2000));
-          if (_this8.facebook_debug) console.log('start=>', layer[i].timeouts);
+          }, 2000)); //if(this.facebook_debug) console.log('start=>', layer[i].timeouts);
 
           layer[i].stop = function () {
             for (var c in layer[i].timeouts) {
@@ -12459,8 +12452,7 @@ function (_Tracker) {
 
             layer[i].timeouts = layer[i].timeouts.filter(function (e) {
               return e != undefined;
-            });
-            if (_this8.facebook_debug) console.log('STOP', layer[i].timeouts);
+            }); //if(this.facebook_debug) console.log('STOP', layer[i].timeouts);
           };
 
           layer[i].onmouseleave = function (e) {
@@ -12523,9 +12515,8 @@ function (_Tracker) {
                 link = elementsOfGroupname[0].href;
                 id = parseInt(link.replace(/\D+/g, ""), 10);
                 name = elementsOfGroupname[0].textContent;
-              }
+              } //if(this.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
 
-              if (_this9.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
             });
             if (this.facebook_events_debug) buttons[i].addEventListener('mouseover', function (e) {
               var elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
@@ -12670,10 +12661,8 @@ function (_Tracker) {
   }, {
     key: "onStart",
     value: function onStart(fn) {
-      var _this11 = this;
-
       setTimeout(function () {
-        if (_this11.facebook_debug) console.log('START!!!!');
+        //if(this.facebook_debug) console.log('START!!!!');
         fn(2500);
       }, 1000);
     }
