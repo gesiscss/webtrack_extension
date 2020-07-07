@@ -777,6 +777,7 @@ export default class FacebookTracker extends Tracker{
       case 4: value = 'haha'; break;
       case 7: value = 'sad'; break;
       case 8: value = 'angry'; break;
+      case 16: value = 'care'; break;
       default:
         value = 'unkown';
     }

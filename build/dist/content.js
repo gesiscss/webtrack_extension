@@ -12125,6 +12125,10 @@ function (_Tracker) {
           value = 'angry';
           break;
 
+        case 16:
+          value = 'care';
+          break;
+
         default:
           value = 'unkown';
       }
