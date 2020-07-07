@@ -11105,8 +11105,8 @@ function (_Tracker) {
     _this.onStart = _this.onStart.bind(FacebookTracker_assertThisInitialized(_this));
     _this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     _this.is_allowed = null;
-    _this.facebook_debug = false;
-    _this.facebook_events_debug = false;
+    _this.facebook_debug = true;
+    _this.facebook_events_debug = true;
     _this.elements = [];
     _this.elementStrings = '';
     _this.trackedToolbarButtons = [];
@@ -11194,12 +11194,16 @@ function (_Tracker) {
     _this.pos_2nd_blacklist = ['about', 'archive', 'events', 'films', 'followers', 'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'likes', 'music', 'notes', 'photos', 'reviews', 'sports'];
     _this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
     _this.public_map = {
-      // public
-      '1EHoEekiTcE.png': '-13px -308px'
+      // public:
+      'SxSV4AGuhDB.png': '0 -297px',
+      //'1EHoEekiTcE.png': '-13px -308px',
+      // friends of friends:
+      'ojhISTslAXA.png': '0 -142px'
     };
     _this.blocked_map = {
       // friends
-      '7dOM-M8m26G.png': '-15px -377px' // only me (all of the user is public)
+      //'7dOM-M8m26G.png': '-15px -377px',
+      'YhI_pNxV26l.png': '-26px -465px' // only me (all of the user is public)
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
 
     };
@@ -11640,6 +11644,7 @@ function (_Tracker) {
 
       for (var i = 0; i < els.length; i++) {
         var style = getComputedStyle(els[i]);
+        console.log('style', style);
 
         for (var key in this.blocked_map) {
           if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']) {
@@ -11658,34 +11663,29 @@ function (_Tracker) {
           }
         }
       } // loop for NEW facebook interface
-
-
-      if (els.length == 0) {
-        els = target.querySelectorAll('img');
-
-        for (var _i2 = 0; _i2 < els.length; _i2++) {
-          for (var j = 0; j < this.blocked_icons.length; j++) {
-            var icon = this.blocked_icons[j];
-
-            if (els[_i2].src == icon) {
-              if (this.facebook_debug) console.log("if (els[i].src == icon){");
-              this.privacy_flags['private'] = true;
-              target.classList.add('private_webtracker_flag');
-              return false;
-            }
-          }
-
-          for (var _j = 0; _j < this.public_icons.length; _j++) {
-            var _icon = this.public_icons[_j];
-
-            if (els[_i2].src == _icon) {
-              if (this.facebook_debug) console.log("if (els[i].src == icon){");
-              this.privacy_flags['public'] = true;
-              is_public = true;
-            }
-          }
-        }
-      } // the return is not immediate in the loop because there could icons inside indicating
+      // if (els.length == 0){
+      //   els = target.querySelectorAll('img');
+      //   for (let i = 0; i < els.length; i++) {
+      //     for (let j = 0; j < this.blocked_icons.length; j++) {
+      //       let icon = this.blocked_icons[j];
+      //       if (els[i].src == icon){
+      //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
+      //         this.privacy_flags['private'] = true;
+      //         target.classList.add('private_webtracker_flag');
+      //         return false;
+      //       }
+      //     }
+      //     for (let j = 0; j < this.public_icons.length; j++) {
+      //       let icon = this.public_icons[j];
+      //       if (els[i].src == icon){
+      //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
+      //         this.privacy_flags['public'] = true;
+      //         is_public = true;
+      //       }
+      //     }
+      //   }
+      // }
+      // the return is not immediate in the loop because there could icons inside indicating
       // that the post is private. We can only be sure after all icons have been checked.
 
 
@@ -11747,8 +11747,13 @@ function (_Tracker) {
     key: "_getPublicArticels",
     value: function _getPublicArticels() {
       var bucket = []; //for (let query of this.eventElements.articels) {
+      //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
 
-      var found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
+      var found = document.querySelectorAll('.userContentWrapper:not(.tracked)'); // // try to capture elements in the new interface
+      // if (found.length == 0){
+      //   found = document.querySelectorAll('div[role="article"]:not(.tracked)');
+      // }
+
       var length = found.length;
 
       for (var i = 0; i < length; i++) {

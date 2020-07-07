@@ -9,8 +9,8 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
 
     this.is_allowed = null;
-    this.facebook_debug = false;
-    this.facebook_events_debug = false;
+    this.facebook_debug = true;
+    this.facebook_events_debug = true;
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
@@ -60,12 +60,17 @@ export default class FacebookTracker extends Tracker{
     this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
 
     this.public_map = {
-      // public
-      '1EHoEekiTcE.png': '-13px -308px',
+      
+      // public:
+      'SxSV4AGuhDB.png': '0 -297px', 
+      //'1EHoEekiTcE.png': '-13px -308px',
+      // friends of friends:
+      'ojhISTslAXA.png': '0 -142px'
     }
     this.blocked_map = {
       // friends
-      '7dOM-M8m26G.png': '-15px -377px',
+      //'7dOM-M8m26G.png': '-15px -377px',
+      'YhI_pNxV26l.png': '-26px -465px',
       // only me (all of the user is public)
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
     }
@@ -450,6 +455,7 @@ export default class FacebookTracker extends Tracker{
     let is_public = false;
     for (let i = 0; i < els.length; i++) {
       let style = getComputedStyle(els[i]);
+      console.log('style', style);
       for (let key in this.blocked_map) {
         if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']){
           if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
@@ -468,29 +474,29 @@ export default class FacebookTracker extends Tracker{
     }
 
     // loop for NEW facebook interface
-    if (els.length == 0){
-      els = target.querySelectorAll('img');
-      for (let i = 0; i < els.length; i++) {
-        for (let j = 0; j < this.blocked_icons.length; j++) {
-          let icon = this.blocked_icons[j];
-          if (els[i].src == icon){
-            if (this.facebook_debug) console.log("if (els[i].src == icon){");
-            this.privacy_flags['private'] = true;
-            target.classList.add('private_webtracker_flag');
-            return false;
-          }
-        }
+    // if (els.length == 0){
+    //   els = target.querySelectorAll('img');
+    //   for (let i = 0; i < els.length; i++) {
+    //     for (let j = 0; j < this.blocked_icons.length; j++) {
+    //       let icon = this.blocked_icons[j];
+    //       if (els[i].src == icon){
+    //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
+    //         this.privacy_flags['private'] = true;
+    //         target.classList.add('private_webtracker_flag');
+    //         return false;
+    //       }
+    //     }
         
-        for (let j = 0; j < this.public_icons.length; j++) {
-          let icon = this.public_icons[j];
-          if (els[i].src == icon){
-            if (this.facebook_debug) console.log("if (els[i].src == icon){");
-            this.privacy_flags['public'] = true;
-            is_public = true;
-          }
-        }
-      }
-    }
+    //     for (let j = 0; j < this.public_icons.length; j++) {
+    //       let icon = this.public_icons[j];
+    //       if (els[i].src == icon){
+    //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
+    //         this.privacy_flags['public'] = true;
+    //         is_public = true;
+    //       }
+    //     }
+    //   }
+    // }
 
     // the return is not immediate in the loop because there could icons inside indicating
     // that the post is private. We can only be sure after all icons have been checked.
@@ -549,7 +555,13 @@ export default class FacebookTracker extends Tracker{
     let bucket = [];
 
     //for (let query of this.eventElements.articels) {
-    let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
+    //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
+    let found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
+
+    // // try to capture elements in the new interface
+    // if (found.length == 0){
+    //   found = document.querySelectorAll('div[role="article"]:not(.tracked)');
+    // }
 
 
     let length = found.length;
