@@ -11203,6 +11203,8 @@ function (_Tracker) {
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
 
     };
+    _this.blocked_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yx/r/HFS9K3dIOb6.png", "https://static.xx.fbcdn.net/rsrc.php/v3/yP/r/IY7_xqHkrTm.png", "https://static.xx.fbcdn.net/rsrc.php/v3/y1/r/8hytOd4Srb5.png"];
+    _this.public_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yQ/r/axobuTi734a.png"];
     _this.privacy_flags = {
       'public': null,
       'private': null,
@@ -11235,7 +11237,7 @@ function (_Tracker) {
     value: function get_content_allowed() {
       //own profile
       if (document.querySelector('fbProfileCoverPhotoSelector')) {
-        //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+        if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
         return true;
       } //public page
       // if (document.querySelector('#entity_sidebar')){
@@ -11247,8 +11249,8 @@ function (_Tracker) {
       var sidebar_timeline = document.querySelector('#timeline_small_column'); // this is a timeline
 
       if (sidebar_timeline) {
-        //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
-        // this is not my own timeline
+        if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline); // this is not my own timeline
+
         if (!sidebar_timeline.querySelector('._6a._m')) {
           return false;
         }
@@ -11269,7 +11271,8 @@ function (_Tracker) {
       var is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
 
       if (is_user_profile != null) {
-        //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+        if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+
         if (!is_user_profile) {
           return false;
         }
@@ -11629,7 +11632,8 @@ function (_Tracker) {
       if (!this.is_content_allowed) {
         if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
         return false;
-      }
+      } // loop for old facebook interface
+
 
       var els = target.querySelectorAll('i[class*=sx_');
       var is_public = false;
@@ -11651,6 +11655,34 @@ function (_Tracker) {
             if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
             this.privacy_flags['public'] = true;
             is_public = true;
+          }
+        }
+      } // loop for NEW facebook interface
+
+
+      if (els.length == 0) {
+        els = target.querySelectorAll('img');
+
+        for (var _i2 = 0; _i2 < els.length; _i2++) {
+          for (var j = 0; j < this.blocked_icons.length; j++) {
+            var icon = this.blocked_icons[j];
+
+            if (els[_i2].src == icon) {
+              if (this.facebook_debug) console.log("if (els[i].src == icon){");
+              this.privacy_flags['private'] = true;
+              target.classList.add('private_webtracker_flag');
+              return false;
+            }
+          }
+
+          for (var _j = 0; _j < this.public_icons.length; _j++) {
+            var _icon = this.public_icons[_j];
+
+            if (els[_i2].src == _icon) {
+              if (this.facebook_debug) console.log("if (els[i].src == icon){");
+              this.privacy_flags['public'] = true;
+              is_public = true;
+            }
           }
         }
       } // the return is not immediate in the loop because there could icons inside indicating
@@ -11716,7 +11748,7 @@ function (_Tracker) {
     value: function _getPublicArticels() {
       var bucket = []; //for (let query of this.eventElements.articels) {
 
-      var found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
+      var found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
       var length = found.length;
 
       for (var i = 0; i < length; i++) {

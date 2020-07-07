@@ -70,6 +70,12 @@ export default class FacebookTracker extends Tracker{
       // 'JTNOKcsLgL6.png': ['-19px -327px'], 
     }
 
+    this.blocked_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yx/r/HFS9K3dIOb6.png", 
+                          "https://static.xx.fbcdn.net/rsrc.php/v3/yP/r/IY7_xqHkrTm.png",
+                          "https://static.xx.fbcdn.net/rsrc.php/v3/y1/r/8hytOd4Srb5.png"]
+    this.public_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yQ/r/axobuTi734a.png"]
+
+
     this.privacy_flags = {
       'public': null,
       'private': null,
@@ -102,7 +108,7 @@ export default class FacebookTracker extends Tracker{
 
     //own profile
     if (document.querySelector('fbProfileCoverPhotoSelector')){
-      //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
+      if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
       return true;
     }
 
@@ -117,7 +123,7 @@ export default class FacebookTracker extends Tracker{
     
     // this is a timeline
     if (sidebar_timeline){
-      //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
+      if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
       // this is not my own timeline
       if (!(sidebar_timeline.querySelector('._6a._m'))){
         return false;
@@ -139,7 +145,7 @@ export default class FacebookTracker extends Tracker{
     // be identified)
     let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
     if (is_user_profile != null){
-      //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
+      if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
 
       if (!is_user_profile){
         return false;
@@ -439,6 +445,7 @@ export default class FacebookTracker extends Tracker{
       return false;
     }
 
+    // loop for old facebook interface
     let els = target.querySelectorAll('i[class*=sx_')
     let is_public = false;
     for (let i = 0; i < els.length; i++) {
@@ -456,6 +463,31 @@ export default class FacebookTracker extends Tracker{
           if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
           this.privacy_flags['public'] = true;
           is_public = true;
+        }
+      }
+    }
+
+    // loop for NEW facebook interface
+    if (els.length == 0){
+      els = target.querySelectorAll('img');
+      for (let i = 0; i < els.length; i++) {
+        for (let j = 0; j < this.blocked_icons.length; j++) {
+          let icon = this.blocked_icons[j];
+          if (els[i].src == icon){
+            if (this.facebook_debug) console.log("if (els[i].src == icon){");
+            this.privacy_flags['private'] = true;
+            target.classList.add('private_webtracker_flag');
+            return false;
+          }
+        }
+        
+        for (let j = 0; j < this.public_icons.length; j++) {
+          let icon = this.public_icons[j];
+          if (els[i].src == icon){
+            if (this.facebook_debug) console.log("if (els[i].src == icon){");
+            this.privacy_flags['public'] = true;
+            is_public = true;
+          }
         }
       }
     }
@@ -517,7 +549,7 @@ export default class FacebookTracker extends Tracker{
     let bucket = [];
 
     //for (let query of this.eventElements.articels) {
-    let found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
+    let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
 
 
     let length = found.length;
