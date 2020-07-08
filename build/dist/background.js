@@ -31696,7 +31696,7 @@ function () {
 
       if (select == null) {
         for (var index in this.projects) {
-          if (this.projects[index].NAME == 'Wave1') {
+          if (this.projects[index].NAME == 'Wave2') {
             select = this.projects[index].ID;
             break;
           }
