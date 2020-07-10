@@ -324,7 +324,7 @@ export default class Configuration {
         }
       }
       if (select == null) {
-        console.warn('No project with the name:', project_name);
+        console.log('No project with the name:', project_name);
       } else {
         console.log('Project found: ', project_name);
 
