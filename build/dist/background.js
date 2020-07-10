@@ -31695,11 +31695,20 @@ function () {
       var select = this.select.get();
 
       if (select == null) {
+        var project_name = this.settings.project_name;
+        console.log(this.projects);
+
         for (var index in this.projects) {
-          if (this.projects[index].NAME == 'Wave2') {
+          if (this.projects[index].NAME == project_name) {
             select = this.projects[index].ID;
             break;
           }
+        }
+
+        if (select == null) {
+          console.warn('No project with the name:', project_name);
+        } else {
+          console.log('Project found: ', project_name);
         }
       } //if (this.debug) console.log('<- Configuration.getSelect()')
 

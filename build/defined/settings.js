@@ -4,7 +4,8 @@ var settings = {
   },
   id: 'webtracker.sowi.unibe.ch',
   lang: 'de',
-  versionType: 'v0.8.1',
+  project_name: 'Wave2',
+  versionType: 'v0.8.2',
   mobile: false,
   requireVersion: {
     chrome: 45
