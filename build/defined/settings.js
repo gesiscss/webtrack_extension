@@ -9,5 +9,5 @@ var settings = {
   requireVersion: {
     chrome: 45
   },
-  server: "https://webtracker.sowi.unibe.ch:9443/"
+  server: "https://webtracker.sowi.unibe.ch:10443/"
 }
