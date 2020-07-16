@@ -92,9 +92,9 @@ export default class TwitterTracker extends Tracker{
     this.sidebar_left = null;
     this.sidebar_right = null;
 
-    this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/', '/login/'];
+    this.startswith_blacklist = ['/messages/', '/settings/', '/notifications/', '/login/', '/account/'];
 
-    this.pos_2nd_blacklist = ['bookmarks', 'signup', 'flow'];
+    this.pos_2nd_blacklist = ['bookmarks', 'signup', 'flow', 'notifications'];
 
     this.privacy_flags = {
       'user_id': null,
