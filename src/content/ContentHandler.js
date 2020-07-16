@@ -408,6 +408,9 @@ export default class ContentHandler {
       sendResponse(true);
     } else if (message.action == 'private_mode'){
       if (message.private_mode) {
+        // This is not perfect: when the private mode is deactactivated
+        // the tracker will not collect the content until the next page
+        // when fixed the full battery of tests should be performed 
         this.closeOnData();
         this.tracker.set_private_mode(true);
         this.sendMessage({ meta: {
