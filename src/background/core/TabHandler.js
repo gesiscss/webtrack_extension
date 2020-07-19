@@ -104,7 +104,6 @@ export default class TabHandler {
       //   id = found[found.length-1].id
       // }
     }
-    console.log('id', id);
     if (id){
       return id;
     } else {
@@ -117,8 +116,6 @@ export default class TabHandler {
    * @param {Number} tabId
    */
   setPrecursor_id(tabId, id){
-    console.log('prec_id');
-    console.log(id);
     if (id) {
       this.tab2precursor_id[tabId] = id;
     } else {
@@ -372,7 +369,7 @@ export default class TabHandler {
             }, 2000)
 
             tab.init().then(()=> {
-              console.log('Create Tab Object');
+              if (this.debug) console.log('Create Tab Object');
               this.tabs[tabId] = tab
               clearTimeout(timeout);
             }).catch(err => {

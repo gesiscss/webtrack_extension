@@ -37104,19 +37104,17 @@ function () {
                 break;
 
               case 17:
-                console.log('id', id);
-
                 if (!id) {
-                  _context.next = 22;
+                  _context.next = 21;
                   break;
                 }
 
                 return _context.abrupt("return", id);
 
-              case 22:
+              case 21:
                 return _context.abrupt("return", 'NO(TabHandler.js:01)');
 
-              case 23:
+              case 22:
               case "end":
                 return _context.stop();
             }
@@ -37136,9 +37134,6 @@ function () {
   }, {
     key: "setPrecursor_id",
     value: function setPrecursor_id(tabId, id) {
-      console.log('prec_id');
-      console.log(id);
-
       if (id) {
         this.tab2precursor_id[tabId] = id;
       } else {
@@ -37900,7 +37895,7 @@ function () {
                         console.warn('Timeout: Failed to create Tab');
                       }, 2000);
                       tab.init().then(function () {
-                        console.log('Create Tab Object');
+                        if (_this7.debug) console.log('Create Tab Object');
                         _this7.tabs[tabId] = tab;
                         clearTimeout(timeout);
                       })["catch"](function (err) {
