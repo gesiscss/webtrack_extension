@@ -301,7 +301,7 @@ export default class Tab {
         landing_url: data.landing_url,
         hostname: data.hostname,
         title: data.title,
-        precursor_id: data.precursor_id==null?'':data.precursor_id,
+        precursor_id: data.precursor_id==null?'NO(Tab.js:01)':data.precursor_id,
         meta: Object.assign({
           description: '',
           keywords: ''

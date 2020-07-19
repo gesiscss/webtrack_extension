@@ -6,6 +6,10 @@ const EVENT_NAMES = {
   'page': 'onPage'
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default class TabHandler {
 
   /**
@@ -46,23 +50,38 @@ export default class TabHandler {
     return hash >>> 0;
   }
 
+  getTabOpenerID(tabId){
+    let openerid = this.tabID2Opener[tabId];
+    //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
+    if (this.tabs.hasOwnProperty(openerid)){
+      return this.tabs[openerid].id;
+    } else {
+      return 'NO(TabHandler.js:03)';
+    }
+
+  }
+
   /**
    * [getPrecursor_id search and return the precursor of tabId]
    * @param  {Number} tabId
    * @param  {String} url      [default: '']
    * @return {Number} id
    */
-  getPrecursor_id(tabId, url=''){
+  async getPrecursor_id(tabId, url=''){
     let id = this.tab2precursor_id.hasOwnProperty(tabId)? this.tab2precursor_id[tabId]: null;
     if(id==null) { //} && url.length>0 && Object.keys(this.tabs).length > 0){
       //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
       //let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
       //let found = [];
       if (this.tabID2Opener.hasOwnProperty(tabId)){
-        let openerid = this.tabID2Opener[tabId];
-        //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
-        if (this.tabs.hasOwnProperty(openerid)){
-          id = this.tabs[openerid].id;
+        id = this.getTabOpenerID(tabId);
+      } else {
+        for (let i = 0; i < 5; i++) {
+          await sleep(1000);
+          if (this.tabID2Opener.hasOwnProperty(tabId)){
+            id = this.getTabOpenerID(tabId);
+            break;
+          }
         }
       }
 
@@ -85,7 +104,12 @@ export default class TabHandler {
       //   id = found[found.length-1].id
       // }
     }
-    return id;
+    console.log('id', id);
+    if (id){
+      return id;
+    } else {
+      return 'NO(TabHandler.js:01)';
+    }
   }
 
   /**
@@ -93,7 +117,13 @@ export default class TabHandler {
    * @param {Number} tabId
    */
   setPrecursor_id(tabId, id){
-    this.tab2precursor_id[tabId] = id;
+    console.log('prec_id');
+    console.log(id);
+    if (id) {
+      this.tab2precursor_id[tabId] = id;
+    } else {
+      this.tab2precursor_id[tabId] = 'NO(TabHandler.js:02)';
+    }
   }
 
   /**
@@ -105,7 +135,7 @@ export default class TabHandler {
    * @param  {Boolean}  close [close tab]
    * @param  {Boolean}  tabRemove [remove the db entry]
    */
-  async closeTab(tabId, openerTabId, close=true, tabRemove=false){
+  closeTab(tabId, openerTabId, close=true, tabRemove=false){
     if (this.debug) console.log('-> closeTab(...)');
     if(openerTabId!=null){
       if(!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
@@ -204,7 +234,7 @@ export default class TabHandler {
   }
 
 
-  _pushData(data, count=0){
+  async _pushData(data, count=0){
     if (this.debug) console.log('-> _pushData(...)');
     if(typeof data != 'object'){
       console.warn('data is no object');
@@ -225,7 +255,7 @@ export default class TabHandler {
         this.closeTab(data.tabId, undefined);
       }
       if(!this.tabs[data.tabId].get().hasOwnProperty('precursor_id')){
-        data.precursor_id = this.getPrecursor_id(data.tabId, data.url);
+        data.precursor_id = await this.getPrecursor_id(data.tabId, data.url);
       }
       this.tabs[data.tabId].addUpdate(data)
     }else if(count <= 10){

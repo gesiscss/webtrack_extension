@@ -36890,7 +36890,7 @@ function () {
         landing_url: data.landing_url,
         hostname: data.hostname,
         title: data.title,
-        precursor_id: data.precursor_id == null ? '' : data.precursor_id,
+        precursor_id: data.precursor_id == null ? 'NO(Tab.js:01)' : data.precursor_id,
         meta: Object.assign({
           description: '',
           keywords: ''
@@ -36975,6 +36975,12 @@ var TabHandler_EVENT_NAMES = {
   'page': 'onPage'
 };
 
+function sleep(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
+}
+
 var TabHandler_TabHandler =
 /*#__PURE__*/
 function () {
@@ -37022,6 +37028,17 @@ function () {
 
       return hash >>> 0;
     }
+  }, {
+    key: "getTabOpenerID",
+    value: function getTabOpenerID(tabId) {
+      var openerid = this.tabID2Opener[tabId]; //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
+
+      if (this.tabs.hasOwnProperty(openerid)) {
+        return this.tabs[openerid].id;
+      } else {
+        return 'NO(TabHandler.js:03)';
+      }
+    }
     /**
      * [getPrecursor_id search and return the precursor of tabId]
      * @param  {Number} tabId
@@ -37031,44 +37048,86 @@ function () {
 
   }, {
     key: "getPrecursor_id",
-    value: function getPrecursor_id(tabId) {
-      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var id = this.tab2precursor_id.hasOwnProperty(tabId) ? this.tab2precursor_id[tabId] : null;
+    value: function () {
+      var _getPrecursor_id = TabHandler_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(tabId) {
+        var url,
+            id,
+            i,
+            _args = arguments;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                url = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
+                id = this.tab2precursor_id.hasOwnProperty(tabId) ? this.tab2precursor_id[tabId] : null;
 
-      if (id == null) {
-        //} && url.length>0 && Object.keys(this.tabs).length > 0){
-        //let hash_url = this._getHashCode(url.replace(new RegExp('^http(s)?:\/\/', 'g'), ''));
-        //let hash_url = url.replace(new RegExp('^http(s)?:\/\/', 'g'), '');
-        //let found = [];
-        if (this.tabID2Opener.hasOwnProperty(tabId)) {
-          var openerid = this.tabID2Opener[tabId]; //id = this.tab2precursor_id.hasOwnProperty(openerid)? this.tab2precursor_id[openerid]: null;
+                if (!(id == null)) {
+                  _context.next = 17;
+                  break;
+                }
 
-          if (this.tabs.hasOwnProperty(openerid)) {
-            id = this.tabs[openerid].id;
+                if (!this.tabID2Opener.hasOwnProperty(tabId)) {
+                  _context.next = 7;
+                  break;
+                }
+
+                id = this.getTabOpenerID(tabId);
+                _context.next = 17;
+                break;
+
+              case 7:
+                i = 0;
+
+              case 8:
+                if (!(i < 5)) {
+                  _context.next = 17;
+                  break;
+                }
+
+                _context.next = 11;
+                return sleep(1000);
+
+              case 11:
+                if (!this.tabID2Opener.hasOwnProperty(tabId)) {
+                  _context.next = 14;
+                  break;
+                }
+
+                id = this.getTabOpenerID(tabId);
+                return _context.abrupt("break", 17);
+
+              case 14:
+                i++;
+                _context.next = 8;
+                break;
+
+              case 17:
+                console.log('id', id);
+
+                if (!id) {
+                  _context.next = 22;
+                  break;
+                }
+
+                return _context.abrupt("return", id);
+
+              case 22:
+                return _context.abrupt("return", 'NO(TabHandler.js:01)');
+
+              case 23:
+              case "end":
+                return _context.stop();
+            }
           }
-        } // for (let _tabId of Object.keys(this.tabs)) {
-        //   let tab = this.tabs[_tabId];
-        //   if(tab.is() && tab.hasContent() && tab.get().links==undefined) console.log('no Links', tab.get());
-        //   if (tab.is() && tab.hasContent() && tab.get().links.includes(hash_url)){
-        //     console.log('=== @Roberto: Let me know if you see this message. I have not being able to get to this condition (legacy code?) ===')
-        //     found.push({tabId: _tabId, id: tab.get().id})
-        //   }
-        // }//for
-        // if(found.length===1){
-        //   return found[0].id
-        // }else if(found.length>1){
-        //   for (let e of found) {
-        //     if(this.openerTabId2tab.hasOwnProperty(e.tabId) && this.openerTabId2tab[e.tabId].includes(tabId)){
-        //       return e.id;
-        //     }
-        //   }
-        //   id = found[found.length-1].id
-        // }
+        }, _callee, this);
+      }));
 
-      }
-
-      return id;
-    }
+      return function getPrecursor_id(_x) {
+        return _getPrecursor_id.apply(this, arguments);
+      };
+    }()
     /**
      * [setPrecursor_id set the precursor id of the tab-id]
      * @param {Number} tabId
@@ -37077,7 +37136,14 @@ function () {
   }, {
     key: "setPrecursor_id",
     value: function setPrecursor_id(tabId, id) {
-      this.tab2precursor_id[tabId] = id;
+      console.log('prec_id');
+      console.log(id);
+
+      if (id) {
+        this.tab2precursor_id[tabId] = id;
+      } else {
+        this.tab2precursor_id[tabId] = 'NO(TabHandler.js:02)';
+      }
     }
     /**
      * [closeTab // close and delete tab and hand over the page to the event function
@@ -37091,63 +37157,41 @@ function () {
 
   }, {
     key: "closeTab",
-    value: function () {
-      var _closeTab = TabHandler_asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(tabId, openerTabId) {
-        var _this = this;
+    value: function closeTab(tabId, openerTabId) {
+      var _this = this;
 
-        var close,
-            tabRemove,
-            _args = arguments;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                close = _args.length > 2 && _args[2] !== undefined ? _args[2] : true;
-                tabRemove = _args.length > 3 && _args[3] !== undefined ? _args[3] : false;
-                if (this.debug) console.log('-> closeTab(...)');
+      var close = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var tabRemove = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      if (this.debug) console.log('-> closeTab(...)');
 
-                if (openerTabId != null) {
-                  if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
-                  if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
-                  this.tabID2Opener[tabId] = openerTabId;
-                }
+      if (openerTabId != null) {
+        if (!this.openerTabId2tab.hasOwnProperty(openerTabId)) this.openerTabId2tab[openerTabId] = [];
+        if (!this.openerTabId2tab[openerTabId].includes(openerTabId)) this.openerTabId2tab[openerTabId].push(tabId);
+        this.tabID2Opener[tabId] = openerTabId;
+      }
 
-                if (this.tabs.hasOwnProperty(tabId)) {
-                  if (this.tabs[tabId].hasContent()) {
-                    this.setPrecursor_id(tabId, this.tabs[tabId].get().id);
-                  }
+      if (this.tabs.hasOwnProperty(tabId)) {
+        if (this.tabs[tabId].hasContent()) {
+          this.setPrecursor_id(tabId, this.tabs[tabId].get().id);
+        }
 
-                  if (close && !tabRemove) {
-                    this.tabs[tabId].close(function (page) {
-                      if (page != null) {
-                        if (_this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
+        if (close && !tabRemove) {
+          this.tabs[tabId].close(function (page) {
+            if (page != null) {
+              if (_this.debug) console.log('==== Emit Event: onPage (Send Page) ====');
 
-                        _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
-                      }
-                    });
-                  } else if (close && tabRemove) {
-                    this.closeLostTabs([tabId]);
-                  }
-                } else {
-                  console.log('TabId %s not found', tabId);
-                }
-
-                if (this.debug) console.log('<- closeTab(...)');
-
-              case 6:
-              case "end":
-                return _context.stop();
+              _this.event.emit(TabHandler_EVENT_NAMES.page, page, false);
             }
-          }
-        }, _callee, this);
-      }));
+          });
+        } else if (close && tabRemove) {
+          this.closeLostTabs([tabId]);
+        }
+      } else {
+        console.log('TabId %s not found', tabId);
+      }
 
-      return function closeTab(_x, _x2) {
-        return _closeTab.apply(this, arguments);
-      };
-    }()
+      if (this.debug) console.log('<- closeTab(...)');
+    }
     /**
      * [_updateDuration update the duration of active tabs]
      */
@@ -37460,91 +37504,137 @@ function () {
     }()
   }, {
     key: "_pushData",
-    value: function _pushData(data) {
-      var _this4 = this;
-
-      var count = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      if (this.debug) console.log('-> _pushData(...)');
-
-      if (TabHandler_typeof(data) != 'object') {
-        console.warn('data is no object');
-      } else if (this.tabs.hasOwnProperty(data.tabId)) {
-        // console.log('onTabContent %s', data.tabId, data);
-        // if(data.count == 1 && data.hasOwnProperty('url')){
-        // data.precursor_id = this.getPrecursor_id(data.tabId, data.url);
-        //   this.tabs[data.tabId].addUpdate(data)
-        // }else if(this.tabs[data.tabId].hasContent()){
-        // this.tabs[data.tabId].addUpdate(data)
-        // }else{
-        //   // this.tabs[data.tabId].create();
-        //   console.log('tab id %s has not content', data.tabId, data.count);
-        // }
-        //close the tab if the data count lower than the old count
-        if (data.count < this.tabs[data.tabId].get().count) {
-          this.closeTab(data.tabId, undefined);
-        }
-
-        if (!this.tabs[data.tabId].get().hasOwnProperty('precursor_id')) {
-          data.precursor_id = this.getPrecursor_id(data.tabId, data.url);
-        }
-
-        this.tabs[data.tabId].addUpdate(data);
-      } else if (count <= 10) {
-        console.log('Timeout', data, count);
-        setTimeout(function () {
-          return _this4._pushData(data, count + 1);
-        }, 1000);
-      } else {
-        console.warn('Timeout over', data);
-      }
-
-      if (this.debug) console.log('<- _pushData(...)');
-    }
-  }, {
-    key: "closeLostTabs",
     value: function () {
-      var _closeLostTabs = TabHandler_asyncToGenerator(
+      var _pushData2 = TabHandler_asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5() {
-        var _this5 = this;
+      regeneratorRuntime.mark(function _callee5(data) {
+        var _this4 = this;
 
-        var lostIds,
-            id,
-            tab,
+        var count,
             _args5 = arguments;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                lostIds = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : [];
+                count = _args5.length > 1 && _args5[1] !== undefined ? _args5[1] : 0;
+                if (this.debug) console.log('-> _pushData(...)');
+
+                if (!(TabHandler_typeof(data) != 'object')) {
+                  _context5.next = 6;
+                  break;
+                }
+
+                console.warn('data is no object');
+                _context5.next = 16;
+                break;
+
+              case 6:
+                if (!this.tabs.hasOwnProperty(data.tabId)) {
+                  _context5.next = 15;
+                  break;
+                }
+
+                // console.log('onTabContent %s', data.tabId, data);
+                // if(data.count == 1 && data.hasOwnProperty('url')){
+                // data.precursor_id = this.getPrecursor_id(data.tabId, data.url);
+                //   this.tabs[data.tabId].addUpdate(data)
+                // }else if(this.tabs[data.tabId].hasContent()){
+                // this.tabs[data.tabId].addUpdate(data)
+                // }else{
+                //   // this.tabs[data.tabId].create();
+                //   console.log('tab id %s has not content', data.tabId, data.count);
+                // }
+                //close the tab if the data count lower than the old count
+                if (data.count < this.tabs[data.tabId].get().count) {
+                  this.closeTab(data.tabId, undefined);
+                }
+
+                if (this.tabs[data.tabId].get().hasOwnProperty('precursor_id')) {
+                  _context5.next = 12;
+                  break;
+                }
+
+                _context5.next = 11;
+                return this.getPrecursor_id(data.tabId, data.url);
+
+              case 11:
+                data.precursor_id = _context5.sent;
+
+              case 12:
+                this.tabs[data.tabId].addUpdate(data);
+                _context5.next = 16;
+                break;
+
+              case 15:
+                if (count <= 10) {
+                  console.log('Timeout', data, count);
+                  setTimeout(function () {
+                    return _this4._pushData(data, count + 1);
+                  }, 1000);
+                } else {
+                  console.warn('Timeout over', data);
+                }
+
+              case 16:
+                if (this.debug) console.log('<- _pushData(...)');
+
+              case 17:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      return function _pushData(_x2) {
+        return _pushData2.apply(this, arguments);
+      };
+    }()
+  }, {
+    key: "closeLostTabs",
+    value: function () {
+      var _closeLostTabs = TabHandler_asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee6() {
+        var _this5 = this;
+
+        var lostIds,
+            id,
+            tab,
+            _args6 = arguments;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                lostIds = _args6.length > 0 && _args6[0] !== undefined ? _args6[0] : [];
 
                 if (!(lostIds.length > 0)) {
-                  _context5.next = 27;
+                  _context6.next = 27;
                   break;
                 }
 
                 id = lostIds.shift();
-                _context5.prev = 3;
+                _context6.prev = 3;
                 tab = null;
 
                 if (this.tabs.hasOwnProperty(id)) {
-                  _context5.next = 11;
+                  _context6.next = 11;
                   break;
                 }
 
                 tab = new Tab_Tab(this.projectId, id);
-                _context5.next = 9;
+                _context6.next = 9;
                 return tab.init();
 
               case 9:
-                _context5.next = 12;
+                _context6.next = 12;
                 break;
 
               case 11:
                 tab = this.tabs[id];
 
               case 12:
-                _context5.next = 14;
+                _context6.next = 14;
                 return tab.cleanTab(function (page) {
                   if (page != null) {
                     if (_this5.debug) console.log('==== Emit Event: onPage (Send Page) ====');
@@ -37555,24 +37645,24 @@ function () {
 
               case 14:
                 if (this.debug) console.log('Tried to delete tab', id);
-                _context5.next = 17;
+                _context6.next = 17;
                 return this.tabCache.deleteTab(id);
 
               case 17:
                 if (this.debug) console.log('Delete the Tab %s', id); // console.log('clean', id)
 
                 this.closeLostTabs(lostIds);
-                _context5.next = 25;
+                _context6.next = 25;
                 break;
 
               case 21:
-                _context5.prev = 21;
-                _context5.t0 = _context5["catch"](3);
+                _context6.prev = 21;
+                _context6.t0 = _context6["catch"](3);
                 this.closeLostTabs(lostIds);
-                console.log(_context5.t0);
+                console.log(_context6.t0);
 
               case 25:
-                _context5.next = 28;
+                _context6.next = 28;
                 break;
 
               case 27:
@@ -37580,10 +37670,10 @@ function () {
 
               case 28:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this, [[3, 21]]);
+        }, _callee6, this, [[3, 21]]);
       }));
 
       return function closeLostTabs() {
@@ -37600,11 +37690,11 @@ function () {
       function () {
         var _ref = TabHandler_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee6(resolve, reject) {
+        regeneratorRuntime.mark(function _callee7(resolve, reject) {
           var tabs;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
                   try {
                     _this6.extension.stop();
@@ -37623,10 +37713,10 @@ function () {
 
                 case 1:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6);
+          }, _callee7);
         }));
 
         return function (_x3, _x4) {
@@ -37649,30 +37739,30 @@ function () {
       function () {
         var _ref2 = TabHandler_asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee7(resolve, reject) {
+        regeneratorRuntime.mark(function _callee8(resolve, reject) {
           var tabIds, lostIds, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, id, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, _id2;
 
-          return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
-              switch (_context7.prev = _context7.next) {
+              switch (_context8.prev = _context8.next) {
                 case 0:
-                  _context7.prev = 0;
-                  _context7.next = 3;
+                  _context8.prev = 0;
+                  _context8.next = 3;
                   return _this7.tabCache.init();
 
                 case 3:
                   _this7.isClose = false;
                   _this7.tabs = {};
-                  _context7.next = 7;
+                  _context8.next = 7;
                   return _this7.extension.getAllTabsIds();
 
                 case 7:
-                  tabIds = _context7.sent;
+                  tabIds = _context8.sent;
                   lostIds = [];
                   _iteratorNormalCompletion4 = true;
                   _didIteratorError4 = false;
                   _iteratorError4 = undefined;
-                  _context7.prev = 12;
+                  _context8.prev = 12;
 
                   for (_iterator4 = _this7.tabCache.getTabsIds()[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                     id = _step4.value;
@@ -37684,38 +37774,38 @@ function () {
                   } // close all lost tabs
 
 
-                  _context7.next = 20;
+                  _context8.next = 20;
                   break;
 
                 case 16:
-                  _context7.prev = 16;
-                  _context7.t0 = _context7["catch"](12);
+                  _context8.prev = 16;
+                  _context8.t0 = _context8["catch"](12);
                   _didIteratorError4 = true;
-                  _iteratorError4 = _context7.t0;
+                  _iteratorError4 = _context8.t0;
 
                 case 20:
-                  _context7.prev = 20;
-                  _context7.prev = 21;
+                  _context8.prev = 20;
+                  _context8.prev = 21;
 
                   if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
                     _iterator4["return"]();
                   }
 
                 case 23:
-                  _context7.prev = 23;
+                  _context8.prev = 23;
 
                   if (!_didIteratorError4) {
-                    _context7.next = 26;
+                    _context8.next = 26;
                     break;
                   }
 
                   throw _iteratorError4;
 
                 case 26:
-                  return _context7.finish(23);
+                  return _context8.finish(23);
 
                 case 27:
-                  return _context7.finish(20);
+                  return _context8.finish(20);
 
                 case 28:
                   _this7.closeLostTabs(lostIds); //create all tabs
@@ -37724,18 +37814,18 @@ function () {
                   _iteratorNormalCompletion5 = true;
                   _didIteratorError5 = false;
                   _iteratorError5 = undefined;
-                  _context7.prev = 32;
+                  _context8.prev = 32;
                   _iterator5 = tabIds[Symbol.iterator]();
 
                 case 34:
                   if (_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done) {
-                    _context7.next = 43;
+                    _context8.next = 43;
                     break;
                   }
 
                   _id2 = _step5.value;
                   _this7.tabs[_id2] = new Tab_Tab(_this7.projectId, _id2);
-                  _context7.next = 39;
+                  _context8.next = 39;
                   return _this7.tabs[_id2].init();
 
                 case 39:
@@ -37748,42 +37838,42 @@ function () {
 
                 case 40:
                   _iteratorNormalCompletion5 = true;
-                  _context7.next = 34;
+                  _context8.next = 34;
                   break;
 
                 case 43:
-                  _context7.next = 49;
+                  _context8.next = 49;
                   break;
 
                 case 45:
-                  _context7.prev = 45;
-                  _context7.t1 = _context7["catch"](32);
+                  _context8.prev = 45;
+                  _context8.t1 = _context8["catch"](32);
                   _didIteratorError5 = true;
-                  _iteratorError5 = _context7.t1;
+                  _iteratorError5 = _context8.t1;
 
                 case 49:
-                  _context7.prev = 49;
-                  _context7.prev = 50;
+                  _context8.prev = 49;
+                  _context8.prev = 50;
 
                   if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
                     _iterator5["return"]();
                   }
 
                 case 52:
-                  _context7.prev = 52;
+                  _context8.prev = 52;
 
                   if (!_didIteratorError5) {
-                    _context7.next = 55;
+                    _context8.next = 55;
                     break;
                   }
 
                   throw _iteratorError5;
 
                 case 55:
-                  return _context7.finish(52);
+                  return _context8.finish(52);
 
                 case 56:
-                  return _context7.finish(49);
+                  return _context8.finish(49);
 
                 case 57:
                   // On close the tab
@@ -37882,23 +37972,23 @@ function () {
 
 
                   resolve();
-                  _context7.next = 69;
+                  _context8.next = 69;
                   break;
 
                 case 65:
-                  _context7.prev = 65;
-                  _context7.t2 = _context7["catch"](0);
+                  _context8.prev = 65;
+                  _context8.t2 = _context8["catch"](0);
 
-                  _this7.event.emit('error', _context7.t2, true);
+                  _this7.event.emit('error', _context8.t2, true);
 
-                  reject(_context7.t2);
+                  reject(_context8.t2);
 
                 case 69:
                 case "end":
-                  return _context7.stop();
+                  return _context8.stop();
               }
             }
-          }, _callee7, null, [[0, 65], [12, 16, 20, 28], [21,, 23, 27], [32, 45, 49, 57], [50,, 52, 56]]);
+          }, _callee8, null, [[0, 65], [12, 16, 20, 28], [21,, 23, 27], [32, 45, 49, 57], [50,, 52, 56]]);
         }));
 
         return function (_x5, _x6) {
