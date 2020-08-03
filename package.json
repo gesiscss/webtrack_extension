@@ -1,6 +1,6 @@
 {
   "name": "webtrack-extension-client",
-  "version": "0.8.3",
+  "version": "0.8.5",
   "description": "",
   "scripts": {
     "start": "npm run live:build:small",

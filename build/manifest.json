@@ -4,8 +4,8 @@
   "name": "Webtrack",
   "description": "Webtrack",
   "manifest_version": 2,
-  "version": "0.8.3",
-  "permissions": ["declarativeContent", "storage",  "tabs", "<all_urls>", "notifications", "unlimitedStorage"],
+  "version": "0.8.5",
+  "permissions": ["storage",  "tabs", "unlimitedStorage"],
   "icons": {
     "128": "images/on.png"
   },
