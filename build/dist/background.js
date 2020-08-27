@@ -35762,8 +35762,7 @@ var schemaPages = {
       exec: stringUrl
     },
     landing_url: {
-      type: 'string',
-      exec: stringUrl
+      type: 'string'
     },
     links: {
       type: 'array'
@@ -35817,8 +35816,7 @@ var schemaPages = {
       type: 'string'
     },
     unhashed_url: {
-      type: 'string',
-      exec: stringUrl
+      type: 'string'
     }
   }
 };
@@ -38541,7 +38539,7 @@ function () {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new eventemitter3["EventEmitter"]();
-    this.debug = false;
+    this.debug = true;
     this.settings = {}; // fields that should be anonymized
 
     this.to_anonym = ['departing_url', 'landing_url', 'title', 'unhashed_url', 'url'];
