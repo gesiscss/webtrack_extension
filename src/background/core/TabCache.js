@@ -16,7 +16,10 @@ export default class TabCache extends CacheHandler{
   constructor(projectId, tabId, defaultContent={}) {
     super();
     this.debug = false;
-    this.inspector = new Inspector()
+
+    // NO MORE INSPECTING
+    //this.inspector = new Inspector()
+
     this.tabId = parseInt(tabId, 10);
     this.projectId = projectId;
     // this.config = {databaseName: this.getDBName(), objectStoreName: 'data', defaultContent: defaultContent, id: "nr"};
@@ -162,12 +165,15 @@ export default class TabCache extends CacheHandler{
         let id = props[this.id];
         console.assert(typeof id == this.typeofId, 'id is '+ typeof id)
         let newContent = Object.assign({}, this.content[id], props);
-        if(inspect){
-          await this.inspector.validatePage(newContent);
-          await super.update(props)
-        }else{
-          await super.update(props)
-        }
+        
+        // No more inspecting
+        // if(inspect){
+        //   await this.inspector.validatePage(newContent);
+        //   await super.update(props)
+        // }else{
+        //   await super.update(props)
+        // }
+        await super.update(props)
         resolve()
       } catch (err) {
         reject(err)
@@ -188,12 +194,16 @@ export default class TabCache extends CacheHandler{
         // console.clear();
 
         // this.databases.set(this.databases.get().push(this.getDBName(this.tabId)));
-        if(inspect){
-          await this.inspector.validatePage(props);
-          await super.add(props)
-        }else{
-          await super.add(props, inspect, now)
-        }
+        
+        // NO MORE INSPECTING
+        // if(inspect){
+        //   await this.inspector.validatePage(props);
+        //   await super.add(props)
+        // }else{
+        //   await super.add(props, inspect, now)
+        // }
+
+        await super.add(props, inspect, now)
         let tables = this.databases.get()
         tables.push(this.getDBName(this.tabId))
         this.databases.set(tables);

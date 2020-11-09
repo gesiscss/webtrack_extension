@@ -311,7 +311,8 @@ export default class Tab {
         //duration: Math.round(((+now) - data.startTime)/1000),
         elapsed: +now - data.startTime
       }
-    ), true);
+    // change to False in Aug 27th, 2020. But the entire Inspection should be removed
+    ), false);
   }
 
   /**
@@ -337,7 +338,8 @@ export default class Tab {
       this.elapsed_timer = now;
     }
 
-    return this.tabCache.update(data, true);
+    // change to False in Aug 27th, 2020. But the entire Inspection should be removed
+    return this.tabCache.update(data, false);
   }
 
   /**

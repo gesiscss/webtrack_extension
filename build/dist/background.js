@@ -35908,8 +35908,9 @@ function (_CacheHandler) {
     TabCache_classCallCheck(this, TabCache);
 
     _this = TabCache_possibleConstructorReturn(this, TabCache_getPrototypeOf(TabCache).call(this));
-    _this.debug = false;
-    _this.inspector = new Inspector();
+    _this.debug = false; // NO MORE INSPECTING
+    //this.inspector = new Inspector()
+
     _this.tabId = parseInt(tabId, 10);
     _this.projectId = projectId; // this.config = {databaseName: this.getDBName(), objectStoreName: 'data', defaultContent: defaultContent, id: "nr"};
 
@@ -36173,44 +36174,33 @@ function (_CacheHandler) {
                             _context2.prev = 0;
                             id = props[_this4.id];
                             console.assert(TabCache_typeof(id) == _this4.typeofId, 'id is ' + TabCache_typeof(id));
-                            newContent = Object.assign({}, _this4.content[id], props);
+                            newContent = Object.assign({}, _this4.content[id], props); // No more inspecting
+                            // if(inspect){
+                            //   await this.inspector.validatePage(newContent);
+                            //   await super.update(props)
+                            // }else{
+                            //   await super.update(props)
+                            // }
 
-                            if (!inspect) {
-                              _context2.next = 11;
-                              break;
-                            }
-
-                            _context2.next = 7;
-                            return _this4.inspector.validatePage(newContent);
-
-                          case 7:
-                            _context2.next = 9;
+                            _context2.next = 6;
                             return _get(TabCache_getPrototypeOf(TabCache.prototype), "update", _this4).call(_this4, props);
+
+                          case 6:
+                            resolve();
+                            _context2.next = 12;
+                            break;
 
                           case 9:
-                            _context2.next = 13;
-                            break;
-
-                          case 11:
-                            _context2.next = 13;
-                            return _get(TabCache_getPrototypeOf(TabCache.prototype), "update", _this4).call(_this4, props);
-
-                          case 13:
-                            resolve();
-                            _context2.next = 19;
-                            break;
-
-                          case 16:
-                            _context2.prev = 16;
+                            _context2.prev = 9;
                             _context2.t0 = _context2["catch"](0);
                             reject(_context2.t0);
 
-                          case 19:
+                          case 12:
                           case "end":
                             return _context2.stop();
                         }
                       }
-                    }, _callee2, null, [[0, 16]]);
+                    }, _callee2, null, [[0, 9]]);
                   }));
 
                   return function (_x3, _x4) {
@@ -36258,48 +36248,30 @@ function (_CacheHandler) {
               switch (_context4.prev = _context4.next) {
                 case 0:
                   _context4.prev = 0;
-
-                  if (!inspect) {
-                    _context4.next = 8;
-                    break;
-                  }
-
-                  _context4.next = 4;
-                  return _this5.inspector.validatePage(props);
-
-                case 4:
-                  _context4.next = 6;
-                  return _get(TabCache_getPrototypeOf(TabCache.prototype), "add", _this5).call(_this5, props);
-
-                case 6:
-                  _context4.next = 10;
-                  break;
-
-                case 8:
-                  _context4.next = 10;
+                  _context4.next = 3;
                   return _get(TabCache_getPrototypeOf(TabCache.prototype), "add", _this5).call(_this5, props, inspect, now);
 
-                case 10:
+                case 3:
                   tables = _this5.databases.get();
                   tables.push(_this5.getDBName(_this5.tabId));
 
                   _this5.databases.set(tables);
 
                   resolve();
-                  _context4.next = 19;
+                  _context4.next = 12;
                   break;
 
-                case 16:
-                  _context4.prev = 16;
+                case 9:
+                  _context4.prev = 9;
                   _context4.t0 = _context4["catch"](0);
                   reject(_context4.t0);
 
-                case 19:
+                case 12:
                 case "end":
                   return _context4.stop();
               }
             }
-          }, _callee4, null, [[0, 16]]);
+          }, _callee4, null, [[0, 9]]);
         }));
 
         return function (_x5, _x6) {
@@ -36896,8 +36868,9 @@ function () {
         links: data.links || [],
         start: new Date(data.startTime).toJSON(),
         //duration: Math.round(((+now) - data.startTime)/1000),
-        elapsed: +now - data.startTime
-      }), true);
+        elapsed: +now - data.startTime // change to False in Aug 27th, 2020. But the entire Inspection should be removed
+
+      }), false);
     }
     /**
      * [update all other data from the tab]
@@ -36923,9 +36896,10 @@ function () {
         var now = +new Date();
         data.elapsed = oldData.elapsed + (now - this.elapsed_timer);
         this.elapsed_timer = now;
-      }
+      } // change to False in Aug 27th, 2020. But the entire Inspection should be removed
 
-      return this.tabCache.update(data, true);
+
+      return this.tabCache.update(data, false);
     }
     /**
      * [_getRandomString return random string]
