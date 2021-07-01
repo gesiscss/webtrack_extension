@@ -1,6 +1,6 @@
 {
   "name": "webtrack-extension-client",
-  "version": "0.8.5",
+  "version": "0.9.6",
   "description": "",
   "scripts": {
     "start": "npm run live:build:small",
@@ -60,6 +60,7 @@
     "framework7": "^4.5.0",
     "framework7-react": "^4.5.0",
     "html-react-parser": "^0.6.4",
+    "md5": "^2.3.0",
     "moment": "^2.24.0",
     "nodemon": "^1.19.4",
     "react": "^16.9.0",

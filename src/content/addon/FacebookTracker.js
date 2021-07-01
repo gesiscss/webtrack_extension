@@ -1,4 +1,5 @@
 import Tracker from '../Tracker';
+const md5 = require('md5');
 
 export default class FacebookTracker extends Tracker{
 
@@ -7,7 +8,7 @@ export default class FacebookTracker extends Tracker{
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
-
+    this.totalPostsSeen = 0;
     this.is_allowed = null;
     this.facebook_debug = false;
     this.facebook_events_debug = false;
@@ -16,20 +17,15 @@ export default class FacebookTracker extends Tracker{
     this.trackedToolbarButtons = [];
     this.eventElements = {
       allowNotToTracked: ['#leftCol ._3ph1.sp_387n34yO1ZQ', '#fbProfileCover'],
-      articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
-      likearticelButton: ['a._6a-y._3l2t._18vj', '.UFILikeLink:not(.UFIReactionLink)'],
+      //articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
+      likearticelButton: ['div[aria-label="Like"]:not(.buofh1pr)', 'div[aria-label="Remove Like"]:not(.buofh1pr)', 'div[aria-label="לייק"]:not(.buofh1pr)', 'div[aria-label="הסרת לייק"]:not(.buofh1pr)'],
       likeComment: [
         {query: '._6coi._6qw9 li:nth-child(1) a', parent: ['._4eek[role="articel"]', 'div'], text: {parent: '._42ef', query: '._72vr > span'}, countComment: {parent: '._42ef', query: '._6cuq > span'}},
         {query: '.UFILikeLink.UFIReactionLink', parent: '.UFIRow.UFIComment',  text: {parent: '.UFICommentContentBlock', query: '.UFICommentBody'}, countComment: {parent: '.UFICommentContentBlock', query: '.UFICommentReactionsBling > span'}}
       ],
-      commentButton: ['._666h._18vj._18vk._42ft', '._3hg-._42ft', '.comment_link', '._ipm._-56', '.UFIPagerLink', '._fmi._613v.UFIInputContainer'],
-      commentfields: ['._5rpu'],
-      commentFromCommentButton: [
-        {query: '._6coi._6qw9 li:nth-child(2) a', nextElement: ['._4eek[role="articel"]', 'div'], text: {query: '._72vr > span'}, countComment: {query: '._6cuq > span'}},
-        {query: '._2h2j > div', previousElement: ['._2h2j', 'div'],  text: {query: '._72vr > span'}, countComment: {query: '._6cuq > span'}},
-        {query: '.UFIReplyLink', nextElement: '.UFIRow.UFIComment',  text: {query: '.UFICommentBody'}, countComment: {query: '.UFISutroLikeCount'}},
-        {query: '.UFIReplyList > div', previousElement: '.UFIReplyList',  text: {query: '.UFICommentBody'}, countComment: {query: '.UFISutroLikeCount'}},
-      ],
+      commentButton: ['[aria-label="Leave a comment"]', '[aria-label="השאר תגובה"]', '._3hg-._42ft', '.comment_link', '._ipm._-56', '.UFIPagerLink', '._fmi._613v.UFIInputContainer'],
+      commentfields: ['[aria-label="Write a comment"]', '[aria-label="כתיבת תגובה"]', '._5rpu'],
+      commentFromCommentButton: ['form.o6r2urh6.l9j0dhe7.b3i9ofy5.e72ty7fz.qlfml3jp.inkptoze.qmr60zad.rt8b4zig.n8ej3o3l.agehan2d.sk4xxmp2.j83agx80.bkfpd7mw'],
       shareButtonBevor: ['a._2nj7', 'a.share_action_link'],
       shareButton: ['a._2nj7', 'a.share_action_link'],
       joinGroup: ['a._42ft._4jy0._21ku._4jy4']
@@ -39,7 +35,7 @@ export default class FacebookTracker extends Tracker{
     this.lastUrlPath = '';
 
     if(this.allow){
-      this._joinGroup();
+      this._joinGroup(); //never executes
       this.documentHead = this._getHead();
       // console.log(this.documentWrapper);
     }
@@ -193,8 +189,8 @@ export default class FacebookTracker extends Tracker{
    */
   reset_credentials(){
 
-    
-
+    //commented this because we get all the info we need from the get_credentials below, except for username which is not needed (?) 
+    /*
     let location = document.querySelector('._2s25._606w');
     this.logged_username = this.get_username(location);
 
@@ -208,12 +204,7 @@ export default class FacebookTracker extends Tracker{
       // grab the user id from the about
       this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
     }
-
-    if (this.logged_username){
-      this.logged_uid = this.logged_username;
-    } else {
-      this.logged_uid = this.logged_user_id;
-    }
+    */
 
     // try now with the credentials
     let credentials = this.get_credentials();
@@ -225,6 +216,12 @@ export default class FacebookTracker extends Tracker{
       this.logged_fullname = credentials.NAME;
       this.logged_shortname = credentials.SHORT_NAME;
 
+    }
+
+    if (this.logged_username){
+      this.logged_uid = this.logged_username;
+    } else {
+      this.logged_uid = this.logged_user_id;
     }
 
     // logged in
@@ -249,7 +246,7 @@ export default class FacebookTracker extends Tracker{
       let scripts = document.querySelectorAll('script:not([src])');
       for (var i = 0; i < scripts.length; i++) {
         let sc = scripts[i].textContent;
-        if (sc.startsWith('require("TimeSliceImpl").guard(')) {
+        if (sc.startsWith('requireLazy(["JSScheduler","ServerJS')) {
           return JSON.parse('{' + sc.match(/"USER_ID":".*?"|"SHORT_NAME":".*?"|"NAME":".*?"|"ACCOUNT_ID":".*?"/g).join(',') + '}')      
         }
       }
@@ -347,6 +344,10 @@ export default class FacebookTracker extends Tracker{
   _getValues(target){
     let search = [
       {
+        name: 'webtracker-articel-id',
+        default: undefined,
+      },
+      {
         name: 'articel-time',
         query: ['._5ptz'],
         default: undefined,
@@ -354,39 +355,67 @@ export default class FacebookTracker extends Tracker{
       },
       {
         name: 'articel-link',
-        query: ['.fsm.fwn.fcg a'],
+        query: ['.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.nc684nl6.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.gmql0nx0.gpro0wi8.b1v8xokw'],
         default: undefined,
-        filter: e => e.href
+        filter: e => e.getAttribute('href').split('?')[0]
       },
       {
         name: 'articel-headertext',
-        query: ['.userContent p'],
+        query: ['.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.c1et5uql.ii04i59q'],
         default: undefined,
         filter: e => e.textContent
       },
       {
         name: 'articel-publisher-name',
-        query: ['.fwn .fwb a'],
+        query: ['h4 a span'],
         default: undefined,
         filter: e => e.textContent
       },
       {
         name: 'articel-count-likes',
-        query: ['a._3dlf > span', '._2x4v > span'],
+        query: ['.gpro0wi8.cwj9ozl2.bzsjyuwj.ja2t1vim'],
         default: undefined,
-        filter: e => parseInt(e.textContent.replace(/\D+/g, ""), 10)
+        filter: e => {
+          let re = /\b(\d+\.?\d*)(K?)\b/g;
+          const matches = e.textContent.match(re);
+          console.log(matches);
+          if (matches === null) {
+            return 1;
+          } else {
+            let lastElement = matches[matches.length -1];
+            if (lastElement.charAt(lastElement.length-1) == 'K') {
+              return parseFloat(lastElement.slice(0, -1))*1000;
+            } else {
+              return parseInt(lastElement);
+            }
+          }
+        } 
       },
       {
         name: 'articel-count-comments',
-        query: ['._1whp._4vn2 a', '._36_q a'],
+        query: ['.gtad4xkn > .oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.nc684nl6.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.gpro0wi8.dwo3fsh8.ow4ym5g4.auili1gw.du4w35lb.gmql0nx0'],
         default: undefined,
-        filter: e => parseInt(e.textContent.replace(/\D+/g, ""), 10)
+        filter: e => {
+          let num = e.textContent.split(' ')[0];
+          if (num.charAt(num.length-1) == 'K') {
+            return parseFloat(num.slice(0, -1))*1000;
+          } else {
+            return parseInt(num);
+          }
+        }
       },
       {
         name: 'articel-count-shares',
-        query: ['._355t._4vn2 a', '._ipm._2x0m'],
+        query: ['.gtad4xkn > .tojvnm2t.a6sixzi8.abs2jz4q.a8s20v7p.t1p8iaqh.k5wvi7nf.q3lfd5jv.pk4s997a.bipmatt0.cebpdrjk.qowsmv63.owwhemhu.dp1hu0rb.dhp61c6y.iyyx5f41'],
         default: undefined,
-        filter: e => parseInt(e.textContent.replace(/\D+/g, ""), 10)
+        filter: e => {
+          let num = e.textContent.split(' ')[0];
+          if (num.charAt(num.length-1) == 'K') {
+            return parseFloat(num.slice(0, -1))*1000;
+          } else {
+            return parseInt(num);
+          }
+        }
       },
       {
         name: 'articel-count-contentType',
@@ -408,14 +437,20 @@ export default class FacebookTracker extends Tracker{
     for (let s of search) {
       try {
         let value = s.default;
-        for (let query of s.query) {
-          var r = target.querySelectorAll(query);
-          if(r.length>0){
-            r = r[0];
-            let data = s.filter(r);
-            if(data!=null) value = data;
-          }
-        }//for
+        if (s.name == 'webtracker-articel-id') {
+          value = target.getAttribute('webtracker-article-id');
+        } else {
+          for (let query of s.query) {
+            var r = target.querySelectorAll(query);
+            if(r.length>0){
+              r = r[0];
+              let data = s.filter(r);
+              if(data!=null) value = data;
+            } else if (s.name == 'articel-count-comments' || s.name == 'articel-count-shares' || s.name == 'articel-count-likes') {
+              value = 0;
+            }
+          }//for
+        }
         values.push({name: s.name, value: value})
       } catch (err) {
         console.log(err);
@@ -528,7 +563,7 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_isPrivate checks if element is for the public oder private]
+   * [_isPrivate checks if element is for the public or private]
    * @param  {Object}  target [DomElement]
    * @return {Boolean}
    */
@@ -552,10 +587,9 @@ export default class FacebookTracker extends Tracker{
    */
   _getPublicArticels(){
     let bucket = [];
-
     //for (let query of this.eventElements.articels) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
-    let found = document.querySelectorAll('.userContentWrapper:not(.tracked)');
+    let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
 
     // // try to capture elements in the new interface
     // if (found.length == 0){
@@ -568,13 +602,14 @@ export default class FacebookTracker extends Tracker{
       this.entries_found += 1;
 
       found[i].classList.add('tracked');
+      found[i].setAttribute('webtracker-article-id', Math.random());
       if (this._isPublicOrLogInUser(found[i])){
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid green !important;");
         this._setLikeEvent(found[i]);
         this._setCommentEvent(found[i]);
         this._eventcommentFromCommentButton(found[i]);
-        this._setLikeCommentEvent(found[i]);
-        this._setShareEvent(found[i]);
+        //this._setLikeCommentEvent(found[i]); //haven't been fixed and currently unsupported
+        //this._setShareEvent(found[i]);  //currently unsupposted and not working
         bucket.push(found[i])
       }else{
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
@@ -583,7 +618,23 @@ export default class FacebookTracker extends Tracker{
 
     }
     //}
-    return bucket.filter(e => e!=undefined);
+    //removes all non-public posts from bucket
+    const savedElements = [];
+    for (var i = 0; i < bucket.length; i++) {
+      let privacy_icon = bucket[i].querySelector("span.g0qnabr5 > span > span > i")
+      if ((privacy_icon && privacy_icon.ariaLabel == 'Shared with Public') ||
+          (privacy_icon && privacy_icon.ariaLabel == 'Shared with Public group') ||
+          (privacy_icon && privacy_icon.ariaLabel == 'Shared with Custom') ||
+          (privacy_icon && privacy_icon.ariaLabel == 'משותף עם קבוצה ציבורית') ||
+          (privacy_icon && privacy_icon.ariaLabel == 'משותף עם ציבורי') ||
+          (privacy_icon && privacy_icon.ariaLabel == 'משותף עם התאמה אישית')) {
+        savedElements.push(bucket[i]);
+      }
+    }
+    
+    this.totalPostsSeen += bucket.length;
+    //return bucket.filter(e => e!=undefined);
+    return savedElements;
   }
 
   /**
@@ -596,7 +647,7 @@ export default class FacebookTracker extends Tracker{
         let commentButtons = articel.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
-          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid yellow !important;");
           commentButtons[i].addEventListener('click', () => {
             this._eventComment(articel, comment => {
               this.eventFn.onEvent(
@@ -625,29 +676,14 @@ export default class FacebookTracker extends Tracker{
    */
   _eventcommentFromCommentButton(articel, timeout=1000){
     setTimeout(()=>{
-      for (let s of this.eventElements.commentFromCommentButton) {
-        let commentButtons = articel.querySelectorAll(s.query+':not(.tracked)');
+      for (let query of this.eventElements.commentFromCommentButton) {
+        let commentButtons = articel.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
           if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
-
           commentButtons[i].addEventListener('click', e => {
-            if(s.hasOwnProperty('previousElement')){
-              var found = this.getParentElement(e.srcElement, s.previousElement);
-              var comment = found.previousElementSibling;
-            }else if(s.hasOwnProperty('nextElement')){
-              var comment = this.getParentElement(e.srcElement, s.nextElement);
-              var found = comment.nextElementSibling; // comment box
-            }
-
             setTimeout(()=>{
-
-              let text = comment.querySelectorAll(s.text.query)[0].textContent,
-              countElements = comment.querySelectorAll(s.countComment.query),
-              count = 0;
-              if(countElements.length>0) count = parseInt(countElements[0].textContent, 10);
-
-              this._eventComment(found, comment => {
+              this._eventComment(articel, comment => {
                 // console.log(found, comment);
                 this.eventFn.onEvent(
                   {
@@ -655,8 +691,8 @@ export default class FacebookTracker extends Tracker{
                     type: 'postanswer',
                     values: this._getValues(articel).concat([
                       {name: 'comment', value: comment},
-                      {name: 'postanswer-count-likes', value: count},
-                      {name: 'postanswer-text', value: text}
+                      //{name: 'postanswer-count-likes', value: null},
+                      //{name: 'postanswer-text', value: null}
                     ])
                   }
                 )
@@ -683,8 +719,8 @@ export default class FacebookTracker extends Tracker{
         let commentfields = articel.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentfields.length; i++) {
           commentfields[i].classList.add('tracked');
-          if(this.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid red !important;");
-          commentfields[i].addEventListener('keyup', e => {
+          if(this.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid pink !important;");
+          commentfields[i].addEventListener('keydown', e => {
             let spans =  e.srcElement.querySelectorAll('span[data-text="true"]');
             if(spans.length>0){
               let comment = spans[spans.length-1].textContent;
@@ -707,7 +743,7 @@ export default class FacebookTracker extends Tracker{
    */
   _setShareEvent(articel, after=false){
     let findShareButton = () => {
-      let shareButton = document.querySelectorAll('.uiContextualLayer:not(.tracked)');
+      let shareButton = document.querySelectorAll('[aria-label="Send this to friends or post it on your timeline."]:not(.tracked)');
       setTimeout(()=>{
         for (var i = 0; i < shareButton.length; i++) {
           shareButton[i].classList.add('tracked');
@@ -871,8 +907,9 @@ export default class FacebookTracker extends Tracker{
         let buttons = articel.querySelectorAll(query);
         for (var i = 0; i < buttons.length; i++) {
           if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
-          buttons[i].addEventListener('click', ()=>{
-            if (buttons[i].classList.contains('_3_16')){
+          let button = buttons[i];
+          button.addEventListener('click', e =>{
+            if (button.getAttribute('aria-label') === 'Remove Like'){
               this.eventFn.onEvent({
                 event: 'undo',
                 type: 'articel',
@@ -893,23 +930,23 @@ export default class FacebookTracker extends Tracker{
             //if(this.facebook_debug) console.log('like 1', articel);
           })
 
-          buttons[i].addEventListener('mouseover', ()=> {
-            // console.log(this._getValues(articel));
-            this._toolbarHandler(nr => {
-              this.eventFn.onEvent(
-                {
-                  event: 'reaction',
-                  type: 'articel',
-                  values: this._getValues(articel).concat([
-                    {name: 'reaction-value', 
-                     value: nr['data_reaction'],
-                     aria_label: nr['aria_label'],
-                     reaction: this.getValueOfLikeNumber(nr['data_reaction'])
-                    }
-                  ])
-                }
-              )
-            })
+          buttons[i].addEventListener('mouseenter', ()=> {
+            setTimeout(() => {
+                // console.log(this._getValues(articel));
+                let toolbar = document.querySelector('div.j83agx80[role="toolbar"]');
+                let button = toolbar.querySelector('div')
+                button.addEventListener('click', e =>{
+                  if ((button.getAttribute('aria-label') === 'לייק') || (button.getAttribute('aria-label') === 'Like')){
+                    this.eventFn.onEvent({
+                      event: 'like',
+                      type: 'articel',
+                      values: this._getValues(articel).concat([
+                        {name: 'like-value', value: this.getValueOfLikeNumber(1)}
+                      ])
+                    })
+                  }
+              })
+            }, 700)
           })
         }
       }
@@ -973,7 +1010,7 @@ export default class FacebookTracker extends Tracker{
     }
 
     let fetch = layer => {
-      let buttons = layer.querySelectorAll('span [data-reaction]:not(.tracked)');
+      let buttons = layer.querySelectorAll('[aria-label="Reactions"]:not(.tracked)');
       for (let a = 0; a < buttons.length; a++) {
         buttons[a].classList.add('tracked');
         this.trackedToolbarButtons.push(buttons[a]);
@@ -1107,10 +1144,15 @@ export default class FacebookTracker extends Tracker{
         // otherwise, the dom can be assembled
         } else {
           for (var i = 0; i < found.length; i++) {
-            this.elements.push(found[i]);
-            this.elementStrings += found[i].outerHTML
+            let cloned = found[i].cloneNode(true);
+            let commentator = cloned.querySelectorAll('[class="pq6dq46d"]');
+            for (var j = 0; j < commentator.length; j++) {
+              commentator[j].innerText = md5(commentator[j].innerText);
+            }
+            this.elements.push(found[i]); //is this being used anywhere?
+            this.elementStrings += cloned.outerHTML
           }
-          resolve('<html>'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
+          resolve('<html totalPostsSeen="'+this.totalPostsSeen+'" >'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
         }
 
       } catch (err) {
