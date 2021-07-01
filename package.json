@@ -25,7 +25,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
+    "@babel/cli": "^7.14.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.5.5",
@@ -48,7 +48,7 @@
     "url-loader": "^1.1.2",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "@babel/plugin-transform-exponentiation-operator": "^7.2.0",
@@ -69,7 +69,7 @@
     "react-hooks": "^1.0.1",
     "react-motion": "^0.5.2",
     "react-scripts": "^2.1.5",
-    "react-spinners": "^0.5.12",
+    "react-spinners": "^0.11.0",
     "react-tooltip": "^3.10.0",
     "schema-inspector": "^1.6.8",
     "valid-url": "^1.0.9"
