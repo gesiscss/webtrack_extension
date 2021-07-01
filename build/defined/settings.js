@@ -1,8 +1,24 @@
+var servers = {
+  //Bern Address
+  bern_address: "https://webtracker.sowi.unibe.ch:10443",
+
+  // Staging IPs and Domains
+  staging_address: "https://svko-webtrack.gesis.intra:10443/",
+  staging_IP: "https://10.6.9.151:10443/",
+
+  // Production IPs and Domains
+  internal_IP: "https://10.4.250.4:10443/",
+  internal_address: "https://SVAZWebTrack.gesis.intra:10443/",
+  production_IP: "https://51.116.230.66:10443/",
+  production_address: "https://webtrack.gesis.org:10443/",
+}
+
+
 var settings = {
   companie: {
     name: "WebTrack"
   },
-  id: '51.116.230.66',
+  id: 'DFG_21',
   lang: 'de',
   project_name: 'Webtrack21',
   versionType: 'v0.8.2',
@@ -10,11 +26,8 @@ var settings = {
   requireVersion: {
     chrome: 45
   },
-  server: "https://51.116.230.66:10443/"
+  server: servers['staging_address']
 }
 
-// webtracker.sowi.unibe.ch
-// svko-webtrack.gesis.intra
-// Production internal: SVAZWebTrack.gesis.intra
-// Production internal IP: 10.4.250.4
-// Production public IP: 51.116.230.66
+
+
