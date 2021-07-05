@@ -35,8 +35,8 @@ export default class Tracker extends MultiFetch {
     this.lastURL = '';
     this.original_url = '';
 
-    this.events_debug = false;
-    this.debug = false;
+    this.events_debug = true;
+    this.debug = true;
 
     this.startswith_blacklist = [];
     this.startswith_whitelist = [];

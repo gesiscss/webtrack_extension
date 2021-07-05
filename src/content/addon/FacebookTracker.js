@@ -10,8 +10,8 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     this.totalPostsSeen = 0;
     this.is_allowed = null;
-    this.facebook_debug = true;
-    this.facebook_events_debug = true;
+    this.facebook_debug = false;
+    this.facebook_events_debug = false;
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
@@ -632,7 +632,6 @@ export default class FacebookTracker extends Tracker{
     //for (let query of this.eventElements.articels) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
-    console.log('Found', found);
 
     // // try to capture elements in the new interface
     // if (found.length == 0){
@@ -665,7 +664,6 @@ export default class FacebookTracker extends Tracker{
     const savedElements = [];
     for (var i = 0; i < bucket.length; i++) {
       let privacy_icon = bucket[i].querySelector("span.g0qnabr5 > span > span > i")
-      console.log('aria-label', privacy_icon.attributes['aria-label'].value);
       if ((privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Public') ||
           (privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Public group') ||
           (privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Custom') ||
@@ -675,7 +673,7 @@ export default class FacebookTracker extends Tracker{
         savedElements.push(bucket[i]);
       }
     }
-
+    
     this.totalPostsSeen += bucket.length;
     //return bucket.filter(e => e!=undefined);
     return savedElements;
@@ -1176,12 +1174,6 @@ export default class FacebookTracker extends Tracker{
       try {      
         let found = this._getPublicArticels();
 
-        console.log("#####################################");
-        console.log("#####################################");
-        console.log("Entries Found", this.entries_found);
-        console.log("#####################################");
-        console.log("#####################################");
-
         // if no entries were found, then this is not a timeline or profile page
         if (this.entries_found == 0) {
           // if the user is not logged in, then default to the normal tracker
@@ -1200,16 +1192,8 @@ export default class FacebookTracker extends Tracker{
               commentator[j].innerText = md5(commentator[j].innerText);
             }
             this.elements.push(found[i]); //is this being used anywhere?
-            this.elementStrings += cloned.outerHTML;
-
+            this.elementStrings += cloned.outerHTML
           }
-
-          //debugger;
-          console.log("#####################################");
-          console.log("#####################################");
-          console.log("Elements String", this.elementStrings);
-          console.log("#####################################");
-          console.log("#####################################");
           resolve('<html totalPostsSeen="'+this.totalPostsSeen+'" >'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
         }
 
