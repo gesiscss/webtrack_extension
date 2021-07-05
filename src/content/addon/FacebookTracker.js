@@ -10,8 +10,8 @@ export default class FacebookTracker extends Tracker{
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     this.totalPostsSeen = 0;
     this.is_allowed = null;
-    this.facebook_debug = false;
-    this.facebook_events_debug = false;
+    this.facebook_debug = true;
+    this.facebook_events_debug = true;
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
@@ -72,15 +72,7 @@ export default class FacebookTracker extends Tracker{
       ]
     };
 
-    this.documentHead = '';
-
     this.lastUrlPath = '';
-
-    if(this.allow){
-      this._joinGroup(); //never executes
-      this.documentHead = this._getHead();
-      // console.log(this.documentWrapper);
-    }
 
     this.startswith_blacklist = [
      '/ads/activity/', '/crisisresponse/', '/events/', '/friends/', 
@@ -1140,7 +1132,7 @@ export default class FacebookTracker extends Tracker{
             this.elements.push(found[i]); //is this being used anywhere?
             this.elementStrings += cloned.outerHTML
           }
-          resolve('<html totalPostsSeen="'+this.totalPostsSeen+'" >'+this._getHead()+'<body>'+this.elementStrings+'</body>'+'</html>');
+          resolve('<html totalPostsSeen="'+this.totalPostsSeen+'" ><head></head><body>'+this.elementStrings+'</body>'+'</html>');
         }
 
       } catch (err) {
