@@ -664,12 +664,12 @@ export default class FacebookTracker extends Tracker{
     const savedElements = [];
     for (var i = 0; i < bucket.length; i++) {
       let privacy_icon = bucket[i].querySelector("span.g0qnabr5 > span > span > i")
-      if ((privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Public') ||
-          (privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Public group') ||
-          (privacy_icon && privacy_icon.attributes['aria-label'].value == 'Shared with Custom') ||
-          (privacy_icon && privacy_icon.attributes['aria-label'].value == 'משותף עם קבוצה ציבורית') ||
-          (privacy_icon && privacy_icon.attributes['aria-label'].value == 'משותף עם ציבורי') ||
-          (privacy_icon && privacy_icon.attributes['aria-label'].value == 'משותף עם התאמה אישית')) {
+      if ((privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Public') ||
+          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Public group') ||
+          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Custom') ||
+          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם קבוצה ציבורית') ||
+          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם ציבורי') ||
+          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם התאמה אישית')) {
         savedElements.push(bucket[i]);
       }
     }
