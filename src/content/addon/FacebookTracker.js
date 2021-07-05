@@ -1110,60 +1110,6 @@ export default class FacebookTracker extends Tracker{
     }, 1000)
   }
 
-  /**
-   * [_joinGroup event handling for join in public group]
-   */
-  _joinGroup(){
-    for (let query of this.eventElements.joinGroup) {
-      let buttons = document.querySelectorAll(query+':not(.tracked)');
-      for (let i = 0; i < buttons.length; i++) {
-        if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
-        buttons[i].classList.add('tracked');
-        buttons[i].addEventListener('click', e => {
-          let elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
-          elementsOfGroupname = document.querySelectorAll('#seo_h1_tag a'),
-          name = '',
-          id = '',
-          link = '',
-          lastpost = [],
-          countGroupUser = 0;
-          if(elementsOfcountGroupUser.length>0){
-            countGroupUser = parseInt(elementsOfcountGroupUser[0].textContent.replace(/\D+/g, ""), 10);
-          }
-          if(elementsOfGroupname.length>0){
-            link = elementsOfGroupname[0].href
-            id = parseInt(link.replace(/\D+/g, ""), 10);
-            name = elementsOfGroupname[0].textContent;
-          }
-          //if(this.facebook_debug) console.log('join group', lastpost, id, link, name, countGroupUser);
-        })
-        if(this.facebook_events_debug) buttons[i].addEventListener('mouseover', e => {
-          let elementsOfcountGroupUser = document.querySelectorAll('.groupsStreamMemberBoxNames'),
-          elementsOfGroupname = document.querySelectorAll('#seo_h1_tag a'),
-          name = '',
-          id = '',
-          link = '',
-          lastpost = '',
-          countGroupUser = 0;
-          if(elementsOfcountGroupUser.length>0){
-            countGroupUser = parseInt(elementsOfcountGroupUser[0].textContent.replace(/\D+/g, ""), 10);
-          }
-          if(elementsOfGroupname.length>0){
-            link = elementsOfGroupname[0].href
-            id = parseInt(link.replace(/\D+/g, ""), 10);
-            name = elementsOfGroupname[0].textContent;
-          }
-          this.eventFn.onEvent({event: 'joinGroup', type: 'info', values: [
-            {name: 'name', value: name},
-            {name: 'id', value: id},
-            {name: 'link', value: link},
-            {name: 'count-Groupuser', value: countGroupUser},
-            {name: 'lastpost', value: lastpost}
-          ]})
-        })
-      }//for
-    }
-  }
 
   /**
    * [getDom return html content from public articel]
