@@ -80,7 +80,7 @@ export default class FacebookTracker extends Tracker{
      '/messages/', '/notifications/', '/offers/', '/photo/', '/recommendations/', 
      '/saved/',  '/settings/'];
 
-    this.startswith_whitelist = ['/pg/']
+    this.startswith_allowlist = ['/pg/']
 
     this.pos_2nd_denylist = ['about', 'archive', 'events', 'films', 'followers', 
       'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 

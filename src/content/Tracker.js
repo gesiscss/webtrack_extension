@@ -39,7 +39,7 @@ export default class Tracker extends MultiFetch {
     this.debug = true;
 
     this.startswith_denylist = [];
-    this.startswith_whitelist = [];
+    this.startswith_allowlist = [];
     this.pos_2nd_denylist = [];
 
     this.header_clone = null;
@@ -125,8 +125,8 @@ export default class Tracker extends MultiFetch {
       }
     }
 
-    for (let i in this.startswith_whitelist) {
-      if (path.startsWith(this.startswith_whitelist[i])){
+    for (let i in this.startswith_allowlist) {
+      if (path.startsWith(this.startswith_allowlist[i])){
         return true;
       }
     }
