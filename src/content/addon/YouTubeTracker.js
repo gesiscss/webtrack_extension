@@ -96,7 +96,7 @@ export default class YouTubeTracker extends Tracker{
     this.lastUrlPath = '';
     this.values = [];
 
-    this.startswith_blacklist = ['/account/', '/reporthistory/', '/upload/', '/account_notifications/', 
+    this.startswith_denylist = ['/account/', '/reporthistory/', '/upload/', '/account_notifications/', 
       '/account_playback/', '/account_privacy/', '/account_sharing/', '/pair/', 
       '/account_billing/', '/account_advanced/'];
   }

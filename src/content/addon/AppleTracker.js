@@ -9,8 +9,8 @@ export default class AppleTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.is_allowed = null;
 
-    this.startswith_blacklist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
-    this.pos_2nd_blacklist = ['itunes', 'icloud'];
+    this.startswith_denylist = ['/in/icloud/', '/icloud/', '/de/itunes/', '/itunes/'];
+    this.pos_2nd_denylist = ['itunes', 'icloud'];
 
     this.apple_debug = false;
 

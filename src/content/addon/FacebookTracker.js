@@ -74,7 +74,7 @@ export default class FacebookTracker extends Tracker{
 
     this.lastUrlPath = '';
 
-    this.startswith_blacklist = [
+    this.startswith_denylist = [
      '/ads/activity/', '/crisisresponse/', '/events/', '/friends/', 
      '/gaming/', '/jobs/', '/marketplace/', '/memories/', 
      '/messages/', '/notifications/', '/offers/', '/photo/', '/recommendations/', 
@@ -82,7 +82,7 @@ export default class FacebookTracker extends Tracker{
 
     this.startswith_whitelist = ['/pg/']
 
-    this.pos_2nd_blacklist = ['about', 'archive', 'events', 'films', 'followers', 
+    this.pos_2nd_denylist = ['about', 'archive', 'events', 'films', 'followers', 
       'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 
       'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'likes', 'music', 
       'notes', 'photos', 'reviews', 'sports']

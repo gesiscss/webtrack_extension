@@ -52,9 +52,9 @@ export default class InstagramTracker extends Tracker{
       'profile_pic_url_hd': null,
     }
 
-    this.startswith_blacklist = ['/accounts/', '/settings/', '/emails/settings/', '/session/login_activity/', '/emails/emails_sent/'];
+    this.startswith_denylist = ['/accounts/', '/settings/', '/emails/settings/', '/session/login_activity/', '/emails/emails_sent/'];
 
-    this.pos_2nd_blacklist = [ 'followers', 'following', 'saved', 'tagged'];
+    this.pos_2nd_denylist = [ 'followers', 'following', 'saved', 'tagged'];
   }
 
 

@@ -6,7 +6,7 @@ import DomainTracker from './addon/DomainTracker';
 import URLTracker from './addon/URLTracker';
 import GoogleTracker from './addon/GoogleTracker';
 import AppleTracker from './addon/AppleTracker';
-import BlacklistTracker from './addon/BlacklistTracker';
+import DenylistTracker from './addon/DenylistTracker';
 import PrivateModeTracker from './addon/PrivateModeTracker';
 import Tracker from './Tracker';
 import DomDetector from './DomDetector';
@@ -157,9 +157,9 @@ export default class ContentHandler {
       } else if (privacy.only_url){
         if (this.debug) console.log('URLTracker');
         return URLTracker;
-      } if (privacy.blacklisted){
-        if (this.debug) console.log('BlacklistTracker');
-        return BlacklistTracker;
+      } if (privacy.denylisted){
+        if (this.debug) console.log('DenylistTracker');
+        return DenylistTracker;
       } if (privacy.private_mode){
         if (this.debug) console.log('PrivateModeTracker');
         return PrivateModeTracker;

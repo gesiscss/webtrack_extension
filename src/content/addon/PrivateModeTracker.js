@@ -13,7 +13,7 @@ export default class PrivateModeTracker extends Tracker{
     // however, currently this is not the case
     this.privacy.is_private_mode = true;
 
-    this.blacklist_debug = false;
+    this.denylist_debug = false;
 
   }
 

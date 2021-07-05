@@ -38,9 +38,9 @@ export default class Tracker extends MultiFetch {
     this.events_debug = true;
     this.debug = true;
 
-    this.startswith_blacklist = [];
+    this.startswith_denylist = [];
     this.startswith_whitelist = [];
-    this.pos_2nd_blacklist = [];
+    this.pos_2nd_denylist = [];
 
     this.header_clone = null;
     this.is_logged_in = false;
@@ -119,8 +119,8 @@ export default class Tracker extends MultiFetch {
       path = path + '/';
     }
 
-    for (let i in this.startswith_blacklist) {
-      if (path.startsWith(this.startswith_blacklist[i])){
+    for (let i in this.startswith_denylist) {
+      if (path.startsWith(this.startswith_denylist[i])){
         return false;
       }
     }
@@ -131,10 +131,10 @@ export default class Tracker extends MultiFetch {
       }
     }
 
-    if (this.pos_2nd_blacklist.length > 0){
+    if (this.pos_2nd_denylist.length > 0){
       let path_2nd = path.split('/')[2];
-      for (let i in this.pos_2nd_blacklist) {
-       if (path_2nd == this.pos_2nd_blacklist[i]){
+      for (let i in this.pos_2nd_denylist) {
+       if (path_2nd == this.pos_2nd_denylist[i]){
           return false;
         }
       }
