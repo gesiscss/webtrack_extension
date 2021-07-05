@@ -29,6 +29,30 @@ class Tab {
 
 }
 
+/**
+ * Chrome 91 BUG PATCH (2021.07.05): a bug that do not let reading the tabs
+ * when they are being created, or when the focus changes. this function is a
+ * wrapper with a tempoorized, 
+ * Sources:
+ * https://bugs.chromium.org/p/chromium/issues/detail?id=1213925
+ * https://stackoverflow.com/questions/67806779/im-getting-an-error-tabs-cannot-be-edited-right-now-user-may-be-dragging-a-ta
+ */
+const ChromeWrapper = {
+  chromeTabsQuery: function (params, callback) {
+    chrome.tabs.query(params, tabs => {
+      if (chrome.runtime.lastError) {
+        setTimeout(function () {
+          console.warn("ChromeWrapper.chromeTabsQuery re-called (Patch for Chrome 91).");
+          ChromeWrapper.chromeTabsQuery(params, callback)
+        }, 100); // arbitrary delay
+      } else {
+        callback(tabs)
+      }
+    })
+  }
+}
+
+
 
 export default class Extension {
 
@@ -121,7 +145,9 @@ export default class Extension {
    */
   getAllTabsIds(query={}, onlyId=true){
     return new Promise((resolve, reject)=>{
-      xbrowser.tabs.query(query, tabs => {
+      // Chrome 91 (Bug Fix): Using ChromeWrapper instead of
+      // xbrowser.tabs.query
+      ChromeWrapper.chromeTabsQuery(query, tabs => {
         if(onlyId){
           resolve(tabs.map(v => v.id))
         }else{
@@ -151,8 +177,11 @@ export default class Extension {
    */
   async displayPrivateTimePopup(){
     this.pending_private_time_answer = true;
-    // send a messate
-    xbrowser.tabs.query({active: true}, function(tabs){
+
+    // send a message
+    // Chrome 91 (Bug Fix): Using ChromeWrapper instead of
+    // xbrowser.tabs.query
+    ChromeWrapper.chromeTabsQuery({active: true}, function(tabs){
       for (let tab of tabs) {
         try{
           xbrowser.tabs.sendMessage(tab.id, { 
