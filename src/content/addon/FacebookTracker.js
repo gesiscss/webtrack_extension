@@ -15,21 +15,63 @@ export default class FacebookTracker extends Tracker{
     this.elements = [];
     this.elementStrings = '';
     this.trackedToolbarButtons = [];
+
+
     this.eventElements = {
       allowNotToTracked: ['#leftCol ._3ph1.sp_387n34yO1ZQ', '#fbProfileCover'],
+
       //articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
-      likearticelButton: ['div[aria-label="Like"]:not(.buofh1pr)', 'div[aria-label="Remove Like"]:not(.buofh1pr)', 'div[aria-label="לייק"]:not(.buofh1pr)', 'div[aria-label="הסרת לייק"]:not(.buofh1pr)'],
-      likeComment: [
-        {query: '._6coi._6qw9 li:nth-child(1) a', parent: ['._4eek[role="articel"]', 'div'], text: {parent: '._42ef', query: '._72vr > span'}, countComment: {parent: '._42ef', query: '._6cuq > span'}},
-        {query: '.UFILikeLink.UFIReactionLink', parent: '.UFIRow.UFIComment',  text: {parent: '.UFICommentContentBlock', query: '.UFICommentBody'}, countComment: {parent: '.UFICommentContentBlock', query: '.UFICommentReactionsBling > span'}}
+      likearticelButton: [
+          'div[aria-label="Like"]:not(.buofh1pr)', 
+          'div[aria-label="Remove Like"]:not(.buofh1pr)', 
+          'div[aria-label="לייק"]:not(.buofh1pr)', 
+          'div[aria-label="הסרת לייק"]:not(.buofh1pr)'
+          ],
+
+      likeComment: [{
+        query: '._6coi._6qw9 li:nth-child(1) a', 
+        parent: ['._4eek[role="articel"]', 'div'], 
+        text: { parent: '._42ef', 
+                query: '._72vr > span'},
+        countComment: {parent: '._42ef', query: '._6cuq > span'}},{
+          query: '.UFILikeLink.UFIReactionLink', 
+          parent: '.UFIRow.UFIComment', 
+          text: {
+            parent: '.UFICommentContentBlock', 
+            query: '.UFICommentBody'
+          }, countComment: {
+            parent: '.UFICommentContentBlock', 
+            query: '.UFICommentReactionsBling > span'
+          }
+        }],
+      commentButton: [
+        '[aria-label="Leave a comment"]', 
+        '[aria-label="השאר תגובה"]', 
+        '._3hg-._42ft', 
+        '.comment_link', 
+        '._ipm._-56', 
+        '.UFIPagerLink', 
+        '._fmi._613v.UFIInputContainer'
       ],
-      commentButton: ['[aria-label="Leave a comment"]', '[aria-label="השאר תגובה"]', '._3hg-._42ft', '.comment_link', '._ipm._-56', '.UFIPagerLink', '._fmi._613v.UFIInputContainer'],
-      commentfields: ['[aria-label="Write a comment"]', '[aria-label="כתיבת תגובה"]', '._5rpu'],
-      commentFromCommentButton: ['form.o6r2urh6.l9j0dhe7.b3i9ofy5.e72ty7fz.qlfml3jp.inkptoze.qmr60zad.rt8b4zig.n8ej3o3l.agehan2d.sk4xxmp2.j83agx80.bkfpd7mw'],
-      shareButtonBevor: ['a._2nj7', 'a.share_action_link'],
-      shareButton: ['a._2nj7', 'a.share_action_link'],
-      joinGroup: ['a._42ft._4jy0._21ku._4jy4']
+      commentfields: [
+        '[aria-label="Write a comment"]',
+        '[aria-label="כתיבת תגובה"]',
+        '._5rpu'
+      ],
+      commentFromCommentButton: [
+        'form.o6r2urh6.l9j0dhe7.b3i9ofy5.e72ty7fz.qlfml3jp.inkptoze.qmr60zad.rt8b4zig.n8ej3o3l.agehan2d.sk4xxmp2.j83agx80.bkfpd7mw'
+      ],
+      shareButtonBevor: [
+        'a._2nj7', 'a.share_action_link'
+        ],
+      shareButton: [
+        'a._2nj7', 'a.share_action_link'
+        ],
+      joinGroup: [
+      'a._42ft._4jy0._21ku._4jy4'
+      ]
     };
+
     this.documentHead = '';
 
     this.lastUrlPath = '';
