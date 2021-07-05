@@ -119,6 +119,15 @@ export default class Tracker extends MultiFetch {
       path = path + '/';
     }
 
+    return this._is_sm_path_allowed(path);
+  }
+
+
+  /**
+   * Reimplemente this method to adjust the controls in each Tracker
+   */
+  _is_sm_path_allowed(path){
+
     for (let i in this.startswith_denylist) {
       if (path.startsWith(this.startswith_denylist[i])){
         return false;
@@ -142,6 +151,7 @@ export default class Tracker extends MultiFetch {
 
     return true;
   }
+
 
 
   /**
@@ -588,7 +598,8 @@ export default class Tracker extends MultiFetch {
           var html = await this.getDom();
 
           // is social media path allowed
-          let is_sm_path_allowed = this.is_sm_path_allowed(location.pathname)
+          let is_sm_path_allowed = this.is_sm_path_allowed(location.pathname);
+          console.log('IS ALLOWED', location.pathname, is_sm_path_allowed);
 
           // if is it ok to track the current address, and some html was
           // recovered, then send the data

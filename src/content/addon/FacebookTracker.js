@@ -74,18 +74,7 @@ export default class FacebookTracker extends Tracker{
 
     this.lastUrlPath = '';
 
-    this.startswith_denylist = [
-     '/ads/activity/', '/crisisresponse/', '/events/', '/friends/', 
-     '/gaming/', '/jobs/', '/marketplace/', '/memories/', 
-     '/messages/', '/notifications/', '/offers/', '/photo/', '/recommendations/', 
-     '/saved/',  '/settings/'];
-
-    this.startswith_allowlist = ['/pg/']
-
-    this.pos_2nd_denylist = ['about', 'archive', 'events', 'films', 'followers', 
-      'following', 'friends_all', 'friends_college', 'friends_current_city', 'friends', 'friends_hometown', 
-      'friends_mutual', 'friends_with_upcoming_birthdays', 'games', 'likes', 'music', 
-      'notes', 'photos', 'reviews', 'sports']
+    this.startswith_allowlist = ['/', '/spd/']
 
     this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
 
@@ -133,6 +122,24 @@ export default class FacebookTracker extends Tracker{
 
     this.reset_credentials();
 
+  }
+
+  _is_sm_path_allowed(path){
+
+    path = path.toLowerCase();
+
+    if (!path.endsWith('/')){
+      path = path + '/';
+    }
+
+    for (let i in this.startswith_allowlist) {
+      console.log('ALLOWED SW', this.startswith_allowlist[i]);
+      if (path == this.startswith_allowlist[i]){
+        return true;
+      }
+    }
+
+    return false;
   }
 
 
