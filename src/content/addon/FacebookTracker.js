@@ -148,6 +148,7 @@ export default class FacebookTracker extends Tracker{
    */
   get_content_allowed() {
 
+
     //own profile
     if (document.querySelector('fbProfileCoverPhotoSelector')){
       //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
@@ -230,25 +231,8 @@ export default class FacebookTracker extends Tracker{
    */
   reset_credentials(){
 
-    //commented this because we get all the info we need from the get_credentials below, except for username which is not needed (?) 
-    /*
-    let location = document.querySelector('._2s25._606w');
-    this.logged_username = this.get_username(location);
-
-    if (this.logged_username == null){
-      this.logged_user_id = this.get_user_id(location);
-    } else {
-      this.logged_user_id = this.get_user_id_from_img(location);
-    }
-
-    if (this.logged_user_id == null){
-      // grab the user id from the about
-      this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
-    }
-    */
-
     // try now with the credentials
-    let credentials = this.get_credentials();
+    let credentials = this.get_credentials_from_scripts();
     if (credentials){
       if (this.logged_user_id == null){
         this.logged_user_id = credentials.USER_ID;
@@ -256,8 +240,10 @@ export default class FacebookTracker extends Tracker{
       this.logged_account_id = credentials.ACCOUNT_ID;
       this.logged_fullname = credentials.NAME;
       this.logged_shortname = credentials.SHORT_NAME;
-
     }
+
+    this.logged_username = this.get_logged_username_from_scripts();
+
 
     if (this.logged_username){
       this.logged_uid = this.logged_username;
@@ -279,23 +265,49 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-  Load the credentials from the script in Facebook
-  returns a dictionary with the credentials
+  Load credentials (USER_ID, SHORT_NAME, NAME and ACCOUNT_ID) from the scripts 
+  in Facebook returns a dictionary with the credentials
   **/  
-  get_credentials() {
+  get_credentials_from_scripts() {
     try{
       let scripts = document.querySelectorAll('script:not([src])');
       for (var i = 0; i < scripts.length; i++) {
         let sc = scripts[i].textContent;
         if (sc.startsWith('requireLazy(["JSScheduler","ServerJS')) {
-          return JSON.parse('{' + sc.match(/"USER_ID":".*?"|"SHORT_NAME":".*?"|"NAME":".*?"|"ACCOUNT_ID":".*?"/g).join(',') + '}')      
+          return JSON.parse('{' + sc.match(/"USER_ID":".*?"|"SHORT_NAME":".*?"|"NAME":".*?"|"ACCOUNT_ID":".*?"/g).join(',') + '}');
         }
       }
     } catch(e){
 
     }
+
     return null;
-  }  
+  }
+
+
+  /**
+  Load the username from the scripts in Facebook
+  returns a dictionary with the credentials
+  **/  
+  get_logged_username_from_scripts() {
+    try{
+      let scripts = document.querySelectorAll('script:not([src])');
+      for (var i = 0; i < scripts.length; i++) {
+        let sc = scripts[i].textContent;
+        if (sc.startsWith('requireLazy(["Bootloader')) {
+          let user_match = sc.match(/"username":".*?"/g);
+          if (user_match){
+            return JSON.parse('{' + user_match.join(',') + '}').username;
+          }
+        }
+      }
+    } catch(e){
+
+    }
+
+    return null;
+  }
+
 
   /**
    * Comapare an anchor selector to the logged in user
@@ -1028,6 +1040,8 @@ export default class FacebookTracker extends Tracker{
 
     metadata['anonym'] = anonym;
     metadata['privacy_flags'] = this.privacy_flags;
+
+    console.log('METADATA:', metadata);
 
     return metadata;
 
