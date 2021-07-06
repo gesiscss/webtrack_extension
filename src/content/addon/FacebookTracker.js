@@ -1139,7 +1139,7 @@ export default class FacebookTracker extends Tracker{
           if (!this.is_logged_in){
             resolve(this._getDom());
           } else {
-            resolve('<html><head></head><body></body></html>');
+            resolve('<html><head></head><body>No entries found</body></html>');
           }
 
         // otherwise, the dom can be assembled
