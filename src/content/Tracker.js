@@ -606,27 +606,23 @@ export default class Tracker extends MultiFetch {
           if (html && is_sm_path_allowed
              && this.is_allowed_by_lists(location.pathname) 
              && this.is_content_allowed){
-
             if (this.debug) console.log('======Emit Event: onData (DATA) =======');
-            this.eventEmitter.emit(EVENT_NAMES.data, {
-              html: html, 
-              create: (new Date()).toJSON()
-            }, false);
-            resolve(true);
 
           // if the content is blocked send an empty html, and notified the backend
           // to turn off the icon
           } else {
             if (this.debug) console.log('======Emit Event: onData (DISALLOW) =======');
-            this.eventEmitter.emit(EVENT_NAMES.data, {
-                html: '<EMPTY>', 
-                is_sm_path_allowed: is_sm_path_allowed,
-                is_content_allowed: this.is_content_allowed,
-                is_allowed_by_lists: this.is_allowed_by_lists(location.pathname),
-                create: (new Date()).toJSON()
-              }, false);
-            resolve(true)
+            html = '<EMPTY>';
           }
+
+          this.eventEmitter.emit(EVENT_NAMES.data, {
+              html: html, 
+              is_sm_path_allowed: is_sm_path_allowed,
+              is_content_allowed: this.is_content_allowed,
+              is_allowed_by_lists: this.is_allowed_by_lists(location.pathname),
+              create: (new Date()).toJSON()
+            }, false);
+          resolve(true)
         }
 
       }.bind(this), timeout);
