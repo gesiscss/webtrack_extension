@@ -174,9 +174,9 @@ export default class FacebookTracker extends Tracker{
     }
 
     // this is a profile, only allow if it is the same user
-    // let logged_uid = this.get_username_or_id(document.querySelector('._2s25._606w'));
+    // let logged_uid = this.get_username_or_id_from_url(document.querySelector('._2s25._606w'));
     // if (logged_uid){
-    //   let profile_uid = this.get_username_or_id(document.querySelector('._2nlw._2nlv'));
+    //   let profile_uid = this.get_username_or_id_from_url(document.querySelector('._2nlw._2nlv'));
     //   if (profile_uid){
     //     if (logged_uid != profile_uid) {
     //       return false;
@@ -318,7 +318,7 @@ export default class FacebookTracker extends Tracker{
   is_link_same_as_logged_user(target, selector){
     if (this.logged_uid){
 
-      let profile_uid = this.get_username_or_id(target.querySelector(selector));
+      let profile_uid = this.get_username_or_id_from_url(target.querySelector(selector));
       if (profile_uid){
         return this.logged_uid == profile_uid;
       }
@@ -349,7 +349,7 @@ export default class FacebookTracker extends Tracker{
    * @param  {Location} anchor html element (<a>)
    * @return {[type]} the username or id found in the anchor elment
    */
-  get_username_or_id(location){
+  get_username_or_id_from_url(location){
     if (location) {
       let username = this.get_username(location);
       if (username) {
