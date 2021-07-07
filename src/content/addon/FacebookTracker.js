@@ -229,13 +229,19 @@ export default class FacebookTracker extends Tracker{
   **/  
   get_logged_username_from_scripts() {
     try{
+      let url_username = this.get_username_from_url(location);
       let scripts = document.querySelectorAll('script:not([src])');
       for (var i = 0; i < scripts.length; i++) {
         let sc = scripts[i].textContent;
         if (sc.startsWith('requireLazy(["Bootloader')) {
           let user_match = sc.match(/"username":".*?"/g);
           if (user_match){
-            return JSON.parse('{' + user_match.join(',') + '}').username;
+            let username = JSON.parse('{' + user_match.join(',') + '}').username;
+            // if the username in the url exist and it is different than the username
+            // in the script, then return that one
+            if (url_username && url_username != username){
+              return username;
+            } 
           }
         }
       }
@@ -272,7 +278,7 @@ export default class FacebookTracker extends Tracker{
    */
   get_username_or_id_from_url(location){
     if (location) {
-      let username = this.get_username(location);
+      let username = this.get_username_from_url(location);
       if (username) {
         return username;
       }
@@ -287,7 +293,7 @@ export default class FacebookTracker extends Tracker{
    * @param  {Location} html anchor (<a>) element in which the username will be searched
    * @return {str} the username
    */
-  get_username(location){
+  get_username_from_url(location){
     if (location && location.pathname) {
       let username = location.pathname.split('/');
       if (username.length > 1) {
@@ -504,7 +510,7 @@ export default class FacebookTracker extends Tracker{
     let bucket = [];
     //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
-    let found = document.querySelectorAll('[role="article"][aria-describedby]:not(.tracked)');
+    let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
 
     let length = found.length;
     for (var i = 0; i < length; i++) {
