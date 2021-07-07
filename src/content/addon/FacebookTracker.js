@@ -72,6 +72,10 @@ export default class FacebookTracker extends Tracker{
       ]
     };
 
+    this.public_arias = new Set([
+      'Shared with Public', 'Shared with Public group', 'Shared with Custom', 
+      'משותף עם קבוצה ציבורית', 'משותף עם ציבורי', 'משותף עם התאמה אישית']);
+
     this.lastUrlPath = '';
 
     this.startswith_allowlist = ['/', '/spd/']
@@ -433,8 +437,16 @@ export default class FacebookTracker extends Tracker{
       return false;
     }
 
-    
-    return true;
+    // check if the icon has a public aria label
+    let privacy_icon = target.querySelector("span.g0qnabr5 > span > span > i");
+    if (privacy_icon){
+      let aria_label = privacy_icon.getAttribute('aria-label');
+      if (aria_label && this.public_arias.has(aria_label)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 
@@ -468,12 +480,6 @@ export default class FacebookTracker extends Tracker{
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
 
-    // // try to capture elements in the new interface
-    // if (found.length == 0){
-    //   found = document.querySelectorAll('div[role="article"]:not(.tracked)');
-    // }
-
-
     let length = found.length;
     for (var i = 0; i < length; i++) {
       this.entries_found += 1;
@@ -492,26 +498,12 @@ export default class FacebookTracker extends Tracker{
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
         delete found[i];
       }
+    }
 
-    }
-    //}
-    //removes all non-public posts from bucket
-    const savedElements = [];
-    for (var i = 0; i < bucket.length; i++) {
-      let privacy_icon = bucket[i].querySelector("span.g0qnabr5 > span > span > i")
-      if ((privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Public') ||
-          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Public group') ||
-          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'Shared with Custom') ||
-          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם קבוצה ציבורית') ||
-          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם ציבורי') ||
-          (privacy_icon && privacy_icon.getAttribute('aria-label') == 'משותף עם התאמה אישית')) {
-        savedElements.push(bucket[i]);
-      }
-    }
-    
     this.totalPostsSeen += bucket.length;
+
     //return bucket.filter(e => e!=undefined);
-    return savedElements;
+    return bucket;
   }
 
   /**
