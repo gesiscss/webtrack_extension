@@ -124,37 +124,8 @@ export default class FacebookTracker extends Tracker{
    * [get_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
   get_content_allowed() {
-
-
-    //own profile
-    if (document.querySelector('fbProfileCoverPhotoSelector')){
-      //if (this.facebook_debug) console.log('** get_content_allowed', 'fbProfileCoverPhotoSelector', document.querySelector('fbProfileCoverPhotoSelector'));
-      return true;
-    }
-
-    // detect the sidebar of the timelines, not always allowed to track timelines
-    let sidebar_timeline = document.querySelector('#timeline_small_column');
-    
-    // this is a timeline
-    if (sidebar_timeline){
-      //if (this.facebook_debug) console.log('** get_content_allowed', '#timeline_small_column', sidebar_timeline);
-      // this is not my own timeline
-      if (!(sidebar_timeline.querySelector('._6a._m'))){
-        return false;
-      }
-    }
-
-    // this is a profile, only allow if it is the same user  (or if this cannot 
-    // be identified)
-    let is_user_profile = this.is_link_same_as_logged_user(document, '._2nlw._2nlv');
-    if (is_user_profile != null){
-      //if (this.facebook_debug) console.log('** get_content_allowed ', '#timeline_small_column', is_user_profile);
-
-      if (!is_user_profile){
-        return false;
-      }
-    }
-
+    // the content is always allowed because the path of the URL will
+    // be used to control for everything
     return true;
   }
 
