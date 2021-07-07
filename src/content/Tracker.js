@@ -45,7 +45,11 @@ export default class Tracker extends MultiFetch {
     this.header_clone = null;
     this.is_logged_in = false;
     this.is_content_allowed = true;
-    this.is_sm_path_allowed = false;
+    
+    // WARNING: this must remain null after fully fetch the first DOM
+    // because of syncing issues. If the variable is null, it is not 
+    // possible to know if the location.pathname is or not allowed. 
+    this.is_sm_path_allowed = null;
   }
 
   /**
