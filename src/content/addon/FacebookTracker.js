@@ -1000,8 +1000,7 @@ export default class FacebookTracker extends Tracker{
             this.elements.push(found[i]); //is this being used anywhere?
             this.elementStrings += cloned.outerHTML
           }
-          resolve('<html posts_seen="'+this.posts_seen+
-            ' posts_people_you_may_know="'+this.posts_people_you_may_know+' " ><head></head><body>'
+          resolve('<html posts_seen="'+this.posts_seen+'" posts_people_you_may_know="'+this.posts_people_you_may_know+'" ><head></head><body>'
             +this.elementStrings+'</body>'+'</html>');
         }
 
