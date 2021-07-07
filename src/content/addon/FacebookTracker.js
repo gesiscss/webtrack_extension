@@ -430,13 +430,6 @@ export default class FacebookTracker extends Tracker{
    */
   _isPublicArticle(target){
 
-    // simply extra protection, to make sure that that nothing is collected
-    // when the path is not allowed
-    if (!this.is_sm_path_allowed){
-      //if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
-      return false;
-    }
-
     // check if the icon has a public aria label
     let privacy_icon = target.querySelector("span.g0qnabr5 > span > span > i");
     if (privacy_icon){
