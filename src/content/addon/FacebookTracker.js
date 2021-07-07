@@ -473,8 +473,6 @@ export default class FacebookTracker extends Tracker{
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
 
-    debugger;
-
     let length = found.length;
     for (var i = 0; i < length; i++) {
       this.entries_found += 1;
