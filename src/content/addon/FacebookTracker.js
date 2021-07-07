@@ -8,7 +8,11 @@ export default class FacebookTracker extends Tracker{
     this.extensionfilter = extensionfilter;
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
-    this.totalPostsSeen = 0;
+    
+    this.posts_seen = 0;
+    this.posts_people_you_may_know = 0;
+
+
     this.is_allowed = null;
     this.facebook_debug = true;
     this.facebook_events_debug = true;
@@ -72,9 +76,17 @@ export default class FacebookTracker extends Tracker{
       ]
     };
 
+
+    /**
+     * To Translate to german
+     */
+
     this.public_arias = new Set([
       'Shared with Public', 'Shared with Public group', 'Shared with Custom', 
       'משותף עם קבוצה ציבורית', 'משותף עם ציבורי', 'משותף עם התאמה אישית']);
+
+    this.people_you_may_know_arias = new Set([
+      'People You May Know']);
 
     this.lastUrlPath = '';
 
@@ -443,6 +455,27 @@ export default class FacebookTracker extends Tracker{
   }
 
 
+  /**
+   * [_isPeopleYouMayKnowArticle check if it is a people you may know article]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isPeopleYouMayKnowArticle(target){
+
+    // check if the icon has a public aria label
+    let element = target.querySelector('[role^=region]');
+    if (element){
+      let aria_label = element.getAttribute('aria-label');
+      if (aria_label && this.people_you_may_know_arias.has(aria_label)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
+
 
   /**
    * [_isPrivate checks if element is for the public or private]
@@ -480,7 +513,7 @@ export default class FacebookTracker extends Tracker{
       found[i].classList.add('tracked');
       found[i].setAttribute('webtracker-article-id', Math.random());
       if (this._isPublicArticle(found[i])){
-        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid green !important;");
+        if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid green !important;");
         this._setLikeEvent(found[i]);
         this._setCommentEvent(found[i]);
         this._eventcommentFromCommentButton(found[i]);
@@ -488,12 +521,17 @@ export default class FacebookTracker extends Tracker{
         //this._setShareEvent(found[i]);  //currently unsupposted and not working
         bucket.push(found[i])
       }else{
-        if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid red !important;");
+        if (this._isPeopleYouMayKnowArticle(found[i])){
+          this.posts_people_you_may_know += 1;
+          if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid yellow !important;");
+        } else {
+          if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid red !important;");
+        }
         delete found[i];
       }
     }
 
-    this.totalPostsSeen += bucket.length;
+    this.posts_seen += bucket.length;
 
     //return bucket.filter(e => e!=undefined);
     return bucket;
@@ -509,7 +547,7 @@ export default class FacebookTracker extends Tracker{
         let commentButtons = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
-          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid yellow !important;");
+          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:3px solid yellow !important;");
           commentButtons[i].addEventListener('click', () => {
             this._eventComment(article, comment => {
               this.eventFn.onEvent(
@@ -542,7 +580,7 @@ export default class FacebookTracker extends Tracker{
         let commentButtons = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
-          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:3px solid red !important;");
           commentButtons[i].addEventListener('click', e => {
             setTimeout(()=>{
               this._eventComment(article, comment => {
@@ -581,7 +619,7 @@ export default class FacebookTracker extends Tracker{
         let commentfields = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentfields.length; i++) {
           commentfields[i].classList.add('tracked');
-          if(this.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid pink !important;");
+          if(this.facebook_debug) commentfields[i].setAttribute("style", "border:3px solid pink !important;");
           commentfields[i].addEventListener('keydown', e => {
             let spans =  e.srcElement.querySelectorAll('span[data-text="true"]');
             if(spans.length>0){
@@ -609,11 +647,11 @@ export default class FacebookTracker extends Tracker{
       setTimeout(()=>{
         for (var i = 0; i < shareButton.length; i++) {
           shareButton[i].classList.add('tracked');
-          if(this.facebook_debug) shareButton[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) shareButton[i].setAttribute("style", "border:3px solid red !important;");
           let shares = shareButton[i].querySelectorAll('ul li a:not(.tracked)');
           for (var i = 0; i < shares.length; i++) {
             shares[i].classList.add('tracked');
-            if(this.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+            if(this.facebook_debug) shares[i].setAttribute("style", "border:3px solid red !important;");
             shares[i].addEventListener('click', e => {
               this.eventFn.onEvent(
                 {
@@ -646,7 +684,7 @@ export default class FacebookTracker extends Tracker{
         let shares = article.querySelectorAll(query+':not(.tracked)');
         for (let i = 0; i < shares.length; i++) {
           shares[i].classList.add('tracked');
-          if(this.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) shares[i].setAttribute("style", "border:3px solid red !important;");
           if(after==false){
             if(this.facebook_events_debug) shares[i].addEventListener('mouseover', e => {
               setTimeout(()=>this._setShareEvent(article, true), 100)
@@ -691,7 +729,7 @@ export default class FacebookTracker extends Tracker{
       for (let s of this.eventElements.likeComment) {
         let buttons = article.querySelectorAll(s.query);
         for (var i = 0; i < buttons.length; i++) {
-          if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) buttons[i].setAttribute("style", "border:3px solid red !important;");
           buttons[i].addEventListener('click', e => {
             let text = this.getParentElement(e.srcElement, s.text.parent).querySelectorAll(s.text.query)[0].textContent;
             let count = 0,
@@ -768,7 +806,7 @@ export default class FacebookTracker extends Tracker{
       for (let query of this.eventElements.likearticleButton) {
         let buttons = article.querySelectorAll(query);
         for (var i = 0; i < buttons.length; i++) {
-          if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
+          if(this.facebook_debug) buttons[i].setAttribute("style", "border:3px solid purple !important;");
           let button = buttons[i];
           button.addEventListener('click', e =>{
             if (button.getAttribute('aria-label') === 'Remove Like'){
@@ -878,7 +916,7 @@ export default class FacebookTracker extends Tracker{
       for (let a = 0; a < buttons.length; a++) {
         buttons[a].classList.add('tracked');
         this.trackedToolbarButtons.push(buttons[a]);
-        if(this.facebook_debug) buttons[a].setAttribute("style", "border:2px solid blue !important;");
+        if(this.facebook_debug) buttons[a].setAttribute("style", "border:3px solid blue !important;");
         buttons[a].onclick = e => {
           //if(this.facebook_debug) console.log('click', e.srcElement.parentElement.getAttribute("data-reaction"));
           fn({
@@ -898,7 +936,7 @@ export default class FacebookTracker extends Tracker{
     setTimeout(() =>{
         let layer = document.querySelectorAll('.uiLayer div[role="toolbar"]');
         for (let i = 0; i < layer.length; i++) {
-          if(this.facebook_debug) layer[i].setAttribute("style", "border:2px solid red !important;");
+          if(this.facebook_debug) layer[i].setAttribute("style", "border:3px solid red !important;");
           layer[i].timeouts = [];
           layer[i].timeouts.push(setTimeout(()=>{
             //if(this.facebook_debug) console.log('START REMOVE');
@@ -962,7 +1000,9 @@ export default class FacebookTracker extends Tracker{
             this.elements.push(found[i]); //is this being used anywhere?
             this.elementStrings += cloned.outerHTML
           }
-          resolve('<html totalPostsSeen="'+this.totalPostsSeen+'" ><head></head><body>'+this.elementStrings+'</body>'+'</html>');
+          resolve('<html posts_seen="'+this.posts_seen+
+            ' posts_people_you_may_know="'+this.posts_people_you_may_know+' " ><head></head><body>'
+            +this.elementStrings+'</body>'+'</html>');
         }
 
       } catch (err) {
