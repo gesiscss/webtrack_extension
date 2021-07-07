@@ -248,23 +248,6 @@ export default class FacebookTracker extends Tracker{
     return null;
   }
 
-  /**
-   * get the value of a paraemeter in the parameters of an url
-   * @param  {str} that contains the url paramesters, e.g. ?id=000&var=x
-   * @param  {str} name of the parameter that the value is being looked for
-   * @return {str} the value  of the partameter
-   */
-  findGetParameter(params, parameterName) {
-    var tmp = [];
-    var items = params.substr(1).split("&");
-    for (var index = 0; index < items.length; index++) {
-        tmp = items[index].split("=");
-        if (tmp[0] === parameterName) {
-          return decodeURIComponent(tmp[1]);
-        } 
-    }
-    return null;
-  }
 
   /**
    * get the username or id given an anchor element
