@@ -20,8 +20,8 @@ export default class FacebookTracker extends Tracker{
     this.eventElements = {
       allowNotToTracked: ['#leftCol ._3ph1.sp_387n34yO1ZQ', '#fbProfileCover'],
 
-      //articels: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="articel"] div[role="articel"][data-testid="fbarticel_story"]'],
-      likearticelButton: [
+      //articles: ['#content_container [role="main"] .userContentWrapper', '#contentArea [role="article"] div[role="article"][data-testid="fbarticle_story"]'],
+      likearticleButton: [
           'div[aria-label="Like"]:not(.buofh1pr)', 
           'div[aria-label="Remove Like"]:not(.buofh1pr)', 
           'div[aria-label="לייק"]:not(.buofh1pr)', 
@@ -30,7 +30,7 @@ export default class FacebookTracker extends Tracker{
 
       likeComment: [{
         query: '._6coi._6qw9 li:nth-child(1) a', 
-        parent: ['._4eek[role="articel"]', 'div'], 
+        parent: ['._4eek[role="article"]', 'div'], 
         text: { parent: '._42ef', 
                 query: '._72vr > span'},
         countComment: {parent: '._42ef', query: '._6cuq > span'}},{
@@ -295,42 +295,42 @@ export default class FacebookTracker extends Tracker{
   }
 
   /**
-   * [_getValues return values of articel]
+   * [_getValues return values of article]
    * @param  {Object} target
    * @return {Array}
    */
   _getValues(target){
     let search = [
       {
-        name: 'webtracker-articel-id',
+        name: 'webtracker-article-id',
         default: undefined,
       },
       {
-        name: 'articel-time',
+        name: 'article-time',
         query: ['._5ptz'],
         default: undefined,
         filter: e => e.getAttribute('title')
       },
       {
-        name: 'articel-link',
+        name: 'article-link',
         query: ['.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.nc684nl6.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.gmql0nx0.gpro0wi8.b1v8xokw'],
         default: undefined,
         filter: e => e.getAttribute('href').split('?')[0]
       },
       {
-        name: 'articel-headertext',
+        name: 'article-headertext',
         query: ['.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.c1et5uql.ii04i59q'],
         default: undefined,
         filter: e => e.textContent
       },
       {
-        name: 'articel-publisher-name',
+        name: 'article-publisher-name',
         query: ['h4 a span'],
         default: undefined,
         filter: e => e.textContent
       },
       {
-        name: 'articel-count-likes',
+        name: 'article-count-likes',
         query: ['.gpro0wi8.cwj9ozl2.bzsjyuwj.ja2t1vim'],
         default: undefined,
         filter: e => {
@@ -350,7 +350,7 @@ export default class FacebookTracker extends Tracker{
         } 
       },
       {
-        name: 'articel-count-comments',
+        name: 'article-count-comments',
         query: ['.gtad4xkn > .oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.nc684nl6.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.gpro0wi8.dwo3fsh8.ow4ym5g4.auili1gw.du4w35lb.gmql0nx0'],
         default: undefined,
         filter: e => {
@@ -363,7 +363,7 @@ export default class FacebookTracker extends Tracker{
         }
       },
       {
-        name: 'articel-count-shares',
+        name: 'article-count-shares',
         query: ['.gtad4xkn > .tojvnm2t.a6sixzi8.abs2jz4q.a8s20v7p.t1p8iaqh.k5wvi7nf.q3lfd5jv.pk4s997a.bipmatt0.cebpdrjk.qowsmv63.owwhemhu.dp1hu0rb.dhp61c6y.iyyx5f41'],
         default: undefined,
         filter: e => {
@@ -376,7 +376,7 @@ export default class FacebookTracker extends Tracker{
         }
       },
       {
-        name: 'articel-count-contentType',
+        name: 'article-count-contentType',
         default: undefined,
         query: ['._3x-2'],
         filter: e => {
@@ -395,7 +395,7 @@ export default class FacebookTracker extends Tracker{
     for (let s of search) {
       try {
         let value = s.default;
-        if (s.name == 'webtracker-articel-id') {
+        if (s.name == 'webtracker-article-id') {
           value = target.getAttribute('webtracker-article-id');
         } else {
           for (let query of s.query) {
@@ -404,7 +404,7 @@ export default class FacebookTracker extends Tracker{
               r = r[0];
               let data = s.filter(r);
               if(data!=null) value = data;
-            } else if (s.name == 'articel-count-comments' || s.name == 'articel-count-shares' || s.name == 'articel-count-likes') {
+            } else if (s.name == 'article-count-comments' || s.name == 'article-count-shares' || s.name == 'article-count-likes') {
               value = 0;
             }
           }//for
@@ -494,12 +494,12 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_getPublicArticels return elements of public articels]
+   * [_getPublicArticels return elements of public articles]
    * @return {Array} found
    */
   _getPublicArticels(){
     let bucket = [];
-    //for (let query of this.eventElements.articels) {
+    //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
 
@@ -551,30 +551,30 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_setCommentEvent set event handling of comment button fields]
-   * @param {Object} articel
+   * @param {Object} article
    */
-  _setCommentEvent(articel){
+  _setCommentEvent(article){
     setTimeout(()=>{
       for (let query of this.eventElements.commentButton) {
-        let commentButtons = articel.querySelectorAll(query+':not(.tracked)');
+        let commentButtons = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
           if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid yellow !important;");
           commentButtons[i].addEventListener('click', () => {
-            this._eventComment(articel, comment => {
+            this._eventComment(article, comment => {
               this.eventFn.onEvent(
                 {
                   event: 'comment',
-                  type: 'articel',
-                  values: this._getValues(articel).concat([
+                  type: 'article',
+                  values: this._getValues(article).concat([
                     {name: 'comment', value: comment},
                   ])
                 }
               )
             });
-            this._eventcommentFromCommentButton(articel);
-            this._setLikeCommentEvent(articel, 100);
-            // this._setCommentEvent(articel);
+            this._eventcommentFromCommentButton(article);
+            this._setLikeCommentEvent(article, 100);
+            // this._setCommentEvent(article);
           })
         }
       }
@@ -583,25 +583,25 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_eventcommentFromCommentButton set event handling for comment from some comment field]
-   * @param {Object} articel
+   * @param {Object} article
    * @param  {Number} timeout [default: 1000]
    */
-  _eventcommentFromCommentButton(articel, timeout=1000){
+  _eventcommentFromCommentButton(article, timeout=1000){
     setTimeout(()=>{
       for (let query of this.eventElements.commentFromCommentButton) {
-        let commentButtons = articel.querySelectorAll(query+':not(.tracked)');
+        let commentButtons = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentButtons.length; i++) {
           commentButtons[i].classList.add('tracked');
           if(this.facebook_debug) commentButtons[i].setAttribute("style", "border:2px solid red !important;");
           commentButtons[i].addEventListener('click', e => {
             setTimeout(()=>{
-              this._eventComment(articel, comment => {
+              this._eventComment(article, comment => {
                 // console.log(found, comment);
                 this.eventFn.onEvent(
                   {
                     event: 'comment',
                     type: 'postanswer',
-                    values: this._getValues(articel).concat([
+                    values: this._getValues(article).concat([
                       {name: 'comment', value: comment},
                       //{name: 'postanswer-count-likes', value: null},
                       //{name: 'postanswer-text', value: null}
@@ -621,14 +621,14 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_eventComment set keyup event to elements for write some comment]
-   * @param  {Object} articel
+   * @param  {Object} article
    * @param  {Function} fn      [default: ()=>{}]
    * @param  {Number} timeout   [default: 1000]
    */
-  _eventComment(articel, fn=()=>{}, timeout=1000){
+  _eventComment(article, fn=()=>{}, timeout=1000){
     setTimeout(()=>{
       for (let query of this.eventElements.commentfields) {
-        let commentfields = articel.querySelectorAll(query+':not(.tracked)');
+        let commentfields = article.querySelectorAll(query+':not(.tracked)');
         for (var i = 0; i < commentfields.length; i++) {
           commentfields[i].classList.add('tracked');
           if(this.facebook_debug) commentfields[i].setAttribute("style", "border:2px solid pink !important;");
@@ -650,10 +650,10 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_setShareEvent set the share event]
-   * @param {Object}  articel
+   * @param {Object}  article
    * @param {Boolean} after  [default: false]
    */
-  _setShareEvent(articel, after=false){
+  _setShareEvent(article, after=false){
     let findShareButton = () => {
       let shareButton = document.querySelectorAll('[aria-label="Send this to friends or post it on your timeline."]:not(.tracked)');
       setTimeout(()=>{
@@ -668,8 +668,8 @@ export default class FacebookTracker extends Tracker{
               this.eventFn.onEvent(
                 {
                   event: 'share',
-                  type: 'articel',
-                  values: this._getValues(articel).concat([
+                  type: 'article',
+                  values: this._getValues(article).concat([
                     {name: 'choice', value: e.srcElement.textContent},
                   ])
                 }
@@ -681,7 +681,7 @@ export default class FacebookTracker extends Tracker{
                 {
                   event: 'share',
                   type: 'postanswer',
-                  values: this._getValues(articel).concat([
+                  values: this._getValues(article).concat([
                     {name: 'value', value: e.srcElement.textContent},
                   ])
                 }
@@ -693,13 +693,13 @@ export default class FacebookTracker extends Tracker{
     }
     setTimeout(()=>{
       for (let query of this.eventElements.shareButtonBevor) {
-        let shares = articel.querySelectorAll(query+':not(.tracked)');
+        let shares = article.querySelectorAll(query+':not(.tracked)');
         for (let i = 0; i < shares.length; i++) {
           shares[i].classList.add('tracked');
           if(this.facebook_debug) shares[i].setAttribute("style", "border:2px solid red !important;");
           if(after==false){
             if(this.facebook_events_debug) shares[i].addEventListener('mouseover', e => {
-              setTimeout(()=>this._setShareEvent(articel, true), 100)
+              setTimeout(()=>this._setShareEvent(article, true), 100)
             })
           }
           shares[i].addEventListener('click', e => {
@@ -733,13 +733,13 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_setLikeCommentEvent set like Event for comment like Button]
-   * @param {Object}  articel
+   * @param {Object}  article
    * @param  {Number} timeout [default: 100]
    */
-  _setLikeCommentEvent(articel, timeout=0){
+  _setLikeCommentEvent(article, timeout=0){
     setTimeout(() => {
       for (let s of this.eventElements.likeComment) {
-        let buttons = articel.querySelectorAll(s.query);
+        let buttons = article.querySelectorAll(s.query);
         for (var i = 0; i < buttons.length; i++) {
           if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid red !important;");
           buttons[i].addEventListener('click', e => {
@@ -753,7 +753,7 @@ export default class FacebookTracker extends Tracker{
               this.eventFn.onEvent({
                   event: 'undo',
                   type: 'postanswer',
-                  values: this._getValues(articel).concat([
+                  values: this._getValues(article).concat([
                     {name: 'reaction-value', value: 'undo'},
                     {name: 'postanswer-count-likes', value: count},
                     {name: 'postanswer-text', value: text}
@@ -763,7 +763,7 @@ export default class FacebookTracker extends Tracker{
               this.eventFn.onEvent({
                   event: 'like',
                   type: 'postanswer',
-                  values: this._getValues(articel).concat([
+                  values: this._getValues(article).concat([
                     {name: 'like-value', value: this.getValueOfLikeNumber(1)},
                     {name: 'postanswer-count-likes', value: count},
                     {name: 'postanswer-text', value: text}
@@ -785,7 +785,7 @@ export default class FacebookTracker extends Tracker{
                 {
                   event: 'reaction',
                   type: 'postanswer',
-                  values: this._getValues(articel).concat([{
+                  values: this._getValues(article).concat([{
                      name: 'reaction-value', 
                      value: nr['data_reaction'],
                      aria_label: nr['aria_label'],
@@ -811,12 +811,12 @@ export default class FacebookTracker extends Tracker{
 
   /**
    * [_setLikeEvent like event]
-   * @param {Object}  articel
+   * @param {Object}  article
    */
-  _setLikeEvent(articel){
+  _setLikeEvent(article){
     setTimeout(() => {
-      for (let query of this.eventElements.likearticelButton) {
-        let buttons = articel.querySelectorAll(query);
+      for (let query of this.eventElements.likearticleButton) {
+        let buttons = article.querySelectorAll(query);
         for (var i = 0; i < buttons.length; i++) {
           if(this.facebook_debug) buttons[i].setAttribute("style", "border:2px solid purple !important;");
           let button = buttons[i];
@@ -824,35 +824,35 @@ export default class FacebookTracker extends Tracker{
             if (button.getAttribute('aria-label') === 'Remove Like'){
               this.eventFn.onEvent({
                 event: 'undo',
-                type: 'articel',
-                values: this._getValues(articel).concat([
+                type: 'article',
+                values: this._getValues(article).concat([
                   {name: 'reaction-value', value: 'undo'}
                 ])
               });
             } else {
               this.eventFn.onEvent({
                 event: 'like',
-                type: 'articel',
-                values: this._getValues(articel).concat([
+                type: 'article',
+                values: this._getValues(article).concat([
                   {name: 'like-value', value: this.getValueOfLikeNumber(1)}
                 ])
               })
             }
 
-            //if(this.facebook_debug) console.log('like 1', articel);
+            //if(this.facebook_debug) console.log('like 1', article);
           })
 
           buttons[i].addEventListener('mouseenter', ()=> {
             setTimeout(() => {
-                // console.log(this._getValues(articel));
+                // console.log(this._getValues(article));
                 let toolbar = document.querySelector('div.j83agx80[role="toolbar"]');
                 let button = toolbar.querySelector('div')
                 button.addEventListener('click', e =>{
                   if ((button.getAttribute('aria-label') === 'לייק') || (button.getAttribute('aria-label') === 'Like')){
                     this.eventFn.onEvent({
                       event: 'like',
-                      type: 'articel',
-                      values: this._getValues(articel).concat([
+                      type: 'article',
+                      values: this._getValues(article).concat([
                         {name: 'like-value', value: this.getValueOfLikeNumber(1)}
                       ])
                     })
@@ -984,7 +984,7 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [getDom return html content from public articel]
+   * [getDom return html content from public article]
    * @return {String}
    */
   async getDom(){
