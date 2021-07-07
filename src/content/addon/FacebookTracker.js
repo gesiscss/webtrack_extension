@@ -420,54 +420,19 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [_isPublicOrLogInUser checks if element is for the public oder private]
+   * [_isPublicArticle checks if element is for the public oder private]
    * @param  {Object}  target [DomElement]
    * @return {Boolean}
    */
-  _isPublicOrLogInUser(target){
+  _isPublicArticle(target){
 
-    // try to detect if the is the same user as logged in
-    let is_same = this.is_link_same_as_logged_user(target, '.fwn.fcg a');
-
-    if (is_same != null){
-      if (is_same){
-        //if (this.facebook_debug) console.log('is same');
-        this.privacy_flags['issame'] = true;
-        target.classList.add('is_same_webtracker_flag');
-        return true;
-      }
-    }
-
-    if (!this.is_content_allowed){
+    // simply extra protection, to make sure that that nothing is collected
+    // when the path is not allowed
+    if (!this.is_sm_path_allowed){
       //if (this.facebook_debug) console.log("if (!this.is_content_allowed){");
       return false;
     }
 
-
-    // the return is not immediate in the loop because there could icons inside indicating
-    // that the post is private. We can only be sure after all icons have been checked.
-    if (is_public){
-      target.classList.add('public_webtracker_flag');
-      return true;
-    }
-
-    //let a_list = target.querySelectorAll('.fwn.fcg a');
-    //let a_list = target.cloneNode(true).querySelectorAll('i.sx_a506d2');
-    let _friends = target.querySelectorAll('i.sx_94649f');
-    //let onlyme = target.querySelectorAll('i.sx_e89a24');
-    let _public = target.querySelectorAll('i.sx_6be848');
-
-    if (_friends.length > 0){
-      this.privacy_flags['private'] = true;
-      target.classList.add('private_webtracker_flag');
-      return false;
-    }
-
-    if (_public.length > 0){
-      this.privacy_flags['public'] = true;
-      target.classList.add('public_webtracker_flag');
-      return true;
-    }
     
     return true;
   }
@@ -515,7 +480,7 @@ export default class FacebookTracker extends Tracker{
 
       found[i].classList.add('tracked');
       found[i].setAttribute('webtracker-article-id', Math.random());
-      if (this._isPublicOrLogInUser(found[i])){
+      if (this._isPublicArticle(found[i])){
         if(this.facebook_debug) found[i].setAttribute("style", "border:2px solid green !important;");
         this._setLikeEvent(found[i]);
         this._setCommentEvent(found[i]);

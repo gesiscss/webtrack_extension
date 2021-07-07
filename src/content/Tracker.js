@@ -45,6 +45,7 @@ export default class Tracker extends MultiFetch {
     this.header_clone = null;
     this.is_logged_in = false;
     this.is_content_allowed = true;
+    this.is_sm_path_allowed = false;
   }
 
   /**
@@ -616,7 +617,7 @@ export default class Tracker extends MultiFetch {
           var html = await this.getDom();
 
           // is social media path allowed
-          let is_sm_path_allowed = this.is_sm_path_allowed(location.pathname);
+          this.is_sm_path_allowed = this.is_sm_path_allowed(location.pathname);
           console.log('IS ALLOWED', location.pathname, is_sm_path_allowed);
 
           // if is it ok to track the current address, and some html was
