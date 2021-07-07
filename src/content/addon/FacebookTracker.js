@@ -105,7 +105,7 @@ export default class FacebookTracker extends Tracker{
 
   }
 
-  _is_sm_path_allowed(path){
+  _get_is_sm_path_allowed(path){
 
     path = path.toLowerCase();
 
@@ -125,9 +125,9 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * [get_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
+   * [get_is_content_allowed check if url changed and search in dom if find some elements they not allowed and set this.allow]
    */
-  get_content_allowed() {
+  get_is_content_allowed() {
     // the content is always allowed because the path of the URL will
     // be used to control for everything
     return true;
@@ -180,7 +180,7 @@ export default class FacebookTracker extends Tracker{
     // logged in
     if (this.logged_uid || credentials){
       this.is_logged_in = true;
-      this.is_content_allowed = this.get_content_allowed();
+      this.is_content_allowed = this.get_is_content_allowed();
 
     // not logged in
     } else {
@@ -479,6 +479,8 @@ export default class FacebookTracker extends Tracker{
     //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
+
+    debugger;
 
     let length = found.length;
     for (var i = 0; i < length; i++) {

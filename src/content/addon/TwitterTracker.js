@@ -209,7 +209,7 @@ export default class TwitterTracker extends Tracker{
   }
 
 
-  get_content_allowed() {
+  get_is_content_allowed() {
     if (document.querySelector(this.selectors.svg_account_protected)){
       return false;
     }
@@ -394,7 +394,7 @@ export default class TwitterTracker extends Tracker{
       }
       
 
-      this.is_content_allowed = this.get_content_allowed();
+      this.is_content_allowed = this.get_is_content_allowed();
     }else{
       this.is_content_allowed = true;
     }

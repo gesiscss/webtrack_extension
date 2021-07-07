@@ -220,7 +220,7 @@ export default class YouTubeTracker extends Tracker{
     } 
 
     //document.querySelector('#avatar-btn');
-    this.is_content_allowed = this.get_content_allowed();
+    this.is_content_allowed = this.get_is_content_allowed();
   }
 
     /**
@@ -336,7 +336,7 @@ export default class YouTubeTracker extends Tracker{
   }
 
 
-  get_content_allowed() {
+  get_is_content_allowed() {
     if (this.rootElement.querySelector(this.eventElements.svg_unlisted)){
       this.privacy_flags['private'] = true;
       return false;

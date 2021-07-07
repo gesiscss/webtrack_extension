@@ -111,7 +111,7 @@ export default class Tracker extends MultiFetch {
    * @param  {Location}  [the location element to analyze the url]
    * @return {Boolean}   [if it is allow according to social media platforms rules]
    */
-  is_sm_path_allowed(path){
+  get_is_sm_path_allowed(path){
     if (!this.is_logged_in) {
       return true;
     }
@@ -120,14 +120,14 @@ export default class Tracker extends MultiFetch {
       path = path + '/';
     }
 
-    return this._is_sm_path_allowed(path);
+    return this._get_is_sm_path_allowed(path);
   }
 
 
   /**
    * Reimplemente this method to adjust the controls in each Tracker
    */
-  _is_sm_path_allowed(path){
+  _get_is_sm_path_allowed(path){
 
     for (let i in this.startswith_denylist) {
       if (path.startsWith(this.startswith_denylist[i])){
@@ -617,12 +617,12 @@ export default class Tracker extends MultiFetch {
           var html = await this.getDom();
 
           // is social media path allowed
-          this.is_sm_path_allowed = this.is_sm_path_allowed(location.pathname);
-          console.log('IS ALLOWED', location.pathname, is_sm_path_allowed);
+          this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
+          console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
 
           // if is it ok to track the current address, and some html was
           // recovered, then send the data
-          if (html && is_sm_path_allowed
+          if (html && this.is_sm_path_allowed
              && this.is_allowed_by_lists(location.pathname) 
              && this.is_content_allowed){
             if (this.debug) console.log('======Emit Event: onData (DATA) =======');
@@ -636,7 +636,7 @@ export default class Tracker extends MultiFetch {
 
           this.eventEmitter.emit(EVENT_NAMES.data, {
               html: html, 
-              is_sm_path_allowed: is_sm_path_allowed,
+              is_sm_path_allowed: this.is_sm_path_allowed,
               is_content_allowed: this.is_content_allowed,
               is_allowed_by_lists: this.is_allowed_by_lists(location.pathname),
               create: (new Date()).toJSON()
