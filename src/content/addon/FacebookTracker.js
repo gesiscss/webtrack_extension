@@ -132,12 +132,6 @@ export default class FacebookTracker extends Tracker{
       return true;
     }
 
-    //public page
-    // if (document.querySelector('#entity_sidebar')){
-    //   this.allow = true;
-    // }
-
-
     // detect the sidebar of the timelines, not always allowed to track timelines
     let sidebar_timeline = document.querySelector('#timeline_small_column');
     
@@ -149,17 +143,6 @@ export default class FacebookTracker extends Tracker{
         return false;
       }
     }
-
-    // this is a profile, only allow if it is the same user
-    // let logged_uid = this.get_username_or_id_from_url(document.querySelector('._2s25._606w'));
-    // if (logged_uid){
-    //   let profile_uid = this.get_username_or_id_from_url(document.querySelector('._2nlw._2nlv'));
-    //   if (profile_uid){
-    //     if (logged_uid != profile_uid) {
-    //       return false;
-    //     }
-    //   }
-    // }
 
     // this is a profile, only allow if it is the same user  (or if this cannot 
     // be identified)
