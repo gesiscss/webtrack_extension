@@ -160,15 +160,6 @@ export default class FacebookTracker extends Tracker{
 
 
   /**
-   * Indicates if the html correspond to a logged in user
-   * @return {boolean} true if the html corresponds to a Log In page
-   */
-  _isLoggedIn(){
-    return this.logged_uid != null;
-  }
-
-
-  /**
    * get the id given an anchor element using the img of the anchor
    * @param  {Location} anchor html element (<a>)
    * @return {src} the user id that is taken from the id of the imate
