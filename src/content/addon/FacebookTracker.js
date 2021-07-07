@@ -76,29 +76,6 @@ export default class FacebookTracker extends Tracker{
 
     this.startswith_allowlist = ['/', '/spd/']
 
-    this.blocked = new Set(['-51px -298px', '-19px -314px', '0 -21px']);
-
-    this.public_map = {
-      
-      // public:
-      'SxSV4AGuhDB.png': '0 -297px', 
-      //'1EHoEekiTcE.png': '-13px -308px',
-      // friends of friends:
-      'ojhISTslAXA.png': '0 -142px'
-    }
-    this.blocked_map = {
-      // friends
-      //'7dOM-M8m26G.png': '-15px -377px',
-      'YhI_pNxV26l.png': '-26px -465px',
-      // only me (all of the user is public)
-      // 'JTNOKcsLgL6.png': ['-19px -327px'], 
-    }
-
-    this.blocked_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yx/r/HFS9K3dIOb6.png", 
-                          "https://static.xx.fbcdn.net/rsrc.php/v3/yP/r/IY7_xqHkrTm.png",
-                          "https://static.xx.fbcdn.net/rsrc.php/v3/y1/r/8hytOd4Srb5.png"]
-    this.public_icons = ["https://static.xx.fbcdn.net/rsrc.php/v3/yQ/r/axobuTi734a.png"]
-
 
     this.privacy_flags = {
       'public': null,
@@ -538,52 +515,6 @@ export default class FacebookTracker extends Tracker{
       return false;
     }
 
-    // loop for old facebook interface
-    let els = target.querySelectorAll('i[class*=sx_')
-    let is_public = false;
-    for (let i = 0; i < els.length; i++) {
-      let style = getComputedStyle(els[i]);
-      for (let key in this.blocked_map) {
-        if (style['background-image'].includes(key) && this.blocked_map[key] == style['background-position']){
-          //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.blocked_map[key] == style['background-position']){");
-          this.privacy_flags['private'] = true;
-          target.classList.add('private_webtracker_flag');
-          return false;
-        }
-      }
-      for (let key in this.public_map) {
-        if (style['background-image'].includes(key) && this.public_map[key] == style['background-position']){
-          //if (this.facebook_debug) console.log("if (key in style['background-image'] && this.public_map[key == style['background-position']){");
-          this.privacy_flags['public'] = true;
-          is_public = true;
-        }
-      }
-    }
-
-    // loop for NEW facebook interface
-    // if (els.length == 0){
-    //   els = target.querySelectorAll('img');
-    //   for (let i = 0; i < els.length; i++) {
-    //     for (let j = 0; j < this.blocked_icons.length; j++) {
-    //       let icon = this.blocked_icons[j];
-    //       if (els[i].src == icon){
-    //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
-    //         this.privacy_flags['private'] = true;
-    //         target.classList.add('private_webtracker_flag');
-    //         return false;
-    //       }
-    //     }
-        
-    //     for (let j = 0; j < this.public_icons.length; j++) {
-    //       let icon = this.public_icons[j];
-    //       if (els[i].src == icon){
-    //         if (this.facebook_debug) console.log("if (els[i].src == icon){");
-    //         this.privacy_flags['public'] = true;
-    //         is_public = true;
-    //       }
-    //     }
-    //   }
-    // }
 
     // the return is not immediate in the loop because there could icons inside indicating
     // that the post is private. We can only be sure after all icons have been checked.
