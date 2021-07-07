@@ -504,7 +504,7 @@ export default class FacebookTracker extends Tracker{
     let bucket = [];
     //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
-    let found = document.querySelectorAll('[data-pagelet^="FeedUnit"]:not(.tracked)');
+    let found = document.querySelectorAll('[role="article"][aria-describedby]:not(.tracked)');
 
     let length = found.length;
     for (var i = 0; i < length; i++) {
