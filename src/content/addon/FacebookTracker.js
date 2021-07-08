@@ -604,7 +604,7 @@ export default class FacebookTracker extends Tracker{
 
         // This has not been tested since 2020
         //this._setLikeCommentEvent(found[i]); //haven't been fixed and currently unsupported
-        //this._setShareEvent(found[i]);  //currently unsupposted and not working
+        //this._setShareEvent(found[i]);  //currently unsupported and not working
         bucket.push(found[i])
       }else{
         if (this._isPeopleYouMayKnowArticle(found[i])){
