@@ -595,9 +595,10 @@ export default class FacebookTracker extends Tracker{
       found[i].setAttribute('webtracker-article-id', Math.random());
       if (this._isPublicArticle(found[i])){
         if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid green !important;");
-        this._setLikeEvent(found[i]);
-        this._setCommentEvent(found[i]);
-        this._eventcommentFromCommentButton(found[i]);
+        //this._setLikeEvent(found[i]);
+        //this._setCommentEvent(found[i]);
+        //this._eventcommentFromCommentButton(found[i]);
+        
         //this._setLikeCommentEvent(found[i]); //haven't been fixed and currently unsupported
         //this._setShareEvent(found[i]);  //currently unsupposted and not working
         bucket.push(found[i])
