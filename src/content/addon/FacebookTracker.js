@@ -512,7 +512,7 @@ export default class FacebookTracker extends Tracker{
   _isPublicArticle(target){
 
     // check if the icon has a public aria label
-    let privacy_icon = target.querySelector("span.g0qnabr5 > span > span > i");
+    let privacy_icon = target.querySelector("span > span > span > i");
     if (privacy_icon){
       let aria_label = privacy_icon.getAttribute('aria-label');
       if (aria_label) {
