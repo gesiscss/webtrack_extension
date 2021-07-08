@@ -88,7 +88,7 @@ export default class FacebookTracker extends Tracker{
 
     this.custom_arias = new Set([
       'Shared with Custom', 
-      'Mit Öffentliche Gruppe geteilt']);
+      'Mit Benutzerdefiniert geteilt']);
 
     // merge the two lists
     this.public_and_custom_arias = new Set([
