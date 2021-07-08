@@ -85,6 +85,9 @@ export default class FacebookTracker extends Tracker{
       'Shared with Public', 'Shared with Public group',
       'Mit Öffentlich geteilt', 'Mit Öffentliche Gruppe geteilt']);
 
+    this.verified_arias = new Set([
+      'Verified Account', 
+      'Bestätigtes Konto']);
 
     this.custom_arias = new Set([
       'Shared with Custom', 
@@ -505,6 +508,10 @@ export default class FacebookTracker extends Tracker{
   }
 
   is_verified(target){
+    let verified_icon = target.querySelector("span > div > span > i[aria-label]");
+    if (verified_icon && this.verified_arias.has(verified_icon.getAttribute('aria-label'))){
+      return true;
+    }
     return false;
   }
 
