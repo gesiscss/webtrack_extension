@@ -77,9 +77,9 @@ export default class FacebookTracker extends Tracker{
     };
 
 
-    /**
-     * To Translate to german
-     */
+    // the newsfeed and the public pages are treated differently
+    this.is_newsfeed = false;
+    this.is_public_page = false;
 
     this.public_arias = new Set([
       'Shared with Public', 'Shared with Public group',
@@ -99,9 +99,13 @@ export default class FacebookTracker extends Tracker{
       'People You May Know',
       'Personen, die du vielleicht kennst']);
 
+    this.create_pages_arias = new Set([
+      'Create Page',
+      'Seite erstellen']);
+
     this.lastUrlPath = '';
 
-    this.startswith_allowlist = ['/', '/spd/']
+    this.startswith_allowlist = ['/spd/']
 
 
     this.privacy_flags = {
@@ -128,17 +132,50 @@ export default class FacebookTracker extends Tracker{
 
   }
 
-  _get_is_sm_path_allowed(path){
-
-    path = path.toLowerCase();
+  /**
+   * [isAllow returns if the path is allowed in social media platforms]
+   * @param  {Location}  [the location element to analyze the url]
+   * @return {Boolean}   [if it is allow according to social media platforms rules]
+   */
+  get_is_sm_path_allowed(path){
+    if (!this.is_logged_in) {
+      return true;
+    }
 
     if (!path.endsWith('/')){
       path = path + '/';
     }
 
-    for (let i in this.startswith_allowlist) {
-      console.log('ALLOWED SW', this.startswith_allowlist[i]);
-      if (path == this.startswith_allowlist[i]){
+    return this._get_is_sm_path_allowed(path);
+  }
+
+  _is_newsfeed(path){
+
+    // if it is landing page
+    if (this.is_logged_in){
+      if (!path.endsWith('/')){
+        path = path + '/';
+      }
+
+      if (path == '/'){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
+  get_is_sm_path_allowed(path){
+    return this.is_newsfeed || this.is_public_page || !this.is_logged_in;
+  }
+
+
+  _is_public_page(){
+    let candidates = document.querySelectorAll(['a[role][aria-label]']);
+
+    for (let i = 0; i < candidates.length; i++) {
+      if (this.create_pages_arias.has(candidates[i].getAttribute('aria-label'))){
         return true;
       }
     }
@@ -210,6 +247,18 @@ export default class FacebookTracker extends Tracker{
       this.is_logged_in = false;
       this.is_content_allowed = true;
     }
+
+    // check if this is a public page
+    this.is_public_page = this._is_public_page();
+
+
+    this.is_newsfeed = this._is_newsfeed(location.pathname);
+
+
+
+    // is social media path allowed
+    this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
+    console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
   }
 
 
@@ -463,8 +512,14 @@ export default class FacebookTracker extends Tracker{
     let privacy_icon = target.querySelector("span.g0qnabr5 > span > span > i");
     if (privacy_icon){
       let aria_label = privacy_icon.getAttribute('aria-label');
-      if (aria_label && this.public_and_custom_arias.has(aria_label)) {
-        return true;
+      if (aria_label) {
+        // for 
+        if (this.is_newsfeed && this.public_arias.has(aria_label)) {
+          return true;
+        // for public pages, we collected public and custom lists
+        } else if (this.is_public_page && this.public_and_custom_arias.has(aria_label)) {
+          return true;
+        }
       }
     }
 
@@ -998,7 +1053,7 @@ export default class FacebookTracker extends Tracker{
         let found = this._getPublicArticels();
 
         // if no entries were found, then this is not a timeline or profile page
-        if (this.entries_found == 0) {
+        if (this.posts_seen== 0) {
           // if the user is not logged in, then default to the normal tracker
           if (!this.is_logged_in){
             resolve(this._getDom());

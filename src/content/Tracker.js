@@ -45,7 +45,7 @@ export default class Tracker extends MultiFetch {
     this.header_clone = null;
     this.is_logged_in = false;
     this.is_content_allowed = true;
-    
+
     // WARNING: this must remain null after fully fetch the first DOM
     // because of syncing issues. If the variable is null, it is not 
     // possible to know if the location.pathname is or not allowed. 
@@ -107,6 +107,10 @@ export default class Tracker extends MultiFetch {
    * Setup the credentials for the logged user (if any)
    */
   reset_credentials(){
+    // is social media path allowed
+    this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
+    console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
+
   }
 
 
@@ -619,10 +623,6 @@ export default class Tracker extends MultiFetch {
           // if the tracker notices that the content is private, it will return
           // false instead, this is used to control what to send on the bottom
           var html = await this.getDom();
-
-          // is social media path allowed
-          this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
-          console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
 
           // if is it ok to track the current address, and some html was
           // recovered, then send the data
