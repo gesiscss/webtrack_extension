@@ -105,7 +105,8 @@ export default class FacebookTracker extends Tracker{
 
     this.lastUrlPath = '';
 
-    this.startswith_allowlist = ['/spd/']
+    this.startswith_allowlist = ['/spd/'];
+    this.elite_accounts = new Set(['/spd/']);
 
 
     this.privacy_flags = {
@@ -503,6 +504,16 @@ export default class FacebookTracker extends Tracker{
     return values;
   }
 
+  is_verified(target){
+    return false;
+  }
+
+  is_elite_poster(target){
+    return this.elite_accounts.has(
+      target.querySelector('span[dir=auto] > h4[dir=auto] a[role="link"]').pathname.toLowerCase()
+    );
+  }
+
 
   /**
    * [_isPublicArticle checks if element is for the public oder private]
@@ -517,12 +528,23 @@ export default class FacebookTracker extends Tracker{
       let aria_label = privacy_icon.getAttribute('aria-label');
       if (aria_label) {
         // for 
-        if (this.is_newsfeed && this.public_arias.has(aria_label)) {
-          return true;
+        if (this.is_newsfeed) {
+          if (this.public_arias.has(aria_label)) {
+            return true;
+          }
+          if (this.custom_arias.has(aria_label)){
+            if (this.is_verified(target)){
+              return true;
+            }
+            if (this.is_elite_poster(target)){
+              return true;
+            }
+          }
         // for public pages, we collected public and custom lists
         } else if (this.is_public_page && this.public_and_custom_arias.has(aria_label)) {
           return true;
-        }
+        } 
+
       }
     }
 
