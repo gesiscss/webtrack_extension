@@ -120,7 +120,6 @@ export default class FacebookTracker extends Tracker{
     }
 
 
-    this.entries_found = 0;
     this.logged_uid = null;
     this.logged_user_id = null;
     this.logged_username = null;
@@ -573,6 +572,13 @@ export default class FacebookTracker extends Tracker{
    * @return {Array} found
    */
   _getPublicArticels(){
+
+    // if it is not the newsfeed or the public page, there is nothing
+    // to do here, get out. 
+    if (!this.is_newsfeed && !this.is_public_page){
+      return [];
+    }
+
     let bucket = [];
     //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
@@ -580,7 +586,6 @@ export default class FacebookTracker extends Tracker{
 
     let length = found.length;
     for (var i = 0; i < length; i++) {
-      this.entries_found += 1;
 
       found[i].classList.add('tracked');
       found[i].setAttribute('webtracker-article-id', Math.random());
