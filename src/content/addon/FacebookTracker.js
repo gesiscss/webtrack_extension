@@ -82,11 +82,22 @@ export default class FacebookTracker extends Tracker{
      */
 
     this.public_arias = new Set([
-      'Shared with Public', 'Shared with Public group', 'Shared with Custom', 
-      'משותף עם קבוצה ציבורית', 'משותף עם ציבורי', 'משותף עם התאמה אישית']);
+      'Shared with Public', 'Shared with Public group',
+      'Mit Öffentlich geteilt', 'Mit Öffentliche Gruppe geteilt']);
+
+
+    this.custom_arias = new Set([
+      'Shared with Custom', 
+      'Mit Öffentliche Gruppe geteilt']);
+
+    // merge the two lists
+    this.public_and_custom_arias = new Set([
+      ...this.public_arias, 
+      ...this.custom_arias]);
 
     this.people_you_may_know_arias = new Set([
-      'People You May Know']);
+      'People You May Know',
+      'Personen, die du vielleicht kennst']);
 
     this.lastUrlPath = '';
 
@@ -452,7 +463,7 @@ export default class FacebookTracker extends Tracker{
     let privacy_icon = target.querySelector("span.g0qnabr5 > span > span > i");
     if (privacy_icon){
       let aria_label = privacy_icon.getAttribute('aria-label');
-      if (aria_label && this.public_arias.has(aria_label)) {
+      if (aria_label && this.public_and_custom_arias.has(aria_label)) {
         return true;
       }
     }
