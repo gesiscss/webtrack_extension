@@ -247,12 +247,16 @@ export default class FacebookTracker extends Tracker{
       this.is_content_allowed = true;
     }
 
-    // check if this is a public page
-    this.is_public_page = this._is_public_page();
-
-
+    // check if it is the newsfeed page (cheap check)
     this.is_newsfeed = this._is_newsfeed(location.pathname);
 
+    // check if this is a public page only if it is not the newsfeed
+    // the check for public page might be heavy
+    if (!this.is_newsfeed){
+      this.is_public_page = this._is_public_page();
+    } else {
+      this.is_public_page = false;
+    }
 
 
     // is social media path allowed
