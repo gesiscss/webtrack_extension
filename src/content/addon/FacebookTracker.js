@@ -119,6 +119,7 @@ export default class FacebookTracker extends Tracker{
       'user_id': null,
       'username': null,
       'account_id': null,
+      'profile_id': null,
       'fullname': null,
       'shortname': null
     }
@@ -130,6 +131,7 @@ export default class FacebookTracker extends Tracker{
     this.logged_account_id = null;
     this.logged_fullname = null;
     this.logged_shortname = null;
+    this.profile_id = null;
 
     this.reset_credentials();
 
@@ -262,6 +264,9 @@ export default class FacebookTracker extends Tracker{
       this.is_public_page = false;
     }
 
+    // check if the profile id parameter is in the url bar
+    this.profile_id = this.get_profile_id_from_url(location);
+
 
     // is social media path allowed
     this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
@@ -368,6 +373,15 @@ export default class FacebookTracker extends Tracker{
       }
     }
     return null;
+  }
+
+    /**
+   * Get the profile id in an anchor
+   * @param  {Location} html anchor (<a>) element in which the username will be searched
+   * @return {str} the username
+   */
+  get_profile_id_from_url(location){
+    return new URLSearchParams(location.search).get('profile_id');
   }
 
   /**
@@ -991,6 +1005,12 @@ export default class FacebookTracker extends Tracker{
       anonym['account_id'] = this.logged_account_id;
       this.privacy_flags['account_id'] = true;
     }
+
+    if (this.profile_id) {
+      anonym['profile_id'] = this.profile_id;
+      this.privacy_flags['profile_id'] = true;
+    }
+
     if (this.logged_fullname) {
       anonym['fullname'] = this.logged_fullname;
       this.privacy_flags['fullname'] = true;
