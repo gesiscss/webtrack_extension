@@ -9,7 +9,7 @@ export default class FacebookTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     
-    this.posts_seen = 0;
+    this.total_posts_seen = 0;
     this.posts_people_you_may_know = 0;
 
 
@@ -646,7 +646,7 @@ export default class FacebookTracker extends Tracker{
       }
     }
 
-    this.posts_seen += bucket.length;
+    this.total_posts_seen += bucket.length;
 
     //return bucket.filter(e => e!=undefined);
     return bucket;
@@ -1096,7 +1096,7 @@ export default class FacebookTracker extends Tracker{
         let found = this._getPublicArticels();
 
         // if no entries were found, then this is not a timeline or profile page
-        if (this.posts_seen== 0) {
+        if (this.total_posts_seen== 0) {
           // if the user is not logged in, then default to the normal tracker
           if (!this.is_logged_in){
             resolve(this._getDom());
@@ -1115,7 +1115,7 @@ export default class FacebookTracker extends Tracker{
             this.elements.push(found[i]); //is this being used anywhere?
             this.elementStrings += cloned.outerHTML
           }
-          resolve('<html posts_seen="'+this.posts_seen+'" posts_people_you_may_know="'+this.posts_people_you_may_know+'" ><head></head><body>'
+          resolve('<html total_posts_seen="'+this.total_posts_seen+'" posts_people_you_may_know="'+this.posts_people_you_may_know+'" ><head></head><body>'
             +this.elementStrings+'</body>'+'</html>');
         }
 
