@@ -395,9 +395,16 @@ export default class TwitterTracker extends Tracker{
       
 
       this.is_content_allowed = this.get_is_content_allowed();
+
+
     }else{
       this.is_content_allowed = true;
     }
+
+
+    // is social media path allowed
+    this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
+    console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
 
   }
 
