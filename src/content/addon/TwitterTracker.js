@@ -376,6 +376,7 @@ export default class TwitterTracker extends Tracker{
 
     if (this.is_logged_in){
       this.credentials = this.get_credentials();
+      debugger;
       if (this.credentials != null) {
         try {
           this.logged_user_id = this.credentials.session.user_id;
@@ -450,19 +451,29 @@ export default class TwitterTracker extends Tracker{
   returns a dictionary with the credentials
   **/  
   get_credentials() {
-    let scripts = document.querySelectorAll('body script[nonce]:not([type])');
-    for (var i = 0; i < scripts.length; i++) {
-      let sc = scripts[i].textContent;
-      if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
-        try {
-          return JSON.parse(sc.substring(sc.indexOf('{'), sc.indexOf(';\n')));
-        } catch (error){
-          console.log(error);
-        }
+    return null;
+    // let scripts = document.querySelectorAll('body script[nonce]');
+    // for (var i = 0; i < scripts.length; i++) {
+    //   let sc = scripts[i].textContent;
+    //   if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
+    //     try {
+    //       //window.__INITIAL_STATE__
+    //       let ini_state = sc.substring(sc.indexOf('{');
+    //       let end_state = sc.indexOf(';');
+    //       let initial_state = sc.substring(sc.indexOf('{'), sc.indexOf(';'));
+    //       let rest 
+
+    //       //window.__META_DATA__
+    //       let ini_meta = end_state;
+    //       let end_meta = ;
+    //       return JSON.parse();
+    //     } catch (error){
+    //       console.log(error);
+    //     }
 
         
-      }
-    }
+    //   }
+    // }
     return null;
   }
 
