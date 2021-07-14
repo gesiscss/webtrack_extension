@@ -667,8 +667,8 @@ export default class TwitterTracker extends Tracker{
       //let id = articles[i].getAttribute('data-tweet-id');
       let id = this._getId(articles[i]);
       let header_id = this._getHeaderId();
-      if ((i == 0) && (header_id != null)){
-        this.trackArticle(header_id, articles[i], 'header');
+      if ((i == 0) && (header_id != null) && !this._isProtected(articles[i])) {
+        this.trackArticle(header_id, articles[i], 'header not-protected');
         if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid cyan !important;");
         public_counter += 1;
       } else if (this._isPromoted(articles[i])) {
