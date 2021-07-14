@@ -629,6 +629,7 @@ export default class TwitterTracker extends Tracker{
           counter += 1;
         } else {
           // This does not seem to be a tweet
+          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
           this.total_tweets_seen -= 1;
         }
       } else {
@@ -639,7 +640,9 @@ export default class TwitterTracker extends Tracker{
 
           counter += 1;
         }else{
-          //if (this.twitter_debug) console.log('Not public: ', articles[i]);
+          // This does not seem to be a tweet
+          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
+          this.total_tweets_seen -= 1;
         }
       }
     }
