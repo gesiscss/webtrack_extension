@@ -80,6 +80,8 @@ export default class FacebookTracker extends Tracker{
     // the newsfeed and the public pages are treated differently
     this.is_newsfeed = false;
     this.is_public_page = false;
+    this.is_profile = false;
+
 
     this.public_arias = new Set([
       'Shared with Public', 'Shared with Public group',
@@ -105,6 +107,10 @@ export default class FacebookTracker extends Tracker{
     this.create_pages_arias = new Set([
       'Create Page',
       'Seite erstellen']);
+
+    this.send_message_arias = new Set([
+      'Message',
+      'Nachricht senden']);
 
     this.lastUrlPath = '';
 
@@ -172,7 +178,7 @@ export default class FacebookTracker extends Tracker{
 
 
   get_is_sm_path_allowed(path){
-    return this.is_newsfeed || this.is_public_page || !this.is_logged_in;
+    return this.is_newsfeed || this.is_public_page || this.is_prfile || !this.is_logged_in;
   }
 
 
@@ -181,6 +187,19 @@ export default class FacebookTracker extends Tracker{
 
     for (let i = 0; i < candidates.length; i++) {
       if (this.create_pages_arias.has(candidates[i].getAttribute('aria-label'))){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
+  _is_profile(){
+    let candidates = document.querySelectorAll(['div[role=button][aria-label]']);
+
+    for (let i = 0; i < candidates.length; i++) {
+      if (this.send_message_arias.has(candidates[i].getAttribute('aria-label'))){
         return true;
       }
     }
@@ -264,7 +283,15 @@ export default class FacebookTracker extends Tracker{
       this.is_public_page = false;
     }
 
-    // check if the profile id parameter is in the url bar
+    // check if this is a profile page only if it is not the newsfeed
+    // the check for public page might be heavy
+    if (!this.is_newsfeed){
+      this.is_profile = this._is_profile();
+    } else {
+      this.is_profile = false;
+    }
+
+        // check if the profile id parameter is in the url bar
     this.profile_id = this.get_profile_id_from_url(location);
 
 
@@ -564,6 +591,8 @@ export default class FacebookTracker extends Tracker{
         // for public pages, we collected public and custom lists
         } else if (this.is_public_page && this.public_and_custom_arias.has(aria_label)) {
           return true;
+        } else if (this.is_profile && this.public_arias.has(aria_label)) {
+          return true;
         } 
 
       }
@@ -622,7 +651,7 @@ export default class FacebookTracker extends Tracker{
 
     // if it is not the newsfeed or the public page, there is nothing
     // to do here, get out. 
-    if (!this.is_newsfeed && !this.is_public_page){
+    if (!this.is_newsfeed && !this.is_public_page  && !this.is_profile){
       return [];
     }
 
@@ -656,7 +685,6 @@ export default class FacebookTracker extends Tracker{
         } else {
           if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid red !important;");
         }
-        delete found[i];
       }
     }
 
