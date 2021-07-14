@@ -352,26 +352,6 @@ export default class TwitterTracker extends Tracker{
    */
   reset_credentials(){
 
-    // let location = document.querySelector('._2s25._606w');
-    // this.logged_username = this.get_username(location);
-
-    // if (this.logged_username == null){
-    //   this.logged_user_id = this.get_user_id(location);
-    // } else {
-    //   this.logged_user_id = this.get_user_id_from_img(location);
-    // }
-
-    // if (this.logged_user_id == null){
-    //   // grab the user id from the about
-    //   this.logged_user_id = this.get_user_id(document.querySelector("a._6-6[data-tab-key=about]"));
-    // }
-
-    // if (this.logged_username){
-    //   this.logged_uid = this.logged_username;
-    // } else {
-    //   this.logged_uid = this.logged_user_id;
-    // }
-
     this.is_logged_in = this._isLoggedTwitter();
 
     if (this.is_logged_in){
