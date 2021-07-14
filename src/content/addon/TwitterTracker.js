@@ -376,7 +376,7 @@ export default class TwitterTracker extends Tracker{
 
     if (this.is_logged_in){
       this.credentials = this.get_credentials();
-      debugger;
+
       if (this.credentials != null) {
         try {
           this.logged_user_id = this.credentials.session.user_id;
@@ -451,29 +451,37 @@ export default class TwitterTracker extends Tracker{
   returns a dictionary with the credentials
   **/  
   get_credentials() {
-    return null;
-    // let scripts = document.querySelectorAll('body script[nonce]');
-    // for (var i = 0; i < scripts.length; i++) {
-    //   let sc = scripts[i].textContent;
-    //   if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
-    //     try {
-    //       //window.__INITIAL_STATE__
-    //       let ini_state = sc.substring(sc.indexOf('{');
-    //       let end_state = sc.indexOf(';');
-    //       let initial_state = sc.substring(sc.indexOf('{'), sc.indexOf(';'));
-    //       let rest 
+    let scripts = document.querySelectorAll('body script[nonce]');
+    for (var i = 0; i < scripts.length; i++) {
+      let sc = scripts[i].textContent;
+      if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
+        try {
+          //window.__INITIAL_STATE__
+          let mid_index = sc.indexOf(';');
+          let initial_state = sc.substring(sc.indexOf('{'), mid_index);
+          initial_state = JSON.parse(initial_state);
 
-    //       //window.__META_DATA__
-    //       let ini_meta = end_state;
-    //       let end_meta = ;
-    //       return JSON.parse();
-    //     } catch (error){
-    //       console.log(error);
-    //     }
+          // extractin important parts from the json
+          let user_id = initial_state['session']['user_id'];
+          let guestId = initial_state['session']['guestId'];
+          let user_json = initial_state['entities']['users']['entities'][user_id];
+          user_json['user_id'] = user_id;
+
+          //window.__META_DATA__
+          let meta = sc.substring(mid_index).substring(
+            sc.substring(sc.indexOf('{'), 
+            sc.indexOf(';')));
+          meta = JSON.parse(meta);
+          user_json['is_logged_in'] = meta["isLoggedIn"];
+
+          return user_json;
+        } catch (error){
+          console.log(error);
+        }
 
         
-    //   }
-    // }
+      }
+    }
     return null;
   }
 
