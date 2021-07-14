@@ -1156,11 +1156,8 @@ export default class FacebookTracker extends Tracker{
         } else {
           for (var i = 0; i < found.length; i++) {
             let cloned = found[i].cloneNode(true);
-            let commentator = cloned.querySelectorAll('[class="pq6dq46d"]');
-            for (var j = 0; j < commentator.length; j++) {
-              commentator[j].innerText = md5(commentator[j].innerText);
-            }
-            this.elements.push(found[i]); //is this being used anywhere?
+             //is this being used anywhere? No, but could be used for the comments?
+            this.elements.push(found[i]);
             this.elementStrings += cloned.outerHTML
           }
           resolve('<html total_posts_seen="'+this.total_posts_seen+'" posts_people_you_may_know="'+this.posts_people_you_may_know+'" ><head></head><body>'
