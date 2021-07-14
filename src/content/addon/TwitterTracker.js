@@ -365,7 +365,6 @@ export default class TwitterTracker extends Tracker{
           this.logged_fullname = this.entity.name;
           this.logged_guest_id = this.credentials.session.guestId;
 
-          
         } catch( error) {
           this.logged_username = this.get_username();
         }
@@ -415,8 +414,8 @@ export default class TwitterTracker extends Tracker{
     }
 
     if (this.logged_fullname) {
-      anonym['email'] = this.logged_fullname;
-      this.privacy_flags['email'] = true;
+      anonym['fullname'] = this.logged_fullname;
+      this.privacy_flags['fullname'] = true;
     }
 
     metadata['anonym'] = anonym;
@@ -433,8 +432,8 @@ export default class TwitterTracker extends Tracker{
   get_credentials() {
     let scripts = document.querySelectorAll('body script[nonce]');
     for (var i = 0; i < scripts.length; i++) {
-      let sc = scripts[i].textContent;
-      if (sc.startsWith('\nwindow.__INITIAL_STATE__')) {
+      let sc = scripts[i].textContent.trim();
+      if (sc.startsWith('window.__INITIAL_STATE__')) {
         try {
           //window.__INITIAL_STATE__
           let mid_index = sc.indexOf(';');
