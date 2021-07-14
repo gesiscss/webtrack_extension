@@ -42,7 +42,10 @@ const ChromeWrapper = {
     chrome.tabs.query(params, tabs => {
       if (chrome.runtime.lastError) {
         setTimeout(function () {
-          console.warn("ChromeWrapper.chromeTabsQuery re-called (Patch for Chrome 91).");
+          console.log(
+            "##############################################################",
+            "ChromeWrapper.chromeTabsQuery re-called (Patch for Chrome 91).",
+            "##############################################################");
           ChromeWrapper.chromeTabsQuery(params, callback)
         }, 100); // arbitrary delay
       } else {
