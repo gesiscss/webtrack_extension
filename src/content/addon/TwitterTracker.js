@@ -459,22 +459,22 @@ export default class TwitterTracker extends Tracker{
           //window.__INITIAL_STATE__
           let mid_index = sc.indexOf(';');
           let initial_state = sc.substring(sc.indexOf('{'), mid_index);
-          initial_state = JSON.parse(initial_state);
+          return JSON.parse(initial_state);
 
-          // extractin important parts from the json
-          let user_id = initial_state['session']['user_id'];
-          let guestId = initial_state['session']['guestId'];
-          let user_json = initial_state['entities']['users']['entities'][user_id];
-          user_json['user_id'] = user_id;
+          // // extractin important parts from the json
+          // let user_id = initial_state['session']['user_id'];
+          // let guestId = initial_state['session']['guestId'];
+          // let user_json = initial_state['entities']['users']['entities'][user_id];
+          // user_json['user_id'] = user_id;
 
-          //window.__META_DATA__
-          let meta = sc.substring(mid_index).substring(
-            sc.substring(sc.indexOf('{'), 
-            sc.indexOf(';')));
-          meta = JSON.parse(meta);
-          user_json['is_logged_in'] = meta["isLoggedIn"];
+          // //window.__META_DATA__
+          // let meta = sc.substring(mid_index).substring(
+          //   sc.substring(sc.indexOf('{'), 
+          //   sc.indexOf(';')));
+          // meta = JSON.parse(meta);
+          // user_json['is_logged_in'] = meta["isLoggedIn"];
 
-          return user_json;
+          // return user_json;
         } catch (error){
           console.log(error);
         }
