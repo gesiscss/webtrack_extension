@@ -50,6 +50,8 @@ export default class TwitterTracker extends Tracker{
       //svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
 
       svg_tweet_protected: 'article svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
+      svg_tweet_promoted: 'article svg g path[d="M20.75 2H3.25C2.007 2 1 3.007 1 4.25v15.5C1 20.993 2.007 22 3.25 22h17.5c1.243 0 2.25-1.007 2.25-2.25V4.25C23 3.007 21.993 2 20.75 2zM17.5 13.504c0 .483-.392.875-.875.875s-.875-.393-.875-.876V9.967l-7.547 7.546c-.17.17-.395.256-.62.256s-.447-.086-.618-.257c-.342-.342-.342-.896 0-1.237l7.547-7.547h-3.54c-.482 0-.874-.393-.874-.876s.392-.875.875-.875h5.65c.483 0 .875.39.875.874v5.65z"]',
+
       svg_account_protected: 'div span svg g path[d="M19.75 7.31h-1.88c-.19-3.08-2.746-5.526-5.87-5.526S6.32 4.232 6.13 7.31H4.25C3.01 7.31 2 8.317 2 9.56v10.23c0 1.24 1.01 2.25 2.25 2.25h15.5c1.24 0 2.25-1.01 2.25-2.25V9.56c0-1.242-1.01-2.25-2.25-2.25zm-7 8.377v1.396c0 .414-.336.75-.75.75s-.75-.336-.75-.75v-1.396c-.764-.3-1.307-1.04-1.307-1.91 0-1.137.92-2.058 2.057-2.058 1.136 0 2.057.92 2.057 2.056 0 .87-.543 1.61-1.307 1.91zM7.648 7.31C7.838 5.06 9.705 3.284 12 3.284s4.163 1.777 4.352 4.023H7.648z"]',
 
       // assumes that the target is the tweet/comment
@@ -102,7 +104,8 @@ export default class TwitterTracker extends Tracker{
       'guest_id': null,
       'email': null,
       'is_logged_in': null,
-      'private': null
+      'seen_protected_tweet': null,
+      'seen_promoted_tweet': null
     }
 
     this.logged_username = null;
@@ -529,12 +532,39 @@ export default class TwitterTracker extends Tracker{
       return true;
     }
 
-    // if the protected svg appear in the tweet, the content is private
+    return !this._isProtected(target);
+  }
+
+
+  /**
+   * [_isPublic checks if element is for the public oder private]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isProtected(target){
+
+   // if the protected svg appear in the tweet, the content is private
     if (target.querySelector(this.selectors.svg_tweet_protected)) {
-      this.privacy_flags['private'] = true;
-      return false;
-    } else {
+      this.privacy_flags['seen_protected_tweet'] = true;
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * [_isPublic checks if element is for the public oder private]
+   * @param  {Object}  target [DomElement]
+   * @return {Boolean}
+   */
+  _isPromoted(target){
+
+    // if the protected svg appear in the tweet, the content is private
+    if (target.querySelector(this.selectors.svg_tweet_promoted)) {
+      this.privacy_flags['seen_promoted_tweet'] = true;
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -570,6 +600,21 @@ export default class TwitterTracker extends Tracker{
   }
 
 
+    /**
+   * [_getSponsoredId get the tweet header id from the location bar]
+   * @param  {Object}  target [DomElement]
+   * @return {int}
+   */
+  _getSponsoredId(article){
+    
+    var _anchor = article.querySelector('a[role=link]');
+    if (_anchor != null){
+      return _anchor.getAttribute('href');
+    }
+    return 'default_sponsor_id';
+
+  }
+
 
   /**
    * [_getId looks for an href that contains the id of the element]
@@ -579,7 +624,6 @@ export default class TwitterTracker extends Tracker{
   _getId(article){
     try {
 
-      var _clone = article.cloneNode(true);
       var times = article.querySelectorAll(this.selectors.time_tweetid);
       if (times.length > 0){
         return times[0].parentNode.getAttribute('href').match(this.selectors.time_tweetid_regex)[1];
@@ -602,8 +646,10 @@ export default class TwitterTracker extends Tracker{
   /**
    * [_getPublicArticels start tracking an article]
    */
-  trackArticle(id, article){
-    this.tweetId2Element[id] = article.cloneNode(true);
+  trackArticle(id, article, category){
+    let cloned = article.cloneNode(true);
+    cloned.classList.add(category);
+    this.tweetId2Element[id] = cloned;
   }
 
   /**
@@ -613,42 +659,37 @@ export default class TwitterTracker extends Tracker{
   addPublicArticles(){
     let articles = document.querySelectorAll('article');
 
-    let counter = 0;
+    let public_counter = 0;
+    let promoted_counter = 0;
 
     for (var i = 0; i < articles.length; i++) {
       this.total_tweets_seen += 1;
       //let id = articles[i].getAttribute('data-tweet-id');
       let id = this._getId(articles[i]);
-      if (id == null) {
-        // Heeader Tweet
-        if ((i == 0) && this._isHeaderTweet(articles[i])){
-          let id = this._getHeaderId();
-          //if (this.twitter_debug) console.log('HEADER ID detected: ' + id);
-          this.trackArticle(id, articles[i]);
-          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid yellow !important;");
-          counter += 1;
-        } else {
-          // This does not seem to be a tweet
-          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
-          this.total_tweets_seen -= 1;
-        }
+      let header_id = this._getHeaderId();
+      if ((i == 0) && (header_id != null)){
+        this.trackArticle(header_id, articles[i], 'header');
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid cyan !important;");
+        public_counter += 1;
+      } else if (this._isPromoted(articles[i])) {
+        let sponsored_id = this._getSponsoredId(articles[i]);
+        this.trackArticle(sponsored_id, articles[i], 'sponsored');
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid blue !important;");
+        promoted_counter += 1;
+      } else if(!this._isProtected(articles[i])) {
+        this.trackArticle(id, articles[i], 'not-protected');
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid green !important;");
+        public_counter += 1;
       } else {
-        if(this._isPublic(articles[i])){
-          //if (this.twitter_debug) console.log('ID detected: ' + id);
-          this.trackArticle(id, articles[i]);
-          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid green !important;");
-
-          counter += 1;
-        }else{
-          // This does not seem to be a tweet
-          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
-          this.total_tweets_seen -= 1;
-        }
+        // This does not seem to be a tweet
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
+        this.total_tweets_seen -= 1;
       }
     }
 
     if (this.twitter_debug) console.log('Articles Found: ' + articles.length);
-    if (this.twitter_debug) console.log('Public Articles: ' + counter);
+    if (this.twitter_debug) console.log('Public Articles: ' + public_counter);
+    if (this.twitter_debug) console.log('Promoted Articles: ' + promoted_counter);
 
     // return True if at lest one article was found (regardless it being public/private)
     return articles.length > 0;
@@ -665,7 +706,7 @@ export default class TwitterTracker extends Tracker{
     for (var i = 0; i < articles.length; i++) {
       let id = articles[i].getAttribute('data-tweet-id');
       if (id != null) {
-        this.trackArticle(id, articles[i]);
+        this.trackArticle(id, articles[i], 'logged-out');
         counter += 1;
       }
     }
