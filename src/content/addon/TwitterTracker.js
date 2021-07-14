@@ -9,8 +9,8 @@ export default class TwitterTracker extends Tracker{
     this.is_allowed = null;
     
     this.allow = false;
-    this.twitter_debug = false;
-    this.twitter_debugEvents = false;
+    this.twitter_debug = true;
+    this.twitter_debugEvents = true;
     this.selectors = {
       root: ['#stream-items-id'],
       allow: ['#stream-items-id'],
@@ -108,7 +108,9 @@ export default class TwitterTracker extends Tracker{
     this.logged_username = null;
     this.credentials = null;
 
-    console.log(+ new Date());
+
+    this.total_tweets_seen = 0;
+
   }
 
 
@@ -614,6 +616,7 @@ export default class TwitterTracker extends Tracker{
     let counter = 0;
 
     for (var i = 0; i < articles.length; i++) {
+      this.total_tweets_seen += 1;
       //let id = articles[i].getAttribute('data-tweet-id');
       let id = this._getId(articles[i]);
       if (id == null) {
@@ -622,17 +625,17 @@ export default class TwitterTracker extends Tracker{
           let id = this._getHeaderId();
           //if (this.twitter_debug) console.log('HEADER ID detected: ' + id);
           this.trackArticle(id, articles[i]);
+          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid yellow !important;");
           counter += 1;
         } else {
           // This does not seem to be a tweet
-          delete articles[i];
+          this.total_tweets_seen -= 1;
         }
       } else {
         if(this._isPublic(articles[i])){
-          //this._setBorder(articles[i]);
-          //let id = this._getId(articles[i]);
           //if (this.twitter_debug) console.log('ID detected: ' + id);
           this.trackArticle(id, articles[i]);
+          if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid green !important;");
 
           counter += 1;
         }else{
@@ -783,44 +786,45 @@ export default class TwitterTracker extends Tracker{
       if (this.twitter_debug) console.log('No public tweets/replies found');
     }
 
-    var who_strings = '';
-    var counter = 0;
-    for (var key in this.whoId2Element) {
-      if (this.whoId2Element.hasOwnProperty(key)){
-        who_strings += this.whoId2Element[key].outerHTML;
-        counter += 1;
-      }
-    }
-    if(counter == 0){
-      if (this.twitter_debug) console.log('No WhoToFollows found');
-    }
+    // var who_strings = '';
+    // var counter = 0;
+    // for (var key in this.whoId2Element) {
+    //   if (this.whoId2Element.hasOwnProperty(key)){
+    //     who_strings += this.whoId2Element[key].outerHTML;
+    //     counter += 1;
+    //   }
+    // }
+    // if(counter == 0){
+    //   if (this.twitter_debug) console.log('No WhoToFollows found');
+    // }
 
-    var trend_strings = '';
-    var counter = 0;
-    for (var key in this.trendId2Element) {
-      if (this.trendId2Element.hasOwnProperty(key)){
-        trend_strings += this.trendId2Element[key].outerHTML;
-        counter += 1;
-      }
-    }
-    if(counter == 0){
-      if (this.twitter_debug) console.log('No Trends found');
-    }
+    // var trend_strings = '';
+    // var counter = 0;
+    // for (var key in this.trendId2Element) {
+    //   if (this.trendId2Element.hasOwnProperty(key)){
+    //     trend_strings += this.trendId2Element[key].outerHTML;
+    //     counter += 1;
+    //   }
+    // }
+    // if(counter == 0){
+    //   if (this.twitter_debug) console.log('No Trends found');
+    // }
 
 
-    var sidebar = document.querySelector('div[data-testid="sidebarColumn"]');
-    if (sidebar){
-      sidebar = sidebar.outerHTML;
-    } else {
-      sidebar = '';
-    }
+    // var sidebar = document.querySelector('div[data-testid="sidebarColumn"]');
+    // if (sidebar){
+    //   sidebar = sidebar.outerHTML;
+    // } else {
+    //   sidebar = '';
+    // }
 
     if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
-    return '<html>' + this._getHead() + 
-       '<body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
-      '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + 
-      '</div><h1>Trends</h1><div class="trends">' + trend_strings + 
-      '</div><h1>SideBar</h1><div class="sidebar">' + sidebar +  '</div></body>'+'</html>';
+    return '<html total_posts_seen="' + this.total_tweets_seen + 
+    '" ><head></head><body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
+      // '</div><h1>Who To Follow</h1><div class="whotofollow">' + who_strings + 
+      // '</div><h1>Trends</h1><div class="trends">' + trend_strings + 
+      // '</div><h1>SideBar</h1><div class="sidebar">' + sidebar +  
+      '</div></body></html>';
     
   }
 
@@ -889,8 +893,8 @@ export default class TwitterTracker extends Tracker{
       return new Promise((resolve, reject) => {
         if (this.is_logged_in) { 
           let found = this.addPublicArticles();
-          this.addWhoToFollow();
-          this.addTrends();
+          //this.addWhoToFollow();
+          //this.addTrends();
 
           //this._eventListenComment();
           //this._eventListenRetweet();
@@ -900,7 +904,6 @@ export default class TwitterTracker extends Tracker{
           this.tweets_exist = found || this.tweets_exist;
 
           if (this.tweets_exist){
-              //SEND
             if (this.twitter_debug) console.log('assembling dom');
             resolve(this.assembleDom());
           } else if (this.tweets_exist == false) {
@@ -916,7 +919,6 @@ export default class TwitterTracker extends Tracker{
           this.tweets_exist = found || this.tweets_exist;
 
           if (this.tweets_exist){
-              //SEND
             if (this.twitter_debug) console.log('assembling dom');
             resolve(this.assemblePublicDom());
           } else if (this.tweets_exist == false) {
