@@ -832,7 +832,7 @@ export default class TwitterTracker extends Tracker{
 
 
     if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
-    return '<html total_posts_seen="' + this.total_tweets_seen + 
+    return '<html total_tweets_seen="' + this.total_tweets_seen + 
     '" ><head></head><body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
       '</div></body></html>';
     
