@@ -178,7 +178,7 @@ export default class FacebookTracker extends Tracker{
 
 
   get_is_sm_path_allowed(path){
-    return this.is_newsfeed || this.is_public_page || this.is_prfile || !this.is_logged_in;
+    return this.is_newsfeed || this.is_public_page || this.is_profile || !this.is_logged_in;
   }
 
 
@@ -285,7 +285,7 @@ export default class FacebookTracker extends Tracker{
 
     // check if this is a profile page only if it is not the newsfeed
     // the check for public page might be heavy
-    if (!this.is_newsfeed){
+    if (!this.is_newsfeed && !this.is_public_page){
       this.is_profile = this._is_profile();
     } else {
       this.is_profile = false;
