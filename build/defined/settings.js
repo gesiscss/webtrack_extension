@@ -21,12 +21,12 @@ var settings = {
   id: 'DFG_21',
   lang: 'de',
   project_name: 'Webtrack21',
-  versionType: 'v0.9.7',
+  versionType: 'v0.9.8',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: servers['production_address']
+  server: servers['staging_address']
 }
 
 
