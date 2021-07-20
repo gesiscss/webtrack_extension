@@ -74,13 +74,14 @@ export default class ContentHandler {
       count: 0,
       startTime: this.startTime,
       landing_url: window.location.href,
+      content_url: '', 
       hostname: location.protocol + '//' + location.hostname,
       page_load_time: window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart,
       unhashed_url: this.get_unhashed_href(),
       clicks: this.clicks,
       clicks_counter: 0,
       rightclicks: this.contextmenu_clicks,
-      rightclicks_counter: 0,
+      rightclicks_coulanding_urlnter: 0,
       scrolls: this.scrolls
     }
   }
@@ -256,11 +257,13 @@ export default class ContentHandler {
    * @param  {Object} [object={}]
    */
   sendMessage(object={}){
-    this.count += 1;
+
 
 
     let type = null;
     if(object.hasOwnProperty('html')){
+      this.count += 1;
+      object['count'] = this.count;
 
 
       if (this.debug){
@@ -273,6 +276,8 @@ export default class ContentHandler {
       object = {
         //links: object['links'],
         content: [object],
+        // the exact url associated to the content
+        content_url: window.location.href,
       };
       type = 'html';
     } else if(object.hasOwnProperty('links')){
@@ -289,7 +294,6 @@ export default class ContentHandler {
       type = 'event';
     }
 
-    object['count'] = this.count;
     // in firefox the domContentLoadedEventEnd is loaded only after the domContentLoadedEventEnd
     if (this.data['page_load_time'] < -9999){
       this.data['page_load_time'] = window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart;
