@@ -257,6 +257,7 @@ export default class ContentHandler {
    * @param  {Object} [object={}]
    */
   sendMessage(object={}){
+    this.count += 1;
 
 
 
