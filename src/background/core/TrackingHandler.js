@@ -48,7 +48,7 @@ export default class TrackingHandler {
     this.is_dummy = is_dummy;
     this.config = config;
     this.event = new EventEmitter();
-    this.debug = true;
+    this.debug = false;
     this.settings = {};
 
     // fields that should be anonymized
