@@ -263,10 +263,7 @@ export default class ContentHandler {
 
     let type = null;
     if(object.hasOwnProperty('html')){
-      this.count += 1;
-      object['count'] = this.count;
-
-
+      
       if (this.debug){
         console.log('Count: ' + this.count);
 
@@ -295,6 +292,7 @@ export default class ContentHandler {
       type = 'event';
     }
 
+    object['count'] = this.count;
     // in firefox the domContentLoadedEventEnd is loaded only after the domContentLoadedEventEnd
     if (this.data['page_load_time'] < -9999){
       this.data['page_load_time'] = window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart;
