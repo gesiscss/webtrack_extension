@@ -112,7 +112,13 @@ export default class TwitterTracker extends Tracker{
     this.credentials = null;
 
 
-    this.total_tweets_seen = 0;
+    this.tweet_header_ids_captured = new Set();
+    this.tweet_header_ids_ignored = new Set();
+    this.tweet_ids_captured = new Set();
+    this.tweet_ids_ignored = new Set();
+    this.promoted_tweets_captured = new Set();
+    this.tweet_wo_id_seen += 1;
+
 
   }
 
@@ -601,17 +607,17 @@ export default class TwitterTracker extends Tracker{
 
 
     /**
-   * [_getSponsoredId get the tweet header id from the location bar]
+   * [_getPromotedId get the tweet header id from the location bar]
    * @param  {Object}  target [DomElement]
    * @return {int}
    */
-  _getSponsoredId(article){
+  _getPromotedId(article){
     
     var _anchor = article.querySelector('a[role=link]');
     if (_anchor != null){
       return _anchor.getAttribute('href');
     }
-    return 'default_sponsor_id';
+    return 'default_promoted_id';
 
   }
 
@@ -659,37 +665,44 @@ export default class TwitterTracker extends Tracker{
   addPublicArticles(){
     let articles = document.querySelectorAll('article');
 
-    let public_counter = 0;
-    let promoted_counter = 0;
-
     for (var i = 0; i < articles.length; i++) {
-      this.total_tweets_seen += 1;
       //let id = articles[i].getAttribute('data-tweet-id');
       let id = this._getId(articles[i]);
       let header_id = this._getHeaderId();
+
       if ((i == 0) && (header_id != null) && !this._isProtected(articles[i])) {
-        this.trackArticle(header_id, articles[i], 'header not-protected');
+        this.tweet_header_ids_captured.add(header_id);
+        this.trackArticle(header_id, articles[i], 'header-not-protected');
         if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid cyan !important;");
-        public_counter += 1;
+      
+      } else if ((i == 0) && (header_id != null) && this._isProtected(articles[i])) {
+        this.tweet_header_ids_ignored.add(header_id);
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid yellow !important;");
+      
       } else if (this._isPromoted(articles[i])) {
-        let sponsored_id = this._getSponsoredId(articles[i]);
-        this.trackArticle(sponsored_id, articles[i], 'sponsored');
+        this.promoted_tweets_captured.add(promoted_id);
+        let promoted_id = this._getPromotedId(articles[i]);
+        this.trackArticle(promoted_id, articles[i], 'promoted');
         if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid blue !important;");
-        promoted_counter += 1;
-      } else if(!this._isProtected(articles[i])) {
+      
+      } else if(id && !this._isProtected(articles[i])) {
+        this.tweet_ids_captured.add(id);
         this.trackArticle(id, articles[i], 'not-protected');
         if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid green !important;");
-        public_counter += 1;
-      } else {
-        // This does not seem to be a tweet
+      
+      } else if(id) {
+        this.tweet_ids_ignored.add(id);
+        // This does not seem to be a public tweet
         if(this.twitter_debug) articles[i].setAttribute("style", "border:3px solid red !important;");
-        this.total_tweets_seen -= 1;
+      
+      } else {
+        this.tweet_wo_id_seen += 1;
+        // This does not seem to be a tweet at all (no id)
+        if(this.twitter_debug) articles[i].setAttribute("style", "border:6px solid magent !important;");
       }
     }
 
     if (this.twitter_debug) console.log('Articles Found: ' + articles.length);
-    if (this.twitter_debug) console.log('Public Articles: ' + public_counter);
-    if (this.twitter_debug) console.log('Promoted Articles: ' + promoted_counter);
 
     // return True if at lest one article was found (regardless it being public/private)
     return articles.length > 0;
@@ -832,10 +845,13 @@ export default class TwitterTracker extends Tracker{
 
 
     if (this.twitter_debug) console.log('Sending ' + counter + ' tweets');
-    return '<html total_tweets_seen="' + this.total_tweets_seen + 
-    '" ><head></head><body><h1>Tweets</h1><div class="tweets">' + tweet_strings +
-      '</div></body></html>';
-    
+    return '<html tweet_header_ids_captured="' + this.tweet_header_ids_captured.size +
+                '" tweet_header_ids_ignored="' + this.tweet_header_ids_ignored.size +
+                '" tweet_ids_captured="' + this.tweet_ids_captured.size +
+                '" tweet_ids_ignored="' + this.tweet_ids_ignored.size +
+                '" promoted_tweets_captured="' + this.promoted_tweets_captured.size +
+                '" tweet_wo_id_seen="' + this.tweet_wo_id_seen +
+            '" ><head></head><body><h1>Tweets</h1><div class="tweets">' + tweet_strings + '</div></body></html>';
   }
 
 
