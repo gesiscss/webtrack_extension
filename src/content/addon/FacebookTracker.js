@@ -14,7 +14,7 @@ export default class FacebookTracker extends Tracker{
 
 
     this.is_allowed = null;
-    this.facebook_debug = false;
+    this.facebook_debug = true;
     this.facebook_events_debug = false;
     this.elements = [];
     this.elementStrings = '';
