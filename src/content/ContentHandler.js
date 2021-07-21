@@ -167,14 +167,16 @@ export default class ContentHandler {
       } else if(str.endsWith('facebook')){
         if (this.debug) console.log('FacebookTracker');
         return FacebookTracker;
-      }else if(str.endsWith('youtube')){
+      }
+      else if(str.endsWith('youtube')){
         if (hostname_parts.length > 2 && YOUTUBE_SET.has(hostname_parts[hostname_parts.length - 3])) {
             return DomainTracker;
         } else {
           if (this.debug) console.log('YouTubeTracker');
           return YouTubeTracker;
         }
-      }else if(str.endsWith('twitter')){
+      }
+      else if(str.endsWith('twitter')){
         if (hostname_parts.length > 2 && TWITTER_SET.has(hostname_parts[hostname_parts.length - 3])) {
           if (this.debug) console.log('DomainTracker');
           return DomainTracker;
@@ -182,10 +184,12 @@ export default class ContentHandler {
           if (this.debug) console.log('TwitterTracker');
           return TwitterTracker;
         }
-      }else if(str.endsWith('instagram')){
-        if (this.debug) console.log('InstagramTracker');
-        return InstagramTracker;
-      }else if(str.endsWith('google')){
+      }
+      // else if(str.endsWith('instagram')){
+      //   if (this.debug) console.log('InstagramTracker');
+      //   return InstagramTracker;
+      // }
+      else if(str.endsWith('google')){
         if (this.debug) console.log('GoogleTracker');
         return GoogleTracker;
       } else if(str.endsWith('apple')){

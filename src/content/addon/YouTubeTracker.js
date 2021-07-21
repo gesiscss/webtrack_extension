@@ -221,6 +221,9 @@ export default class YouTubeTracker extends Tracker{
 
     //document.querySelector('#avatar-btn');
     this.is_content_allowed = this.get_is_content_allowed();
+
+    // is social media path allowed
+    this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
   }
 
     /**
@@ -678,23 +681,23 @@ export default class YouTubeTracker extends Tracker{
       // if(this._isAllow()){
       
         //this._setCategorie2Meta();
-        this._eventSetLike();
-        this._eventSetDislike();
-        this._eventSubscribe();
+        // this._eventSetLike();
+        // this._eventSetDislike();
+        // this._eventSubscribe();
 
-        this._eventNewComment();
-        setTimeout(()=>{
-          this._eventCommentLike(undefined, e => {
-            this.eventFn.onEvent(
-              {
-                event: e.event,
-                type: e.type,
-                values: this._getValues().concat(e.values)
-              }
-            )
-          });
-          this._eventClickHashtag();
-        }, 500);
+        // this._eventNewComment();
+        // setTimeout(()=>{
+        //   this._eventCommentLike(undefined, e => {
+        //     this.eventFn.onEvent(
+        //       {
+        //         event: e.event,
+        //         type: e.type,
+        //         values: this._getValues().concat(e.values)
+        //       }
+        //     )
+        //   });
+        //   this._eventClickHashtag();
+        // }, 500);
 
         // cloning the dom does not work as expected :/
         // resolve(this._getDom());
