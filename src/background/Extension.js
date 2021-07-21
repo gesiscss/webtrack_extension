@@ -513,7 +513,6 @@ export default class Extension {
           // even if the content is blocked, the metainformation is sent in order to
           // keep track of the precursors
           msg = Object.assign(msg, {
-            departing_url: sender.tab.url,
             unhashed_url: msg.unhashed_url,
             title: sender.tab.title
           })

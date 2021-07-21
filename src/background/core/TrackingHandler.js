@@ -53,7 +53,6 @@ export default class TrackingHandler {
 
     // fields that should be anonymized
     this.to_anonym = [
-        'departing_url',
         'landing_url',
         'content_url',
         'title',

@@ -39,7 +39,7 @@ const schemaPages = {
           }
         },
         // adding when sending the data to the server
-        // departing_url: {
+        // content_url: {
         //   type: 'string',
         //   exec: stringUrl,
         // },
