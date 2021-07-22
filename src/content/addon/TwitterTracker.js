@@ -117,7 +117,7 @@ export default class TwitterTracker extends Tracker{
     this.tweet_ids_captured = new Set();
     this.tweet_ids_ignored = new Set();
     this.promoted_tweets_captured = new Set();
-    this.tweet_wo_id_seen += 1;
+    this.tweet_wo_id_seen = 0;
 
 
   }
