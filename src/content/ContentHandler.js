@@ -81,7 +81,7 @@ export default class ContentHandler {
       clicks: this.clicks,
       clicks_counter: 0,
       rightclicks: this.contextmenu_clicks,
-      rightclicks_coulanding_urlnter: 0,
+      rightclicks_counter: 0,
       scrolls: this.scrolls
     }
   }
