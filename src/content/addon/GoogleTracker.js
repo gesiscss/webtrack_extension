@@ -67,8 +67,8 @@ export default class GoogleTracker extends Tracker{
         }
       }
 
-      if (this.logged_fullname  && this.logged_fullname == ''){
-        let fullname = document.querySelector('.gb_ob');
+      if (~this.logged_fullname  || this.logged_fullname == ''){
+        let fullname = document.querySelector('.gb_lb.gb_mb');
         if (fullname){
           this.is_logged_in = true;
           this.logged_fullname = fullname.innerText;
@@ -80,6 +80,9 @@ export default class GoogleTracker extends Tracker{
           }
         }
       }
+
+      // is social media path allowed
+      this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
 
       this.fetchMetaData();
     }
@@ -95,7 +98,7 @@ export default class GoogleTracker extends Tracker{
     let metadata = super.getMetadata();
     let anonym = {};
 
-    if (this.logged_fullname) {
+    if (this.logged_email) {
       anonym['email'] = this.logged_email;
     }
 
