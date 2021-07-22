@@ -301,6 +301,12 @@ export default class FacebookTracker extends Tracker{
     // is social media path allowed
     this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
     console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
+
+    if (this.is_sm_path_allowed) {
+      if(this.facebook_debug) document.querySelector('a').setAttribute("style", "border:10px solid green !important;");
+    } else {
+      if(this.facebook_debug) document.querySelector('a').setAttribute("style", "border:10px solid red !important;");
+    }
   }
 
 
@@ -346,6 +352,9 @@ export default class FacebookTracker extends Tracker{
             } 
           }
         }
+      }
+      if (url_username){
+        return url_username;
       }
     } catch(e){
 
