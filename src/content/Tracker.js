@@ -109,7 +109,7 @@ export default class Tracker extends MultiFetch {
   reset_credentials(){
     // is social media path allowed
     this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
-    console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
+    if (this.debug) console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
 
   }
 
