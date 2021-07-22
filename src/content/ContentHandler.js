@@ -185,10 +185,10 @@ export default class ContentHandler {
           return TwitterTracker;
         }
       }
-      // else if(str.endsWith('instagram')){
-      //   if (this.debug) console.log('InstagramTracker');
-      //   return InstagramTracker;
-      // }
+      else if(str.endsWith('instagram')){
+        if (this.debug) console.log('using URLTracker for InstagramTracker');
+        return URLTracker;
+      }
       else if(str.endsWith('google')){
         if (this.debug) console.log('GoogleTracker');
         return GoogleTracker;
