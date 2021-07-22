@@ -9,8 +9,10 @@ export default class FacebookTracker extends Tracker{
     this.onStart = this.onStart.bind(this);
     this.rootSearch = "#contentArea div[data-gt='{\"ref\":\"nf_generic\"}']";
     
-    this.total_posts_seen = 0;
+    this.posts_seen = 0;
     this.posts_people_you_may_know = 0;
+    this.posts_ignored = 0;
+    this.posts_captured = 0;
 
 
     this.is_allowed = null;
@@ -684,6 +686,7 @@ export default class FacebookTracker extends Tracker{
     //for (let query of this.eventElements.articles) {
     //let found = document.querySelectorAll('.userContentWrapper:not(.tracked), div[role="article"]:not(.tracked)');
     let found = document.querySelectorAll('[role="article"][aria-describedby]:not(.tracked)');
+    this.posts_seen += found.length;
 
     let length = found.length;
     for (var i = 0; i < length; i++) {
@@ -691,6 +694,7 @@ export default class FacebookTracker extends Tracker{
       found[i].classList.add('tracked');
       found[i].setAttribute('webtracker-article-id', Math.random());
       if (this._isPublicArticle(found[i])){
+        this.posts_captured += 1;
         if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid green !important;");
 
 
@@ -708,12 +712,12 @@ export default class FacebookTracker extends Tracker{
           this.posts_people_you_may_know += 1;
           if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid yellow !important;");
         } else {
+          this.posts_ignored += 1;
           if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid red !important;");
         }
       }
     }
 
-    this.total_posts_seen += bucket.length;
 
     //return bucket.filter(e => e!=undefined);
     return bucket;
@@ -1169,7 +1173,7 @@ export default class FacebookTracker extends Tracker{
         let found = this._getPublicArticels();
 
         // if no entries were found, then this is not a timeline or profile page
-        if (this.total_posts_seen== 0) {
+        if (this.posts_seen== 0) {
           // if the user is not logged in, then default to the normal tracker
           if (!this.is_logged_in){
             resolve(this._getDom());
@@ -1185,7 +1189,11 @@ export default class FacebookTracker extends Tracker{
             this.elements.push(found[i]);
             this.elementStrings += cloned.outerHTML
           }
-          resolve('<html total_posts_seen="'+this.total_posts_seen+'" posts_people_you_may_know="'+this.posts_people_you_may_know+'" ><head></head><body>'
+          resolve('<html posts_seen="'+this.posts_seen+
+            '" posts_people_you_may_know="'+this.posts_people_you_may_know+
+            '" posts_ignored="'+this.posts_ignored+
+            '" posts_captured="'+this.posts_captured+
+            '" ><head></head><body>'
             +this.elementStrings+'</body>'+'</html>');
         }
 
