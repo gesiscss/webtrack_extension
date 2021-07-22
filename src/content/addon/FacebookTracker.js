@@ -87,6 +87,9 @@ export default class FacebookTracker extends Tracker{
       'Shared with Public', 'Shared with Public group',
       'Mit Öffentlich geteilt', 'Mit Öffentliche Gruppe geteilt']);
 
+    this.public_alts = new Set([
+      'Public', 'Shared with Public group']);
+
     this.verified_arias = new Set([
       'Verified Account', 
       'Bestätigtes Konto']);
@@ -593,6 +596,21 @@ export default class FacebookTracker extends Tracker{
           return true;
         }
 
+      }
+    }
+
+    // check if the icon has a public aria label
+    privacy_icon = target.querySelector("div > div > img");
+    if (privacy_icon){
+      let alt_label = privacy_icon.getAttribute('alt');
+      if (alt_label) {
+        // for 
+        if (this.is_newsfeed || this.is_profile || this.is_public_page) {
+          if (this.public_alts.has(alt_label)) {
+            return true;
+          }
+        // for public pages, we collected public and custom lists
+        }
       }
     }
 
