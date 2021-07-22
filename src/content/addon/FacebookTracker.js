@@ -90,7 +90,7 @@ export default class FacebookTracker extends Tracker{
       'Mit Öffentlich geteilt', 'Mit Öffentliche Gruppe geteilt']);
 
     this.public_alts = new Set([
-      'Public', 'Shared with Public group']);
+      'Public', "Öffentlich"]);
 
     this.verified_arias = new Set([
       'Verified Account', 
