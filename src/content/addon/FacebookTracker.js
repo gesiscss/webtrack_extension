@@ -304,10 +304,39 @@ export default class FacebookTracker extends Tracker{
     this.is_sm_path_allowed = this.get_is_sm_path_allowed(location.pathname);
     console.log('IS ALLOWED', location.pathname, this.is_sm_path_allowed);
 
-    if (this.is_sm_path_allowed) {
-      if(this.facebook_debug) document.querySelector('a').setAttribute("style", "border:10px solid green !important;");
-    } else {
-      if(this.facebook_debug) document.querySelector('a').setAttribute("style", "border:10px solid red !important;");
+    if(this.facebook_debug) {
+      let style = '';
+      if (this.is_logged_in) {
+        style += "border-top:7px solid green !important;";
+      } else {
+        style += "border-top:7px solid red !important;";
+      }
+
+      if (this.is_newsfeed) {
+        style += "border-right:7px solid green !important;";
+      } else {
+        style += "border-right:7px solid red !important;";
+      }
+
+      if (this.is_public_page) {
+        style += "border-bottom:7px solid green !important;";
+      } else {
+        style += "border-bottom:7px solid red !important;";
+      }
+
+      if (this.is_profile) {
+        style += "border-left:7px solid green !important;";
+      } else {
+        style += "border-left:7px solid red !important;";
+      }
+
+      if (this.is_sm_path_allowed) {
+        style += "outline:7px solid blue !important;";
+      } else {
+        style += "outline:7px solid red !important;";
+      }
+      document.querySelector('a').setAttribute("style", style);
+
     }
   }
 
