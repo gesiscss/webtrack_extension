@@ -21,7 +21,7 @@ var settings = {
   id: 'DFG_21',
   lang: 'de',
   project_name: 'Webtrack21',
-  versionType: 'v0.9.9',
+  versionType: 'v0.10.0',
   mobile: false,
   requireVersion: {
     chrome: 45
