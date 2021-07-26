@@ -1110,32 +1110,52 @@ export default class FacebookTracker extends Tracker{
 
     if (this.logged_user_id) {
       anonym['user_id'] = this.logged_user_id;
-      this.privacy_flags['user_id'] = true;
+      this.privacy_flags['has_user_id'] = true;
+    } else {
+      this.privacy_flags['has_user_id'] = false;
     }
 
     if (this.logged_username) {
       anonym['username'] = this.logged_username;
-      this.privacy_flags['username'] = true;
+      this.privacy_flags['has_username'] = true;
+    } else {
+      this.privacy_flags['has_username'] = false;
     }
 
     if (this.logged_account_id) {
       anonym['account_id'] = this.logged_account_id;
-      this.privacy_flags['account_id'] = true;
+      this.privacy_flags['has_account_id'] = true;
+    } else {
+      this.privacy_flags['has_account_id'] = false;
     }
 
     if (this.profile_id) {
       anonym['profile_id'] = this.profile_id;
-      this.privacy_flags['profile_id'] = true;
+      this.privacy_flags['has_profile_id'] = true;
+    } else {
+      this.privacy_flags['has_profile_id'] = false;
     }
 
     if (this.logged_fullname) {
       anonym['fullname'] = this.logged_fullname;
-      this.privacy_flags['fullname'] = true;
+      this.privacy_flags['has_fullname'] = true;
+    } else {
+      this.privacy_flags['has_fullname'] = false;
     }
     if (this.logged_shortname) {
       anonym['shortname'] = this.logged_shortname;
-      this.privacy_flags['shortname'] = true;
+      this.privacy_flags['has_shortname'] = true;
+    } else {
+      this.privacy_flags['has_shortname'] = false;
     }
+
+    this.privacy_flags['is_profile'] = this.is_profile;
+    this.privacy_flags['is_newsfeed'] = this.is_newsfeed;
+    this.privacy_flags['is_public_page'] = this.is_public_page;
+    this.privacy_flags['is_verified_page_or_profile'] = this.is_verified_page_or_profile;
+    this.privacy_flags['is_logged_in'] = this.is_logged_in;
+
+
 
     metadata['anonym'] = anonym;
     metadata['privacy_flags'] = this.privacy_flags;
