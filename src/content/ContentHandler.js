@@ -488,11 +488,12 @@ export default class ContentHandler {
             if (this.debug) console.log('Dom Change');
 
             let blob_size = 0;
-            if (this.data && this.data['content'] & this.data['content'] > 0){
-              blob_size = new Blob([this.data['content'][0]]).size;
+
+            if (this.data && this.data['content'] && this.data['content'].length > 0 && this.data['content'][0] && this.data['content'][0]['html']){
+              blob_size = new Blob([this.data['content'][0]['html']]).size;
             }
 
-            if (this.debug) console.log('Blob Size', blob_size);
+            if (this.debug) console.log('Blob Size', blob_size / (1024*1024));
 
             if (blob_size <= this.blob_limit){
               // 500 millisecons are necessary as the content changes before 
