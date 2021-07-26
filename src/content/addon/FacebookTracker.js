@@ -125,15 +125,6 @@ export default class FacebookTracker extends Tracker{
 
 
     this.privacy_flags = {
-      'public': null,
-      'private': null,
-      'issame': null,
-      'user_id': null,
-      'username': null,
-      'account_id': null,
-      'profile_id': null,
-      'fullname': null,
-      'shortname': null
     }
 
 
