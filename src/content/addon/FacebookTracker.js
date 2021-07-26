@@ -175,7 +175,7 @@ export default class FacebookTracker extends Tracker{
 
 
   get_is_sm_path_allowed(path){
-    return this.is_newsfeed || this.is_public_page || this.is_profile || this.is_verified_page_or_profile || !this.is_logged_in;
+    return true; //this.is_newsfeed || this.is_public_page || this.is_profile || this.is_verified_page_or_profile || !this.is_logged_in;
   }
 
 
@@ -606,11 +606,16 @@ export default class FacebookTracker extends Tracker{
     return false;
   }
 
-  // is_elite_poster(target){
-  //   return this.elite_accounts.has(
-  //     target.querySelector('span[dir=auto] > h4[dir=auto] a[role="link"]').pathname.toLowerCase()
-  //   );
-  // }
+  _is_public_or_custom_verified(aria_label, target){
+    if (this.public_arias.has(aria_label)) {
+      return true;
+    } else if (this.custom_arias.has(aria_label)){
+      if (this.is_verified(target)){
+        return true;
+      }
+    }
+    return false;
+  }
 
 
   /**
@@ -631,12 +636,8 @@ export default class FacebookTracker extends Tracker{
         // WARNING: the order of ifs are important, make sure that 
         // is_verified_page_or_profile takes precedence
         if (this.is_newsfeed) {
-          if (this.public_arias.has(aria_label)) {
+          if (this._is_public_or_custom_verified(aria_label, target)){
             return true;
-          } else if (this.custom_arias.has(aria_label)){
-            if (this.is_verified(target)){
-              return true;
-            }
           }
         } else if (this.is_verified_page_or_profile){
           if (this.public_and_custom_arias.has(aria_label)) {
@@ -648,35 +649,33 @@ export default class FacebookTracker extends Tracker{
           }
         // this must go after this.is_verified_page_or_profile
         } else if (this.is_profile){
-          if (this.public_arias.has(aria_label)) {
+          if (this._is_public_or_custom_verified(aria_label, target)){
             return true;
-          } else if (this.custom_arias.has(aria_label)){
-            if (this.is_verified(target)){
-              return true;
-            }
+          }
+        } else {
+          if (this._is_public_or_custom_verified(aria_label, target)){
+            return true;
           }
         }
-
       }
     }
+
+
 
     // check if the icon has a public aria label
     privacy_icon = target.querySelector("div > div > img");
     if (privacy_icon){
       let alt_label = privacy_icon.getAttribute('alt');
       if (alt_label) {
-        // for 
-        if (this.is_newsfeed || this.is_profile || this.is_public_page || this.is_verified_page_or_profile) {
-          if (this.public_alts.has(alt_label)) {
-            return true;
-          }
-        // for public pages, we collected public and custom lists
+        if (this.public_alts.has(alt_label)) {
+          return true;
         }
       }
     }
 
     return false;
   }
+
 
 
   /**
@@ -728,9 +727,9 @@ export default class FacebookTracker extends Tracker{
 
     // if it is not the newsfeed or the public page, there is nothing
     // to do here, get out. 
-    if (!this.is_newsfeed && !this.is_public_page  && !this.is_profile && !this.is_verified_page_or_profile){
-      return [];
-    }
+    // if (!this.is_newsfeed && !this.is_public_page  && !this.is_profile && !this.is_verified_page_or_profile){
+    //   return [];
+    // }
 
     let bucket = [];
     //for (let query of this.eventElements.articles) {
