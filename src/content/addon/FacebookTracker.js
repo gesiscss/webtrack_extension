@@ -629,7 +629,6 @@ export default class FacebookTracker extends Tracker{
     let privacy_icon = target.querySelector(":not(h2) > span > span > span > i");
     if (privacy_icon){
       let aria_label = privacy_icon.getAttribute('aria-label');
-      debugger;
 
       if (aria_label) {
 

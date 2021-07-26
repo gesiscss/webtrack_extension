@@ -41,7 +41,7 @@ export default class ContentHandler {
     this.browser = window.hasOwnProperty('chrome') ? chrome : browser;
     this.param = null;
     this.DELAY = 1000;
-    this.debug = false;
+    this.debug = true;
 
     this.onBackendMessage = this.onBackendMessage.bind(this);
     this.click_recorder = this.click_recorder.bind(this);
@@ -54,6 +54,9 @@ export default class ContentHandler {
     this.clear();
 
     this.display_notification = false;
+
+    // Maximum size of the HTML in bytes (45MB)
+    this.blob_limit = 45*1024*1024;
   }
 
   /**
@@ -483,9 +486,19 @@ export default class ContentHandler {
        } finally {
           this.domDetector.onChange(() => {
             if (this.debug) console.log('Dom Change');
-            // 500 millisecons are necessary as the content changes before 
-            // the url in pages like Facebook
-            this.tracker.fetchHTML(500);
+
+            let blob_size = 0;
+            if (this.data && this.data['content'] & this.data['content'] > 0){
+              blob_size = new Blob([this.data['content'][0]]).size;
+            }
+
+            if (this.debug) console.log('Blob Size', blob_size);
+
+            if (blob_size <= this.blob_limit){
+              // 500 millisecons are necessary as the content changes before 
+              // the url in pages like Facebook
+              this.tracker.fetchHTML(500);
+            }
           }, delay);
         }
     });
