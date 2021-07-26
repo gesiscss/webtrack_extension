@@ -93,7 +93,7 @@ export default class FacebookTracker extends Tracker{
       'Public', "Öffentlich"]);
 
     this.verified_arias = new Set([
-      'Verified Account', 
+      'Verified Account', 'Verified account',
       'Bestätigtes Konto']);
 
     this.custom_arias = new Set([
@@ -741,7 +741,6 @@ export default class FacebookTracker extends Tracker{
           this.posts_people_you_may_know += 1;
           if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid yellow !important;");
         } else {
-          debugger;
           this.posts_ignored += 1;
           if(this.facebook_debug) found[i].setAttribute("style", "border:3px solid red !important;");
         }
