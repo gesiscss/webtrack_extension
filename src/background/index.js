@@ -41,6 +41,8 @@ async function load_controllists(xbrowser) {
 
 
     // uncomment to load the tests.json file to perform tests
+    // CHECKED: test_domainonly.json, test_urlonly.json, test_fulldeny.json,
+    // test_fullallow.json, test_porn.json
     ///////////////////////////////////////////////////////////
     // var tests = null;
     // await fetch(xbrowser.runtime.getURL('data/test_domain.json')).then(
