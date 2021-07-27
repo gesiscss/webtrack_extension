@@ -269,7 +269,7 @@ export default class URLFilter {
   isAllow(domain){
     this._reinit();
 
-    //uncomment to text the list in tests.json
+    //uncomment to test the list in tests.json
     /////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
     // console.log('TEST blacklist:');
