@@ -272,11 +272,11 @@ export default class URLFilter {
     //uncomment to test the list in tests.json
     /////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
-    // console.log('TEST blacklist:');
-    // let white=[]
+    // console.log('TEST Control Lists:');
+    // let fullalow=[]
     // let only_domain=[]
     // let only_url=[]
-    // let black=[]
+    // let fulldeny=[]
     // for (var i = 0; i < this.lists.tests.length; i++) {
     //   //when the test contains URLs
     //   //domain = this.get_location(this.lists.tests[i]).hostname
@@ -293,20 +293,20 @@ export default class URLFilter {
     //     } else if (this.only_url(domain)){
     //       only_url.push(this.lists.tests[i]);
     //     } else {
-    //       white.push(this.lists.tests[i]);
+    //       fullalow.push(this.lists.tests[i]);
     //     }
     //   } else {
-    //     black.push(this.lists.tests[i]);
+    //     fulldeny.push(this.lists.tests[i]);
     //   }
     //   if(this.debug){
     //     debugger;
     //   }
     // }
-    // console.log('Whitelist:');
-    // console.log(white);
+    // console.log('Full Allow:');
+    // console.log(fullalow);
 
-    // console.log('Blacklist:');
-    // console.log(black);
+    // console.log('Full Deny:');
+    // console.log(fulldeny);
 
     // console.log('Only Domain:');
     // console.log(only_domain);
