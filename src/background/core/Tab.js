@@ -37,7 +37,7 @@ export default class Tab {
     this.tabCache = new TabCache(projectId, tabId.toString(), DEFAULT_TAB_CONTANT);
     // this.tabCache = tabCache;
     this.tabId = tabId;
-    this.id = '-1';
+    this.id = 'http://NEW_TAB';
     this.isInit = false;
     this.nr = 1;
     this.queue = {

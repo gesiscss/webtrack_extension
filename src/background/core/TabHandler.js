@@ -56,7 +56,7 @@ export default class TabHandler {
     if (this.tabs.hasOwnProperty(openerid)){
       return this.tabs[openerid].id;
     } else {
-      return 'NO(TabHandler.js:03)';
+      return 'TabHandler.js:getTabOpenerID:03)';
     }
 
   }
@@ -107,7 +107,7 @@ export default class TabHandler {
     if (id){
       return id;
     } else {
-      return 'NO(TabHandler.js:01)';
+      return 'TabHandler.js:getPrecursor_id:01';
     }
   }
 
