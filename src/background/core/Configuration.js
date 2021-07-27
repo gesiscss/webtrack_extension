@@ -13,12 +13,12 @@ export default class Configuration {
    * @param {Object} settings [instance of Settings]
    * @param {Object} transfer [instance of Transfer]
    */
-  constructor(settings, transfer, blacklists) {
+  constructor(settings, transfer, controllists) {
     this.settings = settings;
     this.versionType = settings.versionType + ' (' + settings.getBrowser().name + '-' + settings.getBrowser().version + ')';
     this.mobile = settings.mobile;
     this.transfer = transfer;
-    this.blacklists = blacklists;
+    this.controllists = controllists;
     this.getProject = this.getProject.bind(this);
     this.getProjects = this.getProjects.bind(this);
     this.setSending = this.setSending.bind(this);
@@ -31,7 +31,7 @@ export default class Configuration {
     this.is_load = false;
     this.debug = false;
 
-    //if (this.debug) console.log(blacklists);
+    //if (this.debug) console.log(controllists);
   }
 
 
