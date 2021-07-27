@@ -246,7 +246,7 @@ export default class TrackingHandler {
     if (page.meta.hasOwnProperty('privacy')){
       let privacy = page.meta.privacy;
 
-      if (privacy.domain_only || privacy.webtrack_off || privacy.blacklisted || privacy.private_mode) {
+      if (privacy.domain_only || privacy.webtrack_off || privacy.full_deny || privacy.private_mode) {
 
         if (privacy.webtrack_off) {
           page['hostname'] = 'http://WEBTRACK_OFF';
@@ -254,8 +254,8 @@ export default class TrackingHandler {
         else if (privacy.private_mode) {
           page['hostname'] = 'http://PRIVATE_MODE';
         }
-        else if (privacy.blacklisted) {
-          page['hostname'] = 'http://BLACKLISTED';
+        else if (privacy.full_deny) {
+          page['hostname'] = 'http://FULL_DENY';
         }
 
         let hostname = page['hostname'];

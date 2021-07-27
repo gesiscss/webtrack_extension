@@ -227,7 +227,7 @@ export default class URLFilter {
       }
     }
 
-    if (this.debug) console.log('it is not blacklisted');
+    if (this.debug) console.log('it is not Full Deny');
     return false;
   }
 

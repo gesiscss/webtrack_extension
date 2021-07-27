@@ -463,7 +463,7 @@ export default class Extension {
           privacy: {
               only_domain: this.tabs[sender.tab.id].getState('only_domain'),
               only_url: this.tabs[sender.tab.id].getState('only_url'),
-              blacklisted: !this.tabs[sender.tab.id].getState('allow'),
+              full_deny: !this.tabs[sender.tab.id].getState('allow'),
               webtrack_off: this.tabs[sender.tab.id].getState('webtrack_off'),              
               private_mode: this.privateMode,
               tab_disabled: this.tabs[sender.tab.id].getState('disabled')
