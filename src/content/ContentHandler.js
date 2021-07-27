@@ -161,7 +161,7 @@ export default class ContentHandler {
       } else if (privacy.only_url){
         if (this.debug) console.log('URLTracker');
         return URLTracker;
-      } if (privacy.denylisted){
+      } if (privacy.full_deny){
         if (this.debug) console.log('DenylistTracker');
         return DenylistTracker;
       } if (privacy.private_mode){

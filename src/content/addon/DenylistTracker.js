@@ -11,7 +11,7 @@ export default class DenylistTracker extends Tracker{
 
     // make sure this is the case as it can be blocked due to dynamic content
     // however, currently this is not the case
-    this.privacy.denylisted = true;
+    this.privacy.full_deny = true;
 
     this.denylist_debug = false;
 
