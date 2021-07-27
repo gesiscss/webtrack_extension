@@ -13,8 +13,8 @@ import settings from '../lib/settings';
 
 
 
-async function load_blacklists(xbrowser) {
-    // Loading blacklists
+async function load_controllists(xbrowser) {
+    // Loading controllists
     var specials = {};
     await fetch(xbrowser.runtime.getURL('data/specials.json')).then(
       (response) => response.json()).then((json) => {
@@ -93,9 +93,9 @@ async function load_blacklists(xbrowser) {
 
   window.pageHandler = null;
 
-  let blacklists = await load_blacklists(window.xbrowser);
+  let controllists = await load_controllists(window.xbrowser);
 
-  window.config = new Configuration(settings, transfer, blacklists);
+  window.config = new Configuration(settings, transfer, controllists);
 
   //console.log('Create PageHandler');
   window.pageHandler = new PageHandler(config, transfer, window.tracker);

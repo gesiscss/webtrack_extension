@@ -272,48 +272,48 @@ export default class URLFilter {
     //uncomment to test the list in tests.json
     /////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
-    // console.log('TEST Control Lists:');
-    // let fullalow=[]
-    // let only_domain=[]
-    // let only_url=[]
-    // let fulldeny=[]
-    // for (var i = 0; i < this.lists.tests.length; i++) {
-    //   //when the test contains URLs
-    //   //domain = this.get_location(this.lists.tests[i]).hostname
+    console.log('TEST Control Lists:');
+    let fullalow=[]
+    let only_domain=[]
+    let only_url=[]
+    let fulldeny=[]
+    for (var i = 0; i < this.lists.tests.length; i++) {
+      //when the test contains URLs
+      //domain = this.get_location(this.lists.tests[i]).hostname
 
-    //   //when the test contain domains
-    //   domain = this.lists.tests[i];
+      //when the test contain domains
+      domain = this.lists.tests[i];
 
-    //   if ("????" == domain){
-    //     this.debug=true;
-    //   }
-    //   if (!this.isincluded(domain)) {
-    //     if (this.only_domain(domain)){
-    //       only_domain.push(this.lists.tests[i]);
-    //     } else if (this.only_url(domain)){
-    //       only_url.push(this.lists.tests[i]);
-    //     } else {
-    //       fullalow.push(this.lists.tests[i]);
-    //     }
-    //   } else {
-    //     fulldeny.push(this.lists.tests[i]);
-    //   }
-    //   if(this.debug){
-    //     debugger;
-    //   }
-    // }
-    // console.log('Full Allow:');
-    // console.log(fullalow);
+      if ("????" == domain){
+        this.debug=true;
+      }
+      if (!this.isincluded(domain)) {
+        if (this.only_domain(domain)){
+          only_domain.push(this.lists.tests[i]);
+        } else if (this.only_url(domain)){
+          only_url.push(this.lists.tests[i]);
+        } else {
+          fullalow.push(this.lists.tests[i]);
+        }
+      } else {
+        fulldeny.push(this.lists.tests[i]);
+      }
+      if(this.debug){
+        debugger;
+      }
+    }
+    console.log('Full Allow:');
+    console.log(fullalow);
 
-    // console.log('Full Deny:');
-    // console.log(fulldeny);
+    console.log('Full Deny:');
+    console.log(fulldeny);
 
-    // console.log('Only Domain:');
-    // console.log(only_domain);
+    console.log('Only Domain:');
+    console.log(only_domain);
 
-    // console.log('Only URL:');
-    // console.log(only_url);
-    // debugger;
+    console.log('Only URL:');
+    console.log(only_url);
+    debugger;
     ///////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
 
