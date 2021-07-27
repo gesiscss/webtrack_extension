@@ -382,5 +382,6 @@ export default class URLFilter {
         }
       }
     }
+    return false;
   }
 }

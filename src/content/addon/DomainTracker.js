@@ -10,7 +10,7 @@ export default class DomainTracker extends Tracker{
     this.is_allowed = null;
 
     // make sure this is the case as it can be blocked due to dynamic content
-    this.privacy.domain_only = true;
+    this.privacy.only_domain = true;
 
     this.domain_debug = false;
 

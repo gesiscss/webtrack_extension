@@ -246,7 +246,7 @@ export default class TrackingHandler {
     if (page.meta.hasOwnProperty('privacy')){
       let privacy = page.meta.privacy;
 
-      if (privacy.domain_only || privacy.webtrack_off || privacy.full_deny || privacy.private_mode) {
+      if (privacy.only_domain || privacy.webtrack_off || privacy.full_deny || privacy.private_mode) {
 
         if (privacy.webtrack_off) {
           page['hostname'] = 'http://WEBTRACK_OFF';
