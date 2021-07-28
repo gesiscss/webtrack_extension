@@ -26,7 +26,7 @@ var settings = {
   requireVersion: {
     chrome: 45
   },
-  server: servers['staging_address']
+  server: servers['production_address']
 }
 
 
