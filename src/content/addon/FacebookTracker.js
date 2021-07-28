@@ -84,6 +84,7 @@ export default class FacebookTracker extends Tracker{
     this.is_public_page = false;
     this.is_profile = false;
     this.is_verified_page_or_profile = false;
+    this.is_own_profile = false;
 
 
     this.public_arias = new Set([
@@ -131,6 +132,7 @@ export default class FacebookTracker extends Tracker{
     this.logged_uid = null;
     this.logged_user_id = null;
     this.logged_username = null;
+    this.username_from_url = null;
     this.logged_account_id = null;
     this.logged_fullname = null;
     this.logged_shortname = null;
@@ -280,6 +282,7 @@ export default class FacebookTracker extends Tracker{
 
     // check if it is the newsfeed page (cheap check)
     this.is_newsfeed = this._is_newsfeed(location.pathname);
+    this.is_own_profile = this.logged_username == this.username_from_url;
 
     // check if this is a public page only if it is not the newsfeed
     // the check for public page might be heavy
@@ -375,7 +378,7 @@ export default class FacebookTracker extends Tracker{
   **/  
   get_logged_username_from_scripts() {
     try{
-      let url_username = this.get_username_from_url(location);
+      this.username_from_url = this.get_username_from_url(location);
       let scripts = document.querySelectorAll('script:not([src])');
       for (var i = 0; i < scripts.length; i++) {
         let sc = scripts[i].textContent;
@@ -385,14 +388,14 @@ export default class FacebookTracker extends Tracker{
             let username = JSON.parse('{' + user_match.join(',') + '}').username;
             // if the username in the url exist and it is different than the username
             // in the script, then return that one
-            if (url_username && url_username != username){
+            if (this.username_from_url && this.username_from_url != username){
               return username;
             } 
           }
         }
       }
-      if (url_username){
-        return url_username;
+      if (this.username_from_url){
+        return this.username_from_url;
       }
     } catch(e){
 
@@ -649,6 +652,10 @@ export default class FacebookTracker extends Tracker{
         // this must go after this.is_verified_page_or_profile
         } else if (this.is_profile){
           if (this._is_public_or_custom_verified(aria_label, target)){
+            return true;
+          }
+        } else if (this.is_own_profile){
+          if (this.public_arias.has(aria_label)){
             return true;
           }
         } else {
@@ -1139,6 +1146,7 @@ export default class FacebookTracker extends Tracker{
     }
 
     this.privacy_flags['is_profile'] = this.is_profile;
+    this.privacy_flags['is_own_profile'] = this.is_own_profile;
     this.privacy_flags['is_newsfeed'] = this.is_newsfeed;
     this.privacy_flags['is_public_page'] = this.is_public_page;
     this.privacy_flags['is_verified_page_or_profile'] = this.is_verified_page_or_profile;
