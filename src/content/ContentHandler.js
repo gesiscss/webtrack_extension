@@ -169,14 +169,14 @@ export default class ContentHandler {
         return PrivateModeTracker;
       } else if(str.endsWith('facebook')){
         if (this.debug) console.log('FacebookTracker');
-        return FacebookTracker;
+        return DomainTracker;
       }
       else if(str.endsWith('youtube')){
         if (hostname_parts.length > 2 && YOUTUBE_SET.has(hostname_parts[hostname_parts.length - 3])) {
             return DomainTracker;
         } else {
           if (this.debug) console.log('YouTubeTracker');
-          return YouTubeTracker;
+          return URLTracker;
         }
       }
       else if(str.endsWith('twitter')){
@@ -185,7 +185,7 @@ export default class ContentHandler {
           return DomainTracker;
         } else {
           if (this.debug) console.log('TwitterTracker');
-          return TwitterTracker;
+          return DomainTracker;
         }
       }
       else if(str.endsWith('instagram')){
