@@ -11,6 +11,9 @@ var servers = {
   internal_address: "https://SVAZWebTrack.gesis.intra:10443/",
   production_IP: "https://51.116.230.66:10443/",
   production_address: "https://webtrack.gesis.org:10443/",
+
+  // Development IP
+  localhost: "https://127.0.0.1:10443/",
 }
 
 
@@ -21,12 +24,12 @@ var settings = {
   id: 'DFG_21',
   lang: 'de',
   project_name: 'Webtrack21',
-  versionType: 'v0.10.2',
+  versionType: 'v0.10.3',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: servers['production_address']
+  server: servers['localhost']
 }
 
 
