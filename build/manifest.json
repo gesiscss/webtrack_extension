@@ -10,9 +10,7 @@
     "128": "images/on.png"
   },
   "web_accessible_resources": [
-    "images/on.png",
-    "data/blacklists.json",
-    "data/*.txt"
+    "images/on.png"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 

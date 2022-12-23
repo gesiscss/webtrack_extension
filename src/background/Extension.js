@@ -1,4 +1,6 @@
 import EventEmitter from 'eventemitter3';
+import URLFilter from './core/URLFilter';
+
 const EVENT_NAMES = {
   'event': 'onEvent',
   'focusTabCallback': 'onFocusTabCallback',
@@ -441,16 +443,17 @@ export default class Extension {
    *   event: Array
    *  ]
    */
-  _onContentMessage(msg, sender, sendResponse){
+  async _onContentMessage(msg, sender, sendResponse){
       if (this.debug) console.log('-> _onContentMessage');
 
       if(msg==='ontracking'){
         if (this.debug) console.log('# ontracking');
         let domain = this.urlFilter.get_location(sender.tab.url).hostname;
-        this.tabs[sender.tab.id].setState('allow', this.urlFilter.isAllow(domain));
+        const url_rule = await this.urlFilter.is_allow(domain);
+        this.tabs[sender.tab.id].setState('allow', url_rule != 'full_deny' || url_rule == 'full_allow');
         this.tabs[sender.tab.id].setState('webtrack_off', this.urlFilter.is_track_off(domain));
-        this.tabs[sender.tab.id].setState('only_domain', this.urlFilter.only_domain(domain));
-        this.tabs[sender.tab.id].setState('only_url', this.urlFilter.only_url(domain));
+        this.tabs[sender.tab.id].setState('only_domain', url_rule == 'only_domain');
+        this.tabs[sender.tab.id].setState('only_url', url_rule == 'only_url');
 
         //assume it is allowed
         this.tabs[sender.tab.id].setState('is_sm_path_allowed', true);

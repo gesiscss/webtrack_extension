@@ -12,63 +12,6 @@ import settings from '../lib/settings';
 
 
 
-
-async function load_controllists(xbrowser) {
-    // Loading controllists
-    var specials = {};
-    await fetch(xbrowser.runtime.getURL('data/specials.json')).then(
-      (response) => response.json()).then((json) => {
-        for (let key in json) {
-          specials[key] = new Set(json[key]);
-        }
-    });
-
-    var filters = {};
-    await fetch(xbrowser.runtime.getURL('data/filters.json')).then(
-      (response) => response.json()).then((json) => {
-        for (let key in json) {
-          filters[key] = new Set(json[key]);
-        }
-    });
-
-    var simple = {};
-    await fetch(xbrowser.runtime.getURL('data/simple.json')).then(
-      (response) => response.json()).then((json) => {
-        for (let key in json) {
-          simple[key] = new Set(json[key]);
-        }
-    });
-
-
-    // uncomment to load the tests.json file to perform tests
-    // CHECKED: test_domainonly.json, test_urlonly.json, test_fulldeny.json,
-    // test_fullallow.json, test_porn.json
-    ///////////////////////////////////////////////////////////
-    // var tests = null;
-    // await fetch(xbrowser.runtime.getURL('data/test_domain.json')).then(
-    //   (response) => response.json()).then((json) => {
-    //     tests = json;
-    // });
-
-    // console.log(tests);
-    // return { 
-    //   'specials':specials, 
-    //   'filters': filters, 
-    //   'simple': simple,
-    //   'tests': tests
-    // }
-    ////////////////////////////////////////////////////////////
-
-    return { 
-      'specials':specials, 
-      'filters': filters, 
-      'simple': simple,
-
-    }
-
-}
-
-
 (async function main() {
 
   
@@ -95,9 +38,7 @@ async function load_controllists(xbrowser) {
 
   window.pageHandler = null;
 
-  let controllists = await load_controllists(window.xbrowser);
-
-  window.config = new Configuration(settings, transfer, controllists);
+  window.config = new Configuration(settings, transfer);
 
   //console.log('Create PageHandler');
   window.pageHandler = new PageHandler(config, transfer, window.tracker);
