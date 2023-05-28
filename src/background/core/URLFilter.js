@@ -69,7 +69,7 @@ export default class URLFilter {
     //if the domain is in the cache and not older than 30 days, don't query the server
     if ((this.cache.hasOwnProperty(domain)) && (((Date.now() - this.cache[domain].timestamp)/86400000) < this.expiration)) {
       const json = this.cache[domain].value;
-      return json;
+      return json.trim();
     } else {
       this.transfer = new Transfer(config.settings.server + 'tracking/controllists');
       const json = await this.transfer.jsonFetch(config.settings.server + 'tracking/controllists', {
@@ -81,8 +81,8 @@ export default class URLFilter {
         body: JSON.stringify({'domain': domain})})
       //after querying the server update the cache
       let ts = Date.now();
-      this.cache[domain] = {value: json, timestamp: ts};
-      return json;
+      this.cache[domain] = {value: json.trim(), timestamp: ts};
+      return json.trim();
     }
   }
 } 
