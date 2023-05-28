@@ -8,7 +8,7 @@ export default {
     title: 'Projekte',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
-    notloaded: 'Webtrack konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
+    notloaded: 'gesisSurf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     startTitle: 'Starten',
   },
   loggin: {
@@ -20,7 +20,7 @@ export default {
   },
   project: {
     id_not_found: 'Ihre ID wurde nicht gefunden.',
-    not_connected: 'Webtrack konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
+    not_connected: 'gesisSurf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     unavailable: {
       title: 'Nicht mehr Verfügbar',
       content: 'Projekt nicht mehr verfügbar'

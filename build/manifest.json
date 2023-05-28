@@ -1,8 +1,8 @@
 {
-  "short_name": "Webtrack",
+  "short_name": "gesisSurf",
   "author": "Universität Koblenz-Landau",
-  "name": "Webtrack",
-  "description": "Webtrack",
+  "name": "gesisSurf",
+  "description": "gesisSurf",
   "manifest_version": 2,
   "version": "0.10.3",
   "permissions": ["storage",  "tabs", "unlimitedStorage"],
@@ -16,7 +16,7 @@
 
   "browser_action": {
     "default_popup": "index.html",
-    "default_title": "Webtrack",
+    "default_title": "gesisSurf",
 
     "default_icon": {
       "128": "images/off.png"
@@ -25,6 +25,7 @@
 
   "background": {
     "scripts": [
+      "3rdpart/browser-polyfill.js",
       "3rdpart/zip/deflate.js",
       "3rdpart/zip/inflate.js",
       "3rdpart/zip/z-worker.js",
@@ -44,6 +45,7 @@
   "content_scripts": [{
       "matches": ["http://*/*", "https://*/*"],
       "js": [
+            "3rdpart/browser-polyfill.js",
              "3rdpart/aes.js",
              "dist/content.js"],
         "run_at": "document_end",

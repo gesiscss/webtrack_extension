@@ -19,17 +19,17 @@ var servers = {
 
 var settings = {
   companie: {
-    name: "WebTrack"
+    name: "gesisSurf"
   },
   id: 'DFG_21',
   lang: 'de',
-  project_name: 'Webtrack21',
+  project_name: 'gesisSurf',
   versionType: 'v0.10.3',
   mobile: false,
   requireVersion: {
     chrome: 45
   },
-  server: servers['localhost']
+  server: servers['production_address']
 }
 
 
