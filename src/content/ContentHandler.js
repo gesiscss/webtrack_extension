@@ -208,25 +208,20 @@ export default class ContentHandler {
    * [get parameter from background]
    * @return {Promise<object>}
    */
-  _getParam(){
-    return new Promise((resolve, reject)=>{
-      if (this.debug) console.log('sendMessage("ontracking")');
-      this.browser.runtime.sendMessage('ontracking', (response) => {
-        if(this.browser.runtime.lastError) {
-          /*ignore when the background is not listening*/;
-          // console.log(this.browser.runtime.lastError);
-        } else {
-          if (response.pending_private_time_answer){
-            this.display_notification = true;
-            this.showNotification();
-          }
-        }
-        resolve(response);
-      });
-
-    });
+  async _getParam(){
+    if (this.debug) console.log('sendMessage("ontracking")');
+    const response = await browser.runtime.sendMessage('ontracking');
+    if(this.browser.runtime.lastError) {
+      /*ignore when the background is not listening*/;
+      // console.log(this.browser.runtime.lastError);
+    } else {
+      if (response.pending_private_time_answer){
+        this.display_notification = true;
+        this.showNotification();
+      }
+    }
+    return response;
   }
-
 
 
   /**
@@ -592,7 +587,7 @@ export default class ContentHandler {
           </div>
           <div style="margin-left: 15px">
             <div style="display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px">
-              Webtrack
+              gesisSurf
             </div>
             <div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
               Schalten Sie den privaten Modus aus

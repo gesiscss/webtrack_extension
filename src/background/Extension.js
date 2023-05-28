@@ -458,7 +458,7 @@ export default class Extension {
         //assume it is allowed
         this.tabs[sender.tab.id].setState('is_sm_path_allowed', true);
         this.tabs[sender.tab.id].setState('is_content_allowed', true);
-
+        
         let r = {
           extensionfilter: this.extensionfilter, 
           pending_private_time_answer: this.pending_private_time_answer,
@@ -472,25 +472,25 @@ export default class Extension {
               tab_disabled: this.tabs[sender.tab.id].getState('disabled')
           }
         }
-        sendResponse(r);
+        return r;
       } else if (msg.hasOwnProperty('private_time')){
         if (this.debug) console.log('The user has requested more private time: ', msg.private_time);
         this.event.emit(EVENT_NAMES.extendPrivateMode, msg.private_time);
         this.removePrivateTimePopup();
         this.pending_private_time_answer = false;
-        sendResponse(false);
+        return false;
       } else if(!this.tabs.hasOwnProperty(sender.tab.id) || 
           this.tabs[sender.tab.id].getState('disabled')){
         if (this.debug) console.log('# tab disabled');
         if (sender.tab.id == this.active_tab){
           this.setImage(false);
         }
-        sendResponse(false);
+        return false;
       // background controls
       }else if(!this.tabs[sender.tab.id].getState('disabled') && this.tabs.hasOwnProperty(sender.tab.id)){
         if(typeof msg.content[0].html == 'boolean' && msg.content[0].html == false && sender.tab.id == this.active_tab){
           this.setImage(false);
-          sendResponse(false);
+          return false;
         }else {        
           // if the property indicated that is allow to not track the content
           // then update the indicator, otherwise assume that it is allowed
@@ -522,8 +522,8 @@ export default class Extension {
           msg.tabId = sender.tab.id;
           if (this.debug) console.log('==== Emit Event: onTabContent ====');
           this.event.emit(EVENT_NAMES.tabContent, msg, false);
-          sendResponse(true);
           if (this.debug) console.log('==== Event emitted: onTabContent ====');
+          return true;
 
         }
         
@@ -531,11 +531,11 @@ export default class Extension {
       }else{
         debugger;
         if (this.debug) console.log('Private mode: ', this.privateMode);
-        sendResponse(false);
+        return false;
       }
       
       if (this.debug) console.log('<- _onContentMessage');
-      return true;
+      //return true;
   }
 
   /**
@@ -589,7 +589,7 @@ export default class Extension {
       xbrowser.windows.onFocusChanged.addListener(this._onActiveWindows);
       xbrowser.tabs.onRemoved.addListener(this._onTabRemove);
       xbrowser.tabs.onUpdated.addListener(this._onTabUpdate);
-      xbrowser.runtime.onMessage.addListener(this._onContentMessage);
+      browser.runtime.onMessage.addListener(this._onContentMessage);
       xbrowser.tabs.onActivated.addListener(this._onActivatedTab);
       xbrowser.runtime.onConnect.addListener(this._onConnectPopup);
 
@@ -638,7 +638,7 @@ export default class Extension {
     xbrowser.windows.onFocusChanged.removeListener(this._onActiveWindows);
     xbrowser.tabs.onRemoved.removeListener(this._onTabRemove);
     xbrowser.tabs.onUpdated.removeListener(this._onTabUpdate);
-    xbrowser.runtime.onMessage.removeListener(this._onContentMessage);
+    browser.runtime.onMessage.removeListener(this._onContentMessage);
     xbrowser.tabs.onActivated.removeListener(this._onActivatedTab);
     // xbrowser.runtime.onConnect.removeListener(this._onConnectPopup);
     // xbrowser.runtime.onConnect.removeListener(this._onDisconnectPopup);
@@ -680,7 +680,7 @@ export default class Extension {
       {
         type: 'basic',
         iconUrl: 'images/on.png',
-        title:   "Webtrack reminder",
+        title:   "gesisSurf reminder",
         message: "15 minutes have passed!"
         // ,
         // contextMessage: "It's about time...",
