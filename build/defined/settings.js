@@ -24,7 +24,7 @@ var settings = {
   id: 'DFG_21',
   lang: 'de',
   project_name: 'gesisSurf',
-  versionType: 'v0.10.3',
+  versionType: 'v0.10.5',
   mobile: false,
   requireVersion: {
     chrome: 45

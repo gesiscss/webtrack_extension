@@ -4,7 +4,7 @@
   "name": "gesisSurf",
   "description": "gesisSurf",
   "manifest_version": 2,
-  "version": "0.10.3",
+  "version": "0.10.5",
   "permissions": ["storage",  "tabs", "unlimitedStorage"],
   "icons": {
     "128": "images/on.png"
