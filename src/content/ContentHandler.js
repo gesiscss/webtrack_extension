@@ -589,15 +589,15 @@ export default class ContentHandler {
             <div style="display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px">
               gesisSurf
             </div>
-            <div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
+            <!--<div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
               Schalten Sie den privaten Modus aus
-            </div>
+            </div>-->
           </div>
 
           <div style="clear: both;"> </div>
 
           <div style="margin:15px; font-size: 14px;">
-            <div>Es sind 15 Minuten vergangen, seit Sie den privaten Modus aktiviert haben.</div>
+            <div>Ihre angeforderte Zeit im privaten Modus ist abgelaufen.</div>
             <br />
             <div style="font-weight:bold;">Möchten Sie im privaten Modus weiter surfen?</div>
           </div>

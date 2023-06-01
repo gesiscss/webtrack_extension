@@ -5,14 +5,14 @@ export default {
     ok: 'ok'
   },
   projects: {
-    title: 'Projekte',
+    title: 'gesisSurf',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
     notloaded: 'gesisSurf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     startTitle: 'Starten',
   },
   loggin: {
-    invitation: 'Bitte melden Sie sich mit ihrer ID an.',
+    invitation: 'Bitte melden Sie sich mit Ihrer ID an.',
     placeholder: 'Ihre ID',
     error_id_length: 'Ihre ID-Länge muss mindestens %s Zeichen betragen.',
     input_label: 'ID',

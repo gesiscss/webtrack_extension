@@ -68,7 +68,7 @@ export default class View extends Component {
       <Page name={this.constructor.name.toLowerCase()} >
 
         <Headerlogo name={this.props.getCompanie().name} >
-            <NavTitle>{lang.projects.title} or title</NavTitle>
+            <NavTitle>{lang.projects.title}</NavTitle>
         </Headerlogo>
         {content}
       </Page>
