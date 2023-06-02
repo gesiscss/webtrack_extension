@@ -680,7 +680,7 @@ export default class Extension {
       {
         type: 'basic',
         iconUrl: 'images/on.png',
-        title:   "gesisSurf reminder",
+        title:   "GESIS Surf reminder",
         message: "15 minutes have passed!"
         // ,
         // contextMessage: "It's about time...",

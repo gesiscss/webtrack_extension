@@ -19,11 +19,11 @@ var servers = {
 
 var settings = {
   companie: {
-    name: "gesisSurf"
+    name: "GESIS Surf"
   },
   id: 'DFG_21',
   lang: 'de',
-  project_name: 'gesisSurf',
+  project_name: 'GESIS Surf',
   versionType: 'v0.10.5',
   mobile: false,
   requireVersion: {

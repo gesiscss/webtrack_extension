@@ -1,8 +1,8 @@
 {
-  "short_name": "gesisSurf",
+  "short_name": "GESIS Surf",
   "author": "Universität Koblenz-Landau",
-  "name": "gesisSurf",
-  "description": "gesisSurf",
+  "name": "GESIS Surf",
+  "description": "GESIS Surf",
   "manifest_version": 2,
   "version": "0.10.5",
   "permissions": ["storage",  "tabs", "unlimitedStorage"],
@@ -16,7 +16,7 @@
 
   "browser_action": {
     "default_popup": "index.html",
-    "default_title": "gesisSurf",
+    "default_title": "GESIS Surf",
 
     "default_icon": {
       "128": "images/off.png"

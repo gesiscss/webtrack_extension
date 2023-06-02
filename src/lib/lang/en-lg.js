@@ -8,7 +8,7 @@ export default {
     title: 'Projects',
     select: 'Select one project',
     nolist: 'Currently no projects are active. Please try it another time. Thank you!',
-    notloaded: 'gesisSurf could not connect to the server. Please try again later.',
+    notloaded: 'GESIS Surf could not connect to the server. Please try again later.',
     startTitle: 'Starten'
   },
   loggin: {
@@ -20,7 +20,7 @@ export default {
   },
   project: {
     id_not_found: 'Your id was not found.',
-    not_connected: 'gesisSurf could not connect to the server. Please try again later',
+    not_connected: 'GESIS Surf could not connect to the server. Please try again later',
     unavailable: {
       title: 'Unavailable',
       content: 'Project not available anymore'

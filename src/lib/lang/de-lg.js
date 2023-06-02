@@ -5,10 +5,10 @@ export default {
     ok: 'ok'
   },
   projects: {
-    title: 'gesisSurf',
+    title: 'GESIS Surf',
     select: 'Wähle ein Projekt aus',
     nolist: 'Zurzeit sind keine Projekte vorhanden. Bitte probieren Sie es später nochmal. Vielen Dank!',
-    notloaded: 'gesisSurf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
+    notloaded: 'GESIS Surf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     startTitle: 'Starten',
   },
   loggin: {
@@ -20,7 +20,7 @@ export default {
   },
   project: {
     id_not_found: 'Ihre ID wurde nicht gefunden.',
-    not_connected: 'gesisSurf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
+    not_connected: 'GESIS Surf konnte keine Serververbindung herstellen. Versuchen Sie es bitte später wieder.',
     unavailable: {
       title: 'Nicht mehr Verfügbar',
       content: 'Projekt nicht mehr verfügbar'

@@ -587,7 +587,7 @@ export default class ContentHandler {
           </div>
           <div style="margin-left: 15px">
             <div style="display: block;font-size: 48px; color: #0085bc; font-weight: bold; padding-top:10px">
-              gesisSurf
+              GESIS Surf
             </div>
             <!--<div style="display: block; font-size: 16px; color: #0085bc; font-weight: bold;">
               Schalten Sie den privaten Modus aus
