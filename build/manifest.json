@@ -2,7 +2,7 @@
   "short_name": "GESIS Surf",
   "author": "Universität Koblenz-Landau",
   "name": "GESIS Surf",
-  "description": "GESIS Surf",
+  "description": "Nehmen Sie mit GESIS Surf an wissenschaftlichen Studien teil",
   "manifest_version": 2,
   "version": "0.10.5",
   "permissions": ["storage",  "tabs", "unlimitedStorage"],
