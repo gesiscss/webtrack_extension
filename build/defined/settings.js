@@ -1,16 +1,7 @@
 var servers = {
-  //Bern Address
-  bern_address: "https://webtracker.sowi.unibe.ch:10443",
-
-  // Staging IPs and Domains
-  staging_address: "https://svko-webtrack.gesis.intra:10443/",
-  staging_IP: "https://10.6.9.151:10443/",
-
-  // Production IPs and Domains
-  internal_IP: "https://10.4.250.4:10443/",
-  internal_address: "https://SVAZWebTrack.gesis.intra:10443/",
-  production_IP: "https://51.116.230.66:10443/",
-  production_address: "https://webtrack.gesis.org:10443/",
+  //Production Address
+  production_IP: "https://0.0.0.0:10443/",
+  production_address: "https://example.org:10443/",
 
   // Development IP
   localhost: "https://127.0.0.1:10443/",
@@ -21,7 +12,7 @@ var settings = {
   companie: {
     name: "GESIS Surf"
   },
-  id: 'DFG_21',
+  id: 'Sample project',
   lang: 'de',
   project_name: 'GESIS Surf',
   versionType: 'v0.10.5',
@@ -29,7 +20,7 @@ var settings = {
   requireVersion: {
     chrome: 45
   },
-  server: servers['production_address']
+  server: servers['localhost']
 }
 
 
