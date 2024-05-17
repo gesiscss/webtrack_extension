@@ -1,12 +1,3 @@
-
-# WebTrack
- 
-WebTrack is a web browser plugin that captures the web browsing behavior of users who volunteer to participate in web tracking studies. WebTrack was developed within the project “Reciprocal relations between populist radical-right attitudes and information behavior: a longitudinal study of attitude development in high-choice information environments” lead by Silke Adam (U of Bern) and Michaela Maier (U of Koblenz-Landau) and funded by the Swiss National Science Foundation (100001CL 182630/1) and the German Research Foundation DFG (MA2244/9-1). The software was transferred to GESIS in 2021 where WebTrack was maintained and further developed. For academic use of the tool, please consider the below license.  
-
-This repository webtrack_server_interface_public contains the code for the frontend interface of the WebTrack server. The repository webtrack_server_public contains the code for the backend of the WebTrack server. The repository webtrack_extension_public (link) contains the code for the frontend of the browser extension. 
-
-The Chrome Browser API will be updated from V2 to V3 in June 2024. The tool is tailored towards V2 and will not be maintained anymore for version V3.
-
  # License 
 
 **PARTIES** GESIS – Leibniz Institute for the Social Sciences, University of Kaiserslautern-Landau (RPTU), University of Bern, end users 
@@ -30,4 +21,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 **CHOICE OF LAW** German 
 
 **PLACE OF JURISDICTION** Mannheim, Germany 
- 
